@@ -67,6 +67,12 @@ export default function Home() {
                     tabBarStyle: {
                         backgroundColor: "rgba(255, 255, 255, 0.9)",
                     },
+                    headerTitle: () => (
+                        <Text style={styles.headerTitle}>
+                            <Text style={styles.cti}>CTI</Text>
+                            <Text style={styles.control}>Control</Text>
+                        </Text>
+                    ),
                 })}
             >
                 <Tab.Screen name="Home" component={HomeScreen} />
@@ -77,32 +83,57 @@ export default function Home() {
     );
 }
 
+
 const styles = StyleSheet.create({
     container: {
-        flex: 1, // Ocupa todo el espacio disponible
-        backgroundColor: "#f9f9f9", // Fondo general
+        flex: 1,
+        backgroundColor: "#f9f9f9",
     },
     background: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "rgba(255, 255, 255, 0.5)", // Fondo claro para toda la pantalla
     },
     overlay: {
         flex: 1,
         width: "100%",
-        backgroundColor: "rgba(255, 255, 255, 0.5)", // Filtro blanco semitransparente
-        justifyContent: "center",
-        alignItems: "center",
+        backgroundColor: "rgba(255, 255, 255, 0.5)",
+    },
+    ctiContainer: {
+        position: "absolute",
+        top: 40,
+        left: 20,
     },
     screen: {
         justifyContent: "center",
         alignItems: "center",
+        flex: 1,
+    },
+    headerText: {
+        fontSize: 24,
+        fontWeight: "bold",
+    },
+    headerTitle: {
+        fontSize: 20, // Añadido de los nuevos estilos
+        fontWeight: "bold",
+    },
+    cti: {
+        color: "blue",
+    },
+    control: {
+        color: "green",
     },
     contentText: {
         fontSize: 20,
         fontWeight: "bold",
         color: "#333",
     },
+    customHeader: {
+        fontSize: 18,
+        fontWeight: "bold",
+        marginLeft: 20,
+    },
 });
+
+
 
