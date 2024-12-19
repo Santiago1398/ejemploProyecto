@@ -13,14 +13,16 @@ function HomeScreen() {
             resizeMode="contain" // Ajustar la imagen dentro del contenedor sin recortarla
         >
             <View style={styles.overlay}>
-                <View style={styles.screen}>
-                    <Text style={styles.contentText}></Text>
+                <View style={styles.ctiContainer}>
+                    <Text style={styles.headerText}>
+                        <Text style={styles.cti}>CTI</Text>
+                        <Text style={styles.control}>Control</Text>
+                    </Text>
                 </View>
             </View>
         </ImageBackground>
     );
 }
-
 
 function ProfileScreen() {
     return (
@@ -67,22 +69,28 @@ export default function Home() {
                     tabBarStyle: {
                         backgroundColor: "rgba(255, 255, 255, 0.9)",
                     },
-                    headerTitle: () => (
-                        <Text style={styles.headerTitle}>
-                            <Text style={styles.cti}>CTI</Text>
-                            <Text style={styles.control}>Control</Text>
-                        </Text>
-                    ),
+                    headerShown: false, // Oculta el encabezado
                 })}
             >
-                <Tab.Screen name="Home" component={HomeScreen} />
-                <Tab.Screen name="Profile" component={ProfileScreen} />
-                <Tab.Screen name="Settings" component={SettingsScreen} />
+                <Tab.Screen
+                    name="Home"
+                    component={HomeScreen}
+                    options={{ tabBarLabel: "" }} // Elimina el texto debajo del icono
+                />
+                <Tab.Screen
+                    name="Profile"
+                    component={ProfileScreen}
+                    options={{ tabBarLabel: "Perfil" }}
+                />
+                <Tab.Screen
+                    name="Settings"
+                    component={SettingsScreen}
+                    options={{ tabBarLabel: "Configuración" }}
+                />
             </Tab.Navigator>
         </View>
     );
 }
-
 
 const styles = StyleSheet.create({
     container: {
@@ -101,20 +109,11 @@ const styles = StyleSheet.create({
     },
     ctiContainer: {
         position: "absolute",
-        top: 40,
+        top: 20, // Reducido el valor para subir el texto
         left: 20,
     },
-    screen: {
-        justifyContent: "center",
-        alignItems: "center",
-        flex: 1,
-    },
     headerText: {
-        fontSize: 24,
-        fontWeight: "bold",
-    },
-    headerTitle: {
-        fontSize: 20, // Añadido de los nuevos estilos
+        fontSize: 36,
         fontWeight: "bold",
     },
     cti: {
@@ -123,17 +122,14 @@ const styles = StyleSheet.create({
     control: {
         color: "green",
     },
-    contentText: {
-        fontSize: 20,
-        fontWeight: "bold",
-        color: "#333",
-    },
-    customHeader: {
-        fontSize: 18,
-        fontWeight: "bold",
-        marginLeft: 20,
+    screen: {
+        justifyContent: "center",
+        alignItems: "center",
+        flex: 1,
     },
 });
+
+
 
 
 
