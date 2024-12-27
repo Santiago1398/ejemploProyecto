@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import { resultado } from "@/infrastructure/intercafe/listapi.interface";
-import { View, Text, StyleSheet, FlatList } from "react-native";
-import { rgbaArrayToRGBAColor, rgbaColor } from "react-native-reanimated/lib/typescript/Colors";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
 
 export default function DeviceList() {
     const [devices, setDevices] = useState<resultado[]>([]);  // Usa la interfaz Resultado
@@ -44,26 +43,25 @@ export default function DeviceList() {
         }
     };
 
-    const renderItem = ({ item }: { item: resultado }) => (
-        <View
-            style={[
-                styles.deviceContainer,
-                { backgroundColor: getBackgroundColor(item.estado) },
-            ]}
-        >
-            <Text style={styles.text}>Ubicación: {item.ubicacion}</Text>
-            <Text style={styles.text}>Nave: {item.numeroNave}</Text>
-            <Text style={styles.text}>Estado: {item.estado}</Text>
-            <Text style={styles.text}>Mac: {item.mac
-            }</Text>
-        </View>
-    );
+
 
     return (
         <FlatList
             data={devices}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.id.toString()} // Convierte el ID a string
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+                <TouchableOpacity
+                    style={[
+                        styles.deviceContainer,
+                        { backgroundColor: getBackgroundColor(item.estado) },
+                    ]}
+                    onPress={() => navigation.navigate("DeviceDetails", { device: item })}
+                >
+                    <Text style={styles.text}>Ubicación: {item.ubicacion}</Text>
+                    <Text style={styles.text}>Nave: {item.numeroNave}</Text>
+                    <Text style={styles.text}>Estado: {item.estado}</Text>
+                </TouchableOpacity>
+            )}
             contentContainerStyle={styles.listContainer}
         />
     );
