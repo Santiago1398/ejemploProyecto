@@ -1,5 +1,7 @@
+import DeviceList from "@/components/DeviceList";
 import React from "react";
 import { View, Text, StyleSheet, ImageBackground } from "react-native";
+
 
 export default function HomeScreen() {
     return (
@@ -15,6 +17,11 @@ export default function HomeScreen() {
                         <Text style={styles.cti}>CTI</Text>
                         <Text style={styles.control}>Control</Text>
                     </Text>
+                </View>
+
+                {/*Aqui metemos del compoenente DeviceList */}
+                <View style={styles.deviceContainer}>
+                    <DeviceList />
                 </View>
             </View>
         </ImageBackground>
@@ -46,5 +53,18 @@ const styles = StyleSheet.create({
     },
     control: {
         color: "green",
+    },
+    deviceContainer: {
+        padding: 16,
+        marginVertical: 8,
+        borderRadius: 8,
+        backgroundColor: "#fff", // Asegúrate de tener un color de fondo
+        // Sombra para iOS
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        // Elevación para Android
+        elevation: 5,
     },
 });
