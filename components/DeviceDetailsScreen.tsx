@@ -10,12 +10,19 @@ export default function DeviceList({ route }: any) {
     //Estados alarmas
     const getBackgroundColor = (estado: number) => {
         switch (estado) {
+            case 0:
+                return "#B0B0B0"; //Fuera de linea
             case 1:
-                return "#90ee90"; //verde
+                return "#85C285"; //En linea sin alarma
             case 2:
-                return "#FF2323"; //rojo
+                return "red"; //En linea con alarma
+            case 3:
+                return "#9E75C6"; //contraseña incorrecta;
+            case 4:
+                return "#F6BC31"; //En linea desarmada
             default:
-                return "#FFFFFF"; //blanco
+                return "white";
+
         }
 
 
@@ -24,8 +31,8 @@ export default function DeviceList({ route }: any) {
     return (
         <View style={styles.container}>
             <View style={[styles.header, { backgroundColor: getBackgroundColor(device.estado) }]}>
-                <Text style={styles.headerText}>Nombre: {device.ubicacion}</Text>
-                <Text style={styles.headerText}>Alarma: {device.estado === 1 ? "Habilitada" : "Activada"}</Text>
+                <Text style={styles.headerText}> {device.ubicacion}</Text>
+                <Text style={styles.headerText}>A1 {device.estado === 1 ? "Habilitada" : "Activada"}</Text>
             </View>
 
             <TouchableOpacity
@@ -71,7 +78,7 @@ const styles = StyleSheet.create({
     },
     headerText: {
         fontSize: 18,
-        color: "#fff",
+        color: "#333333",
         fontWeight: "bold",
     },
     dropdownButton: {

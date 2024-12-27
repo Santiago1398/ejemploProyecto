@@ -34,9 +34,9 @@ export default function DeviceList() {
             case 0:
                 return "#B0B0B0"; //Fuera de linea
             case 1:
-                return "#66B266"; //En linea sin alarma
+                return "#85C285"; //En linea sin alarma
             case 2:
-                return "#FF6666"; //En linea con alarma
+                return "red"; //En linea con alarma
             case 3:
                 return "#9E75C6"; //contraseña incorrecta;
             case 4:
@@ -61,10 +61,8 @@ export default function DeviceList() {
                     ]}
                     onPress={() => navigation.navigate("DeviceDetails", { device: item })}
                 >
-                    <Text style={styles.text}>Ubicación: {item.ubicacion}</Text>
-                    <Text style={styles.text}>Nave: {item.numeroNave}</Text>
-                    <Text style={styles.text}>Estado: {item.estado}</Text>
-                    <Text style={styles.text}>Mac: {item.mac}</Text>
+                    <Text style={styles.text}> {item.ubicacion}</Text>
+                    <Text style={styles.text}> {item.numeroNave}</Text>
                 </TouchableOpacity>
             )}
             contentContainerStyle={styles.listContainer}
@@ -83,7 +81,7 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 16,
-        color: "#000",
+        color: "#222222",
     },
 })
 
