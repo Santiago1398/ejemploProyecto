@@ -1,9 +1,13 @@
-import { useEffect, useState } from "react"
-import { resultado } from "@/infrastructure/intercafe/listapi.interface";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import React, { useEffect, useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { RootStackParamList } from '@/types/navigation';
+import { resultado } from '@/infrastructure/intercafe/listapi.interface';
 
 export default function DeviceList() {
-    const [devices, setDevices] = useState<resultado[]>([]);  // Usa la interfaz Resultado
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+    const [devices, setDevices] = useState<resultado[]>([]);
 
 
     useEffect(() => {
@@ -60,6 +64,7 @@ export default function DeviceList() {
                     <Text style={styles.text}>Ubicación: {item.ubicacion}</Text>
                     <Text style={styles.text}>Nave: {item.numeroNave}</Text>
                     <Text style={styles.text}>Estado: {item.estado}</Text>
+                    <Text style={styles.text}>Mac: {item.mac}</Text>
                 </TouchableOpacity>
             )}
             contentContainerStyle={styles.listContainer}

@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
 
 
-export default function DevicDetailsScreen({ route }: any) {
+export default function DeviceList({ route }: any) {
     const { device } = route.params;
     const [isDropdownVisible, setDropdownVisible] = useState(false);
 

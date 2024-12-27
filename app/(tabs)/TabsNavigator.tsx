@@ -4,6 +4,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import HomeScreen from "./HomeScreen";
 import SettingsScreen from "./SettingsScreen";
 import ProfileScreen from "./PorfileScreen";
+import HomeStack from "../HomeStack";
 
 const Tab = createBottomTabNavigator();
 
@@ -37,7 +38,7 @@ export default function TabsNavigator() {
                 headerShown: false, // Oculta el encabezado del Tab.Navigator
             })}
         >
-            <Tab.Screen name="Home" component={HomeScreen} />
+            <Tab.Screen name="Home" component={HomeStack} />
             <Tab.Screen name="Profile" component={ProfileScreen} />
             <Tab.Screen name="Settings" component={SettingsScreen} />
         </Tab.Navigator>
