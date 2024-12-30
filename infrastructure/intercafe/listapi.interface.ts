@@ -15,3 +15,9 @@ export interface resultado {
     mac: number,
 
 }
+
+interface Alarma {
+    id: number;
+    nombre: string;
+    estado: number;
+}

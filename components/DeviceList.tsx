@@ -32,15 +32,15 @@ export default function DeviceList() {
     const getBackgroundColor = (estado: number) => {
         switch (estado) {
             case 0:
-                return "#B0B0B0"; //Fuera de linea
+                return "#8a9bb9"; //Fuera de linea , gris
             case 1:
-                return "#85C285"; //En linea sin alarma
+                return "#76db36"; //En linea sin alarma , verde
             case 2:
-                return "red"; //En linea con alarma
+                return "red"; //En linea con alarma , rojo
             case 3:
-                return "#9E75C6"; //contraseña incorrecta;
+                return "#9E75C6"; //contraseña incorrecta, violeta
             case 4:
-                return "#F6BC31"; //En linea desarmada
+                return "#F6BC31"; //En linea desarmada, amarilla
             default:
                 return "white";
 
