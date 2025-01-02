@@ -9,15 +9,12 @@ import {
     TouchableOpacity,
 } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
-import { Alarma } from "@/infrastructure/intercafe/listapi.interface";
 
 export default function DeviceList({ route }: any) {
     const { device } = route.params;
-    const [selectedAlarm, setSelectedAlarm] = useState<Alarma | null>(null);
+    const [selectedAlarm, setSelectedAlarm] = useState<any | null>(null);
     const [isOptionModalVisible, setOptionModalVisible] = useState(false);
-    const [selectedOption, setSelectedOption] = useState<string>("Armada");
-
-    const alarmas = [
+    const [alarms, setAlarms] = useState([
         { id: 1, nombre: "A1 Cuadro Electrica ", estado: 0 },
         { id: 2, nombre: "A2 Sistema de Calefaccion", estado: 2 },
         { id: 3, nombre: "A3 Sistemna de riego", estado: 1 },
@@ -29,7 +26,8 @@ export default function DeviceList({ route }: any) {
         { id: 9, nombre: "A9 Perdida de suminstro cuadro puerta", estado: 0 },
         { id: 10, nombre: "A10 Sobrecarga eléctrica  ", estado: 1 },
         { id: 11, nombre: "A11 Humedad fuera de rango ", estado: 2 },
-    ];
+
+    ]);
 
     const getBackgroundColor = (estado: number) => {
         switch (estado) {
@@ -49,15 +47,32 @@ export default function DeviceList({ route }: any) {
         }
     };
 
-
     const openOptionModal = (alarm: any) => {
         setSelectedAlarm(alarm);
         setOptionModalVisible(true);
     };
 
     const handleOptionSelect = (option: string) => {
-        setSelectedOption(option);
-        // Retraso de 500 ms antes de cerrar el modal
+        if (selectedAlarm) {
+            setAlarms((prevAlarms) =>
+                prevAlarms.map((alarm) =>
+                    alarm.id === selectedAlarm.id
+                        ? {
+                            ...alarm,
+                            estado: option === "Armada" ? 2 : 1, // Actualiza el estado según la opción
+                        }
+                        : alarm
+                )
+            );
+
+            // También actualiza el estado del objeto seleccionado
+            setSelectedAlarm((prev: any) => ({
+                ...prev,
+                estado: option === "Armada" ? 2 : 1,
+            }));
+        }
+
+        // Retraso para asegurarse de que el estado se actualice visualmente antes de cerrar el modal
         setTimeout(() => {
             setOptionModalVisible(false);
         }, 300);
@@ -73,7 +88,7 @@ export default function DeviceList({ route }: any) {
 
             {/* Lista de alarmas */}
             <FlatList
-                data={alarmas}
+                data={alarms}
                 keyExtractor={(item) => item.id.toString()}
                 renderItem={({ item }) => (
                     <View
@@ -109,9 +124,7 @@ export default function DeviceList({ route }: any) {
                         style={styles.modalContent}
                         onPress={(e) => e.stopPropagation()}
                     >
-                        <Text style={styles.modalTitle}>
-                            {selectedAlarm?.nombre}
-                        </Text>
+                        <Text style={styles.modalTitle}>{selectedAlarm?.nombre}</Text>
 
                         {/* Opción Armada */}
                         <TouchableOpacity
@@ -121,7 +134,7 @@ export default function DeviceList({ route }: any) {
                             <View
                                 style={[
                                     styles.circle,
-                                    selectedOption === "Armada" && { backgroundColor: "#85C285" },
+                                    selectedAlarm?.estado === 2 && { backgroundColor: "#85C285" },
                                 ]}
                             />
                             <Text style={styles.optionText}>Armada</Text>
@@ -135,11 +148,12 @@ export default function DeviceList({ route }: any) {
                             <View
                                 style={[
                                     styles.circle,
-                                    selectedOption === "Desarmada" && { backgroundColor: "#FF2323" },
+                                    selectedAlarm?.estado === 1 && { backgroundColor: "#FF2323" },
                                 ]}
                             />
                             <Text style={styles.optionText}>Desarmada</Text>
                         </TouchableOpacity>
+
                     </Pressable>
                 </Pressable>
             </Modal>
