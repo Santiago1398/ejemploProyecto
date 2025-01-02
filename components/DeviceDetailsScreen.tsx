@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     View,
     Text,
@@ -9,45 +9,82 @@ import {
     TouchableOpacity,
 } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Alarma } from "@/infrastructure/intercafe/listapi.interface";
+
+const STORAGE_KEY = "ALARMS_STORAGE";
+
+const DEFAULT_ALARMS: Alarma[] = [
+    { id: 1, nombre: "A1 Cuadro Electrica ", estado: 0 },
+    { id: 2, nombre: "A2 Sistema de Calefaccion", estado: 2 },
+    { id: 3, nombre: "A3 Sistemna de riego", estado: 1 },
+    { id: 4, nombre: "A4 Sistema de Ventilacion", estado: 0 },
+    { id: 5, nombre: "A5 Bebedores automaticos ", estado: 2 },
+    { id: 6, nombre: "A6 Alimentadores automaticos", estado: 1 },
+    { id: 7, nombre: "A7 Geneador en fallo", estado: 2 },
+    { id: 8, nombre: "A8 Perdida de suminstro electrico", estado: 1 },
+    { id: 9, nombre: "A9 Perdida de suminstro cuadro puerta", estado: 0 },
+    { id: 10, nombre: "A10 Sobrecarga eléctrica  ", estado: 1 },
+    { id: 11, nombre: "A11 Humedad fuera de rango ", estado: 2 },
+];
 
 export default function DeviceList({ route }: any) {
     const { device } = route.params;
-    const [selectedAlarm, setSelectedAlarm] = useState<any | null>(null);
+    const [selectedAlarm, setSelectedAlarm] = useState<Alarma | null>(null);
     const [isOptionModalVisible, setOptionModalVisible] = useState(false);
-    const [alarms, setAlarms] = useState([
-        { id: 1, nombre: "A1 Cuadro Electrica ", estado: 0 },
-        { id: 2, nombre: "A2 Sistema de Calefaccion", estado: 2 },
-        { id: 3, nombre: "A3 Sistemna de riego", estado: 1 },
-        { id: 4, nombre: "A4 Sistema de Ventilacion", estado: 0 },
-        { id: 5, nombre: "A5 Bebedores automaticos ", estado: 2 },
-        { id: 6, nombre: "A6 Alimentadores automaticos", estado: 1 },
-        { id: 7, nombre: "A7 Geneador en fallo", estado: 2 },
-        { id: 8, nombre: "A8 Perdida de suminstro electrico", estado: 1 },
-        { id: 9, nombre: "A9 Perdida de suminstro cuadro puerta", estado: 0 },
-        { id: 10, nombre: "A10 Sobrecarga eléctrica  ", estado: 1 },
-        { id: 11, nombre: "A11 Humedad fuera de rango ", estado: 2 },
+    const [alarms, setAlarms] = useState<Alarma[]>([]);
 
-    ]);
+    // Cargar las alarmas desde AsyncStorage al inicio
+    useEffect(() => {
+        const loadAlarms = async () => {
+            try {
+                const savedAlarms = await AsyncStorage.getItem(STORAGE_KEY);
+                if (savedAlarms) {
+                    setAlarms(JSON.parse(savedAlarms));
+                } else {
+                    setAlarms(DEFAULT_ALARMS);
+                }
+            } catch (error) {
+                console.error("Error al cargar las alarmas:", error);
+            }
+        };
+
+        loadAlarms();
+    }, []);
+
+    // Guardar las alarmas en AsyncStorage cada vez que cambian
+    useEffect(() => {
+        const saveAlarms = async () => {
+            try {
+                await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(alarms));
+            } catch (error) {
+                console.error("Error al guardar las alarmas:", error);
+            }
+        };
+
+        if (alarms.length > 0) {
+            saveAlarms();
+        }
+    }, [alarms]);
 
     const getBackgroundColor = (estado: number) => {
         switch (estado) {
             case 0:
-                return "#8a9bb9"; //Fuera de linea , gris
+                return "#8a9bb9"; // Gris
             case 1:
-                return "#76db36"; //En linea sin alarma , verde
+                return "#76db36"; // Verde
             case 2:
-                return "red"; //En linea con alarma , rojo
+                return "red"; // Rojo
             case 3:
-                return "#9E75C6"; //contraseña incorrecta, violeta
+                return "#9E75C6"; // Violeta
             case 4:
-                return "#F6BC31"; //En linea desarmada, amarilla
+                return "#F6BC31"; // Amarillo
             default:
                 return "white";
-
         }
     };
 
-    const openOptionModal = (alarm: any) => {
+    const openOptionModal = (alarm: Alarma) => {
         setSelectedAlarm(alarm);
         setOptionModalVisible(true);
     };
@@ -57,31 +94,25 @@ export default function DeviceList({ route }: any) {
             setAlarms((prevAlarms) =>
                 prevAlarms.map((alarm) =>
                     alarm.id === selectedAlarm.id
-                        ? {
-                            ...alarm,
-                            estado: option === "Armada" ? 2 : 1, // Actualiza el estado según la opción
-                        }
+                        ? { ...alarm, estado: option === "Armada" ? 2 : 1 }
                         : alarm
                 )
             );
 
-            // También actualiza el estado del objeto seleccionado
-            setSelectedAlarm((prev: any) => ({
-                ...prev,
-                estado: option === "Armada" ? 2 : 1,
-            }));
-        }
-
-        // Retraso para asegurarse de que el estado se actualice visualmente antes de cerrar el modal
-        setTimeout(() => {
+            setSelectedAlarm(null);
             setOptionModalVisible(false);
-        }, 300);
+        }
     };
 
     return (
         <View style={styles.container}>
             {/* Rectángulo superior */}
-            <View style={[styles.headerContainer, { backgroundColor: getBackgroundColor(device.estado) }]}>
+            <View
+                style={[
+                    styles.headerContainer,
+                    { backgroundColor: getBackgroundColor(device.estado) },
+                ]}
+            >
                 <Text style={styles.headerText}>{device.ubicacion}</Text>
                 <Text style={styles.headerText}>{device.numeroNave}</Text>
             </View>
@@ -134,7 +165,9 @@ export default function DeviceList({ route }: any) {
                             <View
                                 style={[
                                     styles.circle,
-                                    selectedAlarm?.estado === 2 && { backgroundColor: "#85C285" },
+                                    selectedAlarm?.estado === 2 && {
+                                        backgroundColor: "#85C285",
+                                    },
                                 ]}
                             />
                             <Text style={styles.optionText}>Armada</Text>
@@ -148,12 +181,13 @@ export default function DeviceList({ route }: any) {
                             <View
                                 style={[
                                     styles.circle,
-                                    selectedAlarm?.estado === 1 && { backgroundColor: "#FF2323" },
+                                    selectedAlarm?.estado === 1 && {
+                                        backgroundColor: "#FF2323",
+                                    },
                                 ]}
                             />
                             <Text style={styles.optionText}>Desarmada</Text>
                         </TouchableOpacity>
-
                     </Pressable>
                 </Pressable>
             </Modal>
