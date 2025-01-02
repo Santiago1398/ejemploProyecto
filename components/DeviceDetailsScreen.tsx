@@ -26,15 +26,15 @@ const DEFAULT_ALARMS: Alarma[] = [
     { id: 9, nombre: "A9 Perdida de suminstro cuadro puerta", estado: 0 },
     { id: 10, nombre: "A10 Sobrecarga eléctrica  ", estado: 1 },
     { id: 11, nombre: "A11 Humedad fuera de rango ", estado: 2 },
+
 ];
 
-export default function DeviceList({ route }: any) {
-    const { device } = route.params;
+export default function DeviceList() {
     const [selectedAlarm, setSelectedAlarm] = useState<Alarma | null>(null);
     const [isOptionModalVisible, setOptionModalVisible] = useState(false);
     const [alarms, setAlarms] = useState<Alarma[]>([]);
 
-    // Cargar las alarmas desde AsyncStorage al inicio
+    // Cargar alarmas desde AsyncStorage al inicio
     useEffect(() => {
         const loadAlarms = async () => {
             try {
@@ -52,7 +52,7 @@ export default function DeviceList({ route }: any) {
         loadAlarms();
     }, []);
 
-    // Guardar las alarmas en AsyncStorage cada vez que cambian
+    // Guardar alarmas en AsyncStorage cuando cambien
     useEffect(() => {
         const saveAlarms = async () => {
             try {
@@ -67,56 +67,57 @@ export default function DeviceList({ route }: any) {
         }
     }, [alarms]);
 
+    // Obtener color de fondo según el estado
     const getBackgroundColor = (estado: number) => {
         switch (estado) {
             case 0:
-                return "#8a9bb9"; // Gris
+                return "#8a9bb9"; //Fuera de linea , gris
             case 1:
-                return "#76db36"; // Verde
+                return "#76db36"; //En linea sin alarma , verde
             case 2:
-                return "red"; // Rojo
+                return "red"; //En linea con alarma , rojo
             case 3:
-                return "#9E75C6"; // Violeta
+                return "#9E75C6"; //contraseña incorrecta, violeta
             case 4:
-                return "#F6BC31"; // Amarillo
+                return "#F6BC31"; //En linea desarmada, amarilla
             default:
                 return "white";
+
         }
+
     };
 
+    // Abrir modal de opciones
     const openOptionModal = (alarm: Alarma) => {
         setSelectedAlarm(alarm);
         setOptionModalVisible(true);
     };
 
+    // Manejar selección de opciones
     const handleOptionSelect = (option: string) => {
         if (selectedAlarm) {
             setAlarms((prevAlarms) =>
                 prevAlarms.map((alarm) =>
                     alarm.id === selectedAlarm.id
-                        ? { ...alarm, estado: option === "Armada" ? 2 : 1 }
+                        ? {
+                            ...alarm,
+                            estado:
+                                option === "Armada"
+                                    ? 1 // Cambiar a verde
+                                    : 0, // Cambiar a gris
+                        }
                         : alarm
                 )
             );
-
-            setSelectedAlarm(null);
-            setOptionModalVisible(false);
+            setSelectedAlarm((prev) =>
+                prev ? { ...prev, estado: option === "Armada" ? 1 : 0 } : null
+            );
         }
+        setTimeout(() => setOptionModalVisible(false), 250); // Retraso para visualizar el cambio
     };
 
     return (
         <View style={styles.container}>
-            {/* Rectángulo superior */}
-            <View
-                style={[
-                    styles.headerContainer,
-                    { backgroundColor: getBackgroundColor(device.estado) },
-                ]}
-            >
-                <Text style={styles.headerText}>{device.ubicacion}</Text>
-                <Text style={styles.headerText}>{device.numeroNave}</Text>
-            </View>
-
             {/* Lista de alarmas */}
             <FlatList
                 data={alarms}
@@ -137,7 +138,6 @@ export default function DeviceList({ route }: any) {
                         </TouchableOpacity>
                     </View>
                 )}
-                contentContainerStyle={styles.alarmList}
             />
 
             {/* Modal de opciones */}
@@ -156,8 +156,6 @@ export default function DeviceList({ route }: any) {
                         onPress={(e) => e.stopPropagation()}
                     >
                         <Text style={styles.modalTitle}>{selectedAlarm?.nombre}</Text>
-
-                        {/* Opción Armada */}
                         <TouchableOpacity
                             style={styles.optionRow}
                             onPress={() => handleOptionSelect("Armada")}
@@ -165,15 +163,13 @@ export default function DeviceList({ route }: any) {
                             <View
                                 style={[
                                     styles.circle,
-                                    selectedAlarm?.estado === 2 && {
-                                        backgroundColor: "#85C285",
+                                    selectedAlarm?.estado === 1 && {
+                                        backgroundColor: "#76db36", // Verde para "Armada"
                                     },
                                 ]}
                             />
                             <Text style={styles.optionText}>Armada</Text>
                         </TouchableOpacity>
-
-                        {/* Opción Desarmada */}
                         <TouchableOpacity
                             style={styles.optionRow}
                             onPress={() => handleOptionSelect("Desarmada")}
@@ -181,8 +177,8 @@ export default function DeviceList({ route }: any) {
                             <View
                                 style={[
                                     styles.circle,
-                                    selectedAlarm?.estado === 1 && {
-                                        backgroundColor: "#FF2323",
+                                    selectedAlarm?.estado === 0 && {
+                                        backgroundColor: "#8a9bb9", // Gris para "Desarmada"
                                     },
                                 ]}
                             />
@@ -200,20 +196,6 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: "#f9f9f9",
     },
-    headerContainer: {
-        padding: 20,
-        margin: 16,
-        borderRadius: 10,
-        alignItems: "center",
-    },
-    headerText: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: "rgb(60, 60, 60)",
-    },
-    alarmList: {
-        paddingHorizontal: 16,
-    },
     alarmContainer: {
         padding: 16,
         marginVertical: 8,
@@ -221,6 +203,9 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
+        marginHorizontal: 16,
+        width: "90%",
+        alignSelf: "center",
     },
     alarmText: {
         fontSize: 16,
