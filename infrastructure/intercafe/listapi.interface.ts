@@ -4,6 +4,7 @@ export interface listApi {
     Numero_nave: string,
     estado: number,
     mac: number,
+    alarmas: Alarma[];
 
 }
 

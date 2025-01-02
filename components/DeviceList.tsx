@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { FlatList, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RootStackParamList } from '@/types/navigation';
 import { resultado } from '@/infrastructure/intercafe/listapi.interface';
 
@@ -50,6 +50,7 @@ export default function DeviceList() {
 
 
     return (
+
         <FlatList
             data={devices}
             keyExtractor={(item) => item.id.toString()}
@@ -67,10 +68,12 @@ export default function DeviceList() {
             )}
             contentContainerStyle={styles.listContainer}
         />
+
     );
 }
 
 const styles = StyleSheet.create({
+
     listContainer: {
         padding: 16,
     },

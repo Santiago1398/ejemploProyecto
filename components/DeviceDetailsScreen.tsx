@@ -7,6 +7,7 @@ import {
     Pressable,
     FlatList,
     TouchableOpacity,
+    ImageBackground,
 } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
 import Feather from "@expo/vector-icons/Feather";
@@ -59,6 +60,9 @@ export default function DeviceList({ route }: any) {
     };
 
     return (
+
+
+
         <View style={styles.container}>
             {/* Rectángulo superior */}
             <View style={[styles.headerContainer, { backgroundColor: getBackgroundColor(device.estado) }]}>
@@ -88,6 +92,7 @@ export default function DeviceList({ route }: any) {
                 )}
                 contentContainerStyle={styles.alarmList}
             />
+
 
             {/* Modal de opciones */}
             <Modal

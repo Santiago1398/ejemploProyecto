@@ -1,6 +1,7 @@
-import DeviceList from "@/components/DeviceList";
 import React from "react";
-import { View, Text, StyleSheet, ImageBackground } from "react-native";
+import { View, Text, StyleSheet, ImageBackground, } from "react-native";
+import DeviceList from "@/components/DeviceList";
+
 
 
 export default function HomeScreen() {
@@ -8,9 +9,8 @@ export default function HomeScreen() {
         <ImageBackground
             source={require("../../assets/images/pigs.png")}
             style={styles.background}
-            resizeMode="contain"
+            resizeMode="contain" // Ajusta la imagen al tamaño de la pantalla
         >
-
             <View style={styles.overlay}>
                 <View style={styles.ctiContainer}>
                     <Text style={styles.headerText}>
@@ -18,11 +18,7 @@ export default function HomeScreen() {
                         <Text style={styles.control}>Control</Text>
                     </Text>
                 </View>
-
-                {/*Aqui metemos del compoenente DeviceList */}
-                <View style={styles.deviceContainer}>
-                    <DeviceList />
-                </View>
+                <DeviceList />
             </View>
         </ImageBackground>
     );
@@ -31,18 +27,16 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
     background: {
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
+
     },
     overlay: {
         flex: 1,
-        width: "100%",
-        backgroundColor: "rgba(255, 255, 255, 0.5)",
+        backgroundColor: "rgba(255, 255, 255, 0.7)", // Fondo semitransparente
+        padding: 12,
     },
     ctiContainer: {
-        position: "absolute",
-        top: 20,
-        left: 20,
+        alignItems: "center",
+        marginBottom: 16,
     },
     headerText: {
         fontSize: 36,
@@ -53,18 +47,5 @@ const styles = StyleSheet.create({
     },
     control: {
         color: "green",
-    },
-    deviceContainer: {
-        padding: 16,
-        marginVertical: 8,
-        borderRadius: 8,
-        backgroundColor: "#fff", // Asegúrate de tener un color de fondo
-        // Sombra para iOS
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.2,
-        shadowRadius: 4,
-        // Elevación para Android
-        elevation: 5,
     },
 });
