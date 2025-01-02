@@ -17,7 +17,7 @@ export interface resultado {
 
 }
 
-interface Alarma {
+export interface Alarma {
     id: number;
     nombre: string;
     estado: number;

@@ -7,21 +7,15 @@ import {
     Pressable,
     FlatList,
     TouchableOpacity,
-    ImageBackground,
 } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
-import Feather from "@expo/vector-icons/Feather";
-
-interface Alarma {
-    id: number;
-    nombre: string;
-    estado: number;
-}
+import { Alarma } from "@/infrastructure/intercafe/listapi.interface";
 
 export default function DeviceList({ route }: any) {
     const { device } = route.params;
     const [selectedAlarm, setSelectedAlarm] = useState<Alarma | null>(null);
     const [isOptionModalVisible, setOptionModalVisible] = useState(false);
+    const [selectedOption, setSelectedOption] = useState<string>("Armada");
 
     const alarmas = [
         { id: 1, nombre: "A1 Cuadro Electrica ", estado: 0 },
@@ -40,29 +34,36 @@ export default function DeviceList({ route }: any) {
     const getBackgroundColor = (estado: number) => {
         switch (estado) {
             case 0:
-                return "#8a9bb9"; // Fuera de línea , gris
+                return "#8a9bb9"; //Fuera de linea , gris
             case 1:
-                return "#76db36"; // En línea sin alarma , verde
+                return "#76db36"; //En linea sin alarma , verde
             case 2:
-                return "red"; // En línea con alarma . rojo
+                return "red"; //En linea con alarma , rojo
             case 3:
                 return "#9E75C6"; //contraseña incorrecta, violeta
             case 4:
                 return "#F6BC31"; //En linea desarmada, amarilla
             default:
-                return "#ffffff"; // Blanco por defecto
+                return "white";
+
         }
     };
 
-    const openOptionModal = (alarm: Alarma) => {
+
+    const openOptionModal = (alarm: any) => {
         setSelectedAlarm(alarm);
         setOptionModalVisible(true);
     };
 
+    const handleOptionSelect = (option: string) => {
+        setSelectedOption(option);
+        // Retraso de 500 ms antes de cerrar el modal
+        setTimeout(() => {
+            setOptionModalVisible(false);
+        }, 300);
+    };
+
     return (
-
-
-
         <View style={styles.container}>
             {/* Rectángulo superior */}
             <View style={[styles.headerContainer, { backgroundColor: getBackgroundColor(device.estado) }]}>
@@ -93,7 +94,6 @@ export default function DeviceList({ route }: any) {
                 contentContainerStyle={styles.alarmList}
             />
 
-
             {/* Modal de opciones */}
             <Modal
                 animationType="slide"
@@ -103,11 +103,11 @@ export default function DeviceList({ route }: any) {
             >
                 <Pressable
                     style={styles.modalOverlay}
-                    onPress={() => setOptionModalVisible(false)} // Cierra la ventana al tocar fuera
+                    onPress={() => setOptionModalVisible(false)}
                 >
                     <Pressable
                         style={styles.modalContent}
-                        onPress={(e) => e.stopPropagation()} // Evita cerrar al tocar dentro
+                        onPress={(e) => e.stopPropagation()}
                     >
                         <Text style={styles.modalTitle}>
                             {selectedAlarm?.nombre}
@@ -116,30 +116,33 @@ export default function DeviceList({ route }: any) {
                         {/* Opción Armada */}
                         <TouchableOpacity
                             style={styles.optionRow}
-                            onPress={() => {
-                                console.log("Armada seleccionada");
-                                setOptionModalVisible(false);
-                            }}
+                            onPress={() => handleOptionSelect("Armada")}
                         >
-                            <Feather name="circle" size={24} color="#85C285" />
+                            <View
+                                style={[
+                                    styles.circle,
+                                    selectedOption === "Armada" && { backgroundColor: "#85C285" },
+                                ]}
+                            />
                             <Text style={styles.optionText}>Armada</Text>
                         </TouchableOpacity>
 
                         {/* Opción Desarmada */}
                         <TouchableOpacity
                             style={styles.optionRow}
-                            onPress={() => {
-                                console.log("Desarmada seleccionada");
-                                setOptionModalVisible(false);
-                            }}
+                            onPress={() => handleOptionSelect("Desarmada")}
                         >
-                            <Feather name="circle" size={24} color="#FF2323" />
+                            <View
+                                style={[
+                                    styles.circle,
+                                    selectedOption === "Desarmada" && { backgroundColor: "#FF2323" },
+                                ]}
+                            />
                             <Text style={styles.optionText}>Desarmada</Text>
                         </TouchableOpacity>
                     </Pressable>
                 </Pressable>
             </Modal>
-
         </View>
     );
 }
@@ -167,19 +170,19 @@ const styles = StyleSheet.create({
         padding: 16,
         marginVertical: 8,
         borderRadius: 8,
-        flexDirection: "row", // Alinea elementos horizontalmente
-        justifyContent: "space-between", // Coloca el texto a la izquierda y el botón a la derecha
-        alignItems: "center", // Alinea verticalmente en el centro
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
     },
     alarmText: {
         fontSize: 16,
         fontWeight: "bold",
-        color: " #333333",
-        flex: 1, // Permite que el texto ocupe el espacio restante
+        color: "#333333",
+        flex: 1,
     },
     chevronButton: {
-        padding: 8, // Ajusta el tamaño del área de clic del botón
-        marginRight: -8, // Coloca el botón más cerca del borde derecho
+        padding: 8,
+        marginRight: -8,
     },
     modalOverlay: {
         flex: 1,
@@ -193,6 +196,11 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         padding: 20,
         alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
     },
     modalTitle: {
         fontSize: 18,
@@ -211,5 +219,14 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: "#333",
         fontWeight: "bold",
+    },
+    circle: {
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        borderWidth: 2,
+        borderColor: "#999",
+        marginRight: 10,
+        backgroundColor: "transparent",
     },
 });
