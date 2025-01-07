@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "503923979781",
+    "project_id": "mi-proyecto-e32ff",
+    "storage_bucket": "mi-proyecto-e32ff.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:503923979781:android:65a46594edac9480d6ce6c",
+        "android_client_info": {
+          "package_name": "com.santicticontrol.notificationtc5"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBqrNqrA8NEOhdflFJ334PsAMUHSatgkwk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

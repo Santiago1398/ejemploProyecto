@@ -9,7 +9,8 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.santicticontrol.notificationtc5"
     },
     "android": {
       "adaptiveIcon": {
@@ -17,7 +18,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.santicticontrol.notificationtc5",
-      "googleServicesFile": "google-services (2).json"
+      "googleServicesFile": "./google-services (2).json"
     },
     "web": {
       "bundler": "metro",

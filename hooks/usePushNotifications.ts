@@ -3,6 +3,7 @@ import { Platform } from "react-native";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import Constants from "expo-constants";
+import { router } from "expo-router";
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -90,13 +91,23 @@ export const usePushNotifications = () => {
             .catch((error) => console.error(error));
 
         //Esto se ejecuta cuando se recibe una notificacion 
-        const notificationListener = Notifications.addNotificationReceivedListener((notification) =>
+        const notificationListener = Notifications.addNotificationReceivedListener((notification) => {
+
             setNotifications((prev) => [notification, ...prev])
-        );
+        });
         //Esto se ejecita cuando el usuario interactua con una notificacion al tocarla por ejemeplo
-        const responseListener = Notifications.addNotificationResponseReceivedListener((response) =>
-            console.log(response)
-        );
+        const responseListener = Notifications.addNotificationResponseReceivedListener((response) => {
+            // console.log(JSON.stringify(response, null, 2))
+
+            const { chatId } = response.notification.request.content.data;
+
+            if (chatId) {
+                //router.push(´/chat/${chatId}´);
+
+
+            }
+
+        });
 
         return () => {
             notificationListener.remove();
