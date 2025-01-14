@@ -1,8 +1,8 @@
 import React from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import DrawerContent from "../components/DrawerContent";
-import LoginScreen from "./login";
 import TabsNavigator from "./(tabs)/TabsNavigator";
+import LoginScreen from "./login";
 
 const Drawer = createDrawerNavigator();
 

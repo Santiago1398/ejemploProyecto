@@ -4,7 +4,7 @@ import { DrawerContentComponentProps } from "@react-navigation/drawer"; // Impor
 import { useAuthStore } from "../store/authStore";
 
 export default function DrawerContent(props: DrawerContentComponentProps) {
-    const { email, isActive, logout, isAuthenticated } = useAuthStore();
+    const { username: email, isActive, logout, isAuthenticated } = useAuthStore();
     const { navigation } = props;
 
     return (

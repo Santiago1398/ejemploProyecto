@@ -143,7 +143,7 @@ export const usePushNotifications = () => {
                 const { chatId } = response.notification.request.content.data;
 
                 if (chatId) {
-                    router.push(`/chat/${chatId}`);
+                    //router.push(`/chat/${chatId}`);
                 }
             });
 

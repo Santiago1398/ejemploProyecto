@@ -4,7 +4,7 @@ import { useAuthStore } from "../store/authStore";
 import { Feather } from "@expo/vector-icons";
 
 export default function LoginScreen({ navigation }: any) { // Props navigation
-    const { email: savedEmail, password: savedPassword, login } = useAuthStore();
+    const { username: savedEmail, password: savedPassword, login } = useAuthStore();
     const [email, setEmail] = useState(savedEmail || "");
     const [password, setPassword] = useState(savedPassword || "");
 
@@ -116,6 +116,5 @@ const styles = StyleSheet.create({
         marginLeft: 8,
     },
 });
-
 
 
