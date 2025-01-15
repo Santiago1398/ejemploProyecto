@@ -33,6 +33,10 @@ export default function DeviceList() {
             setLoading(false);
         }
     };
+    console.log("Token:", token);
+    console.log("UserId:", userId);
+
+
 
     useEffect(() => {
         if (token && userId) {
