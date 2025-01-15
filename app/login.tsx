@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { useAuthStore } from "../store/authStore";
 import { Feather } from "@expo/vector-icons";
 
@@ -14,10 +14,10 @@ export default function LoginScreen({ navigation }: any) { // Props navigation
             if (success) {
                 navigation.navigate("Home");
             } else {
-                Alert.alert("Error", "Correo electrónico o contraseña incorrectos");
+                Alert.alert("Correo electrónico o contraseña incorrectos");
             }
         } catch (error) {
-            Alert.alert("Error", "Algo salió mal");
+            throw new Error("Algo salió mal");
         }
     };
 

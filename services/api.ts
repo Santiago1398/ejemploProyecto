@@ -9,20 +9,82 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const getHeaders = async () => {
     const token = await AsyncStorage.getItem("token"); // Obtiene el token almacenado
     return {
-        "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}` }),
+        //     "Content-Type": "application/json",
+        //     ...(token && { Authorization: `Bearer ${token}` }),
+        // };
+        Authorization: `Bearer ${token}`
     };
+}
+
+
+
+// AXIOS: Buen post de axios ****************************
+export const post = async (path: string, data: unknown) => {
+
+    console.log("PostData", data);
+    console.log("path de post", `${API_URL}/${path}`);
+    const token = await AsyncStorage.getItem("token")
+    console.log(token);
+
+    const headers = await getHeaders();
+    const respuesta = await axios.post(`${API_URL}/${path}`, data, {
+        headers: { "Content-Type": "application/json", ...headers },
+    }).then((response) => {
+        // console.log('Axios Success Response POST:', response.data);
+        return response.data
+    })
+        .catch((error) => {
+            if (error.code !== 'ERR_NETWORK') {
+                console.log('Axios Error Response POST:', error.response);
+                throw new Error(JSON.stringify(error.response.data));
+            }
+            else {
+                console.log('Axios Error POST CONEXION:', error);
+                throw new Error(JSON.stringify(error));
+
+            }
+        });
+
+    return respuesta;
+
+};
+
+// AXIOS: Buen get de axios ****************************
+export const get = async (path: string, id?: number) => {
+
+    const headers = await getHeaders();
+    const urlRequest = id ? `${API_URL}/${path}/${id}` : `${API_URL}/${path}`;
+    console.log("path", urlRequest);
+    // const xdata = await axios.get(`${API_URL}/${path}`, {
+    const xdata = await axios.get(urlRequest, {
+        headers: { ...headers },
+    }).then(({ data }) => {
+        console.log('Axios Success Response GET:', data);
+        return data
+    }).catch((error) => {
+        if (error.code !== 'ERR_NETWORK') {
+            console.log('Axios Error Response GET:', error.response);
+            throw new Error(error.response.data);
+        } else {
+            console.log('Axios Error GET CONEXION:', error);
+            throw new Error(error);
+        }
+    });
+    //   console.log(res);
+    return xdata;
+
 };
 
 
+
 // Función para realizar peticiones POST
-export const post = async (path: string, data: unknown) => {
+export const postxxx = async (path: string, data: unknown) => {
     try {
         const headers = await getHeaders(); // Espera los headers
         const response = await axios.post(`${API_URL}/${path}`, data, {
             headers, // Pasa los headers resueltos
         });
-        console.log("Axios POST Response:", response.data);
+        // console.log("Axios POST Response:", response.data);
         return response.data;
     } catch (error) {
         handleError(error, "POST");
@@ -30,12 +92,12 @@ export const post = async (path: string, data: unknown) => {
 };
 
 // Función para realizar peticiones GET
-export const get = async (path: string, id?: number) => {
+export const getxxx = async (path: string, id?: number) => {
     try {
         const headers = await getHeaders(); // Espera los headers
         const url = id ? `${API_URL}/${path}/${id}` : `${API_URL}/${path}`;
         const response = await axios.get(url, { headers }); // Pasa los headers resueltos
-        console.log("Axios GET Response:", response.data);
+        // console.log("Axios GET Response:", response.data);
         return response.data;
     } catch (error) {
         handleError(error, "GET");
@@ -45,10 +107,10 @@ export const get = async (path: string, id?: number) => {
 // Función para manejar errores
 const handleError = (error: any, method: string) => {
     if (error.response) {
-        console.error(`Axios ${method} Error Response:`, error.response.data);
+        // console.error(`Axios ${method} Error Response:`, error.response.data);
         throw new Error(error.response.data.message || "Error en la petición");
     } else {
-        console.error(`Axios ${method} Error:`, error.message);
+        // console.error(`Axios ${method} Error:`, error.message);
         throw new Error("Error de conexión con el servidor");
     }
 };

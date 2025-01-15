@@ -1,19 +1,17 @@
-export interface listApi {
-    id: number,
-    ubicacion: string,
-    Numero_nave: string,
-    estado: number,
-    mac: number,
-    alarmas: Alarma[];
 
-}
+export interface ResponseAlarmaSite {
+    farmName: string;
+    siteName: string;
+    town: string;
+    province: string;
+    country: string;
+    model: string;
+    mac: number;
+    idSite: number;
+    locLevel: number;
+    alarmStatus: boolean;
+    alarmType: number;
 
-export interface resultado {
-    id: number,
-    ubicacion: string,
-    numeroNave: string,
-    estado: number,
-    mac: number,
 
 }
 
