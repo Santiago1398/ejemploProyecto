@@ -101,7 +101,7 @@ export default function DeviceList() {
                                 styles.deviceContainer,
                                 { backgroundColor: getBackgroundColor(item.alarmType) },
                             ]}
-                            onPress={() => navigation.navigate("DeviceDetails", { device: item })}
+                            onPress={() => navigation.navigate("DeviceDetails", { device: { mac: item.mac } })}
                         >
                             <Text style={styles.text}>{item.farmName}</Text>
                             <Text style={styles.text}>{item.siteName}</Text>
@@ -110,6 +110,7 @@ export default function DeviceList() {
                             <Text style={styles.text}>{item.country}</Text>
                             <Text style={styles.text}>{item.idSite}</Text>
                             <Text style={styles.text}>{item.locLevel}</Text>
+                            {/* <Text style={styles.text}>{item.mac}</Text>*/}
                         </TouchableOpacity>
                     )}
                     contentContainerStyle={styles.listContainer}

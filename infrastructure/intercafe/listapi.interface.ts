@@ -15,8 +15,16 @@ export interface ResponseAlarmaSite {
 
 }
 
-export interface Alarma {
-    id: number;
-    nombre: string;
-    estado: number;
+export interface ParamTC {
+    idAlarm: number;
+    armado: boolean;
+    habilitado: boolean;
+    disparado: boolean;
+    tipoSonda: number;
+    unidades: number;
+    ValorSonda: number;
+    consignaMinima: number;
+    consignaMaxima: number;
+    texto: string;
+
 }

@@ -9,138 +9,110 @@ import {
     TouchableOpacity,
 } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Alarma } from "@/infrastructure/intercafe/listapi.interface";
+import { get } from "@/services/api";
+import { ParamTC } from "@/infrastructure/intercafe/listapi.interface";
+import { useRoute, RouteProp } from "@react-navigation/native";
+import axios from "axios";
 
-const STORAGE_KEY = "ALARMS_STORAGE";
+type RouteParams = {
+    AlarmList: {
+        mac: number;
+    };
+};
 
-const DEFAULT_ALARMS: Alarma[] = [
-    { id: 1, nombre: "A1 Cuadro Electrica ", estado: 0 },
-    { id: 2, nombre: "A2 Sistema de Calefaccion", estado: 2 },
-    { id: 3, nombre: "A3 Sistemna de riego", estado: 1 },
-    { id: 4, nombre: "A4 Sistema de Ventilacion", estado: 0 },
-    { id: 5, nombre: "A5 Bebedores automaticos ", estado: 2 },
-    { id: 6, nombre: "A6 Alimentadores automaticos", estado: 1 },
-    { id: 7, nombre: "A7 Geneador en fallo", estado: 2 },
-    { id: 8, nombre: "A8 Perdida de suminstro electrico", estado: 1 },
-    { id: 9, nombre: "A9 Perdida de suminstro cuadro puerta", estado: 0 },
-    { id: 10, nombre: "A10 Sobrecarga eléctrica  ", estado: 1 },
-    { id: 11, nombre: "A11 Humedad fuera de rango ", estado: 2 },
+export default function AlarmList() {
+    const route = useRoute<RouteProp<RouteParams, "AlarmList">>();
+    const { mac } = route.params;
 
-];
-
-export default function DeviceList() {
-    const [selectedAlarm, setSelectedAlarm] = useState<Alarma | null>(null);
+    const [selectedAlarm, setSelectedAlarm] = useState<ParamTC | null>(null);
     const [isOptionModalVisible, setOptionModalVisible] = useState(false);
-    const [alarms, setAlarms] = useState<Alarma[]>([]);
+    const [alarms, setAlarms] = useState<ParamTC[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    // Cargar alarmas desde AsyncStorage al inicio
-    useEffect(() => {
-        const loadAlarms = async () => {
-            try {
-                const savedAlarms = await AsyncStorage.getItem(STORAGE_KEY);
-                if (savedAlarms) {
-                    setAlarms(JSON.parse(savedAlarms));
-                } else {
-                    setAlarms(DEFAULT_ALARMS);
-                }
-            } catch (error) {
-                console.error("Error al cargar las alarmas:", error);
-            }
-        };
-
-        loadAlarms();
-    }, []);
-
-    // Guardar alarmas en AsyncStorage cuando cambien
-    useEffect(() => {
-        const saveAlarms = async () => {
-            try {
-                await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(alarms));
-            } catch (error) {
-                console.error("Error al guardar las alarmas:", error);
-            }
-        };
-
-        if (alarms.length > 0) {
-            saveAlarms();
-        }
-    }, [alarms]);
-
-    // Obtener color de fondo según el estado
-    const getBackgroundColor = (estado: number) => {
-        switch (estado) {
-            case 0:
-                return "#8a9bb9"; //Fuera de linea , gris
-            case 1:
-                return "#76db36"; //En linea sin alarma , verde
-            case 2:
-                return "red"; //En linea con alarma , rojo
-            case 3:
-                return "#9E75C6"; //contraseña incorrecta, violeta
-            case 4:
-                return "#F6BC31"; //En linea desarmada, amarilla
-            default:
-                return "white";
-
+    const fetchAlarms = async () => {
+        if (!mac) {
+            console.error("La dirección MAC no está definida");
+            return;
         }
 
+        try {
+            setLoading(true);
+            console.log(`Obteniendo alarmas para el dispositivo con MAC: ${mac}`);
+            const data: ParamTC[] = await get(`alarmtc/status?mac=${mac}`);
+            console.log("Alarmas obtenidas:", data);
+
+            const enabledAlarms = data.filter(alarm => alarm.habilitado);
+            setAlarms(enabledAlarms);
+        } catch (error: any) {
+            if (axios.isAxiosError(error)) {
+                console.error("Error de Axios:", error.response?.data || error.message);
+            } else if (error instanceof Error) {
+                console.error("Error estándar:", error.message);
+            } else {
+                console.error("Error desconocido:", error);
+            }
+        } finally {
+            setLoading(false);
+        }
     };
 
-    // Abrir modal de opciones
-    const openOptionModal = (alarm: Alarma) => {
+    useEffect(() => {
+        if (mac) {
+            fetchAlarms();
+        }
+    }, [mac]);
+
+    const getBackgroundColor = (armado: boolean) => {
+        return armado ? "#76db36" : "#8a9bb9";
+    };
+
+    const openOptionModal = (alarm: ParamTC) => {
         setSelectedAlarm(alarm);
         setOptionModalVisible(true);
     };
 
-    // Manejar selección de opciones
-    const handleOptionSelect = (option: string) => {
+    const handleOptionSelect = (option: "Armada" | "Desarmada") => {
         if (selectedAlarm) {
             setAlarms((prevAlarms) =>
                 prevAlarms.map((alarm) =>
-                    alarm.id === selectedAlarm.id
-                        ? {
-                            ...alarm,
-                            estado:
-                                option === "Armada"
-                                    ? 1 // Cambiar a verde
-                                    : 0, // Cambiar a gris
-                        }
+                    alarm.idAlarm === selectedAlarm.idAlarm
+                        ? { ...alarm, armado: option === "Armada" }
                         : alarm
                 )
             );
-            setSelectedAlarm((prev) =>
-                prev ? { ...prev, estado: option === "Armada" ? 1 : 0 } : null
-            );
         }
-        setTimeout(() => setOptionModalVisible(false), 250); // Retraso para visualizar el cambio
+        setTimeout(() => setOptionModalVisible(false), 250);
     };
 
     return (
         <View style={styles.container}>
-            {/* Lista de alarmas */}
-            <FlatList
-                data={alarms}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({ item }) => (
-                    <View
-                        style={[
-                            styles.alarmContainer,
-                            { backgroundColor: getBackgroundColor(item.estado) },
-                        ]}
-                    >
-                        <Text style={styles.alarmText}>{item.nombre}</Text>
-                        <TouchableOpacity
-                            style={styles.chevronButton}
-                            onPress={() => openOptionModal(item)}
+            {loading ? (
+                <Text style={styles.loadingText}>Cargando alarmas</Text>
+            ) : alarms.length === 0 ? (
+                <Text style={styles.loadingText}>No hay alarmas habilitadas</Text>
+            ) : (
+                <FlatList
+                    data={alarms}
+                    keyExtractor={(item) => item.idAlarm.toString()}
+                    renderItem={({ item }) => (
+                        <View
+                            style={[
+                                styles.alarmContainer,
+                                { backgroundColor: getBackgroundColor(item.armado) },
+                            ]}
                         >
-                            <Entypo name="chevron-thin-right" size={24} color="#333" />
-                        </TouchableOpacity>
-                    </View>
-                )}
-            />
+                            <Text style={styles.alarmText}>{item.texto}</Text>
+                            <TouchableOpacity
+                                style={styles.chevronButton}
+                                onPress={() => openOptionModal(item)}
+                            >
+                                <Entypo name="chevron-thin-right" size={24} color="#333" />
+                            </TouchableOpacity>
+                        </View>
+                    )}
+                />
+            )}
 
-            {/* Modal de opciones */}
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -155,7 +127,7 @@ export default function DeviceList() {
                         style={styles.modalContent}
                         onPress={(e) => e.stopPropagation()}
                     >
-                        <Text style={styles.modalTitle}>{selectedAlarm?.nombre}</Text>
+                        <Text style={styles.modalTitle}>{selectedAlarm?.texto}</Text>
                         <TouchableOpacity
                             style={styles.optionRow}
                             onPress={() => handleOptionSelect("Armada")}
@@ -163,8 +135,8 @@ export default function DeviceList() {
                             <View
                                 style={[
                                     styles.circle,
-                                    selectedAlarm?.estado === 1 && {
-                                        backgroundColor: "#76db36", // Verde para "Armada"
+                                    selectedAlarm?.armado && {
+                                        backgroundColor: "#76db36",
                                     },
                                 ]}
                             />
@@ -177,8 +149,8 @@ export default function DeviceList() {
                             <View
                                 style={[
                                     styles.circle,
-                                    selectedAlarm?.estado === 0 && {
-                                        backgroundColor: "#8a9bb9", // Gris para "Desarmada"
+                                    !selectedAlarm?.armado && {
+                                        backgroundColor: "#8a9bb9",
                                     },
                                 ]}
                             />
@@ -195,6 +167,12 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#f9f9f9",
+    },
+    loadingText: {
+        fontSize: 18,
+        color: "#666",
+        textAlign: "center",
+        marginTop: 20,
     },
     alarmContainer: {
         padding: 16,
@@ -263,3 +241,4 @@ const styles = StyleSheet.create({
         backgroundColor: "transparent",
     },
 });
+
