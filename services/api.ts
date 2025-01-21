@@ -8,46 +8,51 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const getHeaders = async () => {
     const token = await AsyncStorage.getItem("token"); // Obtiene el token almacenado
+    //Fix:En el login no tengo token por tanto si descomento esto me dara 
+    //error en el login. Mirar como solucionar esto aposteriori.
+    /*
+    if (!token) {
+        console.error("Error: No se encontró un token en AsyncStorage.");
+        throw new Error("Token no encontrado");
+    }
+    */
     return {
-        //     "Content-Type": "application/json",
-        //     ...(token && { Authorization: `Bearer ${token}` }),
-        // };
-        Authorization: `Bearer ${token}`
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
     };
-}
+};
+
 
 
 
 // AXIOS: Buen post de axios ****************************
 export const post = async (path: string, data: unknown) => {
-
     console.log("PostData", data);
     console.log("path de post", `${API_URL}/${path}`);
-    const token = await AsyncStorage.getItem("token")
-    console.log(token);
 
     const headers = await getHeaders();
-    const respuesta = await axios.post(`${API_URL}/${path}`, data, {
-        headers: { "Content-Type": "application/json", ...headers },
-    }).then((response) => {
-        // console.log('Axios Success Response POST:', response.data);
-        return response.data
-    })
+    const respuesta = await axios
+        .post(`${API_URL}/${path}`, data, {
+            headers: { ...headers }, // No incluyas "Content-Type" aquí
+        })
+        .then((response) => {
+            return response.data;
+        })
         .catch((error) => {
-            if (error.code !== 'ERR_NETWORK') {
-                console.log('Axios Error Response POST:', error.response);
+            if (error.code !== "ERR_NETWORK") {
+                console.log("Axios Error Response POST:", error.response);
                 throw new Error(JSON.stringify(error.response.data));
-            }
-            else {
-                console.log('Axios Error POST CONEXION:', error);
+            } else {
+                console.log("Axios Error POST CONEXION:", error);
                 throw new Error(JSON.stringify(error));
-
             }
         });
 
     return respuesta;
-
 };
+
+
+
 
 // AXIOS: Buen get de axios ****************************
 export const get = async (path: string, id?: number) => {

@@ -1,7 +1,8 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import zustandStorage from "./zustandStorage";
-import { post } from "@/services/api";
+import { post, postxxx } from "@/services/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface AuthState {
     username: string | null;
@@ -25,24 +26,36 @@ export const useAuthStore = create<AuthState>()(
             isActive: false,
             login: async (username, password) => {
                 try {
-                    //console.log("llamando a al api")
-                    const data = await post("auth/login", { username, password }); // Usa la función `post`
-                    //console.log(data)
+                    console.log("llamando a la api")
+                    const data = await postxxx("auth/login", { username, password }); // Realiza la solicitud POST al servidor
+                    console.log("iniciando sesision Datos del servidor:", data);
+
+
+                    // Guarda el token y el userId en AsyncStorage
+                    await AsyncStorage.setItem("token", data.token);
+                    await AsyncStorage.setItem("userId", data.userId.toString());
+
+                    // Actualiza el estado en el store
                     set({
-                        username: username,
+                        username,
                         password,
-                        token: data.token, // Asegúrate de que el backend devuelve `token`
+                        token: data.token,
                         userId: data.userId,
                         isAuthenticated: true,
                         isActive: true,
                     });
-                    console.log(data.token)
+
+                    console.log("Token guardado en AsyncStorage:", data.token);
+                    console.log("UserId guardado en AsyncStorage:", data.userId);
                     return true;
                 } catch (error) {
-                    //console.error("Error en el Email o contraseña");
+                    console.error("Error en el inicio de sesión:", error);
                     return false;
                 }
             },
+
+
+
             logout: () => {
                 set({
                     username: null,

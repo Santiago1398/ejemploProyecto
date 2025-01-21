@@ -6,6 +6,7 @@ import { RootStackParamList } from "@/types/navigation";
 import { ResponseAlarmaSite } from "@/infrastructure/intercafe/listapi.interface";
 import { useAuthStore } from "@/store/authStore";
 import { get } from "@/services/api";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function DeviceList() {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -15,34 +16,59 @@ export default function DeviceList() {
 
     // Función para obtener los datos desde la API
     const fetchDevices = async () => {
-        if (!userId || !token) {
-            Alert.alert("Error", "No se puede cargar los dispositivos: falta el ID del usuario.");
-            return;
-        }
-
         try {
             setLoading(true);
-            const data: ResponseAlarmaSite[] = await get(`alarmtc/sites/user/${userId}`);
+
+            // Verifica si el token y el userId están en AsyncStorage
+            const storedToken = await AsyncStorage.getItem("token");
+            const storedUserId = await AsyncStorage.getItem("userId");
+
+            if (!storedToken || !storedUserId) {
+                throw new Error("Token o userId no encontrado en AsyncStorage.");
+            }
+
+            console.log("Token en AsyncStorage:", storedToken);
+            console.log("UserId guardado en AsyncStorage:", storedUserId);
+
+            // Realiza la solicitud GET
+            const data: ResponseAlarmaSite[] = await get(`alarmtc/sites/user/${storedUserId}`);
             console.log("Dispositivos obtenidos:", data);
             setDevices(data);
-            console.log(token)
         } catch (error) {
-            console.error("Error al cargar los dispositivos:", error);
+            if (error instanceof Error) {
+                console.error("Error al cargar los dispositivos:", error.message);
+            } else if (typeof error === "object" && error !== null) {
+                console.error("Error al cargar los dispositivos:", JSON.stringify(error));
+            } else {
+                console.error("Error desconocido al cargar los dispositivos:", error);
+            }
             Alert.alert("Error", "No se pudieron cargar los dispositivos.");
         } finally {
             setLoading(false);
         }
     };
-    console.log("Token:", token);
-    console.log("UserId:", userId);
+
 
 
 
     useEffect(() => {
         if (token && userId) {
-            fetchDevices(); // Llama a la función cuando el token y userId están disponibles
+            fetchDevices();
         }
     }, [token, userId]);
+
+
+    useEffect(() => {
+        const checkToken = async () => {
+            const storedToken = await AsyncStorage.getItem("token");
+            console.log("Token en AsyncStorage:", storedToken);
+            const storedUserId = await AsyncStorage.getItem("userId");
+            console.log("UserId guardado en AsyncStorage:", storedUserId);
+
+        };
+        checkToken();
+    }, []);
+
 
     const getBackgroundColor = (alarmType: number) => {
         switch (alarmType) {
