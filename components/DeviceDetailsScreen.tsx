@@ -11,6 +11,8 @@ import {
 } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
 import { get } from "@/services/api";
+import { post } from "@/services/api";
+
 import { ParamTC } from "@/infrastructure/intercafe/listapi.interface";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import axios from "axios";
@@ -85,8 +87,28 @@ export default function AlarmList() {
         }
     }, [mac]);
 
-    const getBackgroundColor = (armado: boolean) => {
-        return armado ? "#76db36" : "#8a9bb9";
+    const handleOptionSelect = async (option: "Armada" | "Desarmada") => {
+        if (selectedAlarm) {
+            const status = option === "Armada" ? 1 : 0; // Status para la solicitud POST
+            const idAlarm = selectedAlarm.idAlarm;
+            try {
+                const response = await post(`arm?mac=${mac}&alarm=${idAlarm}&status=${status}`, {});
+                console.log("Respuesta del servidor:", response);
+
+                // Actualiza el estado local solo si la solicitud fue exitosa
+                setAlarms((prevAlarms) =>
+                    prevAlarms.map((alarm) =>
+                        alarm.idAlarm === idAlarm ? { ...alarm, armado: status === 1 } : alarm
+                    )
+                );
+
+                // Cierra el modal después de una pequeña espera
+                setTimeout(() => setOptionModalVisible(false), 250);
+            } catch (error) {
+                console.error("Error al cambiar el estado de la alarma:", error);
+                Alert.alert("Error", "No se pudo cambiar el estado de la alarma.");
+            }
+        }
     };
 
     const openOptionModal = (alarm: ParamTC) => {
@@ -94,18 +116,6 @@ export default function AlarmList() {
         setOptionModalVisible(true);
     };
 
-    const handleOptionSelect = (option: "Armada" | "Desarmada") => {
-        if (selectedAlarm) {
-            setAlarms((prevAlarms) =>
-                prevAlarms.map((alarm) =>
-                    alarm.idAlarm === selectedAlarm.idAlarm
-                        ? { ...alarm, armado: option === "Armada" }
-                        : alarm
-                )
-            );
-        }
-        setTimeout(() => setOptionModalVisible(false), 250);
-    };
 
     return (
         <View style={styles.container}>
