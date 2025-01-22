@@ -1,4 +1,5 @@
 
+//Esto para la lista de los dispositivos (granjas)
 export interface ResponseAlarmaSite {
     farmName: string;
     siteName: string;
@@ -15,6 +16,7 @@ export interface ResponseAlarmaSite {
 
 }
 
+//Esto es para la lista de las alarmas
 export interface ParamTC {
     idAlarm: number;
     armado: boolean;
@@ -26,5 +28,6 @@ export interface ParamTC {
     consignaMinima: number;
     consignaMaxima: number;
     texto: string;
+    //passwordCorrection: boolean;
 
 }

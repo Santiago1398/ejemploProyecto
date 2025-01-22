@@ -2,11 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View, Alert } from "react-native";
-import { RootStackParamList } from "@/types/navigation";
 import { ResponseAlarmaSite } from "@/infrastructure/intercafe/listapi.interface";
 import { useAuthStore } from "@/store/authStore";
 import { get } from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { RootStackParamList } from "./DeviceDetailsScreen";
+
+
+
 
 export default function DeviceList() {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -101,7 +104,7 @@ export default function DeviceList() {
                                 styles.deviceContainer,
                                 { backgroundColor: getBackgroundColor(item.alarmType) },
                             ]}
-                            onPress={() => navigation.navigate("DeviceDetails", { device: { mac: item.mac } })}
+                            onPress={() => navigation.navigate("DeviceDetails", { mac: item.mac })}
                         >
                             <Text style={styles.text}>{item.farmName}</Text>
                             <Text style={styles.text}>{item.siteName}</Text>

@@ -7,21 +7,25 @@ import {
     Pressable,
     FlatList,
     TouchableOpacity,
+    Alert,
 } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
 import { get } from "@/services/api";
 import { ParamTC } from "@/infrastructure/intercafe/listapi.interface";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import axios from "axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-type RouteParams = {
-    AlarmList: {
-        mac: number;
-    };
+
+export type RootStackParamList = {
+    DeviceList: undefined; // Esta pantalla no recibe parámetros
+    DeviceDetails: { mac: number }; // Esta pantalla espera un parámetro `mac`
+    AlarmList: { mac: number }; // Si también usas `AlarmList`
 };
 
+
 export default function AlarmList() {
-    const route = useRoute<RouteProp<RouteParams, "AlarmList">>();
+    const route = useRoute<RouteProp<{ AlarmList: { mac: number } }, "AlarmList">>();
     const { mac } = route.params;
 
     const [selectedAlarm, setSelectedAlarm] = useState<ParamTC | null>(null);
@@ -30,20 +34,36 @@ export default function AlarmList() {
     const [loading, setLoading] = useState(true);
 
     const fetchAlarms = async () => {
-        if (!mac) {
-            console.error("La dirección MAC no está definida");
-            return;
-        }
-
         try {
             setLoading(true);
-            console.log(`Obteniendo alarmas para el dispositivo con MAC: ${mac}`);
-            const data: ParamTC[] = await get(`alarmtc/status?mac=${mac}`);
-            console.log("Alarmas obtenidas:", data);
 
-            const enabledAlarms = data.filter(alarm => alarm.habilitado);
+            // Verifica token y dirección MAC
+            const storedToken = await AsyncStorage.getItem("token");
+            if (!storedToken) {
+                throw new Error("Token no encontrado en AsyncStorage.");
+            }
+
+            if (!mac) {
+                throw new Error("La dirección MAC no está definida.");
+            }
+
+            console.log("Token en AsyncStorage:", storedToken);
+            console.log("MAC utilizada:", mac);
+
+            // Imprime la URL que se está solicitando
+            console.log("Petición GET:", `alarmtc/status?mac=${mac}`);
+
+            // Realiza la solicitud GET
+            const data: ParamTC[] = await get(`alarmtc/status?mac=${mac}`);
+            console.log("Datos obtenidos:", data);
+
+            // Filtra alarmas habilitadas
+            const enabledAlarms = data.filter(alarm => alarm.habilitado === true);
+            console.log("Alarmas habilitadas:", enabledAlarms);
+
             setAlarms(enabledAlarms);
         } catch (error: any) {
+            console.error("Error en la solicitud GET:");
             if (axios.isAxiosError(error)) {
                 console.error("Error de Axios:", error.response?.data || error.message);
             } else if (error instanceof Error) {
@@ -51,10 +71,13 @@ export default function AlarmList() {
             } else {
                 console.error("Error desconocido:", error);
             }
+            Alert.alert("Error", "No se pudieron cargar las alarmas.");
         } finally {
             setLoading(false);
         }
     };
+
+
 
     useEffect(() => {
         if (mac) {
@@ -87,7 +110,7 @@ export default function AlarmList() {
     return (
         <View style={styles.container}>
             {loading ? (
-                <Text style={styles.loadingText}>Cargando alarmas</Text>
+                <Text style={styles.loadingText}></Text>
             ) : alarms.length === 0 ? (
                 <Text style={styles.loadingText}>No hay alarmas habilitadas</Text>
             ) : (
@@ -241,4 +264,5 @@ const styles = StyleSheet.create({
         backgroundColor: "transparent",
     },
 });
+
 
