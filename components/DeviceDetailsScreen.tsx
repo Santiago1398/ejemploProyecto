@@ -69,12 +69,13 @@ export default function AlarmList() {
         if (selectedAlarm) {
             const status = option === "Armada" ? 1 : 0; // Status para la solicitud POST
             const idAlarm = selectedAlarm.idAlarm;
-            console.log("MAC enviado:", mac, typeof mac);
-            console.log("Alarm ID enviado:", selectedAlarm?.idAlarm, typeof selectedAlarm?.idAlarm);
-            console.log("Status enviado:", option === "Armada" ? 1 : 0, typeof (option === "Armada" ? 1 : 0));
+            console.log("MAC type:", typeof mac, "value:", mac);
+            console.log("Alarm ID type:", typeof idAlarm, "value:", idAlarm);
+            console.log("Status type:", typeof status, "value:", status);
+
 
             try {
-                const response = await post(`alarmtc/arm?/mac=${mac}&alarm=${idAlarm}&status=${status}`, {});
+                const response = await post(`alarmtc/arm?mac=${mac}&alarm=${idAlarm}&status=${status}`, {});
                 console.log("Respuesta del servidor:", response);
 
                 // Cierra el modal después de una pequeña espera
