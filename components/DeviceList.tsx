@@ -6,7 +6,7 @@ import { ResponseAlarmaSite } from "@/infrastructure/intercafe/listapi.interface
 import { useAuthStore } from "@/store/authStore";
 import { get } from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { RootStackParamList } from "./DeviceDetailsScreen";
+import { RootStackParamList } from "@/types/navigation";
 
 
 
@@ -35,6 +35,12 @@ export default function DeviceList() {
 
             // Realiza la solicitud GET
             const data: ResponseAlarmaSite[] = await get(`alarmtc/sites/user/${storedUserId}`);
+            const formattedData = data.map((device) => ({
+                ...device,
+                mac: Number(device.mac), // Convierte `mac` a número
+            }));
+            setDevices(formattedData);
+
             console.log("Dispositivos obtenidos:", data);
             setDevices(data);
         } catch (error) {
@@ -104,7 +110,13 @@ export default function DeviceList() {
                                 styles.deviceContainer,
                                 { backgroundColor: getBackgroundColor(item.alarmType) },
                             ]}
-                            onPress={() => navigation.navigate("DeviceDetails", { mac: item.mac })}
+                            onPress={() => {
+                                if (item.mac) {
+                                    navigation.navigate("DeviceDetails", { device: { mac: Number(item.mac) } });
+                                } else {
+                                    Alert.alert("Error", "El dispositivo no tiene una MAC válida.");
+                                }
+                            }}
                         >
                             <Text style={styles.text}>{item.farmName}</Text>
                             <Text style={styles.text}>{item.siteName}</Text>
@@ -113,8 +125,8 @@ export default function DeviceList() {
                             <Text style={styles.text}>{item.country}</Text>
                             <Text style={styles.text}>{item.idSite}</Text>
                             <Text style={styles.text}>{item.locLevel}</Text>
-                            {/* <Text style={styles.text}>{item.mac}</Text>*/}
                         </TouchableOpacity>
+
                     )}
                     contentContainerStyle={styles.listContainer}
                 />

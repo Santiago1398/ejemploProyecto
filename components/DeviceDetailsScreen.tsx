@@ -15,95 +15,73 @@ import { post } from "@/services/api";
 
 import { ParamTC } from "@/infrastructure/intercafe/listapi.interface";
 import { useRoute, RouteProp } from "@react-navigation/native";
-import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
-
-export type RootStackParamList = {
-    DeviceList: undefined; // Esta pantalla no recibe parámetros
-    DeviceDetails: { mac: number }; // Esta pantalla espera un parámetro `mac`
-    AlarmList: { mac: number }; // Si también usas `AlarmList`
-};
-
+import { RootStackParamList } from "@/types/navigation";
 
 export default function AlarmList() {
-    const route = useRoute<RouteProp<{ AlarmList: { mac: number } }, "AlarmList">>();
-    const { mac } = route.params;
+    const route = useRoute<RouteProp<RootStackParamList, "DeviceDetails">>();
+    const { device } = route.params;
+    const { mac } = device;
 
     const [selectedAlarm, setSelectedAlarm] = useState<ParamTC | null>(null);
     const [isOptionModalVisible, setOptionModalVisible] = useState(false);
     const [alarms, setAlarms] = useState<ParamTC[]>([]);
     const [loading, setLoading] = useState(true);
+    const [refresh, setRefresh] = useState(false); // Estado para disparar el GET
 
+    // Función para obtener las alarmas
     const fetchAlarms = async () => {
         try {
             setLoading(true);
 
-            // Verifica token y dirección MAC
-            const storedToken = await AsyncStorage.getItem("token");
-            if (!storedToken) {
-                throw new Error("Token no encontrado en AsyncStorage.");
-            }
-
             if (!mac) {
-                throw new Error("La dirección MAC no está definida.");
+                console.error("Error: La MAC no está definida.");
+                return;
             }
 
-            console.log("Token en AsyncStorage:", storedToken);
-            console.log("MAC utilizada:", mac);
-
-            // Imprime la URL que se está solicitando
             console.log("Petición GET:", `alarmtc/status?mac=${mac}`);
-
-            // Realiza la solicitud GET
             const data: ParamTC[] = await get(`alarmtc/status?mac=${mac}`);
-            console.log("Datos obtenidos:", data);
+            console.log("Datos obtenidos del servidor:", data);
 
-            // Filtra alarmas habilitadas
-            const enabledAlarms = data.filter(alarm => alarm.habilitado === true);
+            const enabledAlarms = data.filter(
+                (alarm) => alarm.habilitado === true && alarm.idAlarm !== 1000
+            );
             console.log("Alarmas habilitadas:", enabledAlarms);
 
             setAlarms(enabledAlarms);
-        } catch (error: any) {
-            console.error("Error en la solicitud GET:");
-            if (axios.isAxiosError(error)) {
-                console.error("Error de Axios:", error.response?.data || error.message);
-            } else if (error instanceof Error) {
-                console.error("Error estándar:", error.message);
-            } else {
-                console.error("Error desconocido:", error);
-            }
+        } catch (error) {
+            console.error("Error en la solicitud GET:", error);
             Alert.alert("Error", "No se pudieron cargar las alarmas.");
         } finally {
-            setLoading(false);
+            setLoading(false); // Asegúrate de cambiar el estado loading
         }
     };
 
 
-
+    // Efecto para obtener alarmas al montar el componente o cuando `refresh` cambie
     useEffect(() => {
         if (mac) {
             fetchAlarms();
         }
-    }, [mac]);
+    }, [mac, refresh]);
 
+    // Maneja la selección de opciones (POST)
     const handleOptionSelect = async (option: "Armada" | "Desarmada") => {
         if (selectedAlarm) {
             const status = option === "Armada" ? 1 : 0; // Status para la solicitud POST
             const idAlarm = selectedAlarm.idAlarm;
-            try {
-                const response = await post(`arm?mac=${mac}&alarm=${idAlarm}&status=${status}`, {});
-                console.log("Respuesta del servidor:", response);
+            console.log("MAC enviado:", mac, typeof mac);
+            console.log("Alarm ID enviado:", selectedAlarm?.idAlarm, typeof selectedAlarm?.idAlarm);
+            console.log("Status enviado:", option === "Armada" ? 1 : 0, typeof (option === "Armada" ? 1 : 0));
 
-                // Actualiza el estado local solo si la solicitud fue exitosa
-                setAlarms((prevAlarms) =>
-                    prevAlarms.map((alarm) =>
-                        alarm.idAlarm === idAlarm ? { ...alarm, armado: status === 1 } : alarm
-                    )
-                );
+            try {
+                const response = await post(`alarmtc/arm?/mac=${mac}&alarm=${idAlarm}&status=${status}`, {});
+                console.log("Respuesta del servidor:", response);
 
                 // Cierra el modal después de una pequeña espera
                 setTimeout(() => setOptionModalVisible(false), 250);
+
+                // Actualiza el trigger para refrescar el estado
+                setRefresh((prev) => !prev);
             } catch (error) {
                 console.error("Error al cambiar el estado de la alarma:", error);
                 Alert.alert("Error", "No se pudo cambiar el estado de la alarma.");
@@ -111,27 +89,32 @@ export default function AlarmList() {
         }
     };
 
+    // Abre el modal para la alarma seleccionada
     const openOptionModal = (alarm: ParamTC) => {
         setSelectedAlarm(alarm);
         setOptionModalVisible(true);
     };
 
-
     return (
         <View style={styles.container}>
             {loading ? (
-                <Text style={styles.loadingText}></Text>
+                <Text style={styles.loadingText}>Cargando alarmas...</Text>
             ) : alarms.length === 0 ? (
                 <Text style={styles.loadingText}>No hay alarmas habilitadas</Text>
             ) : (
                 <FlatList
-                    data={alarms}
-                    keyExtractor={(item) => item.idAlarm.toString()}
+                    data={alarms.filter(
+                        (alarm, index, self) =>
+                            index === self.findIndex((a) => a.idAlarm === alarm.idAlarm)
+                    )}
+                    keyExtractor={(item, index) =>
+                        item.idAlarm ? `${item.idAlarm}-${index}` : `key-${index}`
+                    }
                     renderItem={({ item }) => (
                         <View
                             style={[
                                 styles.alarmContainer,
-                                { backgroundColor: getBackgroundColor(item.armado) },
+                                { backgroundColor: item.armado ? "#76db36" : "#8a9bb9" },
                             ]}
                         >
                             <Text style={styles.alarmText}>{item.texto}</Text>
@@ -144,6 +127,7 @@ export default function AlarmList() {
                         </View>
                     )}
                 />
+
             )}
 
             <Modal
@@ -274,5 +258,6 @@ const styles = StyleSheet.create({
         backgroundColor: "transparent",
     },
 });
+
 
 
