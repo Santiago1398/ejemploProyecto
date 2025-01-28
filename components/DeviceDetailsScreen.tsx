@@ -10,12 +10,11 @@ import {
     Alert,
 } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
-import { get } from "@/services/api";
-import { post } from "@/services/api";
-
-import { ParamTC } from "@/infrastructure/intercafe/listapi.interface";
+import { get, post } from "@/services/api";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/types/navigation";
+import ButtonMaster from "./BottonMaster";
+import { ParamTC } from "@/infrastructure/intercafe/listapi.interface";
 
 export default function AlarmList() {
     const route = useRoute<RouteProp<RootStackParamList, "DeviceDetails">>();
@@ -26,24 +25,17 @@ export default function AlarmList() {
     const [isOptionModalVisible, setOptionModalVisible] = useState(false);
     const [alarms, setAlarms] = useState<ParamTC[]>([]);
     const [loading, setLoading] = useState(true);
-    const [refresh, setRefresh] = useState(false); // Estado para disparar el GET
 
-    // Función para obtener las alarmas
+    // Función para obtener las alarmas (GET)
     const fetchAlarms = async () => {
         try {
             setLoading(true);
-
-            if (!mac) {
-                console.error("Error: La MAC no está definida.");
-                return;
-            }
-
             console.log("Petición GET:", `alarmtc/status?mac=${mac}`);
-            const data: ParamTC[] = await get(`alarmtc/status?mac=${mac}`);
-            console.log("Datos obtenidos del servidor:", data);
+            const data = await get(`alarmtc/status?mac=${mac}`);
+            console.log("Datos obtenidos:", data);
 
             const enabledAlarms = data.filter(
-                (alarm) => alarm.habilitado === true && alarm.idAlarm !== 1000
+                (alarm: { habilitado: boolean; idAlarm: number }) => alarm.habilitado === true && alarm.idAlarm !== 1000
             );
             console.log("Alarmas habilitadas:", enabledAlarms);
 
@@ -52,37 +44,34 @@ export default function AlarmList() {
             console.error("Error en la solicitud GET:", error);
             Alert.alert("Error", "No se pudieron cargar las alarmas.");
         } finally {
-            setLoading(false); // Asegúrate de cambiar el estado loading
+            setLoading(false);
         }
     };
 
-
-    // Efecto para obtener alarmas al montar el componente o cuando `refresh` cambie
+    // Efecto para obtener alarmas al montar el componente
     useEffect(() => {
         if (mac) {
             fetchAlarms();
         }
-    }, [mac, refresh]);
+    }, [mac]);
 
-    // Maneja la selección de opciones (POST)
-    const handleOptionSelect = async (option: "Armada" | "Desarmada") => {
+    // Manejo de la opción de armado/desarmado
+    const handleOptionSelect = async (option: string) => {
         if (selectedAlarm) {
-            const status = option === "Armada" ? 1 : 0; // Status para la solicitud POST
+            const status = option === "Armada" ? 1 : 0;
             const idAlarm = selectedAlarm.idAlarm;
-            console.log("MAC type:", typeof mac, "value:", mac);
-            console.log("Alarm ID type:", typeof idAlarm, "value:", idAlarm);
-            console.log("Status type:", typeof status, "value:", status);
-
 
             try {
                 const response = await post(`alarmtc/arm?mac=${mac}&alarm=${idAlarm}&status=${status}`, {});
                 console.log("Respuesta del servidor:", response);
 
-                // Cierra el modal después de una pequeña espera
-                setTimeout(() => setOptionModalVisible(false), 250);
+                //Aqui actualizamos el estado antes de la alarma amtes de que se cierre la pantalla modal 
+                setSelectedAlarm((prev) => prev ? { ...prev, armado: status === 1 } : prev);
 
-                // Actualiza el trigger para refrescar el estado
-                setRefresh((prev) => !prev);
+                setTimeout(() => {
+                    setOptionModalVisible(false);
+                    fetchAlarms(); // Actualiza la lista tras el cambio
+                }, 250);
             } catch (error) {
                 console.error("Error al cambiar el estado de la alarma:", error);
                 Alert.alert("Error", "No se pudo cambiar el estado de la alarma.");
@@ -108,28 +97,24 @@ export default function AlarmList() {
                         (alarm, index, self) =>
                             index === self.findIndex((a) => a.idAlarm === alarm.idAlarm)
                     )}
-                    keyExtractor={(item, index) =>
-                        item.idAlarm ? `${item.idAlarm}-${index}` : `key-${index}`
-                    }
+                    keyExtractor={(item) => `${item.idAlarm}`}
                     renderItem={({ item }) => (
-                        <View
+                        <TouchableOpacity
                             style={[
                                 styles.alarmContainer,
                                 { backgroundColor: item.armado ? "#76db36" : "#8a9bb9" },
                             ]}
+                            onPress={() => openOptionModal(item)}
                         >
                             <Text style={styles.alarmText}>{item.texto}</Text>
-                            <TouchableOpacity
-                                style={styles.chevronButton}
-                                onPress={() => openOptionModal(item)}
-                            >
-                                <Entypo name="chevron-thin-right" size={24} color="#333" />
-                            </TouchableOpacity>
-                        </View>
+                            <Entypo name="chevron-thin-right" size={24} color="#333" />
+                        </TouchableOpacity>
                     )}
                 />
-
             )}
+
+            {/* Botón Master en la esquina inferior derecha */}
+            <ButtonMaster mac={mac} fetchAlarms={fetchAlarms} />
 
             <Modal
                 animationType="slide"
@@ -141,10 +126,7 @@ export default function AlarmList() {
                     style={styles.modalOverlay}
                     onPress={() => setOptionModalVisible(false)}
                 >
-                    <Pressable
-                        style={styles.modalContent}
-                        onPress={(e) => e.stopPropagation()}
-                    >
+                    <Pressable style={styles.modalContent}>
                         <Text style={styles.modalTitle}>{selectedAlarm?.texto}</Text>
                         <TouchableOpacity
                             style={styles.optionRow}
@@ -153,13 +135,12 @@ export default function AlarmList() {
                             <View
                                 style={[
                                     styles.circle,
-                                    selectedAlarm?.armado && {
-                                        backgroundColor: "#76db36",
-                                    },
+                                    selectedAlarm?.armado ? { backgroundColor: "#76db36" } : {},
                                 ]}
                             />
                             <Text style={styles.optionText}>Armada</Text>
                         </TouchableOpacity>
+
                         <TouchableOpacity
                             style={styles.optionRow}
                             onPress={() => handleOptionSelect("Desarmada")}
@@ -167,13 +148,12 @@ export default function AlarmList() {
                             <View
                                 style={[
                                     styles.circle,
-                                    !selectedAlarm?.armado && {
-                                        backgroundColor: "#8a9bb9",
-                                    },
+                                    !selectedAlarm?.armado ? { backgroundColor: "#8a9bb9" } : {},
                                 ]}
                             />
                             <Text style={styles.optionText}>Desarmada</Text>
                         </TouchableOpacity>
+
                     </Pressable>
                 </Pressable>
             </Modal>
@@ -184,34 +164,35 @@ export default function AlarmList() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#f9f9f9",
+        backgroundColor: "#f9f9f9", //Establece un fondo gris claro para toda la pantalla.
+        paddingBottom: 90, // Asegurar espacio suficiente para el botón
     },
     loadingText: {
         fontSize: 18,
         color: "#666",
         textAlign: "center",
-        marginTop: 20,
+        marginTop: 20, //margen un espacio de 20px arriba del texto  
     },
     alarmContainer: {
-        padding: 16,
+        padding: 16, // Agrega espacio alrededor del contenido dentro del contenedor de la alarma.
         marginVertical: 8,
         borderRadius: 8,
-        flexDirection: "row",
+        flexDirection: "row", // Organiza los elementos en fila.
         justifyContent: "space-between",
         alignItems: "center",
         marginHorizontal: 16,
-        width: "90%",
+        width: "90%", // El contenedor ocupa el 90% del ancho de la pantalla.
         alignSelf: "center",
     },
     alarmText: {
         fontSize: 16,
         fontWeight: "bold",
-        color: "#333333",
+        color: "#333333", //Color gris oscuro.
         flex: 1,
     },
     chevronButton: {
         padding: 8,
-        marginRight: -8,
+        marginRight: -8, //Mueve el botón 8px hacia la izquierda.
     },
     modalOverlay: {
         flex: 1,
@@ -220,13 +201,13 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     modalContent: {
-        width: "80%",
-        backgroundColor: "#fff",
+        width: "80%", // Ocupa el 80% del ancho de la pantalla.
+        backgroundColor: "#fff", // Fondo blanco.
         borderRadius: 20,
         padding: 20,
         alignItems: "center",
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
+        shadowColor: "#000", // Sombra negra.
+        shadowOffset: { width: 0, height: 2 }, // Desplazamiento de la sombra.
         shadowOpacity: 0.25,
         shadowRadius: 4,
         elevation: 5,
@@ -234,30 +215,31 @@ const styles = StyleSheet.create({
     modalTitle: {
         fontSize: 18,
         fontWeight: "bold",
-        marginBottom: 20,
+        marginBottom: 20, // Espaciado entre el título y las opciones.
         textAlign: "center",
     },
     optionRow: {
-        flexDirection: "row",
-        alignItems: "center",
+        flexDirection: "row", // Organiza los elementos en fila.
+        alignItems: "center", // Alinea los elementos verticalmente.
         paddingVertical: 10,
         width: "100%",
     },
     optionText: {
         marginLeft: 10,
         fontSize: 16,
-        color: "#333",
+        color: "#333", // Color gris oscuro.
         fontWeight: "bold",
     },
     circle: {
-        width: 24,
-        height: 24,
-        borderRadius: 12,
+        width: 24, // Diámetro del círculo.
+        height: 24, // Diámetro del círculo.
+        borderRadius: 12, // Radio del círculo.
         borderWidth: 2,
-        borderColor: "#999",
-        marginRight: 10,
-        backgroundColor: "transparent",
+        borderColor: "#999", // Color gris claro.
+        marginRight: 10, // Espaciado a la derecha del círculo.
+        backgroundColor: "transparent", // Fondo transparente.
     },
+
 });
 
 
