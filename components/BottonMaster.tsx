@@ -53,15 +53,17 @@ const ButtonMaster: React.FC<ButtonMasterProps> = ({ mac, fetchAlarms }) => {
 const styles = StyleSheet.create({
     button: {
         position: "absolute",
-        bottom: 10, // Ajuste para evitar que se corte
+        bottom: 13, // Ajuste para evitar que se corte
         right: 20, // Asegurar que esté bien alineado a la derecha
-        width: 75, // Aumentar tamaño para evitar corte
-        height: 75, // Asegurar el tamaño uniforme
+        width: 73, // Aumentar tamaño para evitar corte
+        height: 73, // Asegurar el tamaño uniforme
         borderRadius: 37.5, // Circular
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: "red",
-        elevation: 5, // Sombra para resaltar
+        elevation: 6,
+        shadowOpacity: 0.3,
+        shadowOffset: { width: 0, height: 2 },
     },
 });
 

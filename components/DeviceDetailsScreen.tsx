@@ -164,7 +164,7 @@ export default function AlarmList() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#f9f9f9", //Establece un fondo gris claro para toda la pantalla.
+        backgroundColor: "#f4f4f4", //Establece un fondo gris claro para toda la pantalla.
         paddingBottom: 90, // Asegurar espacio suficiente para el botón
     },
     loadingText: {
@@ -174,19 +174,24 @@ const styles = StyleSheet.create({
         marginTop: 20, //margen un espacio de 20px arriba del texto  
     },
     alarmContainer: {
-        padding: 16, // Agrega espacio alrededor del contenido dentro del contenedor de la alarma.
-        marginVertical: 8,
-        borderRadius: 8,
+        padding: 14, // Agrega espacio alrededor del contenido dentro del contenedor de la alarma.
+        marginVertical: 6,
+        borderRadius: 12,
         flexDirection: "row", // Organiza los elementos en fila.
         justifyContent: "space-between",
         alignItems: "center",
         marginHorizontal: 16,
         width: "90%", // El contenedor ocupa el 90% del ancho de la pantalla.
         alignSelf: "center",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        elevation: 3,
+        backgroundColor: "#66BB6A", // Un verde más agradable
     },
     alarmText: {
         fontSize: 16,
-        fontWeight: "bold",
+        fontWeight: "600",
         color: "#333333", //Color gris oscuro.
         flex: 1,
     },
