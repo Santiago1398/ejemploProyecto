@@ -5,6 +5,7 @@ import {
     StyleSheet,
     Modal,
     Pressable,
+
     FlatList,
     TouchableOpacity,
     Alert,
@@ -25,6 +26,8 @@ export default function AlarmList() {
     const [isOptionModalVisible, setOptionModalVisible] = useState(false);
     const [alarms, setAlarms] = useState<ParamTC[]>([]);
     const [loading, setLoading] = useState(true);
+    const [masterAlarmState, setMasterAlarmState] = useState<boolean>(true); // Estado de la alarma 1000
+
 
     // Función para obtener las alarmas (GET)
     const fetchAlarms = async () => {
@@ -33,6 +36,12 @@ export default function AlarmList() {
             console.log("Petición GET:", `alarmtc/status?mac=${mac}`);
             const data = await get(`alarmtc/status?mac=${mac}`);
             console.log("Datos obtenidos:", data);
+
+            //Guardamoss el estado de la alarma del Boton Master
+            const masterAlarm = data.find((alarm: { idAlarm: number; }) => alarm.idAlarm === 1000);
+            if (masterAlarm) {
+                setMasterAlarmState(masterAlarm.armado);
+            }
 
             const enabledAlarms = data.filter(
                 (alarm: { habilitado: boolean; idAlarm: number }) => alarm.habilitado === true && alarm.idAlarm !== 1000
@@ -88,10 +97,11 @@ export default function AlarmList() {
     return (
         <View style={styles.container}>
             {loading ? (
-                <Text style={styles.loadingText}>Cargando alarmas...</Text>
+                <Text style={styles.loadingText}></Text>
             ) : alarms.length === 0 ? (
-                <Text style={styles.loadingText}>No hay alarmas habilitadas</Text>
-            ) : (
+                <View style={styles.centeredContainer}>
+                    <Text style={styles.noAlarmsText}>No hay alarmas habilitadas</Text>
+                </View>) : (
                 <FlatList
                     data={alarms.filter(
                         (alarm, index, self) =>
@@ -114,7 +124,7 @@ export default function AlarmList() {
             )}
 
             {/* Botón Master en la esquina inferior derecha */}
-            <ButtonMaster mac={mac} fetchAlarms={fetchAlarms} />
+            <ButtonMaster mac={mac} fetchAlarms={fetchAlarms} masterAlarmState={masterAlarmState} />
 
             <Modal
                 animationType="slide"
@@ -195,6 +205,17 @@ const styles = StyleSheet.create({
         color: "#333333", //Color gris oscuro.
         flex: 1,
     },
+    centeredContainer: {
+        flex: 1, // Ocupa toda la pantalla
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    noAlarmsText: {
+        fontSize: 20,
+        color: "#666",
+        fontWeight: "bold",
+        textAlign: "center",
+    },
     chevronButton: {
         padding: 8,
         marginRight: -8, //Mueve el botón 8px hacia la izquierda.
@@ -246,6 +267,8 @@ const styles = StyleSheet.create({
     },
 
 });
+
+
 
 
 

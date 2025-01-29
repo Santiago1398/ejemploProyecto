@@ -125,6 +125,7 @@ export default function DeviceList() {
                             <Text style={styles.text}>{item.country}</Text>
                             <Text style={styles.text}>{item.idSite}</Text>
                             <Text style={styles.text}>{item.locLevel}</Text>
+                            <Text style={styles.text}>Prueba estado alarma {item.alarmType}</Text>
                         </TouchableOpacity>
 
                     )}

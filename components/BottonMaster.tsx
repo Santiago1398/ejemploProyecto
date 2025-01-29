@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { TouchableOpacity, Alert, StyleSheet } from "react-native";
 import { post } from "@/services/api";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -6,10 +6,15 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 interface ButtonMasterProps {
     mac: number;
     fetchAlarms: () => void; // Función para actualizar alarmas
+    masterAlarmState: boolean; // Estado de la alarma 1000
 }
 
-const ButtonMaster: React.FC<ButtonMasterProps> = ({ mac, fetchAlarms }) => {
-    const [isEnabled, setIsEnabled] = useState(true);
+
+const ButtonMaster: React.FC<ButtonMasterProps> = ({ mac, fetchAlarms, masterAlarmState }) => {
+    const [isEnabled, setIsEnabled] = useState(masterAlarmState);
+    useEffect(() => {
+        setIsEnabled(masterAlarmState);
+    }, [masterAlarmState]);
 
     const handleToggleMaster = async () => {
         const status = isEnabled ? 0 : 1;
@@ -19,6 +24,10 @@ const ButtonMaster: React.FC<ButtonMasterProps> = ({ mac, fetchAlarms }) => {
 
             console.log("Respuesta del servidor:", response);
 
+            console.log(`🔴 Estado actual: ${isEnabled ? "ON" : "OFF"}`);
+            console.log(`🟢 Enviando POST a: alarmtc/armMaster?mac=${mac}&status=${status}`);
+
+
             // Validamos si el API devuelve un JSON ya procesado
             const data = response;
 
@@ -26,7 +35,10 @@ const ButtonMaster: React.FC<ButtonMasterProps> = ({ mac, fetchAlarms }) => {
             if (data.status === "Master Button Alarm Armed" || data.status === "Master Button Alarm Disarmed") {
                 Alert.alert("Éxito", `Las alarmas han sido ${status === 1 ? "activadas" : "desactivadas"}.`);
                 setIsEnabled(!isEnabled); // Cambia el estado del botón
-                fetchAlarms(); // Realiza un GET para actualizar el estado de las alarmas
+                if (status === 0) {
+                    fetchAlarms(); // Realiza un GET para actualizar el estado de las alarmas
+                }
+
             } else {
                 Alert.alert("Error", "No se pudo cambiar el estado de las alarmas.");
             }
