@@ -27,7 +27,7 @@ export const useAuthStore = create<AuthState>()(
             login: async (username, password) => {
                 try {
                     console.log("llamando a la api")
-                    const data = await postxxx("auth/login", { username, password }); // Realiza la solicitud POST al servidor
+                    const data = await post("auth/login", { username, password }); // Realiza la solicitud POST al servidor
                     console.log("iniciando sesision Datos del servidor:", data);
 
 

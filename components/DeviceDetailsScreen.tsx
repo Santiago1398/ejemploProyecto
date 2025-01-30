@@ -35,7 +35,7 @@ export default function AlarmList() {
             setLoading(true);
             console.log("Petición GET:", `alarmtc/status?mac=${mac}`);
             const data = await get(`alarmtc/status?mac=${mac}`);
-            console.log("Datos obtenidos:", data);
+            console.table("Datos obtenidos:", data);
 
             //Guardamoss el estado de la alarma del Boton Master
             const masterAlarm = data.find((alarm: { idAlarm: number; }) => alarm.idAlarm === 1000);
@@ -46,7 +46,7 @@ export default function AlarmList() {
             const enabledAlarms = data.filter(
                 (alarm: { habilitado: boolean; idAlarm: number }) => alarm.habilitado === true && alarm.idAlarm !== 1000
             );
-            console.log("Alarmas habilitadas:", enabledAlarms);
+            console.table("Alarmas habilitadas:", enabledAlarms);
 
             setAlarms(enabledAlarms);
         } catch (error) {

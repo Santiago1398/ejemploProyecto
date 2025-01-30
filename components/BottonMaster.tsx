@@ -24,7 +24,7 @@ const ButtonMaster: React.FC<ButtonMasterProps> = ({ mac, fetchAlarms, masterAla
 
             console.log("Respuesta del servidor:", response);
 
-            console.log(`🔴 Estado actual: ${isEnabled ? "ON" : "OFF"}`);
+            console.log(`🔴 Estado actual: ${isEnabled ? "OFF" : "ON"}`);
             console.log(`🟢 Enviando POST a: alarmtc/armMaster?mac=${mac}&status=${status}`);
 
 
@@ -35,7 +35,7 @@ const ButtonMaster: React.FC<ButtonMasterProps> = ({ mac, fetchAlarms, masterAla
             if (data.status === "Master Button Alarm Armed" || data.status === "Master Button Alarm Disarmed") {
                 Alert.alert("Éxito", `Las alarmas han sido ${status === 1 ? "activadas" : "desactivadas"}.`);
                 setIsEnabled(!isEnabled); // Cambia el estado del botón
-                if (status === 0) {
+                if (status === 1) {
                     fetchAlarms(); // Realiza un GET para actualizar el estado de las alarmas
                 }
 
@@ -53,7 +53,7 @@ const ButtonMaster: React.FC<ButtonMasterProps> = ({ mac, fetchAlarms, masterAla
         <TouchableOpacity
             style={[
                 styles.button,
-                { backgroundColor: isEnabled ? "green" : "red" },
+                { backgroundColor: isEnabled ? "red" : "green" },
             ]}
             onPress={handleToggleMaster}
         >
