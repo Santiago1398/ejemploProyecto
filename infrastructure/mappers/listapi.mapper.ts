@@ -1,21 +1,21 @@
 import { resultado } from "../intercafe/listapi.interface";
 
 
-export class ListApi{
+export class ListApi {
 
 
 
-    static fromThelistApiDBToMovie = (listApi: resultado) => {
+  static fromThelistApiDBToMovie = (listApi: resultado) => {
 
-        return {
-          id: listApi.id,
-          ubicacion : listApi.ubicacion,
-          numeroNave : listApi.numeroNave,
-          estado : listApi.estado
-          
-
-        }
+    return {
+      id: listApi.id,
+      ubicacion: listApi.ubicacion,
+      numeroNave: listApi.numeroNave,
+      estado: listApi.estado
 
 
     }
+
+
+  }
 }

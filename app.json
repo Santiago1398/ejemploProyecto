@@ -18,7 +18,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.santicticontrol.notificationtc5",
-      "googleServicesFile": "./google-services (2).json"
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",
