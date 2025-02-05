@@ -1,62 +1,57 @@
-import { useState, useEffect, useRef } from 'react';
-import { Platform } from 'react-native';
-import * as Device from 'expo-device';
-import * as Notifications from 'expo-notifications';
-import Constants from 'expo-constants';
-import { router } from 'expo-router';
+import { useState, useEffect, useRef } from "react";
+import { Platform } from "react-native";
+import * as Device from "expo-device";
+import * as Notifications from "expo-notifications";
+import Constants from "expo-constants";
+import { RouteProp, useRoute } from "@react-navigation/native";
+import { RootStackParamList } from "@/types/navigation";
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
-        shouldShowAlert: true, //Muestra una alerta de notificacion
-        shouldPlaySound: true, //Reproduce un sonido cuando se recibe una notificacion 
-        shouldSetBadge: true,  // Ajusta el badge (contador de notificaciones) en el icono de la aplicacion
+        shouldShowAlert: true,
+        shouldPlaySound: true,  // Sonido en la notificación
+        shouldSetBadge: true,
     }),
 });
 
 interface SendPushOptions {
-    to: string[];  //Una lista de tokens de dispositivos que recibiran la notificacion
+    to: string[];
     title: string;
     body: string;
     data?: Record<string, any>;
 }
 
-//Envia notificaciones push usando el servicio de Expo
+// Función para enviar notificaciones push con Expo
 async function sendPushNotification(options: SendPushOptions) {
     const { to, title, body, data } = options;
 
     const message = {
         to: to,
-        sound: 'default',
+        sound: "default",
         title: title,
-        body: body,
+        body: body, // Aquí se mostrará el contenido personalizado
         data: data,
     };
 
-    //Usa esta Api para enviar la notificacion con esto el backend envia la notoificacion
-    await fetch('https://exp.host/--/api/v2/push/send', {
-        method: 'POST',
+    await fetch("https://exp.host/--/api/v2/push/send", {
+        method: "POST",
         headers: {
-            Accept: 'application/json',
-            'Accept-encoding': 'gzip, deflate',
-            'Content-Type': 'application/json',
+            Accept: "application/json",
+            "Accept-Encoding": "gzip, deflate",
+            "Content-Type": "application/json",
         },
         body: JSON.stringify(message),
     });
 }
 
-function handleRegistrationError(errorMessage: string) {
-    alert(errorMessage);
-    throw new Error(errorMessage);
-}
-
-//Verifica si el dispositivo tiene permisos para recibir notificaciones y si los tiene solicita permisos al usuario
+// Función para registrar el dispositivo y obtener el token de Expo
 async function registerForPushNotificationsAsync() {
-    if (Platform.OS === 'android') {
-        Notifications.setNotificationChannelAsync('default', {
-            name: 'default',
+    if (Platform.OS === "android") {
+        Notifications.setNotificationChannelAsync("default", {
+            name: "default",
             importance: Notifications.AndroidImportance.MAX,
             vibrationPattern: [0, 250, 250, 250],
-            lightColor: '#FF231F7C',
+            lightColor: "red",
         });
     }
 
@@ -66,108 +61,94 @@ async function registerForPushNotificationsAsync() {
 
         let finalStatus = existingStatus;
 
-        if (existingStatus !== 'granted') {
-            // IMPORTANTE
+        if (existingStatus !== "granted") {
             const { status } = await Notifications.requestPermissionsAsync();
             finalStatus = status;
         }
 
-        if (finalStatus !== 'granted') {
-            handleRegistrationError(
-                'Permission not granted to get push token for push notification!'
-            );
+        if (finalStatus !== "granted") {
+            alert("Permiso denegado para recibir notificaciones push.");
             return;
         }
 
-        //Genera el token unico para el dispositivo utilizando Expo "getExpoPushToeknAsync"
         const projectId =
             Constants?.expoConfig?.extra?.eas?.projectId ??
             Constants?.easConfig?.projectId;
+
         if (!projectId) {
-            handleRegistrationError('Project ID not found');
+            alert("Project ID no encontrado");
+            return;
         }
+
         try {
             const pushTokenString = (
                 await Notifications.getExpoPushTokenAsync({
                     projectId,
                 })
             ).data;
-            console.log({ [Platform.OS]: pushTokenString });
             return pushTokenString;
-        } catch (e: unknown) {
-            handleRegistrationError(`${e}`);
+        } catch (e) {
+            alert(`Error: ${e}`);
         }
     } else {
-        handleRegistrationError('Must use physical device for push notifications');
+        alert("Debes usar un dispositivo físico para recibir notificaciones.");
     }
 }
 
-let areListenersReady = false;
-
 export const usePushNotifications = () => {
-    const [expoPushToken, setExpoPushToken] = useState('');
-    const [notifications, setNotifications] = useState<
-        Notifications.Notification[]
-    >([]);
-
-    const notificationListener = useRef<Notifications.Subscription>();
-    const responseListener = useRef<Notifications.Subscription>();
-
-    //Aqui llama para obtener el token del dispositivo con el "register" y luego lo actualiza el estado con "expoPushToekn"
-    useEffect(() => {
-        if (areListenersReady) return;
-
-        registerForPushNotificationsAsync()
-            .then((token) => setExpoPushToken(token ?? ''))
-            .catch((error: any) => setExpoPushToken(`${error}`));
-    }, []);
+    const [expoPushToken, setExpoPushToken] = useState("");
+    const [notifications, setNotifications] = useState<Notifications.Notification[]>([]);
+    const socketRef = useRef<WebSocket | null>(null);
+    const route = useRoute<RouteProp<RootStackParamList, "DeviceDetails">>();
+    const { device } = route.params;
+    const { mac } = device;
 
     useEffect(() => {
-        if (areListenersReady) return;
+        registerForPushNotificationsAsync().then((token) =>
+            setExpoPushToken(token ?? "")
+        );
 
-        areListenersReady = true;
+        // Conectamos el WebSocket
+        socketRef.current = new WebSocket("ws://37.187.180.179:8032");
 
-        //Esto se ejecuta cuando se recibe una notificacion 
-        notificationListener.current =
-            Notifications.addNotificationReceivedListener((notification) => {
-                setNotifications((prevNotifications) => [
-                    notification,
-                    ...prevNotifications,
-                ]);
-            });
+        socketRef.current.onopen = () => {
+            console.log("🔌 Conectado al WebSocket");
+            socketRef.current?.send(JSON.stringify({ action: "subscribe", mac: mac }));
+        };
 
-        responseListener.current =
-            Notifications.addNotificationResponseReceivedListener((response) => {
-                console.log(JSON.stringify(response, null, 2));
+        socketRef.current.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            console.log("📡 Alarma recibida:", data);
 
-                const { chatId } = response.notification.request.content.data;
+            // Verificamos si la alarma está activada (status === 1)
+            if (data.status === 1) {
+                const { idAlarm, farmName, siteName, texto } = data;
 
-                if (chatId) {
-                    //router.push(`/chat/${chatId}`);
-                }
-            });
+                sendPushNotification({
+                    to: [expoPushToken],
+                    title: "⚠️ ¡Alarma activada!",
+                    body: `📍 Granja: ${farmName}\n🏠 Sitio: ${siteName}\n🚨 Alarma: ${texto}`,
+                    data: data,
+                });
+            }
+        };
+
+        socketRef.current.onclose = () => {
+            console.log("❌ WebSocket cerrado. Intentando reconectar...");
+            setTimeout(() => {
+                socketRef.current = new WebSocket("ws://37.187.180.179:8032");
+            }, 3000);
+        };
 
         return () => {
-            notificationListener.current &&
-                Notifications.removeNotificationSubscription(
-                    notificationListener.current
-                );
-            responseListener.current &&
-                Notifications.removeNotificationSubscription(responseListener.current);
+            socketRef.current?.close();
         };
     }, []);
 
     return {
-
-        //expoPushToken: Token del dispositivo para enviar notificaciones.
-        //notifications: Lista de notificaciones recibidas.
-        //sendPushNotification: Función para enviar notificaciones.
-
-        // Properties
         expoPushToken,
         notifications,
-
-        // Methods
         sendPushNotification,
     };
 };
+
