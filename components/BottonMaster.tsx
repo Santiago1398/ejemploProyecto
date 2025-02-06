@@ -65,7 +65,7 @@ const ButtonMaster: React.FC<ButtonMasterProps> = ({ mac, fetchAlarms, masterAla
 const styles = StyleSheet.create({
     button: {
         position: "absolute",
-        bottom: 13, // Ajuste para evitar que se corte
+        bottom: 8, // Ajuste para evitar que se corte
         right: 20, // Asegurar que esté bien alineado a la derecha
         width: 73, // Aumentar tamaño para evitar corte
         height: 73, // Asegurar el tamaño uniforme

@@ -8,7 +8,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export type RootStackParamList = {
     HomeScreen: undefined; // HomeScreen no necesita parámetros
-    DeviceDetails: { mac: number }; // DeviceDetailsScreen espera un parámetro `mac`
+    DeviceDetails: { mac: number, farmName: string, siteName: string }; // DeviceDetailsScreen espera  parámetro 
     BottonMaster: { mac: number }; // Bottton Master  espera un parámetro `mac`
 };
 
@@ -27,5 +27,7 @@ export default function HomeStack() {
             />
         </Stack.Navigator>
     );
+
+
 }
 

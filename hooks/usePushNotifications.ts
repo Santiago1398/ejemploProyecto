@@ -96,19 +96,34 @@ async function registerForPushNotificationsAsync() {
 }
 
 export const usePushNotifications = () => {
-    const [expoPushToken, setExpoPushToken] = useState("");
+    const [expoPushToken, setExpoPushToken] = useState<string | null>(null); // ✅ Inicializado correctamente
     const [notifications, setNotifications] = useState<Notifications.Notification[]>([]);
     const socketRef = useRef<WebSocket | null>(null);
+    const reconnectInterval = useRef<NodeJS.Timeout | null>(null);
+
     const route = useRoute<RouteProp<RootStackParamList, "DeviceDetails">>();
     const { device } = route.params;
     const { mac } = device;
 
     useEffect(() => {
-        registerForPushNotificationsAsync().then((token) =>
-            setExpoPushToken(token ?? "")
-        );
+        registerForPushNotificationsAsync().then((token) => {
+            if (token) setExpoPushToken(token);
+        });
 
-        // Conectamos el WebSocket
+        connectWebSocket();
+
+        return () => {
+            socketRef.current?.close();
+            if (reconnectInterval.current) {
+                clearTimeout(reconnectInterval.current);
+            }
+        };
+    }, []);
+
+    // ✅ **Corrección en el WebSocket**
+    const connectWebSocket = () => {
+        if (socketRef.current) return; // Evita conexiones duplicadas
+
         socketRef.current = new WebSocket("ws://37.187.180.179:8032");
 
         socketRef.current.onopen = () => {
@@ -120,30 +135,29 @@ export const usePushNotifications = () => {
             const data = JSON.parse(event.data);
             console.log("📡 Alarma recibida:", data);
 
-            // Verificamos si la alarma está activada (status === 1)
             if (data.status === 1) {
-                const { idAlarm, farmName, siteName, texto } = data;
-
-                sendPushNotification({
-                    to: [expoPushToken],
-                    title: "⚠️ ¡Alarma activada!",
-                    body: `📍 Granja: ${farmName}\n🏠 Sitio: ${siteName}\n🚨 Alarma: ${texto}`,
-                    data: data,
-                });
+                if (expoPushToken) { // ✅ Verificamos que expoPushToken exista
+                    sendPushNotification({
+                        to: [expoPushToken],
+                        title: "⚠️ ¡Alarma activada!",
+                        body: `📍 Granja: ${data.farmName}\n🏠 Sitio: ${data.siteName}\n🚨 Alarma: ${data.texto}`,
+                        data: { action: "STOP_ALARM" },
+                    });
+                } else {
+                    console.warn("⚠️ Token de notificación no disponible, no se envió la notificación.");
+                }
             }
         };
 
         socketRef.current.onclose = () => {
             console.log("❌ WebSocket cerrado. Intentando reconectar...");
-            setTimeout(() => {
-                socketRef.current = new WebSocket("ws://37.187.180.179:8032");
-            }, 3000);
-        };
+            socketRef.current = null;
 
-        return () => {
-            socketRef.current?.close();
+            if (!reconnectInterval.current) {
+                reconnectInterval.current = setTimeout(connectWebSocket, 3000);
+            }
         };
-    }, []);
+    };
 
     return {
         expoPushToken,
@@ -151,4 +165,5 @@ export const usePushNotifications = () => {
         sendPushNotification,
     };
 };
+
 

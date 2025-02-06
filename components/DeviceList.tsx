@@ -112,7 +112,7 @@ export default function DeviceList() {
                             ]}
                             onPress={() => {
                                 if (item.mac) {
-                                    navigation.navigate("DeviceDetails", { device: { mac: Number(item.mac) } });
+                                    navigation.navigate("DeviceDetails", { device: { mac: Number(item.mac), farmName: item.farmName, siteName: item.siteName } });
                                 } else {
                                     Alert.alert("Error", "El dispositivo no tiene una MAC válida.");
                                 }
