@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect } from "react";
 import { TouchableOpacity, Alert, StyleSheet } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { post } from "@/services/api";
 import { Audio } from "expo-av";
 import * as Notifications from "expo-notifications";
+import { globalAlarmSound } from "@/utils/globalSound";
 
 interface AlarmButtonProps {
     mac: number;
@@ -16,34 +17,39 @@ interface AlarmButtonProps {
 
 const AlarmButton: React.FC<AlarmButtonProps> = ({ mac, farmName, siteName, alarms, fetchAlarms }) => {
     const { sendPushNotification, expoPushToken } = usePushNotifications();
-    const alarmSoundRef = useRef<Audio.Sound | null>(null); // 🔊 Mantener referencia global del sonido
 
-    // 🛑 **Función para detener el sonido**
+    // Función para detener el sonido
     const stopAlarmSound = async () => {
-        if (alarmSoundRef.current) {
+        if (globalAlarmSound.sound) {
             console.log("⏹️ Deteniendo sonido de alarma...");
-            await alarmSoundRef.current.stopAsync();
-            await alarmSoundRef.current.unloadAsync();
-            alarmSoundRef.current = null;
+            await globalAlarmSound.sound.stopAsync();
+            await globalAlarmSound.sound.unloadAsync();
+            globalAlarmSound.sound = null;
         }
     };
 
-    // 🔊 **Función para reproducir sonido de alarma**
+    // Función para reproducir sonido de alarma
     const playAlarmSound = async () => {
         try {
+            if (globalAlarmSound.sound) {
+                console.log("🔊 Sonido ya en reproducción. No se inicia de nuevo.");
+                return; // ⏳ Si ya hay un sonido en reproducción, no lo iniciamos otra vez
+            }
+
             console.log("🔊 Reproduciendo sonido de alarma...");
             const { sound } = await Audio.Sound.createAsync(
                 require("../assets/images/alarm-car-or-home-62554.mp3"),
-                { shouldPlay: true, isLooping: true } // 🔄 Se repetirá hasta que lo detengamos
+                { shouldPlay: true, isLooping: true } //  Se repetirá hasta que lo detengamos
             );
-            alarmSoundRef.current = sound; // Guardamos la referencia
+
+            globalAlarmSound.sound = sound; // Guardamos la referencia global
             await sound.playAsync();
         } catch (error) {
             console.error("⚠️ Error al reproducir el sonido:", error);
         }
     };
 
-    // 🚨 **Función para simular una alarma**
+    // Función para simular una alarma
     const simulateAlarm = async () => {
         if (!expoPushToken) {
             Alert.alert("Error", "No se ha generado un token de notificación aún.");
@@ -63,17 +69,17 @@ const AlarmButton: React.FC<AlarmButtonProps> = ({ mac, farmName, siteName, alar
         });
 
         try {
-            // 🔊 **Reproducir sonido**
+            // Asegurar que solo haya un sonido activo
             await playAlarmSound();
 
             await post(`alarmtc/arm?mac=${mac}&alarm=${simulatedAlarm.idAlarm}&status=1`, {});
 
-            // 📢 **Enviar notificación**
+            // Enviar notificación*
             await sendPushNotification({
                 to: [expoPushToken],
                 title: "🚨 ¡Alarma Activada!",
                 body: `📍 Granja: ${farmName || "Desconocida"}\n🏠 Sitio: ${siteName || "Desconocido"}\n🚨 Mensaje: ${simulatedAlarm.texto}`,
-                data: { action: "STOP_ALARM" }, // 🔥 Enviamos una acción para detener la alarma
+                data: { action: "STOP_ALARM" }, // 🔥 Enviamos acción para detener la alarma
             });
 
             Alert.alert("Éxito", "Notificación de alarma simulada enviada.");
@@ -84,13 +90,11 @@ const AlarmButton: React.FC<AlarmButtonProps> = ({ mac, farmName, siteName, alar
         }
     };
 
-    // 📲 **Manejar la interacción con la notificación**
+    // Manejar la interacción con la notificación
     useEffect(() => {
         const subscription = Notifications.addNotificationResponseReceivedListener(response => {
             console.log("📲 Notificación tocada:", response);
-            if (response.notification.request.content.data.action === "STOP_ALARM") {
-                stopAlarmSound(); // 🛑 Detener sonido cuando la notificación es tocada
-            }
+            stopAlarmSound();
         });
 
         return () => subscription.remove();
