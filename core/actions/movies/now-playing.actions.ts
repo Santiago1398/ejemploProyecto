@@ -1,17 +1,17 @@
-import { listApi } from "./api/list-api";
+import { listApi } from "./list-api";
 
 
-export const nowPlayingAction = async () =>{
+export const nowPlayingAction = async () => {
 
-    try{
+    try {
 
-        const {data} = await listApi.get("/list-api")
+        const { data } = await listApi.get("/list-api")
 
         const list = data.resultado.map(listApi.post)
 
         console.log(JSON.stringify(data, null, 4));
 
-    }catch(eror){
+    } catch (eror) {
         console.log(eror);
         throw "No se pude traer la peticion"
     }

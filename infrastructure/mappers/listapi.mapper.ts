@@ -1,21 +1,12 @@
-import { resultado } from "../intercafe/listapi.interface";
-
+import { ResponseAlarmaSite } from "../intercafe/listapi.interface";
 
 export class ListApi {
-
-
-
-  static fromThelistApiDBToMovie = (listApi: resultado) => {
-
+  static fromThelistApiDBToMovie = (listApi: ResponseAlarmaSite) => {
     return {
-      id: listApi.id,
-      ubicacion: listApi.ubicacion,
-      numeroNave: listApi.numeroNave,
-      estado: listApi.estado
-
-
-    }
-
-
-  }
+      id: listApi.idSite, // Asegúrate de que `idSite` existe
+      ubicacion: listApi.farmName,
+      numeroNave: listApi.mac,
+      estado: listApi.alarmStatus,
+    };
+  };
 }

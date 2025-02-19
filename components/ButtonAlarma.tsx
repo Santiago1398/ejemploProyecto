@@ -16,7 +16,7 @@ interface AlarmButtonProps {
 }
 
 const AlarmButton: React.FC<AlarmButtonProps> = ({ mac, farmName, siteName, alarms, fetchAlarms }) => {
-    const { sendPushNotification, expoPushToken } = usePushNotifications();
+    const { expoPushToken } = usePushNotifications();
 
     // Función para detener el sonido
     const stopAlarmSound = async () => {
@@ -33,7 +33,7 @@ const AlarmButton: React.FC<AlarmButtonProps> = ({ mac, farmName, siteName, alar
         try {
             if (globalAlarmSound.sound) {
                 console.log("🔊 Sonido ya en reproducción. No se inicia de nuevo.");
-                return; // ⏳ Si ya hay un sonido en reproducción, no lo iniciamos otra vez
+                return; //Si ya hay un sonido en reproducción, no lo iniciamos otra vez
             }
 
             console.log("🔊 Reproduciendo sonido de alarma...");
@@ -75,12 +75,15 @@ const AlarmButton: React.FC<AlarmButtonProps> = ({ mac, farmName, siteName, alar
             await post(`alarmtc/arm?mac=${mac}&alarm=${simulatedAlarm.idAlarm}&status=1`, {});
 
             // Enviar notificación*
-            await sendPushNotification({
-                to: [expoPushToken],
-                title: "🚨 ¡Alarma Activada!",
-                body: `📍 Granja: ${farmName || "Desconocida"}\n🏠 Sitio: ${siteName || "Desconocido"}\n🚨 Mensaje: ${simulatedAlarm.texto}`,
-                data: { action: "STOP_ALARM" }, // 🔥 Enviamos acción para detener la alarma
+            await Notifications.scheduleNotificationAsync({
+                content: {
+                    title: "🚨 ¡Alarma Activada!",
+                    body: `📍 Granja: ${farmName}\n🏠 Sitio: ${siteName}\n🚨 Mensaje: ${simulatedAlarm.texto}`,
+                    data: { action: "STOP_ALARM" },
+                },
+                trigger: null,
             });
+
 
             Alert.alert("Éxito", "Notificación de alarma simulada enviada.");
             await fetchAlarms();
@@ -127,3 +130,5 @@ const styles = StyleSheet.create({
 });
 
 export default AlarmButton;
+
+

@@ -1,116 +1,107 @@
 import { useState, useEffect, useRef } from "react";
-import { Platform } from "react-native";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
-import Constants from "expo-constants";
-import { RouteProp, useRoute } from "@react-navigation/native";
-import { RootStackParamList } from "@/types/navigation";
+import { getMessaging, onMessage } from "firebase/messaging";
+import { Audio } from "expo-av";
+import { app } from "@/config/firebaseConfig";
+import { globalAlarmSound } from "@/utils/globalSound";
+import { useAuthStore } from "@/store/authStore";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { post } from "@/services/api";
+import { getToken } from "firebase/messaging";
 
+const messaging = getMessaging(app);
+
+// Función para reproducir sonido
+const playAlarmSound = async () => {
+    try {
+        if (globalAlarmSound.sound) return;
+
+        console.log("🔊 Reproduciendo sonido de alarma...");
+        const { sound } = await Audio.Sound.createAsync(
+            require("../assets/images/alarm-car-or-home-62554.mp3"),
+            { shouldPlay: true, isLooping: true }
+        );
+
+        globalAlarmSound.sound = sound;
+        await sound.playAsync();
+    } catch (error) {
+        console.error("⚠️ Error al reproducir el sonido:", error);
+    }
+};
+
+// Función para detener el sonido
+const stopAlarmSound = async () => {
+    if (globalAlarmSound.sound) {
+        console.log("⏹️ Deteniendo sonido de alarma...");
+        await globalAlarmSound.sound.stopAsync();
+        await globalAlarmSound.sound.unloadAsync();
+        globalAlarmSound.sound = null;
+    }
+};
+
+// Configurar notificaciones
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
         shouldShowAlert: true,
-        shouldPlaySound: true,  // Sonido en la notificación
+        shouldPlaySound: true,
         shouldSetBadge: true,
     }),
 });
 
-interface SendPushOptions {
-    to: string[];
-    title: string;
-    body: string;
-    data?: Record<string, any>;
-}
-
-// Función para enviar notificaciones push con Expo
-async function sendPushNotification(options: SendPushOptions) {
-    const { to, title, body, data } = options;
-
-    const message = {
-        to: to,
-        sound: "default",
-        title: title,
-        body: body, // Aquí se mostrará el contenido personalizado
-        data: data,
-    };
-
-    await fetch("https://exp.host/--/api/v2/push/send", {
-        method: "POST",
-        headers: {
-            Accept: "application/json",
-            "Accept-Encoding": "gzip, deflate",
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(message),
-    });
-}
-
-// Función para registrar el dispositivo y obtener el token de Expo
-async function registerForPushNotificationsAsync() {
-    if (Platform.OS === "android") {
-        Notifications.setNotificationChannelAsync("default", {
-            name: "default",
-            importance: Notifications.AndroidImportance.MAX,
-            vibrationPattern: [0, 250, 250, 250],
-            lightColor: "red",
-        });
-    }
-
-    if (Device.isDevice) {
-        const { status: existingStatus } =
-            await Notifications.getPermissionsAsync();
-
-        let finalStatus = existingStatus;
-
-        if (existingStatus !== "granted") {
-            const { status } = await Notifications.requestPermissionsAsync();
-            finalStatus = status;
-        }
-
-        if (finalStatus !== "granted") {
-            alert("Permiso denegado para recibir notificaciones push.");
-            return;
-        }
-
-        const projectId =
-            Constants?.expoConfig?.extra?.eas?.projectId ??
-            Constants?.easConfig?.projectId;
-
-        if (!projectId) {
-            alert("Project ID no encontrado");
-            return;
-        }
-
-        try {
-            const pushTokenString = (
-                await Notifications.getExpoPushTokenAsync({
-                    projectId,
-                })
-            ).data;
-            return pushTokenString;
-        } catch (e) {
-            alert(`Error: ${e}`);
-        }
-    } else {
+// Registrar el dispositivo y enviar token al backend
+async function registerForPushNotificationsAsync(userId: number) {
+    if (!Device.isDevice) {
         alert("Debes usar un dispositivo físico para recibir notificaciones.");
+        return null;
+    }
+
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
+
+    if (existingStatus !== "granted") {
+        const { status } = await Notifications.requestPermissionsAsync();
+        finalStatus = status;
+    }
+
+    if (finalStatus !== "granted") {
+        alert("Permiso denegado para recibir notificaciones push.");
+        return null;
+    }
+
+    try {
+        // Obtener token de FCM (Firebase Cloud Messaging)
+        const pushTokenString = await getToken(messaging, { vapidKey: "BI_sg_fVIgI6cq5pA3N8qY-UVlVOnPpklMOH-BJYxz4w9HmKoUAYs0OWzUPSCkNZi3hu8GfT-AAr-JzR7cc7Psw" });
+
+        console.log("✅ Token de notificación obtenido:", pushTokenString);
+        await AsyncStorage.setItem("expoPushToken", pushTokenString);
+
+        //  Enviar token al backend
+        await post(`alarmtc/token?userId=${userId}&token=${pushTokenString}`, {});
+
+        return pushTokenString;
+    } catch (e) {
+        console.error("❌ Error obteniendo el token:", e);
+        return null;
     }
 }
 
+// Hook para manejar WebSocket y Notificaciones
 export const usePushNotifications = () => {
-    const [expoPushToken, setExpoPushToken] = useState<string | null>(null); // ✅ Inicializado correctamente
-    const [notifications, setNotifications] = useState<Notifications.Notification[]>([]);
+    const { userId } = useAuthStore();
+    const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
     const socketRef = useRef<WebSocket | null>(null);
     const reconnectInterval = useRef<NodeJS.Timeout | null>(null);
-
-    const route = useRoute<RouteProp<RootStackParamList, "DeviceDetails">>();
-    const { device } = route.params;
-    const { mac } = device;
+    const [notifications, setNotifications] = useState<Notifications.Notification[]>([]);
 
     useEffect(() => {
-        registerForPushNotificationsAsync().then((token) => {
-            if (token) setExpoPushToken(token);
-        });
+        if (userId) {
+            registerForPushNotificationsAsync(userId).then((token) => {
+                if (token) setExpoPushToken(token);
+            });
 
-        connectWebSocket();
+            connectWebSocket();
+        }
 
         return () => {
             socketRef.current?.close();
@@ -118,17 +109,55 @@ export const usePushNotifications = () => {
                 clearTimeout(reconnectInterval.current);
             }
         };
+    }, [userId]);
+
+    // Manejar notificaciones en segundo plano
+    useEffect(() => {
+        if (messaging) {
+            onMessage(messaging, (payload) => {
+                console.log("🔔 Notificación recibida:", payload);
+
+                const newNotification = {
+                    request: {
+                        identifier: payload.messageId || Math.random().toString(),
+                        content: {
+                            title: payload.notification?.title ?? "Alarma",
+                            body: payload.notification?.body ?? "Se activó una alarma.",
+                            data: payload.data || {},
+                        },
+                    },
+                };
+
+                setNotifications((prev) => [...prev, newNotification as Notifications.Notification]);
+
+                if (payload.data?.action === "STOP_ALARM") {
+                    stopAlarmSound();
+                } else {
+                    playAlarmSound();
+                }
+
+                Notifications.scheduleNotificationAsync({
+                    content: {
+                        title: payload.notification?.title ?? "Alarma",
+                        body: payload.notification?.body ?? "Se activó una alarma.",
+                        data: payload.data,
+                    },
+                    trigger: null,
+                });
+            });
+        }
     }, []);
 
-    // ✅ **Corrección en el WebSocket**
+
+    // Conectar WebSocket
     const connectWebSocket = () => {
-        if (socketRef.current) return; // Evita conexiones duplicadas
+        if (socketRef.current) return;
 
         socketRef.current = new WebSocket("ws://37.187.180.179:8032");
 
         socketRef.current.onopen = () => {
             console.log("🔌 Conectado al WebSocket");
-            socketRef.current?.send(JSON.stringify({ action: "subscribe", mac: mac }));
+            socketRef.current?.send(JSON.stringify({ action: "subscribe" }));
         };
 
         socketRef.current.onmessage = (event) => {
@@ -136,16 +165,15 @@ export const usePushNotifications = () => {
             console.log("📡 Alarma recibida:", data);
 
             if (data.status === 1) {
-                if (expoPushToken) { // ✅ Verificamos que expoPushToken exista
-                    sendPushNotification({
-                        to: [expoPushToken],
+                playAlarmSound();
+                Notifications.scheduleNotificationAsync({
+                    content: {
                         title: "⚠️ ¡Alarma activada!",
                         body: `📍 Granja: ${data.farmName}\n🏠 Sitio: ${data.siteName}\n🚨 Alarma: ${data.texto}`,
                         data: { action: "STOP_ALARM" },
-                    });
-                } else {
-                    console.warn("⚠️ Token de notificación no disponible, no se envió la notificación.");
-                }
+                    },
+                    trigger: null,
+                });
             }
         };
 
@@ -162,8 +190,5 @@ export const usePushNotifications = () => {
     return {
         expoPushToken,
         notifications,
-        sendPushNotification,
     };
 };
-
-

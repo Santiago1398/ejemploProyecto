@@ -1,22 +1,18 @@
 import React from "react";
-import TabsNavigator from "./(tabs)/TabsNavigator";
+import TabsNavigator from "./tabs/TabsNavigator";
 import { ThemedText } from '@/components/ThemedText';
 import { usePushNotifications } from '@/hooks/usePushNotifications';
-import { View, Text, FlatList } from 'react-native';
+import { View, FlatList } from 'react-native';
 
-
-export function Home() {
-    return <TabsNavigator />; // Renderizamos TabsNavigator directamente
+export function Home(): JSX.Element {
+    return <TabsNavigator />;
 }
 
-
 const PushApp = () => {
-    const { expoPushToken, notifications } = usePushNotifications();
+    const { notifications } = usePushNotifications();
 
     return (
         <View style={{ marginHorizontal: 10, marginTop: 5 }}>
-            {/* <ThemedText>Token: {expoPushToken}</ThemedText> */}
-
             <ThemedText
                 style={{
                     marginTop: 10,
@@ -48,4 +44,6 @@ const PushApp = () => {
         </View>
     );
 };
-export default PushApp;
+
+export default Home;
+export { PushApp };

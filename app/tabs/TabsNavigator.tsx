@@ -2,7 +2,7 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import SettingsScreen from "./SettingsScreen";
-import ProfileScreen from "./PorfileScreen";
+import ProfileScreen from "./ProfileScreen";
 import HomeStack from "../HomeStack";
 
 const Tab = createBottomTabNavigator();
