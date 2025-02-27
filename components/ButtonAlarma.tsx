@@ -21,7 +21,7 @@ const AlarmButton: React.FC<AlarmButtonProps> = ({ mac, farmName, siteName, alar
     // Función para detener el sonido
     const stopAlarmSound = async () => {
         if (globalAlarmSound.sound) {
-            console.log("⏹️ Deteniendo sonido de alarma...");
+            console.log(" Deteniendo sonido de alarma...");
             await globalAlarmSound.sound.stopAsync();
             await globalAlarmSound.sound.unloadAsync();
             globalAlarmSound.sound = null;
@@ -32,11 +32,11 @@ const AlarmButton: React.FC<AlarmButtonProps> = ({ mac, farmName, siteName, alar
     const playAlarmSound = async () => {
         try {
             if (globalAlarmSound.sound) {
-                console.log("🔊 Sonido ya en reproducción. No se inicia de nuevo.");
+                console.log(" Sonido ya en reproducción. No se inicia de nuevo.");
                 return; //Si ya hay un sonido en reproducción, no lo iniciamos otra vez
             }
 
-            console.log("🔊 Reproduciendo sonido de alarma...");
+            console.log("Reproduciendo sonido de alarma...");
             const { sound } = await Audio.Sound.createAsync(
                 require("../assets/images/alarm-car-or-home-62554.mp3"),
                 { shouldPlay: true, isLooping: true } //  Se repetirá hasta que lo detengamos
@@ -45,7 +45,7 @@ const AlarmButton: React.FC<AlarmButtonProps> = ({ mac, farmName, siteName, alar
             globalAlarmSound.sound = sound; // Guardamos la referencia global
             await sound.playAsync();
         } catch (error) {
-            console.error("⚠️ Error al reproducir el sonido:", error);
+            console.error("Error al reproducir el sonido:", error);
         }
     };
 
@@ -77,8 +77,8 @@ const AlarmButton: React.FC<AlarmButtonProps> = ({ mac, farmName, siteName, alar
             // Enviar notificación*
             await Notifications.scheduleNotificationAsync({
                 content: {
-                    title: "🚨 ¡Alarma Activada!",
-                    body: `📍 Granja: ${farmName}\n🏠 Sitio: ${siteName}\n🚨 Mensaje: ${simulatedAlarm.texto}`,
+                    title: " ¡Alarma Activada!",
+                    body: ` Granja: ${farmName}\n Sitio: ${siteName}\n Mensaje: ${simulatedAlarm.texto}`,
                     data: { action: "STOP_ALARM" },
                 },
                 trigger: null,

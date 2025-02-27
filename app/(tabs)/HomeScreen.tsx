@@ -9,7 +9,7 @@ export default function HomeScreen() {
         <ImageBackground
             source={require("../../assets/images/pigs.png")}
             style={styles.background}
-            resizeMode="contain" // Ajusta la imagen al tamaño de la pantalla
+            resizeMode="contain"
         >
             <View style={styles.overlay}>
                 <View style={styles.ctiContainer}>

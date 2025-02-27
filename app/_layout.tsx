@@ -1,8 +1,8 @@
 import React from "react";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import DrawerContent from "../components/DrawerContent";
-import TabsNavigator from "./tabs/TabsNavigator";
 import LoginScreen from "./login";
+import TabsNavigator from "./(tabs)/TabsNavigator";
 
 const Drawer = createDrawerNavigator();
 
@@ -22,6 +22,9 @@ export default function Layout() {
             <Drawer.Screen name="Home" component={TabsNavigator} options={{ headerTitle: "Home" }} />
             <Drawer.Screen name="Login" component={LoginScreen} options={{ headerTitle: "Iniciar Sesión" }} />
         </Drawer.Navigator>
+
+
+
     );
 }
 

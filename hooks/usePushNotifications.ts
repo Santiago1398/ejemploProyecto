@@ -17,7 +17,7 @@ const playAlarmSound = async () => {
     try {
         if (globalAlarmSound.sound) return;
 
-        console.log("🔊 Reproduciendo sonido de alarma...");
+        console.log("Reproduciendo sonido de alarma...");
         const { sound } = await Audio.Sound.createAsync(
             require("../assets/images/alarm-car-or-home-62554.mp3"),
             { shouldPlay: true, isLooping: true }
@@ -26,14 +26,14 @@ const playAlarmSound = async () => {
         globalAlarmSound.sound = sound;
         await sound.playAsync();
     } catch (error) {
-        console.error("⚠️ Error al reproducir el sonido:", error);
+        console.error("Error al reproducir el sonido:", error);
     }
 };
 
 // Función para detener el sonido
 const stopAlarmSound = async () => {
     if (globalAlarmSound.sound) {
-        console.log("⏹️ Deteniendo sonido de alarma...");
+        console.log(" Deteniendo sonido de alarma...");
         await globalAlarmSound.sound.stopAsync();
         await globalAlarmSound.sound.unloadAsync();
         globalAlarmSound.sound = null;
@@ -73,7 +73,7 @@ async function registerForPushNotificationsAsync(userId: number) {
         // Obtener token de FCM (Firebase Cloud Messaging)
         const pushTokenString = await getToken(messaging, { vapidKey: "BI_sg_fVIgI6cq5pA3N8qY-UVlVOnPpklMOH-BJYxz4w9HmKoUAYs0OWzUPSCkNZi3hu8GfT-AAr-JzR7cc7Psw" });
 
-        console.log("✅ Token de notificación obtenido:", pushTokenString);
+        console.log("Token de notificación obtenido:", pushTokenString);
         await AsyncStorage.setItem("expoPushToken", pushTokenString);
 
         //  Enviar token al backend
@@ -81,7 +81,7 @@ async function registerForPushNotificationsAsync(userId: number) {
 
         return pushTokenString;
     } catch (e) {
-        console.error("❌ Error obteniendo el token:", e);
+        console.error("Error obteniendo el token:", e);
         return null;
     }
 }
@@ -115,7 +115,7 @@ export const usePushNotifications = () => {
     useEffect(() => {
         if (messaging) {
             onMessage(messaging, (payload) => {
-                console.log("🔔 Notificación recibida:", payload);
+                console.log("Notificación recibida:", payload);
 
                 const newNotification = {
                     request: {
@@ -162,14 +162,14 @@ export const usePushNotifications = () => {
 
         socketRef.current.onmessage = (event) => {
             const data = JSON.parse(event.data);
-            console.log("📡 Alarma recibida:", data);
+            console.log("Alarma recibida:", data);
 
             if (data.status === 1) {
                 playAlarmSound();
                 Notifications.scheduleNotificationAsync({
                     content: {
-                        title: "⚠️ ¡Alarma activada!",
-                        body: `📍 Granja: ${data.farmName}\n🏠 Sitio: ${data.siteName}\n🚨 Alarma: ${data.texto}`,
+                        title: "¡Alarma activada!",
+                        body: ` Granja: ${data.farmName}\n Sitio: ${data.siteName}\n Alarma: ${data.texto}`,
                         data: { action: "STOP_ALARM" },
                     },
                     trigger: null,
@@ -178,7 +178,7 @@ export const usePushNotifications = () => {
         };
 
         socketRef.current.onclose = () => {
-            console.log("❌ WebSocket cerrado. Intentando reconectar...");
+            console.log(" WebSocket cerrado. Intentando reconectar...");
             socketRef.current = null;
 
             if (!reconnectInterval.current) {
