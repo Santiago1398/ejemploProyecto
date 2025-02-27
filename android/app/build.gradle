@@ -150,7 +150,9 @@ dependencies {
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
     implementation 'com.google.firebase:fibebase-core:19.0.0' //Esta linea 
-    //implementation 'com.google.firebase:firebase-messaging:21.0.0'
+    implementation 'com.google.firebase:firebase-messaging:21.0.0'
+     classpath("com.google.gms:google-services:4.3.10")
+}
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
@@ -175,6 +177,6 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-}
+
 
 apply plugin: 'com.google.gms.google-services' //Esta linea 

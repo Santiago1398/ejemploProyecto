@@ -24,6 +24,7 @@ export default function HomeStack() {
                 component={DeviceDetailsScreen}
                 options={{ headerTitle: "Detalles del Dispositivo" }}
             />
+
         </Stack.Navigator>
     );
 

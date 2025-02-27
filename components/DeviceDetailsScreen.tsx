@@ -16,7 +16,6 @@ import { useRoute, RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/types/navigation";
 import ButtonMaster from "./BottonMaster";
 import { ParamTC } from "@/infrastructure/intercafe/listapi.interface";
-import ButtonAlarma from "./ButtonAlarma";
 
 export default function AlarmList() {
     const route = useRoute<RouteProp<RootStackParamList, "DeviceDetails">>();
@@ -127,8 +126,8 @@ export default function AlarmList() {
             {/* Botón Master en la esquina inferior derecha */}
             <ButtonMaster mac={mac} fetchAlarms={fetchAlarms} masterAlarmState={masterAlarmState} />
 
-            {/* 🔔 Botón de simulación y maestro */}
-            <ButtonAlarma mac={mac} farmName={farmName} siteName={siteName} alarms={alarms} fetchAlarms={fetchAlarms} />
+            {/* 🔔 Botón de simulación y maestro 
+            <ButtonAlarma mac={mac} farmName={farmName} siteName={siteName} alarms={alarms} fetchAlarms={fetchAlarms} /> */}
 
             <Modal
                 animationType="slide"

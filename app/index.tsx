@@ -1,10 +1,10 @@
 import React from "react";
 import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { View, FlatList } from 'react-native';
-import TabsNavigator from "./(tabs)/TabsNavigator";
 import { ThemedText } from "@/components/ThemedText";
+import TabsNavigator from "./(tabs)/TabsNavigator";
 
-export function Index() {
+export function Home() {
     return <TabsNavigator />;
 }
 
@@ -45,6 +45,6 @@ const PushApp = () => {
     );
 };
 
-export default Index;
+export default Home;
 export { PushApp };
 
