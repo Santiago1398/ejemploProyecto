@@ -126,7 +126,7 @@ export default function AlarmList() {
             {/* Botón Master en la esquina inferior derecha */}
             <ButtonMaster mac={mac} fetchAlarms={fetchAlarms} masterAlarmState={masterAlarmState} />
 
-            {/* 🔔 Botón de simulación y maestro 
+            {/* Botón de simulación y maestro 
             <ButtonAlarma mac={mac} farmName={farmName} siteName={siteName} alarms={alarms} fetchAlarms={fetchAlarms} /> */}
 
             <Modal

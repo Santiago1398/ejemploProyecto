@@ -147,36 +147,32 @@ android {
 }
 
 dependencies {
-    // The version of react-native is set by the React Native Gradle Plugin
+    // La versión de react-native se establece por el React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
-    implementation 'com.google.firebase:fibebase-core:19.0.0' //Esta linea 
+
+    // Dependencias de Firebase (corrigiendo error de tipeo)
+    implementation 'com.google.firebase:firebase-core:19.0.0'
     implementation 'com.google.firebase:firebase-messaging:21.0.0'
-     classpath("com.google.gms:google-services:4.3.10")
-}
 
-    def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
-    def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
-    def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";
+    // Depedencia de Fresco correctamente definida
+    implementation 'com.facebook.fresco:fresco:3.2.0'
+    implementation 'com.facebook.fresco:animated-gif:3.2.0'
+    implementation 'com.facebook.fresco:webpsupport:3.2.0'
+    implementation 'com.facebook.fresco:animated-webp:3.2.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.24"
 
-    if (isGifEnabled) {
-        // For animated gif support
-        implementation("com.facebook.fresco:animated-gif:${reactAndroidLibs.versions.fresco.get()}")
-    }
+    implementation "com.google.android.gms:play-services-measurement:22.1.2"
+    implementation "com.google.android.gms:play-services-measurement-api:22.1.2"
 
-    if (isWebpEnabled) {
-        // For webp support
-        implementation("com.facebook.fresco:webpsupport:${reactAndroidLibs.versions.fresco.get()}")
-        if (isWebpAnimatedEnabled) {
-            // Animated webp support
-            implementation("com.facebook.fresco:animated-webp:${reactAndroidLibs.versions.fresco.get()}")
-        }
-    }
 
+    // Hermes (motor de ejecución opcional)
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {
         implementation jscFlavor
     }
+}
+
 
 
 apply plugin: 'com.google.gms.google-services' //Esta linea 

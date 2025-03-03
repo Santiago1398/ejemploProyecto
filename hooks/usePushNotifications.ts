@@ -52,7 +52,7 @@ Notifications.setNotificationHandler({
 // Registrar el dispositivo y enviar token al backend
 async function registerForPushNotificationsAsync(userId: number) {
     if (!Device.isDevice) {
-        alert("Debes usar un dispositivo físico para recibir notificaciones.");
+        alert("❌ Debes usar un dispositivo físico.");
         return null;
     }
 
@@ -65,26 +65,30 @@ async function registerForPushNotificationsAsync(userId: number) {
     }
 
     if (finalStatus !== "granted") {
-        alert("Permiso denegado para recibir notificaciones push.");
+        alert("❌ Permiso denegado para recibir notificaciones push.");
         return null;
     }
 
     try {
-        // Obtener token de FCM (Firebase Cloud Messaging)
-        const pushTokenString = await getToken(messaging, { vapidKey: "BI_sg_fVIgI6cq5pA3N8qY-UVlVOnPpklMOH-BJYxz4w9HmKoUAYs0OWzUPSCkNZi3hu8GfT-AAr-JzR7cc7Psw" });
+        const pushTokenString = await getToken(messaging, { vapidKey: "TU_VAPID_KEY" });
 
-        console.log("Token de notificación obtenido:", pushTokenString);
+        if (!pushTokenString) {
+            throw new Error("No se pudo obtener el token.");
+        }
+
+        console.log("🔑 Token obtenido:", pushTokenString);
+
         await AsyncStorage.setItem("expoPushToken", pushTokenString);
 
-        //  Enviar token al backend
         await post(`alarmtc/token?userId=${userId}&token=${pushTokenString}`, {});
 
         return pushTokenString;
     } catch (e) {
-        console.error("Error obteniendo el token:", e);
+        console.error("❌ Error obteniendo el token:", e);
         return null;
     }
 }
+
 
 // Hook para manejar WebSocket y Notificaciones
 export const usePushNotifications = () => {
@@ -97,8 +101,13 @@ export const usePushNotifications = () => {
     useEffect(() => {
         if (userId) {
             registerForPushNotificationsAsync(userId).then((token) => {
-                if (token) setExpoPushToken(token);
+                if (token) {
+                    setExpoPushToken(token);
+                    console.log("🔥 Token de notificación actualizado:", token); // ✅ Imprime aquí
+                }
             });
+
+
 
             connectWebSocket();
         }
