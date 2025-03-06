@@ -1,10 +1,11 @@
 buildscript {
     ext {
-        buildToolsVersion = '33.0.2'
-        minSdkVersion = 24
-        compileSdkVersion = 34
-        targetSdkVersion = 34
-        kotlinVersion = '1.9.22'
+       buildToolsVersion = findProperty('android.buildToolsVersion') ?: '35.0.0'
+        minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '24')
+        compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '35')
+        targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
+        kotlinVersion = '1.9.25'
+        composeCompilerVersion = '1.5.15' // Versión compatible con Kotlin 1.9.25
         ndkVersion = "26.1.10909125"
     }
     repositories {
@@ -13,7 +14,7 @@ buildscript {
         gradlePluginPortal()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.4.2'
+        classpath 'com.android.tools.build:gradle:8.1.0'
         classpath 'com.google.gms:google-services:4.4.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
         // Usamos la versión que trae React Native; puede que debas forzar la versión en resolutions
@@ -31,7 +32,7 @@ allprojects {
     }
 }
 
-subprojects {
+/*subprojects {
     afterEvaluate { project ->
         if (project.hasProperty("android")) {
             android {
@@ -39,12 +40,12 @@ subprojects {
             }
         }
     }
-}
+}*/
 
 configurations.all {
     resolutionStrategy.eachDependency { details ->
         if (details.requested.group == 'org.jetbrains.kotlin') {
-            details.useVersion "1.9.22"
+            details.useVersion "1.7.20"
         }
     }
 }

@@ -150,19 +150,44 @@ dependencies {
     // La versión de react-native se establece por el React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 
+    def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
+    def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
+    def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";
+
+
+    if (isGifEnabled) {
+        // For animated gif support
+        implementation("com.facebook.fresco:animated-gif:${reactAndroidLibs.versions.fresco.get()}")
+    }
+
+    if (isWebpEnabled) {
+        // For webp support
+        implementation("com.facebook.fresco:webpsupport:${reactAndroidLibs.versions.fresco.get()}")
+        if (isWebpAnimatedEnabled) {
+            // Animated webp support
+            implementation("com.facebook.fresco:animated-webp:${reactAndroidLibs.versions.fresco.get()}")
+        }
+    }
+
+    if (hermesEnabled.toBoolean()) {
+        implementation("com.facebook.react:hermes-android")
+    } else {
+        implementation jscFlavor
+    }
+
     // Dependencias de Firebase (corrigiendo error de tipeo)
-    implementation 'com.google.firebase:firebase-core:19.0.0'
+    //implementation 'com.google.firebase:firebase-core:19.0.0'
     implementation 'com.google.firebase:firebase-messaging:21.0.0'
 
     // Depedencia de Fresco correctamente definida
-    implementation 'com.facebook.fresco:fresco:3.2.0'
-    implementation 'com.facebook.fresco:animated-gif:3.2.0'
-    implementation 'com.facebook.fresco:webpsupport:3.2.0'
-    implementation 'com.facebook.fresco:animated-webp:3.2.0'
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.24"
+    //implementation 'com.facebook.fresco:fresco:3.2.0'
+    //implementation 'com.facebook.fresco:animated-gif:3.2.0'
+    //implementation 'com.facebook.fresco:webpsupport:3.2.0'
+    //implementation 'com.facebook.fresco:animated-webp:3.2.0'
+    //implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.24"
 
-    implementation "com.google.android.gms:play-services-measurement:22.1.2"
-    implementation "com.google.android.gms:play-services-measurement-api:22.1.2"
+    //implementation "com.google.android.gms:play-services-measurement:22.1.2"
+   // implementation "com.google.android.gms:play-services-measurement-api:22.1.2"
 
 
     // Hermes (motor de ejecución opcional)
