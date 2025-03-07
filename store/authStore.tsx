@@ -27,7 +27,7 @@ export const useAuthStore = create<AuthState>()(
             login: async (username, password) => {
                 try {
                     const data = await post("auth/login", { username, password });
-                    console.log("✅ Datos del servidor:", data);
+                    console.log(" Datos del servidor:", data);
 
                     await AsyncStorage.setItem("token", data.token);
                     await AsyncStorage.setItem("userId", data.userId.toString());
@@ -42,7 +42,7 @@ export const useAuthStore = create<AuthState>()(
 
                     return true;
                 } catch (error) {
-                    console.error("❌ Error en el inicio de sesión:", error);
+                    console.error(" Error en el inicio de sesión:", error);
                     return false;
                 }
             },

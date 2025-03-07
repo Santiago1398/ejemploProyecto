@@ -52,7 +52,7 @@ Notifications.setNotificationHandler({
 // Registrar el dispositivo y enviar token al backend
 async function registerForPushNotificationsAsync(userId: number) {
     if (!Device.isDevice) {
-        alert("❌ Debes usar un dispositivo físico.");
+        alert("Debes usar un dispositivo físico.");
         return null;
     }
 
@@ -65,12 +65,12 @@ async function registerForPushNotificationsAsync(userId: number) {
     }
 
     if (finalStatus !== "granted") {
-        alert("❌ Permiso denegado para recibir notificaciones push.");
+        alert(" Permiso denegado para recibir notificaciones push.");
         return null;
     }
 
     try {
-        const pushTokenString = await getToken(messaging, { vapidKey: "TU_VAPID_KEY" });
+        const pushTokenString = await getToken(messaging, { vapidKey: "BI_sg_fVIgI6cq5pA3N8qY-UVlVOnPpklMOH-BJYxz4w9HmKoUAYs0OWzUPSCkNZi3hu8GfT-AAr-JzR7cc7Psw" });
 
         if (!pushTokenString) {
             throw new Error("No se pudo obtener el token.");
@@ -84,7 +84,7 @@ async function registerForPushNotificationsAsync(userId: number) {
 
         return pushTokenString;
     } catch (e) {
-        console.error("❌ Error obteniendo el token:", e);
+        console.error(" Error obteniendo el token:", e);
         return null;
     }
 }
@@ -103,7 +103,7 @@ export const usePushNotifications = () => {
             registerForPushNotificationsAsync(userId).then((token) => {
                 if (token) {
                     setExpoPushToken(token);
-                    console.log("🔥 Token de notificación actualizado:", token); // ✅ Imprime aquí
+                    console.log("Token de notificación actualizado:", token);
                 }
             });
 
