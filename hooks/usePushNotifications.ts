@@ -1,28 +1,22 @@
 import { useState, useEffect, useRef } from "react";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
-import { getMessaging, onMessage } from "firebase/messaging";
 import { Audio } from "expo-av";
-import { app } from "@/config/firebaseConfig";
+import { app } from "@/config/firebaseConfig"; // <-- Si lo usas para otras cosas, está bien
 import { globalAlarmSound } from "@/utils/globalSound";
 import { useAuthStore } from "@/store/authStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { post } from "@/services/api";
-import { getToken } from "firebase/messaging";
-
-const messaging = getMessaging(app);
 
 // Función para reproducir sonido
 const playAlarmSound = async () => {
     try {
         if (globalAlarmSound.sound) return;
-
         console.log("Reproduciendo sonido de alarma...");
         const { sound } = await Audio.Sound.createAsync(
             require("../assets/images/alarm-car-or-home-62554.mp3"),
             { shouldPlay: true, isLooping: true }
         );
-
         globalAlarmSound.sound = sound;
         await sound.playAsync();
     } catch (error) {
@@ -33,14 +27,14 @@ const playAlarmSound = async () => {
 // Función para detener el sonido
 const stopAlarmSound = async () => {
     if (globalAlarmSound.sound) {
-        console.log(" Deteniendo sonido de alarma...");
+        console.log("Deteniendo sonido de alarma...");
         await globalAlarmSound.sound.stopAsync();
         await globalAlarmSound.sound.unloadAsync();
         globalAlarmSound.sound = null;
     }
 };
 
-// Configurar notificaciones
+// Configurar notificaciones locales de Expo
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
         shouldShowAlert: true,
@@ -52,10 +46,11 @@ Notifications.setNotificationHandler({
 // Registrar el dispositivo y enviar token al backend
 async function registerForPushNotificationsAsync(userId: number) {
     if (!Device.isDevice) {
-        alert("Debes usar un dispositivo físico.");
+        alert("❌ Debes usar un dispositivo físico.");
         return null;
     }
 
+    // Verifica y solicita permisos de notificación
     const { status: existingStatus } = await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
 
@@ -65,30 +60,31 @@ async function registerForPushNotificationsAsync(userId: number) {
     }
 
     if (finalStatus !== "granted") {
-        alert(" Permiso denegado para recibir notificaciones push.");
+        alert("Permiso denegado para recibir notificaciones push.");
         return null;
     }
 
     try {
-        const pushTokenString = await getToken(messaging, { vapidKey: "BI_sg_fVIgI6cq5pA3N8qY-UVlVOnPpklMOH-BJYxz4w9HmKoUAYs0OWzUPSCkNZi3hu8GfT-AAr-JzR7cc7Psw" });
+        // Obtén el Expo Push Token en lugar de usar firebase/messaging
+        const { data: expoPushToken } = await Notifications.getExpoPushTokenAsync();
 
-        if (!pushTokenString) {
-            throw new Error("No se pudo obtener el token.");
+        if (!expoPushToken) {
+            throw new Error("No se pudo obtener el token de Expo.");
         }
 
-        console.log("🔑 Token obtenido:", pushTokenString);
+        console.log("Token obtenido:", expoPushToken);
 
-        await AsyncStorage.setItem("expoPushToken", pushTokenString);
+        await AsyncStorage.setItem("expoPushToken", expoPushToken);
 
-        await post(`alarmtc/token?userId=${userId}&token=${pushTokenString}`, {});
+        // Envía el token al backend para que pueda enviar notificaciones
+        await post(`alarmtc/token?userId=${userId}&token=${expoPushToken}`, {});
 
-        return pushTokenString;
+        return expoPushToken;
     } catch (e) {
-        console.error(" Error obteniendo el token:", e);
+        console.error("Error obteniendo el token:", e);
         return null;
     }
 }
-
 
 // Hook para manejar WebSocket y Notificaciones
 export const usePushNotifications = () => {
@@ -107,8 +103,6 @@ export const usePushNotifications = () => {
                 }
             });
 
-
-
             connectWebSocket();
         }
 
@@ -120,43 +114,30 @@ export const usePushNotifications = () => {
         };
     }, [userId]);
 
-    // Manejar notificaciones en segundo plano
+    // Manejar notificaciones en primer plano con Expo
+    // (en lugar de onMessage de firebase/messaging)
     useEffect(() => {
-        if (messaging) {
-            onMessage(messaging, (payload) => {
-                console.log("Notificación recibida:", payload);
+        // Suscribirse al evento de notificación recibida
+        const subscription = Notifications.addNotificationReceivedListener((notification) => {
+            console.log("Notificación recibida (Expo):", notification);
 
-                const newNotification = {
-                    request: {
-                        identifier: payload.messageId || Math.random().toString(),
-                        content: {
-                            title: payload.notification?.title ?? "Alarma",
-                            body: payload.notification?.body ?? "Se activó una alarma.",
-                            data: payload.data || {},
-                        },
-                    },
-                };
+            // Agregarla a nuestro estado local
+            setNotifications((prev) => [...prev, notification]);
 
-                setNotifications((prev) => [...prev, newNotification as Notifications.Notification]);
+            const data = notification.request.content.data || {};
 
-                if (payload.data?.action === "STOP_ALARM") {
-                    stopAlarmSound();
-                } else {
-                    playAlarmSound();
-                }
+            if (data.action === "STOP_ALARM") {
+                stopAlarmSound();
+            } else {
+                playAlarmSound();
+            }
+        });
 
-                Notifications.scheduleNotificationAsync({
-                    content: {
-                        title: payload.notification?.title ?? "Alarma",
-                        body: payload.notification?.body ?? "Se activó una alarma.",
-                        data: payload.data,
-                    },
-                    trigger: null,
-                });
-            });
-        }
+        return () => {
+            // Limpiar el listener
+            subscription.remove();
+        };
     }, []);
-
 
     // Conectar WebSocket
     const connectWebSocket = () => {
@@ -178,7 +159,7 @@ export const usePushNotifications = () => {
                 Notifications.scheduleNotificationAsync({
                     content: {
                         title: "¡Alarma activada!",
-                        body: ` Granja: ${data.farmName}\n Sitio: ${data.siteName}\n Alarma: ${data.texto}`,
+                        body: `Granja: ${data.farmName}\nSitio: ${data.siteName}\nAlarma: ${data.texto}`,
                         data: { action: "STOP_ALARM" },
                     },
                     trigger: null,
@@ -187,9 +168,8 @@ export const usePushNotifications = () => {
         };
 
         socketRef.current.onclose = () => {
-            console.log(" WebSocket cerrado. Intentando reconectar...");
+            console.log("WebSocket cerrado. Intentando reconectar...");
             socketRef.current = null;
-
             if (!reconnectInterval.current) {
                 reconnectInterval.current = setTimeout(connectWebSocket, 3000);
             }

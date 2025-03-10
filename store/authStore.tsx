@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import zustandStorage from "./zustandStorage";
-import { post } from "@/services/api";
+import { post, postxxx } from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface AuthState {
@@ -26,7 +26,7 @@ export const useAuthStore = create<AuthState>()(
             isActive: false,
             login: async (username, password) => {
                 try {
-                    const data = await post("auth/login", { username, password });
+                    const data = await postxxx("auth/login", { username, password });
                     console.log(" Datos del servidor:", data);
 
                     await AsyncStorage.setItem("token", data.token);
