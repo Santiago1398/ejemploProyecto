@@ -1,10 +1,11 @@
 import axios from "axios";
 
 // Define la URL base de la API
-const API_URL = "http://37.187.180.179:8032/api";
+
 
 // Obtiene los headers con el token desde ` AsyncStorage`
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { API_URL } from "@/config/apiConfig";
 
 const getHeaders = async () => {
     const token = await AsyncStorage.getItem("token"); // Obtiene el token almacenado

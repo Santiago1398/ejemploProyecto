@@ -28,7 +28,7 @@ export const useAuthStore = create<AuthState>()(
             reslogin: "",
             login: async (username, password) => {
                 try {
-                    console.log("Datos de inicio de sesión:", username, password);
+
                     const data = await post("auth/login", { username, password });
                     set({ reslogin: data.toString() });
 

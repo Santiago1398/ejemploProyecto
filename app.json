@@ -18,7 +18,7 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.santicticontrol.notificationtc5",
-      "googleServicesFile": "./google-services.json"
+      "googleServicesFile": "./android/app/google-services.json"
     },
     "web": {
       "bundler": "metro",
@@ -42,6 +42,7 @@
       "typedRoutes": true
     },
     "extra": {
+      "apiUrl": "http://37.187.180.179:8032/api",
       "router": {
         "origin": false
       },
