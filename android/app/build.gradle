@@ -177,12 +177,12 @@ dependencies {
 
     // Dependencias de Firebase (corrigiendo error de tipeo)
     //implementation 'com.google.firebase:firebase-core:19.0.0'
-    implementation 'com.google.firebase:firebase-messaging:21.0.0'
+   
    
     //Esto es lo ultimo que he agreado a la espera de pprbar si funciona al generar el apk
-    implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
-    implementation("com.google.firebase:firebase-inappmessaging-display")
-    implementation("com.google.firebase:firebase-analytics")
+    //implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    //implementation("com.google.firebase:firebase-inappmessaging-display")
+    //implementation("com.google.firebase:firebase-analytics")
 
     // Depedencia de Fresco correctamente definida
     //implementation 'com.facebook.fresco:fresco:3.2.0'

@@ -14,6 +14,7 @@ export default function LoginScreen({ navigation }: any) { // Props navigation
             if (success) {
                 navigation.navigate("Home");
             } else {
+                console.log("Correo electrónico o contraseña incorrectos");
                 Alert.alert("Correo electrónico o contraseña incorrectos");
             }
         } catch (error) {

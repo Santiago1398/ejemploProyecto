@@ -15,12 +15,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff",
-        "permissions": [
-          "VIBRATE",
-          "WAKE_LOCK"
-        ],
-        "useNextNotificationsApi": true
+        "backgroundColor": "#ffffff"
       },
       "package": "com.santicticontrol.notificationtc5",
       "googleServicesFile": "./google-services.json"
@@ -32,7 +27,6 @@
     },
     "plugins": [
       "@react-native-firebase/app",
-      "@react-native-firebase/messaging",
       "expo-router",
       [
         "expo-splash-screen",

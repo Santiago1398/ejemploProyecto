@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import { Audio } from "expo-av";
-import { app } from "@/config/firebaseConfig"; // <-- Si lo usas para otras cosas, está bien
 import { globalAlarmSound } from "@/utils/globalSound";
 import { useAuthStore } from "@/store/authStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -46,7 +45,7 @@ Notifications.setNotificationHandler({
 // Registrar el dispositivo y enviar token al backend
 async function registerForPushNotificationsAsync(userId: number) {
     if (!Device.isDevice) {
-        alert("❌ Debes usar un dispositivo físico.");
+        // alert("Debes usar un dispositivo físico.");
         return null;
     }
 
@@ -65,7 +64,7 @@ async function registerForPushNotificationsAsync(userId: number) {
     }
 
     try {
-        // Obtén el Expo Push Token en lugar de usar firebase/messaging
+
         const { data: expoPushToken } = await Notifications.getExpoPushTokenAsync();
 
         if (!expoPushToken) {
@@ -114,14 +113,12 @@ export const usePushNotifications = () => {
         };
     }, [userId]);
 
-    // Manejar notificaciones en primer plano con Expo
-    // (en lugar de onMessage de firebase/messaging)
     useEffect(() => {
-        // Suscribirse al evento de notificación recibida
-        const subscription = Notifications.addNotificationReceivedListener((notification) => {
-            console.log("Notificación recibida (Expo):", notification);
 
-            // Agregarla a nuestro estado local
+        const subscription = Notifications.addNotificationReceivedListener((notification) => {
+            console.log("Notificación recibida:", notification);
+
+
             setNotifications((prev) => [...prev, notification]);
 
             const data = notification.request.content.data || {};
@@ -134,7 +131,7 @@ export const usePushNotifications = () => {
         });
 
         return () => {
-            // Limpiar el listener
+
             subscription.remove();
         };
     }, []);

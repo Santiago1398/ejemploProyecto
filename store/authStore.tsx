@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import zustandStorage from "./zustandStorage";
-import { post, postxxx } from "@/services/api";
+import { post } from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface AuthState {
@@ -13,6 +13,7 @@ interface AuthState {
     isActive: boolean;
     login: (email: string, password: string) => Promise<boolean>;
     logout: () => void;
+    reslogin: string;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -24,13 +25,18 @@ export const useAuthStore = create<AuthState>()(
             userId: null,
             isAuthenticated: false,
             isActive: false,
+            reslogin: "",
             login: async (username, password) => {
                 try {
-                    const data = await postxxx("auth/login", { username, password });
+                    console.log("Datos de inicio de sesión:", username, password);
+                    const data = await post("auth/login", { username, password });
+                    set({ reslogin: data.toString() });
+
                     console.log(" Datos del servidor:", data);
 
                     await AsyncStorage.setItem("token", data.token);
                     await AsyncStorage.setItem("userId", data.userId.toString());
+
 
                     set({
                         username,
