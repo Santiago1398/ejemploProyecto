@@ -9,17 +9,21 @@ import { API_URL } from "@/config/apiConfig";
 
 const getHeaders = async () => {
     const token = await AsyncStorage.getItem("token"); // Obtiene el token almacenado
+    const headers: any = {
+        "Content-Type": "application/json",
+        Accept: "application/json, text/plain, */*",
+    };
     //Fix:En el login no tengo token por tanto si descomento esto me dara 
     //error en el login. Mirar como solucionar esto aposteriori.
-    /*
-    if (!token) {
-        console.error("Error: No se encontró un token en AsyncStorage.");
-        throw new Error("Token no encontrado");
+
+    if (token) {
+        headers.Authorization = `Bearer ${token}`;
     }
-    */
+
     return {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
+        headers,
     };
 };
 
@@ -34,7 +38,9 @@ export const post = async (path: string, data: unknown) => {
     const headers = await getHeaders();
     const respuesta = await axios
         .post(`${API_URL}/${path}`, data, {
-            headers: { ...headers }, // No incluyas "Content-Type" aquí
+            headers: { ...headers },
+            timeout: 10000,
+            // No incluyas "Content-Type" aquí
         })
         .then((response) => {
             return response.data;
