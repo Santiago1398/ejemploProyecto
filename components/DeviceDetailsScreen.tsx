@@ -5,7 +5,6 @@ import {
     StyleSheet,
     Modal,
     Pressable,
-
     FlatList,
     TouchableOpacity,
     Alert,
@@ -127,7 +126,7 @@ export default function AlarmList() {
             <ButtonMaster mac={mac} fetchAlarms={fetchAlarms} masterAlarmState={masterAlarmState} />
 
             {/* Botón de simulación y maestro 
-            <ButtonAlarma mac={mac} farmName={farmName} siteName={siteName} alarms={alarms} fetchAlarms={fetchAlarms} /> */}
+            <AlarmSimulatorButton farmName={farmName} siteName={siteName} alarms={alarms} /> */}
 
             <Modal
                 animationType="slide"
