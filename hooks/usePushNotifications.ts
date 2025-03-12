@@ -15,7 +15,7 @@ export const usePushNotifications = () => {
     // Registrar token y conectar WebSocket cuando se loguea el usuario
     useEffect(() => {
         if (userId) {
-            registerForPushNotificationsAsync(userId).then((token) => {
+            registerForPushNotificationsAsync().then((token) => {
                 if (token) {
                     setExpoPushToken(token);
                     console.log("Token de notificación actualizado:", token);
