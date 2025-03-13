@@ -1,11 +1,12 @@
 import * as Location from 'expo-location';
-import { PermissionStatus } from 'expo-location';
+import { PermissionStatus } from '@/infrastructure/interface/location';
 
 
 export const requestLocationPermission = async (): Promise<PermissionStatus> => {
     const { status } = await Location.requestForegroundPermissionsAsync();
 
     if (status === 'granted') {
+        manualPermissionRequest();
         return PermissionStatus.GRANTED;
     }
     return PermissionStatus.DENIED;
@@ -26,5 +27,6 @@ export const checkLocationPermission = async () => {
 
 
 export const manualPermissionRequest = async () => {
+    //Laznzar los ajutes de la aplicacion
 
 };

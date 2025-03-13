@@ -1,4 +1,4 @@
-import { ResponseAlarmaSite } from "../intercafe/listapi.interface";
+import { ResponseAlarmaSite } from "../interface/listapi.interface";
 
 export class ListApi {
   static fromThelistApiDBToMovie = (listApi: ResponseAlarmaSite) => {

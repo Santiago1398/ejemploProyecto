@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View, Alert } from "react-native";
-import { ResponseAlarmaSite } from "@/infrastructure/intercafe/listapi.interface";
+import { ResponseAlarmaSite } from "@/infrastructure/interface/listapi.interface";
 import { useAuthStore } from "@/store/authStore";
 import { get } from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";

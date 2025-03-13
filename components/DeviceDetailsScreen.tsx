@@ -15,7 +15,7 @@ import { get, post } from "@/services/api";
 import { useRoute, RouteProp } from "@react-navigation/native";
 import { RootStackParamList } from "@/types/navigation";
 import ButtonMaster from "./BottonMaster";
-import { ParamTC } from "@/infrastructure/intercafe/listapi.interface";
+import { ParamTC } from "@/infrastructure/interface/listapi.interface";
 //import AlarmButton from "./AlarmButtonProps";
 
 export default function AlarmList() {
