@@ -4,7 +4,8 @@ import DrawerContent from "../components/DrawerContent";
 import LoginScreen from "./login";
 import TabsNavigator from "./(tabs)/TabsNavigator";
 import PermissionsCkeckProvider from "@/presentation/providers/PermissionsCkeckProvider";
-import { Stack } from "expo-router";
+import ExtraStack from "./extra/Extra";
+//import { Stack } from "expo-router";
 
 const Drawer = createDrawerNavigator();
 
@@ -24,14 +25,10 @@ export default function Layout() {
             >
                 <Drawer.Screen name="Home" component={TabsNavigator} options={{ headerTitle: "Home" }} />
                 <Drawer.Screen name="Login" component={LoginScreen} options={{ headerTitle: "Iniciar Sesión" }} />
+                {/*Esto es para los permisos de google maps*/}
+                <Drawer.Screen name="Extra" component={ExtraStack} options={{ headerShown: false }} />
             </Drawer.Navigator>
-
-            {/*<Stack screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="map" options={{ animation: "fade" }} />
-                <Stack.Screen name="permissions" options={{ animation: "fade" }} />
-            </Stack>*/}
         </PermissionsCkeckProvider>
-
 
 
     );

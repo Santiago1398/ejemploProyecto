@@ -9,6 +9,9 @@ export type RootStackParamList = {
     HomeScreen: undefined; // HomeScreen no necesita parámetros
     DeviceDetails: { mac: number, farmName: string, siteName: string }; // DeviceDetailsScreen espera  parámetro 
     BottonMaster: { mac: number }; // Bottton Master  espera un parámetro `mac`
+    Map: undefined;          // Si la pantalla "Map" no recibe params
+    permissions: undefined;  // Si la pantalla "permissions" no recibe params
+    // Agrega más pantallas si quieres
 };
 
 export default function HomeStack() {

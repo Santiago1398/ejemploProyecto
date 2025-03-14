@@ -13,9 +13,11 @@ export const usePermissionsStore = create<PermissionsState>()((set) => ({
     locationStatus: PermissionStatus.CHECKING,
 
     requestLocationPermission: async () => {
+
         const status = await requestLocationPermission();
         set({ locationStatus: status });
         return status;
+
     },
 
     checkLocationPermission: async () => {
@@ -23,4 +25,4 @@ export const usePermissionsStore = create<PermissionsState>()((set) => ({
         set({ locationStatus: status });
         return status;
     },
-}));
+})); 

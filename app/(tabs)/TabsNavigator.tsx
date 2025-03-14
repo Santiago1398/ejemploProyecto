@@ -4,6 +4,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import SettingsScreen from "./SettingsScreen";
 import ProfileScreen from "./ProfileScreen";
 import HomeStack from "../HomeStack";
+import ExtraStack from "../extra/Extra";
 
 const Tab = createBottomTabNavigator();
 
@@ -23,6 +24,10 @@ export default function TabsNavigator() {
                         case "Settings":
                             iconName = "cog";
                             break;
+                        // Se agrega el icono para la nueva pestaña
+                        case "Extra":
+                            iconName = "plus";
+                            break;
                         default:
                             iconName = "question-circle";
                     }
@@ -40,6 +45,10 @@ export default function TabsNavigator() {
             <Tab.Screen name="Home" component={HomeStack} />
             <Tab.Screen name="Profile" component={ProfileScreen} />
             <Tab.Screen name="Settings" component={SettingsScreen} />
+
+            {/* Nueva pestaña para el extra */}
+            <Tab.Screen name="Extra" component={ExtraStack} />
+
         </Tab.Navigator>
     );
 }
