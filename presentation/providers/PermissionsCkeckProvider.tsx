@@ -10,12 +10,15 @@ const PermissionsCkeckProvider = ({ children }: PropsWithChildren) => {
     const { locationStatus, checkLocationPermission } = usePermissionsStore()
 
     useEffect(() => {
+        console.log("llega hasta aqui")
         if (locationStatus === PermissionStatus.GRANTED) {
-            router.replace("./map")
+            router.replace("/extra/map/MapsScreen")
         } else if (locationStatus !== PermissionStatus.CHECKING) {
-            router.replace("./permissions")
+
+            router.replace("/extra/permissions/PermissionScreen")
         }
     }, [locationStatus])
+    console.log("llega  ooo  hasta aqui")
 
     useEffect(() => {
         checkLocationPermission()

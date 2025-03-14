@@ -6,18 +6,21 @@ import { RootStackParamList } from '@/app/HomeStack';
 
 type MapScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Map'>;
 
-export default function MapScreen() {
+export default function MapsScreen() {
     const navigation = useNavigation<MapScreenNavigationProp>();
-
+    //const MapsScreen = () => {
     return (
         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
             <Text>Pantalla de Mapa</Text>
-            <Button
+            /*<Button
                 title="Ir a Permisos"
                 onPress={() => navigation.navigate('permissions')}
-            />
-
-
+            />*/
         </View>
     );
 }
+
+//export default MapsScreen
+
+//}
+
