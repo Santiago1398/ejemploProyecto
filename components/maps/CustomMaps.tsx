@@ -1,7 +1,9 @@
-import { View, Text, ViewProps, StyleSheet } from 'react-native'
-import React from 'react'
+import { View, ViewProps, StyleSheet } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react'
 import { LatLng } from '@/infrastructure/interface/lat-lng';
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView from 'react-native-maps';
+import { useLocationStore } from '@/store/useLocationStore';
+import FAB from 'components/maps/FAB'
 
 interface Props extends ViewProps {
     initialLocation: LatLng;
@@ -10,9 +12,51 @@ interface Props extends ViewProps {
 }
 
 const CustomMaps = ({ initialLocation, showUserLocation = true, ...rest }: Props) => {
+    const mapRef = useRef<MapView>(null);
+    const [isFollowingUser, setIsFollowingUser] = useState(true);
+
+
+    const { watchLocation, clearWatchLocation, lastKnownLocation, getLocation } = useLocationStore();
+
+    useEffect(() => {
+        watchLocation();
+        return () => {
+            clearWatchLocation();
+        }
+    }, []);
+
+    useEffect(() => {
+        if (lastKnownLocation && isFollowingUser) {
+            moveCameraToLocation(lastKnownLocation);
+        }
+    }, [lastKnownLocation, isFollowingUser]);
+
+    const moveCameraToLocation = (latlng: LatLng) => {
+        if (!mapRef.current) return;
+
+        mapRef.current.animateCamera({
+            center: latlng,
+        })
+
+    }
+
+    const moveToCurrentLocation = async () => {
+        if (!lastKnownLocation) {
+            moveCameraToLocation(initialLocation);
+
+        } else {
+            moveCameraToLocation(lastKnownLocation);
+
+        }
+        const location = await getLocation();
+        if (!location) return;
+        moveCameraToLocation(location);
+    }
     return (
         <View {...rest}>
-            <MapView style={styles.map}
+            <MapView ref={mapRef}
+                onTouchStart={() => setIsFollowingUser(false)}
+                style={styles.map}
                 //Esto es para desabilitar en el maps puntos intereses como los resturantes sitios etc
                 //showsPointsOfInterest={false} 
                 showsUserLocation={showUserLocation}
@@ -22,9 +66,26 @@ const CustomMaps = ({ initialLocation, showUserLocation = true, ...rest }: Props
                     latitudeDelta: 0.0922,
                     longitudeDelta: 0.0421,
                 }}
-            >
+            />
 
-            </MapView>
+            <FAB
+                iconName={isFollowingUser ? 'walk-outline' : 'accessibility-outline'}
+                onPress={() => setIsFollowingUser(!isFollowingUser)}
+                style={{
+                    bottom: 80,
+                    right: 20
+                }}
+            />
+            <FAB
+                iconName='compass-outline'
+                onPress={moveToCurrentLocation}
+                style={{
+                    bottom: 20,
+                    right: 20
+                }}
+            />
+
+
         </View>
     )
 }

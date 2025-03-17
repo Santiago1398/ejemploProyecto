@@ -13,6 +13,7 @@ const Drawer = createDrawerNavigator();
 
 export default function Layout() {
     return (
+        //<GestureHandlerRootView> </GestureHandlerRootView> por si me da error de gestos
         <PermissionsCkeckProvider>
             <Drawer.Navigator
                 drawerContent={(props) => <DrawerContent {...props} />}

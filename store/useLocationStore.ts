@@ -44,6 +44,8 @@ export const useLocationStore = create<LocationState>()((set, get) => ({
         // Se espera a que se resuelva la promesa que devuelve watchCurrentPosition
         // para obtener la suscripción (la cual incluye el método remove)
         const watchSubscription = await watchCurrentPosition((LatLng) => {
+
+            //console.log(get().userLocationList);
             // Actualiza el estado con la última ubicación conocida y la lista de ubicaciones
             set({
                 lastKnownLocation: LatLng,
