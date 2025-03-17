@@ -1,7 +1,7 @@
-import { View, ViewProps, StyleSheet } from 'react-native'
+import { View, ViewProps, StyleSheet, Alert } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { LatLng } from '@/infrastructure/interface/lat-lng';
-import MapView from 'react-native-maps';
+import MapView, { Marker } from 'react-native-maps';
 import { useLocationStore } from '@/store/useLocationStore';
 import FAB from 'components/maps/FAB'
 
@@ -16,7 +16,7 @@ const CustomMaps = ({ initialLocation, showUserLocation = true, ...rest }: Props
     const [isFollowingUser, setIsFollowingUser] = useState(true);
 
 
-    const { watchLocation, clearWatchLocation, lastKnownLocation, getLocation } = useLocationStore();
+    const { watchLocation, clearWatchLocation, lastKnownLocation, getLocation, saveLocations, saveLocation } = useLocationStore();
 
     useEffect(() => {
         watchLocation();
@@ -38,7 +38,12 @@ const CustomMaps = ({ initialLocation, showUserLocation = true, ...rest }: Props
             center: latlng,
         })
 
+
     }
+
+    useEffect(() => {
+        console.log("Ubicaciones guardadas:", saveLocations);
+    }, [saveLocations]);
 
     const moveToCurrentLocation = async () => {
         if (!lastKnownLocation) {
@@ -52,13 +57,28 @@ const CustomMaps = ({ initialLocation, showUserLocation = true, ...rest }: Props
         if (!location) return;
         moveCameraToLocation(location);
     }
+
+    const onSaveLocationPress = async () => {
+        Alert.alert("Guardar Ubicacion", "¿Desea guardar la ubicacion actual?", [
+
+            {
+                text: "Cancelar",
+                style: "cancel"
+            },
+            {
+                text: "Guardar",
+                onPress: async () => {
+                    await saveLocation();
+                }
+            }
+        ])
+    };
+
     return (
         <View {...rest}>
-            <MapView ref={mapRef}
-                onTouchStart={() => setIsFollowingUser(false)}
+            <MapView
+                ref={mapRef}
                 style={styles.map}
-                //Esto es para desabilitar en el maps puntos intereses como los resturantes sitios etc
-                //showsPointsOfInterest={false} 
                 showsUserLocation={showUserLocation}
                 initialRegion={{
                     latitude: initialLocation.latitude,
@@ -66,7 +86,28 @@ const CustomMaps = ({ initialLocation, showUserLocation = true, ...rest }: Props
                     latitudeDelta: 0.0922,
                     longitudeDelta: 0.0421,
                 }}
+                onTouchStart={() => setIsFollowingUser(false)}
+            >
+                {/* MARCADORES DE UBICACIONES GUARDADAS */}
+
+                {saveLocations.map((location, index) => (
+                    <Marker
+                        key={index}
+                        coordinate={location}
+                        title={`Ubicacion ${index + 1}`}
+                    />
+                ))}
+            </MapView>
+
+            <FAB
+                iconName='pin-outline'
+                onPress={onSaveLocationPress}
+                style={{
+                    bottom: 140,
+                    right: 20
+                }}
             />
+
 
             <FAB
                 iconName={isFollowingUser ? 'walk-outline' : 'accessibility-outline'}

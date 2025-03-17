@@ -9,16 +9,13 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "config": {
-        "googleMapsApiKey": "AIzaSyCwza5VRj3Rxh7ljMDrUO0pfiBfBxflC1g"
-      },
       "supportsTablet": true,
       "bundleIdentifier": "com.santicticontrol.notificationtc5"
     },
     "android": {
       "config": {
         "googleMaps": {
-          "apiKey": "AAIzaSyBqrNqrA8NEOhdflFJ334PsAMUHSatgkwk"
+          "apiKey": "AIzaSyBc9_-F2yvfU480sMWnhX5t3Mj8lDWtWxo"
         }
       },
       "adaptiveIcon": {

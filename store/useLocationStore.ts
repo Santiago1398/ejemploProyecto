@@ -1,4 +1,6 @@
+import Layout from "@/app/_layout";
 import { getCurrentLocation, watchCurrentPosition } from "@/core/actions/location/location";
+import { post } from "@/services/api";
 import { LocationSubscription } from "expo-location";
 import { LatLng } from "react-native-maps";
 import { create } from "zustand";
@@ -14,9 +16,18 @@ interface LocationState {
     //Subscription para la ubicacion paea poder cancelarla cuando se desee
     watchSubscriptionID: LocationSubscription | null;
 
+    // lista de ubicaciones guardadas manualmente
+    saveLocations: LatLng[];
+
+
     getLocation: () => Promise<LatLng>;
     watchLocation: () => void;
     clearWatchLocation: () => void;
+
+    //Funcion para guardar la ubicacion actual del usuario
+    saveLocation: () => Promise<void>;
+
+
 
 
 }
@@ -25,6 +36,8 @@ export const useLocationStore = create<LocationState>()((set, get) => ({
     lastKnownLocation: null,
     userLocationList: [],
     watchSubscriptionID: null,
+
+    saveLocations: [],
 
     //Con esta funcion se obtiene la ubicacion actual del usuario y se guarda en el estado de la aplicacion
     getLocation: async () => {
@@ -66,4 +79,26 @@ export const useLocationStore = create<LocationState>()((set, get) => ({
             set({ watchSubscriptionID: null });
         }
     },
+
+
+    //con este metodo se guarda la ubicacion actual del usuario
+    saveLocation: async () => {
+        const current = get().lastKnownLocation;
+        //console.log("Guardando ubicacion", location, current);
+        if (!current) return;
+        set({ saveLocations: [...get().saveLocations, current] });
+        try {
+
+            //Se guarda la ubicacion en el servidor
+            await post("coordenadas", { lat: current.latitude, lng: current.longitude });
+
+        } catch (error) {
+            console.error("Error al guardar la ubicacion", error);
+        }
+
+    },
+
+
 }));
+
+
