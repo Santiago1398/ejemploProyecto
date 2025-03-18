@@ -176,11 +176,11 @@ dependencies {
     }
 
     // Dependencias de Firebase (corrigiendo error de tipeo)
-    //implementation 'com.google.firebase:firebase-core:19.0.0'
+    implementation 'com.google.firebase:firebase-core:19.0.0'
    
    
     //Esto es lo ultimo que he agreado a la espera de pprbar si funciona al generar el apk
-    //implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     //implementation("com.google.firebase:firebase-inappmessaging-display")
     //implementation("com.google.firebase:firebase-analytics")
 

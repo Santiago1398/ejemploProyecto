@@ -1,9 +1,11 @@
 import { View, ViewProps, StyleSheet, Alert } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import { LatLng } from '@/infrastructure/interface/lat-lng';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { useLocationStore } from '@/store/useLocationStore';
-import FAB from 'components/maps/FAB'
+import FAB from 'components/maps/FAB';
+
+
 
 interface Props extends ViewProps {
     initialLocation: LatLng;
@@ -79,6 +81,8 @@ const CustomMaps = ({ initialLocation, showUserLocation = true, ...rest }: Props
             <MapView
                 ref={mapRef}
                 style={styles.map}
+                provider={PROVIDER_GOOGLE}
+
                 showsUserLocation={showUserLocation}
                 initialRegion={{
                     latitude: initialLocation.latitude,

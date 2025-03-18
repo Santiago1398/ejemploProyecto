@@ -1,10 +1,9 @@
 import React, { useEffect } from 'react';
 import { View, Text, Button, StyleSheet, ActivityIndicator } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { RootStackParamList } from '@/app/HomeStack';
+//import { useNavigation } from '@react-navigation/native';
+//import { StackNavigationProp } from '@react-navigation/stack';
+//import { RootStackParamList } from '@/app/HomeStack';
 
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import CustomMaps from '@/components/maps/CustomMaps';
 import { useLocationStore } from '@/store/useLocationStore';
 
