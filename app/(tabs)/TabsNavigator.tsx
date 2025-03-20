@@ -25,8 +25,8 @@ export default function TabsNavigator() {
                             iconName = "cog";
                             break;
                         // Se agrega el icono para la nueva pestaña
-                        case "Extra":
-                            iconName = "plus";
+                        case "maps":
+                            iconName = "map-marker";
                             break;
                         default:
                             iconName = "question-circle";
