@@ -12,6 +12,9 @@ export interface ResponseAlarmaSite {
     locLevel: number;
     alarmStatus: boolean;
     alarmType: number;
+    //Añadir los tipos 
+    latitude: number;
+    longitude: number;
 
 
 }

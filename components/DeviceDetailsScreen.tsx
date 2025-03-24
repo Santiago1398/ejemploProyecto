@@ -1,25 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect } from "react";
 import {
     View,
     Text,
     StyleSheet,
     Modal,
     Pressable,
-
     FlatList,
     TouchableOpacity,
     Alert,
 } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
 import { get, post } from "@/services/api";
-import { useRoute, RouteProp } from "@react-navigation/native";
+import { useRoute, RouteProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "@/types/navigation";
 import ButtonMaster from "./BottonMaster";
 import { ParamTC } from "@/infrastructure/interface/listapi.interface";
 //import AlarmButton from "./AlarmButtonProps";
+import Menu3Puntos from "@/components/Menu3Puntos";
+
+type DeviceDetailsRouteProp = RouteProp<RootStackParamList, "DeviceDetails">;
+
+
+
+
 
 export default function AlarmList() {
-    const route = useRoute<RouteProp<RootStackParamList, "DeviceDetails">>();
+    const route = useRoute<DeviceDetailsRouteProp>();
     const { device } = route.params;
     const { mac, farmName, siteName } = device;
 
@@ -64,6 +70,24 @@ export default function AlarmList() {
             fetchAlarms();
         }
     }, [mac]);
+
+    const navigation = useNavigation<any>();
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerTitle: false,
+            headerRight: () => (
+                <Menu3Puntos device={{
+                    latitude: 0,
+                    longitude: 0,
+                    farmName: "",
+                    siteName: "",
+                    mac: 0
+                }} />
+            ),
+        });
+    }, [navigation, device]);
+
 
     // Manejo de la opción de armado/desarmado
     const handleOptionSelect = async (option: string) => {

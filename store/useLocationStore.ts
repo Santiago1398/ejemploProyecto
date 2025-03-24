@@ -84,19 +84,20 @@ export const useLocationStore = create<LocationState>()((set, get) => ({
     //con este metodo se guarda la ubicacion actual del usuario
     saveLocation: async () => {
         const current = get().lastKnownLocation;
-        //console.log("Guardando ubicacion", location, current);
         if (!current) return;
         set({ saveLocations: [...get().saveLocations, current] });
         try {
+            // Se envían todos los datos en el body
+            await post("alarmtc/saveLocation?", {
+                latitude: current.latitude,
+                longitude: current.longitude,
 
-            //Se guarda la ubicacion en el servidor
-            await post("coordenadas", { lat: current.latitude, lng: current.longitude });
-
+            });
         } catch (error) {
+
             console.error("Error al guardar la ubicacion", error);
         }
-
-    },
+    }
 
 
 }));

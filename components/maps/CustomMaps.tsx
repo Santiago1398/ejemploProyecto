@@ -107,7 +107,7 @@ const CustomMaps = ({ initialLocation, showUserLocation = true, ...rest }: Props
                 iconName='pin-outline'
                 onPress={onSaveLocationPress}
                 style={{
-                    bottom: 140,
+                    bottom: 200,
                     right: 20
                 }}
             />
@@ -117,7 +117,7 @@ const CustomMaps = ({ initialLocation, showUserLocation = true, ...rest }: Props
                 iconName={isFollowingUser ? 'walk-outline' : 'accessibility-outline'}
                 onPress={() => setIsFollowingUser(!isFollowingUser)}
                 style={{
-                    bottom: 80,
+                    bottom: 1400,
                     right: 20
                 }}
             />
@@ -125,7 +125,7 @@ const CustomMaps = ({ initialLocation, showUserLocation = true, ...rest }: Props
                 iconName='compass-outline'
                 onPress={moveToCurrentLocation}
                 style={{
-                    bottom: 20,
+                    bottom: 80,
                     right: 20
                 }}
             />
