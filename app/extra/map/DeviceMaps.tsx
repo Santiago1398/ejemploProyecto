@@ -13,7 +13,7 @@ export type RootStackParamList = {
         };
         farmName: string;
         siteName: string;
-        mac: string;
+        mac: number;
     };
 };
 
@@ -29,7 +29,7 @@ export default function DeviceMap() {
 
     useEffect(() => {
         // Si deviceLocation es distinto de 0,0 (ya se ha guardado una ubicación)
-        if (deviceLocation.latitude !== 0 && deviceLocation.longitude !== 0) {
+        if (deviceLocation.latitude === 0 && deviceLocation.longitude === 0) {
             if (lastKnownLocation) {
                 setMarketLocation(lastKnownLocation);
                 setLoading(false);
@@ -111,12 +111,16 @@ export default function DeviceMap() {
                 provider={PROVIDER_GOOGLE}
                 initialRegion={initialRegion}
                 showsUserLocation={true}
-            //onPress={(e) => setMarketLocation(e.nativeEvent.coordinate)}
+                onPress={(e) => setMarketLocation(e.nativeEvent.coordinate)}
             >
                 <Marker
                     coordinate={marketLocation}
                     title={farmName || "Granja"}
                     description={siteName || "Nave"}
+                    draggable={true}
+                    onDragEnd={(e) => {
+                        setMarketLocation(e.nativeEvent.coordinate);
+                    }}
                 />
             </MapView>
             <FAB

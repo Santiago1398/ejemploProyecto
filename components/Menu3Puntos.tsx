@@ -10,22 +10,12 @@ import { Entypo, Feather } from "@expo/vector-icons"
 import { Portal } from "react-native-paper"
 import { useNavigation } from "@react-navigation/native"
 import { NativeStackNavigationProp } from "@react-navigation/native-stack"
+import { RootStackParamList } from "@/app/HomeStack"
 
 
 type DeviceDetailsNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-export type RootStackParamList = {
 
-    DeviceMaps: {
-        deviceLocation: {
-            latitude: number;
-            longitude: number;
-        };
-        farmName: string;
-        siteName: string;
-        mac: number;
-    };
-};
 
 export interface MenuOption {
     id: string
@@ -61,15 +51,29 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({ device, options }) => {
             icon: "save",
             onPress: () => {
                 // Navega a la pantalla DeviceMap pasando los datos del dispositivo
-                navigation.navigate("DeviceMaps", {
-                    deviceLocation: {
-                        latitude: device.latitude,
-                        longitude: device.longitude
-                    },
-                    farmName: device.farmName,
-                    siteName: device.siteName,
-                    mac: device.mac
-                })
+                if (device.latitude === 0 && device.longitude === 0) {
+                    navigation.navigate("DeviceMaps", {
+                        deviceLocation: {
+                            latitude: 0,
+                            longitude: 0,
+                        },
+                        farmName: device.farmName,
+                        siteName: device.siteName,
+                        mac: device.mac
+                    })
+                } else {
+                    navigation.navigate("DeviceMaps", {
+                        deviceLocation: {
+                            latitude: device.latitude,
+                            longitude: device.longitude,
+                        },
+                        farmName: device.farmName,
+                        siteName: device.siteName,
+                        mac: device.mac
+
+                    })
+
+                }
             },
         },
         {
@@ -145,18 +149,18 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
-        zIndex: 9999,
+        //zIndex: 9999,
     },
     menuItem: {
         flexDirection: "row",
         alignItems: "center",
-        paddingVertical: 10,
+        paddingVertical: 8,
     },
     menuItemIcon: {
-        marginRight: 12,
+        marginRight: 10,
     },
     menuItemText: {
-        fontSize: 18,
+        fontSize: 16,
         color: "#333",
     },
 })

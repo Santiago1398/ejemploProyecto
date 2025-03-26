@@ -74,19 +74,26 @@ export default function AlarmList() {
     const navigation = useNavigation<any>();
 
     useLayoutEffect(() => {
+        if (!device || !farmName || !siteName || !mac) {
+            console.error("Faltan datos necesarios", {
+                device, farmName, siteName, mac
+            })
+        }
+        const latitude = device.latitude || 0;
+        const longitude = device.longitude || 0;
         navigation.setOptions({
             headerTitle: false,
             headerRight: () => (
                 <Menu3Puntos device={{
-                    latitude: 0,
-                    longitude: 0,
-                    farmName: "",
-                    siteName: "",
-                    mac: 0
+                    latitude,
+                    longitude,
+                    farmName,
+                    siteName,
+                    mac
                 }} />
             ),
         });
-    }, [navigation, device]);
+    }, [navigation, device, farmName, siteName, mac]);
 
 
     // Manejo de la opción de armado/desarmado
