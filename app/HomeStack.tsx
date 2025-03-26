@@ -5,6 +5,7 @@ import { Provider as PaperProvider } from "react-native-paper";
 import HomeScreen from "./(tabs)/HomeScreen";
 import Menu3Puntos from "@/components/Menu3Puntos";
 import DeviceMaps from "./extra/map/DeviceMaps";
+import PermissionsScreen from "./extra/permissions/PermissionScreen";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 
@@ -44,6 +45,13 @@ export default function HomeStack() {
                     name="DeviceMaps"
                     component={DeviceMaps}
                     options={{ headerTitle: "Ubicación del Dispositivo" }}
+
+                />
+
+                <Stack.Screen
+                    name="permissions"
+                    component={PermissionsScreen}
+
                 />
             </Stack.Navigator>
         </PaperProvider>
