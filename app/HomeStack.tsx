@@ -6,22 +6,34 @@ import HomeScreen from "./(tabs)/HomeScreen";
 import Menu3Puntos from "@/components/Menu3Puntos";
 import DeviceMaps from "./extra/map/DeviceMaps";
 import PermissionsScreen from "./extra/permissions/PermissionScreen";
+import SettingsScreen from "./(tabs)/SettingsScreen";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 
 export type RootStackParamList = {
     HomeScreen: undefined;
-    DeviceDetails: { mac: number, farmName: string, siteName: string, latitude: number; longitude: number; }; // DeviceDetailsScreen espera  parámetro 
-    BottonMaster: { mac: number };
+    DeviceDetails: {
+        mac: number;
+        farmName: string;
+        siteName: string;
+        latitude: number;
+        longitude: number;
+    };
+    BottonMaster: {
+        mac: number
+    };
     Map: undefined;
     DeviceMaps: {
-        deviceLocation: { latitude: number; longitude: number };
+        deviceLocation: {
+            latitude: number;
+            longitude: number;
+        };
         farmName: string;
         siteName: string;
         mac: number;
     };
     permissions: undefined;
-    // Agrega más pantallas si quieres
+    SettingsScreen: undefined;
 };
 
 export default function HomeStack() {
@@ -51,7 +63,12 @@ export default function HomeStack() {
                 <Stack.Screen
                     name="permissions"
                     component={PermissionsScreen}
+                />
 
+                <Stack.Screen
+                    name="SettingsScreen"
+                    component={SettingsScreen}
+                    options={{ headerTitle: "Configuracion" }}
                 />
             </Stack.Navigator>
         </PaperProvider>

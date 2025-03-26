@@ -1,27 +1,28 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Alert, ActivityIndicator } from "react-native";
+import { View, StyleSheet, Alert, ActivityIndicator, Text } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { useRoute, RouteProp, useNavigation } from "@react-navigation/native";
 import { get, post } from "@/services/api";
 import { useLocationStore } from "@/store/useLocationStore";
 import FAB from "@/components/maps/FAB";
-export type RootStackParamList = {
-    DeviceMaps: {
-        deviceLocation: {
-            latitude: number;
-            longitude: number;
-        };
-        farmName: string;
-        siteName: string;
-        mac: number;
-    };
-};
+import * as Location from 'expo-location';
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "app/HomeStack"
 
-type DeviceMapRouteProp = RouteProp<RootStackParamList>;
+
+
+
+
+
+
+
+type DeviceMapRouteProp = RouteProp<RootStackParamList, 'DeviceMaps'>;
+type DeviceMapNavigationProp = NativeStackNavigationProp<RootStackParamList>;
+
 
 export default function DeviceMap() {
     const route = useRoute<DeviceMapRouteProp>();
-    const navigation = useNavigation();
+    const navigation = useNavigation<DeviceMapNavigationProp>();
     const { deviceLocation, farmName, siteName, mac } = route.params;
     const { lastKnownLocation, getLocation } = useLocationStore();
     const [marketLocation, setMarketLocation] = useState<{ latitude: number; longitude: number } | null>(null);
@@ -113,24 +114,58 @@ export default function DeviceMap() {
     };
 
 
+    useEffect(() => {
+        const checkPermissionsAndLocation = async () => {
+            try {
+                const { status } = await Location.getForegroundPermissionsAsync();
+                if (status !== 'granted') {
+                    // Si no hay permisos, navegar a Settings
+                    Alert.alert(
+                        "Permisos necesarios",
+                        "Necesitas habilitar los permisos de ubicación para usar esta función",
+                        [
+                            {
+                                text: "Ir a Configuración",
+                                onPress: () => {
+                                    navigation.goBack();
+                                    navigation.navigate('SettingsScreen')
+                                }
+                            },
+                            {
+                                text: "Cancelar",
+                                style: "cancel",
+                                onPress: () => navigation.goBack()
+                            }
+                        ]
+                    );
+                    return;
+                }
+                // Si hay permisos, obtener ubicación
+                fetchSavedLocation();
+            } catch (error) {
+                console.error("Error checking permissions:", error);
+                setLoading(false);
+            }
+        };
+
+        checkPermissionsAndLocation();
+    }, []);
+
+    // Modificar el loading screen para mostrar un mensaje más informativo
     if (loading || !marketLocation) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" />
+                <ActivityIndicator size="large" color="#007AFF" />
+                <Text style={styles.loadingText}>
+                    {!marketLocation ? "Verificando permisos..." : "Cargando ubicación..."}
+                </Text>
             </View>
         );
     }
-
     // Supongamos que tienes:
     const initialRegion = {
-        latitude:
-            deviceLocation.latitude === 0 && lastKnownLocation
-                ? lastKnownLocation.latitude
-                : deviceLocation.latitude,
-        longitude:
-            deviceLocation.longitude === 0 && lastKnownLocation
-                ? lastKnownLocation.longitude
-                : deviceLocation.longitude,
+        latitude: marketLocation?.latitude || 0,
+        longitude: marketLocation?.longitude || 0,
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
     };
@@ -176,5 +211,12 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+        backgroundColor: '#fff'
     },
+    loadingText: {
+        marginTop: 10,
+        fontSize: 16,
+        color: '#666'
+    }
+
 });
