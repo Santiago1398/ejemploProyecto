@@ -5,6 +5,7 @@ import SettingsScreen from "./SettingsScreen";
 import ProfileScreen from "./ProfileScreen";
 import HomeStack from "../HomeStack";
 import ExtraStack from "../extra/Extra";
+import { Ionicons } from "@expo/vector-icons";
 
 const Tab = createBottomTabNavigator();
 
@@ -13,26 +14,26 @@ export default function TabsNavigator() {
         <Tab.Navigator
             screenOptions={({ route }) => ({
                 tabBarIcon: ({ color, size }) => {
-                    let iconName: React.ComponentProps<typeof FontAwesome>["name"];
+                    let iconName;
                     switch (route.name) {
                         case "Home":
-                            iconName = "home";
+                            iconName = "home-outline" as const;
                             break;
                         case "Profile":
-                            iconName = "user";
+                            iconName = "person-outline" as const;
                             break;
                         case "Settings":
-                            iconName = "cog";
+                            iconName = "settings-outline" as const;
                             break;
                         // Se agrega el icono para la nueva pestaña
-                        case "maps":
-                            iconName = "map-marker";
+                        case "Maps":
+                            iconName = "map-outline" as const;
                             break;
                         default:
-                            iconName = "question-circle";
+                            iconName = "help-circle-outline" as const;
                     }
 
-                    return <FontAwesome name={iconName} size={size} color={color} />;
+                    return <Ionicons name={iconName} size={size} color={color} />;
                 },
                 tabBarActiveTintColor: "blue",
                 tabBarInactiveTintColor: "gray",
@@ -47,7 +48,7 @@ export default function TabsNavigator() {
             <Tab.Screen name="Settings" component={SettingsScreen} />
 
             {/* Nueva pestaña para el extra */}
-            <Tab.Screen name="Extra" component={ExtraStack} />
+            <Tab.Screen name="Maps" component={ExtraStack} />
 
         </Tab.Navigator>
     );
