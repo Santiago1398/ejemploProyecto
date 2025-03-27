@@ -7,6 +7,7 @@ import Menu3Puntos from "@/components/Menu3Puntos";
 import DeviceMaps from "./extra/map/DeviceMaps";
 import PermissionsScreen from "./extra/permissions/PermissionScreen";
 import SettingsScreen from "./(tabs)/SettingsScreen";
+import MapsScreen from "./extra/map/MapsScreen";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 
@@ -22,7 +23,7 @@ export type RootStackParamList = {
     BottonMaster: {
         mac: number
     };
-    Map: undefined;
+    MapsScreen: undefined;
     DeviceMaps: {
         deviceLocation: {
             latitude: number;
@@ -34,15 +35,18 @@ export type RootStackParamList = {
     };
     permissions: undefined;
     SettingsScreen: undefined;
+    Settings: undefined;
+
 };
 
 export default function HomeStack() {
     return (
         <PaperProvider>
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Navigator >
                 <Stack.Screen
                     name="HomeScreen"
                     component={HomeScreen}
+                    options={{ headerShown: false }}
 
                 />
                 <Stack.Screen
@@ -70,6 +74,12 @@ export default function HomeStack() {
                     name="SettingsScreen"
                     component={SettingsScreen}
                     options={{ headerTitle: "Configuracion" }}
+                />
+
+                <Stack.Screen
+                    name="MapsScreen"
+                    component={MapsScreen}
+                    options={{ headerTitle: "Mapas" }}
                 />
             </Stack.Navigator>
         </PaperProvider>

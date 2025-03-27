@@ -1,57 +1,72 @@
-import React, { useEffect } from 'react';
-import { View, Text, Button, StyleSheet, ActivityIndicator } from 'react-native';
-//import { useNavigation } from '@react-navigation/native';
-//import { StackNavigationProp } from '@react-navigation/stack';
-//import { RootStackParamList } from '@/app/HomeStack';
-
+import React, { useEffect, useState } from 'react';
+import { View, ActivityIndicator, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '@/app/HomeStack';
 import CustomMaps from '@/components/maps/CustomMaps';
 import { useLocationStore } from '@/store/useLocationStore';
+import * as Location from 'expo-location';
 
+type MapScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 
-//type MapScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Map'>;
-
-//export default function MapsScreen() {
-//const navigation = useNavigation<MapScreenNavigationProp>();
 const MapsScreen = () => {
-
+    const navigation = useNavigation<MapScreenNavigationProp>();
     const { lastKnownLocation, getLocation } = useLocationStore();
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        if (lastKnownLocation === null) {
-            getLocation();
-        }
+        const checkPermissionsAndLocation = async () => {
+            try {
+                const { status } = await Location.getForegroundPermissionsAsync();
+                if (status !== 'granted') {
+                    Alert.alert(
+                        "Permisos necesarios",
+                        "Necesitas habilitar los permisos de ubicación para usar esta función",
+                        [
+                            {
+                                text: "Ir a Configuración",
+                                onPress: () => {
+                                    navigation.goBack();
+                                    navigation.navigate('Settings');
+                                }
+                            },
+                            {
+                                text: "Cancelar",
+                                style: "cancel",
+                                onPress: () => navigation.goBack()
+                            }
+                        ]
+                    );
+                    return;
+                }
+                // Si hay permisos, obtener ubicación
+                await getLocation();
+                setLoading(false);
+            } catch (error) {
+                console.error("Error checking permissions:", error);
+                setLoading(false);
+            }
+        };
 
+        checkPermissionsAndLocation();
     }, []);
 
-    if (lastKnownLocation === null) {
+    if (loading || lastKnownLocation === null) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator
-                />
-
+                <ActivityIndicator size="large" color="#007AFF" />
             </View>
-        )
+        );
     }
 
     return (
-        <View >
+        <View style={{ flex: 1 }}>
             <CustomMaps
                 initialLocation={lastKnownLocation}
+                showUserLocation={true}
             />
-
-            {  /* <Button
-                title="Ir a Permisos"
-                onPress={() => navigation.navigate('permissions')}
-            /> */}
         </View>
     );
-}
+};
 
-export default MapsScreen
-
-
-
-
-
-
-
+export default MapsScreen;
