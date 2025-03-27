@@ -87,8 +87,8 @@ const CustomMaps = ({ initialLocation, showUserLocation = true, ...rest }: Props
                 initialRegion={{
                     latitude: initialLocation.latitude,
                     longitude: initialLocation.longitude,
-                    latitudeDelta: 0.0922,
-                    longitudeDelta: 0.0421,
+                    latitudeDelta: 10,
+                    longitudeDelta: 10,
                 }}
                 onTouchStart={() => setIsFollowingUser(false)}
             >
@@ -117,7 +117,7 @@ const CustomMaps = ({ initialLocation, showUserLocation = true, ...rest }: Props
                 iconName={isFollowingUser ? 'walk-outline' : 'accessibility-outline'}
                 onPress={() => setIsFollowingUser(!isFollowingUser)}
                 style={{
-                    bottom: 1400,
+                    bottom: 140,
                     right: 20
                 }}
             />

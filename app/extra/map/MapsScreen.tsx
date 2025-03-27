@@ -6,6 +6,17 @@ import { RootStackParamList } from '@/app/HomeStack';
 import CustomMaps from '@/components/maps/CustomMaps';
 import { useLocationStore } from '@/store/useLocationStore';
 import * as Location from 'expo-location';
+import { get } from '@/services/api';
+
+
+
+interface DeviceLocation {
+    mac: number;
+    farmName: string;
+    siteName: string;
+    latitude: number;
+    longitude: number;
+}
 
 type MapScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 
@@ -13,6 +24,18 @@ const MapsScreen = () => {
     const navigation = useNavigation<MapScreenNavigationProp>();
     const { lastKnownLocation, getLocation } = useLocationStore();
     const [loading, setLoading] = useState(true);
+    const [deviceLocations, setDeviceLocations] = useState<DeviceLocation[]>([]);
+
+    const fetchDeviceLocations = async () => {
+        try {
+            const response = await get('alarmtc/sites/saved/${mac}'); //Inventada 
+            const data = await response.json();
+            setDeviceLocations(data);
+        } catch (error) {
+            console.error('Error fetching device locations:', error);
+        }
+    };
+
 
     useEffect(() => {
         const checkPermissionsAndLocation = async () => {
@@ -41,6 +64,7 @@ const MapsScreen = () => {
                 }
                 // Si hay permisos, obtener ubicación
                 await getLocation();
+                await fetchDeviceLocations();
                 setLoading(false);
             } catch (error) {
                 console.error("Error checking permissions:", error);

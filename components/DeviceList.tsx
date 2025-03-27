@@ -2,14 +2,12 @@ import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View, Alert } from "react-native";
-import { ResponseAlarmaSite } from "@/infrastructure/interface/listapi.interface";
+import { Ionicons } from "@expo/vector-icons";
 import { useAuthStore } from "@/store/authStore";
 import { get } from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RootStackParamList } from "@/types/navigation";
-
-
-
+import { ResponseAlarmaSite } from "@/infrastructure/interface/listapi.interface";
 
 export default function DeviceList() {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -21,17 +19,12 @@ export default function DeviceList() {
     const fetchDevices = async () => {
         try {
             setLoading(true);
-
-            // Verifica si el token y el userId están en AsyncStorage
             const storedToken = await AsyncStorage.getItem("token");
             const storedUserId = await AsyncStorage.getItem("userId");
 
             if (!storedToken || !storedUserId) {
                 throw new Error("Token o userId no encontrado en AsyncStorage.");
             }
-
-            console.log("Token en AsyncStorage:", storedToken);
-            console.log("UserId guardado en AsyncStorage:", storedUserId);
 
             // Realiza la solicitud GET
             const data: ResponseAlarmaSite[] = await get(`alarmtc/sites/user/${storedUserId}`);
@@ -40,25 +33,13 @@ export default function DeviceList() {
                 mac: Number(device.mac), // Convierte `mac` a número
             }));
             setDevices(formattedData);
-
-            console.log("Dispositivos obtenidos:", data);
-            setDevices(data);
         } catch (error) {
-            if (error instanceof Error) {
-                console.error("Error al cargar los dispositivos:", error.message);
-            } else if (typeof error === "object" && error !== null) {
-                console.error("Error al cargar los dispositivos:", JSON.stringify(error));
-            } else {
-                console.error("Error desconocido al cargar los dispositivos:", error);
-            }
+            console.error("Error al cargar los dispositivos:", error);
             Alert.alert("Error", "No se pudieron cargar los dispositivos.");
         } finally {
             setLoading(false);
         }
     };
-
-
-
 
     useEffect(() => {
         if (token && userId) {
@@ -66,69 +47,83 @@ export default function DeviceList() {
         }
     }, [token, userId]);
 
-
+    // Para verificar token/usuario en consola (opcional)
     useEffect(() => {
         const checkToken = async () => {
             const storedToken = await AsyncStorage.getItem("token");
-            console.log("Token en AsyncStorage:", storedToken);
             const storedUserId = await AsyncStorage.getItem("userId");
+            console.log("Token en AsyncStorage:", storedToken);
             console.log("UserId guardado en AsyncStorage:", storedUserId);
-
         };
         checkToken();
     }, []);
 
-
+    // Colores de fondo según estado
     const getBackgroundColor = (alarmType: number) => {
         switch (alarmType) {
             case 0:
                 return "#8a9bb9"; // Fuera de línea, gris
             case 1:
-                return "#76db36"; // En línea sin alarma, verde
+                return "#76db36"; // En línea sin alarma, verde brillante
             case 2:
-                return "red"; // En línea con alarma, rojo
+                return "#e94b3c"; // En línea con alarma, rojo
             case 3:
                 return "#9E75C6"; // Contraseña incorrecta, violeta
             case 4:
                 return "#F6BC31"; // En línea desarmada, amarilla
             default:
-                return "white";
+                return "#ffffff";
         }
     };
 
+    // Render de cada tarjeta
+    const renderDeviceItem = ({ item }: { item: ResponseAlarmaSite }) => {
+        const backgroundColor = getBackgroundColor(item.alarmType);
+        return (
+            <TouchableOpacity
+                style={[styles.deviceContainer, { backgroundColor }]}
+                onPress={() => {
+                    if (item.mac) {
+                        navigation.navigate("DeviceDetails", {
+                            device: {
+                                mac: Number(item.mac),
+                                farmName: item.farmName,
+                                siteName: item.siteName,
+                                latitude: item.latitude,
+                                longitude: item.longitude,
+                            },
+                        });
+                    } else {
+                        Alert.alert("Error", "El dispositivo no tiene una MAC válida.");
+                    }
+                }}
+            >
+                {/* Encabezado de la tarjeta */}
+                <View style={styles.row}>
+                    <Ionicons name="home-outline" size={24} color="#fff" style={{ marginRight: 8 }} />
+                    <Text style={styles.deviceTitle}>{item.farmName}</Text>
+                </View>
+
+                {/* Subtítulo y ubicación */}
+                <Text style={styles.deviceSubtitle}>{item.siteName}</Text>
+                <Text style={styles.deviceLocation}>
+                    {item.town}, {item.province}, {item.country}
+                </Text>
+            </TouchableOpacity>
+        );
+    };
+
     return (
-        <View style={{ flex: 1 }}>
+        <View style={styles.container}>
             {loading ? (
-                <Text style={styles.loadingText}>No hay dispositivos Conectados</Text>
+                <Text style={styles.loadingText}>Cargando dispositivos...</Text>
+            ) : devices.length === 0 ? (
+                <Text style={styles.loadingText}>No hay dispositivos disponibles</Text>
             ) : (
                 <FlatList
                     data={devices}
                     keyExtractor={(item) => item.idSite.toString()}
-                    renderItem={({ item }) => (
-                        <TouchableOpacity
-                            style={[
-                                styles.deviceContainer,
-                                { backgroundColor: getBackgroundColor(item.alarmType) },
-                            ]}
-                            onPress={() => {
-                                if (item.mac) {
-                                    navigation.navigate("DeviceDetails", { device: { mac: Number(item.mac), farmName: item.farmName, siteName: item.siteName, latitude: item.latitude, longitude: item.longitude } });
-                                } else {
-                                    Alert.alert("Error", "El dispositivo no tiene una MAC válida.");
-                                }
-                            }}
-                        >
-                            <Text style={styles.text}>{item.farmName}</Text>
-                            <Text style={styles.text}>{item.siteName}</Text>
-                            <Text style={styles.text}>{item.town}</Text>
-                            <Text style={styles.text}>{item.province}</Text>
-                            <Text style={styles.text}>{item.country}</Text>
-                            <Text style={styles.text}>{item.idSite}</Text>
-                            <Text style={styles.text}>{item.locLevel}</Text>
-                            <Text style={styles.text}>{item.alarmType}</Text>
-                        </TouchableOpacity>
-
-                    )}
+                    renderItem={renderDeviceItem}
                     contentContainerStyle={styles.listContainer}
                 />
             )}
@@ -137,17 +132,42 @@ export default function DeviceList() {
 }
 
 const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: "#f2f2f2", // Fondo suave de la pantalla
+    },
     listContainer: {
         padding: 16,
     },
     deviceContainer: {
         padding: 16,
         marginVertical: 8,
-        borderRadius: 8,
+        borderRadius: 12,
+        // Sombras
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 3.84,
+        elevation: 4,
     },
-    text: {
+    row: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 6,
+    },
+    deviceTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: "#fff", // Texto blanco para contrastar con el verde o rojo
+    },
+    deviceSubtitle: {
         fontSize: 16,
-        color: "#222222",
+        color: "#f0f0f0",
+        marginBottom: 4,
+    },
+    deviceLocation: {
+        fontSize: 14,
+        color: "#f0f0f0",
     },
     loadingText: {
         fontSize: 18,
@@ -156,4 +176,3 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
 });
-

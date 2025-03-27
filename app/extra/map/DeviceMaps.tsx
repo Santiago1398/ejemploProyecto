@@ -194,7 +194,7 @@ export default function DeviceMap() {
                 iconName='pin-outline'
                 onPress={handleSaveLocation}
                 style={{
-                    bottom: 100,
+                    bottom: 80,
                     right: 20
                 }}
             />

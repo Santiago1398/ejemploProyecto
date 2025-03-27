@@ -1,79 +1,64 @@
-import React, { useRef, useState } from "react"
+"use client"
+
+import React, { useRef, useState } from "react";
 import {
     View,
     TouchableOpacity,
     Pressable,
     StyleSheet,
     Text,
-} from "react-native"
-import { Entypo, Feather } from "@expo/vector-icons"
-import { Portal } from "react-native-paper"
-import { useNavigation } from "@react-navigation/native"
-import { NativeStackNavigationProp } from "@react-navigation/native-stack"
-import { RootStackParamList } from "@/app/HomeStack"
-
+} from "react-native";
+import { Entypo, Feather } from "@expo/vector-icons";
+import { Portal } from "react-native-paper";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "@/app/HomeStack";
 
 type DeviceDetailsNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
-
-
 export interface MenuOption {
-    id: string
-    label: string
-    icon: string
-    onPress: () => void
+    id: string;
+    label: string;
+    icon: string;
+    onPress: () => void;
 }
 
 export interface Menu3PuntosProps {
     device: {
-        latitude: number
-        longitude: number
-        farmName: string
-        siteName: string
-        mac: number
-    }
-    options?: MenuOption[]
+        latitude: number;
+        longitude: number;
+        farmName: string;
+        siteName: string;
+        mac: number;
+    };
+    options?: MenuOption[];
 }
 
 const Menu3Puntos: React.FC<Menu3PuntosProps> = ({ device, options }) => {
-    // Obtenemos la navegación
-    const navigation = useNavigation<DeviceDetailsNavigationProp>()
+    // Obtenemos la navegación con el tipo correcto
+    const navigation = useNavigation<DeviceDetailsNavigationProp>();
 
-    const [visible, setVisible] = useState(false)
-    //const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
-    const buttonRef = useRef<View>(null)
+    const [visible, setVisible] = useState(false);
+    const buttonRef = useRef<View>(null);
 
-    // Definimos las opciones por defecto usando la prop device y navigation
+    // Opciones por defecto. Se pueden modificar según necesidad.
     const defaultOptions: MenuOption[] = [
         {
             id: "save",
             label: "Guardar Ubicación",
             icon: "save",
             onPress: () => {
-                // Navega a la pantalla DeviceMap pasando los datos del dispositivo
-                if (device.latitude === 0 && device.longitude === 0) {
-                    navigation.navigate("DeviceMaps", {
-                        deviceLocation: {
-                            latitude: 0,
-                            longitude: 0,
-                        },
-                        farmName: device.farmName,
-                        siteName: device.siteName,
-                        mac: device.mac
-                    })
-                } else {
-                    navigation.navigate("DeviceMaps", {
-                        deviceLocation: {
-                            latitude: device.latitude,
-                            longitude: device.longitude,
-                        },
-                        farmName: device.farmName,
-                        siteName: device.siteName,
-                        mac: device.mac
-
-                    })
-
-                }
+                // Si la ubicación del dispositivo es (0,0) se navega de la misma forma,
+                // pero en DeviceMaps se podrá usar la ubicación actual del usuario.
+                navigation.navigate("DeviceMaps", {
+                    deviceLocation: {
+                        latitude: device.latitude,
+                        longitude: device.longitude,
+                    },
+                    farmName: device.farmName,
+                    siteName: device.siteName,
+                    mac: device.mac,
+                });
             },
         },
         {
@@ -82,57 +67,74 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({ device, options }) => {
             icon: "trash",
             onPress: () => console.log("Eliminar Ubicación"),
         },
-    ]
+    ];
 
+    // Si se pasan opciones por props, las usamos; de lo contrario, usamos las por defecto.
+    const finalOptions = options ?? defaultOptions;
 
-    // Si se pasan opciones por props, las usamos; si no, usamos las por defecto
-    const finalOptions = options ?? defaultOptions
-
-    // Al pulsar el botón, medimos su posición
+    // Al pulsar el botón, se muestra el menú.
     const onMenuPress = () => {
         if (buttonRef.current) {
             buttonRef.current.measureInWindow((x, y, width, height) => {
-                console.log("Posición del botón:", { x, y, width, height })
-                const adjustedY = y < 0 ? 0 : y + height // Ajusta según el header
-                // setMenuPosition({ x, y: adjustedY })
-                setVisible(true)
-            })
+                console.log("Posición del botón:", { x, y, width, height });
+                setVisible(true);
+            });
         }
-    }
+    };
 
     const closeMenu = () => {
-        setVisible(false)
-    }
+        setVisible(false);
+    };
 
     const handleOptionPress = (option: MenuOption) => {
-        option.onPress()
-        closeMenu()
-    }
+        option.onPress();
+        closeMenu();
+    };
 
     return (
         <View>
-            {/* Botón de los 3 puntos */}
-            <TouchableOpacity ref={buttonRef} onPress={onMenuPress} style={styles.menuButton}>
+            {/* Botón de los tres puntos */}
+            <TouchableOpacity
+                ref={buttonRef}
+                onPress={onMenuPress}
+                style={styles.menuButton}
+            >
                 <Entypo name="dots-three-horizontal" size={30} color="#333" />
             </TouchableOpacity>
 
             {visible && (
                 <Portal>
+                    {/* Cubre toda la pantalla para detectar clics fuera del menú */}
                     <Pressable style={StyleSheet.absoluteFill} onPress={closeMenu}>
+                        {/* Contenedor del menú: posición fija (ajusta top/right si lo necesitas) */}
                         <View style={[styles.menuContainer, { top: 50, right: 10 }]}>
-                            {finalOptions.map((option) => (
-                                <TouchableOpacity key={option.id} style={styles.menuItem} onPress={() => handleOptionPress(option)}>
-                                    <Feather name={option.icon as any} size={30} color="#333" style={styles.menuItemIcon} />
-                                    <Text style={styles.menuItemText}>{option.label}</Text>
-                                </TouchableOpacity>
+                            {finalOptions.map((option, index) => (
+                                <View key={option.id}>
+                                    <TouchableOpacity
+                                        style={styles.menuItem}
+                                        onPress={() => handleOptionPress(option)}
+                                    >
+                                        <Feather
+                                            name={option.icon as any}
+                                            size={30}
+                                            color="#333"
+                                            style={styles.menuItemIcon}
+                                        />
+                                        <Text style={styles.menuItemText}>{option.label}</Text>
+                                    </TouchableOpacity>
+                                    {/* Agregamos un divisor entre opciones, excepto después de la última */}
+                                    {index < finalOptions.length - 1 && (
+                                        <View style={styles.divider} />
+                                    )}
+                                </View>
                             ))}
                         </View>
                     </Pressable>
                 </Portal>
             )}
         </View>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     menuButton: {
@@ -141,7 +143,7 @@ const styles = StyleSheet.create({
     menuContainer: {
         position: "absolute",
         backgroundColor: "#fff",
-        borderRadius: 4,
+        borderRadius: 8,
         paddingVertical: 12,
         paddingHorizontal: 16,
         shadowColor: "#000",
@@ -149,7 +151,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
         elevation: 5,
-        //zIndex: 9999,
     },
     menuItem: {
         flexDirection: "row",
@@ -163,6 +164,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: "#333",
     },
-})
+    divider: {
+        height: 1,
+        backgroundColor: "#e0e0e0",
+        marginVertical: 8,
+    },
+});
 
-export default Menu3Puntos
+export default Menu3Puntos;
