@@ -1,9 +1,17 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    StyleSheet,
+    Alert,
+    ImageBackground
+} from "react-native";
 import { useAuthStore } from "../store/authStore";
 import { Feather } from "@expo/vector-icons";
 
-export default function LoginScreen({ navigation }: any) { // Props navigation
+export default function LoginScreen({ navigation }: any) {
     const { username: savedEmail, password: savedPassword, login } = useAuthStore();
     const [email, setEmail] = useState(savedEmail || "");
     const [password, setPassword] = useState(savedPassword || "");
@@ -12,7 +20,7 @@ export default function LoginScreen({ navigation }: any) { // Props navigation
         try {
             const success = await login(email, password);
             if (success) {
-                navigation.navigate("Home");
+                navigation.navigate("HomeScreen");
             } else {
                 console.log("Correo electrónico o contraseña incorrectos");
                 Alert.alert("Correo electrónico o contraseña incorrectos");
@@ -22,50 +30,69 @@ export default function LoginScreen({ navigation }: any) { // Props navigation
         }
     };
 
-
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Ingresar</Text>
-            <Text style={styles.subtitle}>Por favor ingrese para continuar</Text>
-            <View style={styles.inputContainer}>
-                <Feather name="mail" size={20} color="#666" style={styles.icon} />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Correo electrónico"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                />
-            </View>
 
-            <View style={styles.inputContainer}>
-                <Feather name="lock" size={20} color="#666" style={styles.icon} />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Contraseña"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                />
-            </View>
+            <ImageBackground
+                source={require("assets/images/imagenTecnologicaLogin.jpg")}
 
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>Ingresar</Text>
-                <Feather name="arrow-right" size={20} color="#fff" style={styles.buttonIcon} />
-            </TouchableOpacity>
+                style={styles.backgroundImage}
+                resizeMode="cover"
+            >
+
+                <View style={styles.overlay}>
+                    <Text style={styles.title}>Ingresar</Text>
+                    <Text style={styles.subtitle}>Por favor ingrese para continuar</Text>
+
+                    <View style={styles.inputContainer}>
+                        <Feather name="mail" size={20} color="#666" style={styles.icon} />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Correo electrónico"
+                            value={email}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                        />
+                    </View>
+
+                    <View style={styles.inputContainer}>
+                        <Feather name="lock" size={20} color="#666" style={styles.icon} />
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Contraseña"
+                            value={password}
+                            onChangeText={setPassword}
+                            secureTextEntry
+                        />
+                    </View>
+
+                    <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                        <Text style={styles.buttonText}>Ingresar</Text>
+                        <Feather name="arrow-right" size={20} color="#fff" style={styles.buttonIcon} />
+                    </TouchableOpacity>
+                </View>
+            </ImageBackground>
         </View>
     );
 }
 
-// BLOQUE DE ESTILOS
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+    },
+    backgroundImage: {
+        flex: 1,
         justifyContent: "center",
+    },
+    overlay: {
+
+        backgroundColor: "rgba(255, 255, 255, 0.8)",
+        marginHorizontal: 20,
+        borderRadius: 10,
+        padding: 20,
         alignItems: "center",
-        backgroundColor: "#fff",
-        padding: 16,
+
     },
     title: {
         fontSize: 24,
@@ -88,6 +115,7 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         marginBottom: 16,
         width: "100%",
+        backgroundColor: "#fff",
     },
     icon: {
         marginRight: 8,
@@ -117,5 +145,3 @@ const styles = StyleSheet.create({
         marginLeft: 8,
     },
 });
-
-

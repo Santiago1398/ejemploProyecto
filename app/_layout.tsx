@@ -7,11 +7,14 @@ import PermissionsCkeckProvider from "@/presentation/providers/PermissionsCkeckP
 //import ExtraStack from "./extra/Extra";
 import PermissionsScreen from "./extra/permissions/PermissionScreen";
 import MapsScreen from "./extra/map/MapsScreen";
+import { useAuthStore } from "@/store/authStore";
 //import { Stack } from "expo-router";
 
 const Drawer = createDrawerNavigator();
 
 export default function Layout() {
+    const { isAuthenticated } = useAuthStore();
+
     return (
         //<GestureHandlerRootView> </GestureHandlerRootView> por si me da error de gestos
         <PermissionsCkeckProvider>
@@ -24,10 +27,34 @@ export default function Layout() {
                         backgroundColor: "#fff",
                     },
                     headerTintColor: "#000", // Color del texto del encabezado
+
                 }}
+                initialRouteName={isAuthenticated ? "HomeScreen" : "Login"}
+
             >
-                <Drawer.Screen name="Home" component={TabsNavigator} options={{ headerTitle: "Home" }} />
-                <Drawer.Screen name="Login" component={LoginScreen} options={{ headerTitle: "Iniciar Sesión" }} />
+                {/*  Ruta para HomeScreen */}
+                {isAuthenticated ? (
+                    <Drawer.Screen
+                        name="Home"
+                        component={TabsNavigator}
+                        options={{ headerTitle: "Home" }}
+                    />
+                ) : (
+                    <Drawer.Screen
+                        name="Login"
+                        component={LoginScreen}
+                        options={{
+                            headerTitle: "Iniciar Sesión",
+                            swipeEnabled: false,
+                            drawerItemStyle: { display: "none" },
+                        }}
+                    />
+                )}
+                {/* <Drawer.Screen name="Home" component={TabsNavigator} options={{ headerTitle: "Home" }} />
+                <Drawer.Screen name="Login" component={LoginScreen} options={{
+                    headerTitle: "Iniciar Sesión", swipeEnabled: false,
+                    drawerItemStyle: { display: "none" }
+                }} /> */}
                 <Drawer.Screen name="Map" component={MapsScreen} />
                 <Drawer.Screen name="permissions" component={PermissionsScreen} />
 

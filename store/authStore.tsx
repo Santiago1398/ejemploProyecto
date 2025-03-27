@@ -52,20 +52,24 @@ export const useAuthStore = create<AuthState>()(
                     return false;
                 }
             },
+            logout: async () => {
+                try {
+                    await AsyncStorage.removeItem("token");
+                    await AsyncStorage.removeItem("userId");
 
-
-
-
-            logout: () => {
-                set({
-                    username: null,
-                    password: null,
-                    token: null,
-                    userId: null,
-                    isAuthenticated: false,
-                    isActive: false,
-                });
+                    set({
+                        username: null,
+                        password: null,
+                        token: null,
+                        userId: null,
+                        isAuthenticated: false,
+                        isActive: false,
+                    });
+                } catch (error) {
+                    console.error("Error durante el logout:", error);
+                }
             },
+
         }),
         {
             name: "auth-storage",

@@ -79,6 +79,11 @@ export default function DeviceList() {
     // Render de cada tarjeta
     const renderDeviceItem = ({ item }: { item: ResponseAlarmaSite }) => {
         const backgroundColor = getBackgroundColor(item.alarmType);
+        function capitalize(str: string) {
+            if (!str) return '';
+            return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+        }
+
         return (
             <TouchableOpacity
                 style={[styles.deviceContainer, { backgroundColor }]}
@@ -87,8 +92,8 @@ export default function DeviceList() {
                         navigation.navigate("DeviceDetails", {
                             device: {
                                 mac: Number(item.mac),
-                                farmName: item.farmName,
-                                siteName: item.siteName,
+                                farmName: capitalize(item.farmName),
+                                siteName: capitalize(item.siteName),
                                 latitude: item.latitude,
                                 longitude: item.longitude,
                             },
@@ -98,26 +103,22 @@ export default function DeviceList() {
                     }
                 }}
             >
-                {/* Encabezado de la tarjeta */}
                 <View style={styles.row}>
                     <Ionicons name="home-outline" size={24} color="#fff" style={{ marginRight: 8 }} />
-                    <Text style={styles.deviceTitle}>{item.farmName}</Text>
+                    <Text style={styles.deviceTitle}>{capitalize(item.farmName)}</Text>
                 </View>
-
-                {/* Subtítulo y ubicación */}
-                <Text style={styles.deviceSubtitle}>{item.siteName}</Text>
+                <Text style={styles.deviceSubtitle}>{capitalize(item.siteName)}</Text>
                 <Text style={styles.deviceLocation}>
-                    {item.town}, {item.province}, {item.country}
+                    {capitalize(item.town)}, {capitalize(item.province)}, {capitalize(item.country)}
                 </Text>
             </TouchableOpacity>
         );
     };
 
+
     return (
         <View style={styles.container}>
-            {loading ? (
-                <Text style={styles.loadingText}>Cargando dispositivos...</Text>
-            ) : devices.length === 0 ? (
+            {devices.length === 0 ? (
                 <Text style={styles.loadingText}>No hay dispositivos disponibles</Text>
             ) : (
                 <FlatList
