@@ -39,17 +39,18 @@ export type RootStackParamList = {
 export default function HomeStack() {
     return (
         <PaperProvider>
-            <Stack.Navigator>
+            <Stack.Navigator screenOptions={{ headerShown: false }}>
                 <Stack.Screen
                     name="HomeScreen"
                     component={HomeScreen}
-                    options={{ headerShown: false }}
+
                 />
                 <Stack.Screen
                     name="DeviceDetails"
                     component={DeviceDetailsScreen}
                     options={({ route }) => ({
-                        headerTitle: "Detalles del Dispositivo", headerRight: () => <Menu3Puntos device={route.params} />
+                        title: "Detalles del Dispositivo",
+                        headerRight: () => <Menu3Puntos device={route.params} />
                     })}
 
                 />

@@ -1,6 +1,5 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import SettingsScreen from "./SettingsScreen";
 import ProfileScreen from "./ProfileScreen";
 import HomeStack from "../HomeStack";
@@ -25,14 +24,12 @@ export default function TabsNavigator() {
                         case "Settings":
                             iconName = "settings-outline" as const;
                             break;
-                        // Se agrega el icono para la nueva pestaña
                         case "Maps":
                             iconName = "map-outline" as const;
                             break;
                         default:
                             iconName = "help-circle-outline" as const;
                     }
-
                     return <Ionicons name={iconName} size={size} color={color} />;
                 },
                 tabBarActiveTintColor: "blue",
@@ -40,17 +37,42 @@ export default function TabsNavigator() {
                 tabBarStyle: {
                     backgroundColor: "rgba(255, 255, 255, 0.9)",
                 },
-                headerShown: false, // Oculta el encabezado del Tab.Navigator
+
+                headerShown: false,
             })}
         >
-            <Tab.Screen name="Home" component={HomeStack} />
-            <Tab.Screen name="Profile" component={ProfileScreen} />
-            <Tab.Screen name="Settings" component={SettingsScreen} />
+            <Tab.Screen
+                name="Home"
+                component={HomeStack}
+                options={{
+                    tabBarLabel: 'Inicio',
 
-            {/* Nueva pestaña para el extra */}
-            <Tab.Screen name="Maps" component={ExtraStack} />
+                }}
+            />
+            <Tab.Screen
+                name="Profile"
+                component={ProfileScreen}
+                options={{
+                    tabBarLabel: 'Perfil',
 
+                }}
+            />
+            <Tab.Screen
+                name="Settings"
+                component={SettingsScreen}
+                options={{
+                    tabBarLabel: 'Configuracion',
+
+                }}
+            />
+            <Tab.Screen
+                name="Maps"
+                component={ExtraStack}
+                options={{
+                    tabBarLabel: 'Mapas',
+
+                }}
+            />
         </Tab.Navigator>
     );
 }
-
