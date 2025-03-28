@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, Switch, Platform, Linking, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -6,19 +6,84 @@ import { Ionicons } from "@expo/vector-icons";
 import { usePermissionsStore } from "@/store/usePermissions";
 import { PermissionStatus } from "@/infrastructure/interface/location";
 import { RootStackParamList } from "../HomeStack";
+import * as Notifications from 'expo-notifications';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import { requestLocationPermission } from "@/core/actions/permissions/locations";
+import { registerForPushNotificationsAsync } from "@/utils/notifications";
 
 
 
 type SettingsScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>
 
 export default function SettingsScreen() {
-    const navigation = useNavigation<SettingsScreenNavigationProp>();
     const { locationStatus, checkLocationPermission } = usePermissionsStore();
+    const [notificationStatus, setNotificationStatus] = useState<boolean>(false);
+
 
     useEffect(() => {
-        checkLocationPermission();
+        const initializePermissions = async () => {
+            await checkLocationPermission();
+            await checkNotificationStatus();
+        };
+
+        initializePermissions();
     }, []);
+
+    const checkNotificationStatus = async () => {
+        const { status } = await Notifications.getPermissionsAsync();
+        setNotificationStatus(status === 'granted');
+    };
+
+    const handleNotificationToggle = async () => {
+        if (notificationStatus) {
+            // Si están activadas, mostrar diálogo para desactivar
+            Alert.alert(
+                "Desactivar notificaciones",
+                "¿Deseas desactivar las notificaciones de la aplicación?",
+                [
+                    {
+                        text: "Cancelar",
+                        style: "cancel"
+                    },
+                    {
+                        text: "Desactivar",
+                        onPress: async () => {
+                            Platform.OS === 'ios'
+                                ? await Linking.openURL('app-settings:')
+                                : await Linking.openSettings();
+                        }
+                    }
+                ]
+            );
+        } else {
+            // Si están desactivadas, solicitar permisos
+            Alert.alert(
+                "Activar notificaciones",
+                "¿Deseas recibir notificaciones de alarmas y actualizaciones?",
+                [
+                    {
+                        text: "No",
+                        style: "cancel"
+                    },
+                    {
+                        text: "Sí",
+                        onPress: async () => {
+                            const token = await registerForPushNotificationsAsync();
+                            if (token) {
+                                setNotificationStatus(true);
+                                await AsyncStorage.setItem('hasAskedForNotifications', 'true');
+                            } else {
+                                Platform.OS === 'ios'
+                                    ? await Linking.openURL('app-settings:')
+                                    : await Linking.openSettings();
+                            }
+                        }
+                    }
+                ]
+            );
+        }
+    };
 
     const handleToggle = async () => {
         if (locationStatus === PermissionStatus.GRANTED) {
@@ -57,6 +122,8 @@ export default function SettingsScreen() {
         <View style={styles.screen}>
             <View style={styles.section}>
                 <Text style={styles.sectionTitle}>Permisos</Text>
+
+                {/* Control de Ubicación */}
                 <View style={styles.button}>
                     <View style={styles.buttonText}>
                         <Ionicons name="map-outline" size={24} color="#007AFF" />
@@ -70,11 +137,25 @@ export default function SettingsScreen() {
                         value={locationStatus === PermissionStatus.GRANTED}
                     />
                 </View>
+
+                {/* Control de Notificaciones */}
+                <View style={styles.button}>
+                    <View style={styles.buttonText}>
+                        <Ionicons name="notifications-outline" size={24} color="#007AFF" />
+                        <Text style={styles.buttonText}>Notificaciones</Text>
+                    </View>
+                    <Switch
+                        trackColor={{ false: "#767577", true: "#81b0ff" }}
+                        thumbColor={notificationStatus ? "#007AFF" : "#f4f3f4"}
+                        ios_backgroundColor="#3e3e3e"
+                        onValueChange={handleNotificationToggle}
+                        value={notificationStatus}
+                    />
+                </View>
             </View>
         </View>
     );
 }
-
 const styles = StyleSheet.create({
     screen: {
         flex: 1,
