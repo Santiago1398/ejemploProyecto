@@ -11,35 +11,51 @@ Notifications.setNotificationHandler({
     }),
 });
 
-export async function registerForPushNotificationsAsync() {
+export async function registerForPushNotificationsAsync(userId?: number) {
     if (!Device.isDevice) {
-        console.warn('Debes usar un dispositivo físico para las notificaciones');
-        return null;
-    }
-
-    // Solicitar permisos
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
-    let finalStatus = existingStatus;
-
-    if (existingStatus !== 'granted') {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
-    }
-
-    if (finalStatus !== 'granted') {
-        console.warn('Permiso denegado para notificaciones push');
+        console.warn('Las notificaciones solo funcionan en dispositivos físicos');
         return null;
     }
 
     try {
+        // Verificar permisos existentes
+        const { status: existingStatus } = await Notifications.getPermissionsAsync();
+        let finalStatus = existingStatus;
+
+        if (existingStatus !== 'granted') {
+            const { status } = await Notifications.requestPermissionsAsync();
+            finalStatus = status;
+        }
+
+        if (finalStatus !== 'granted') {
+            console.warn('Permiso denegado para notificaciones push');
+            return null;
+        }
+
+        // Verificar token existente
+        const tokenGuardado = await AsyncStorage.getItem('pushToken');
+        if (tokenGuardado && userId) {
+            await post('users/push-token', {
+                token: tokenGuardado,
+                userId
+            });
+            return tokenGuardado;
+        }
+
+        // Generar nuevo token
         const token = (await Notifications.getExpoPushTokenAsync()).data;
-        console.log('Token obtenido:', token);
-        // Guarda el token en AsyncStorage
+        console.log('Nuevo token generado:', token);
+
         await AsyncStorage.setItem('pushToken', token);
-        await post('users/push-token', { token });
+
+        if (userId) {
+            await post('users/push-token', { token, userId });
+            console.log('Token enviado al servidor para usuario:', userId);
+        }
+
         return token;
     } catch (error) {
-        console.error('Error obteniendo el token:', error);
+        console.error('Error en el proceso de notificaciones:', error);
         return null;
     }
 }

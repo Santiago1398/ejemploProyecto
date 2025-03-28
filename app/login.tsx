@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     View,
     Text,
@@ -10,17 +10,32 @@ import {
 } from "react-native";
 import { useAuthStore } from "../store/authStore";
 import { Feather } from "@expo/vector-icons";
+import { useNotificationPermission } from '../hooks/useNotificationPermission';
+
 
 export default function LoginScreen({ navigation }: any) {
     const { username: savedEmail, password: savedPassword, login } = useAuthStore();
     const [email, setEmail] = useState(savedEmail || "");
     const [password, setPassword] = useState(savedPassword || "");
+    const { requestPermission } = useNotificationPermission();
+
+    useEffect(() => {
+        const initializePermissions = async () => {
+            try {
+                await requestPermission();
+            } catch (error) {
+                console.error('Error al solicitar permisos:', error);
+            }
+        };
+
+        initializePermissions();
+    }, []);
 
     const handleLogin = async () => {
         try {
             const success = await login(email, password);
             if (success) {
-                navigation.navigate("HomeScreen");
+                navigation.navigate("Home");
             } else {
                 console.log("Correo electrónico o contraseña incorrectos");
                 Alert.alert("Correo electrónico o contraseña incorrectos");
@@ -145,3 +160,4 @@ const styles = StyleSheet.create({
         marginLeft: 8,
     },
 });
+

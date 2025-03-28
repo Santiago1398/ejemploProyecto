@@ -8,6 +8,7 @@ import PermissionsCkeckProvider from "@/presentation/providers/PermissionsCkeckP
 import PermissionsScreen from "./extra/permissions/PermissionScreen";
 import MapsScreen from "./extra/map/MapsScreen";
 import { useAuthStore } from "@/store/authStore";
+import HomeScreen from "./(tabs)/HomeScreen";
 //import { Stack } from "expo-router";
 
 const Drawer = createDrawerNavigator();
@@ -29,7 +30,7 @@ export default function Layout() {
                     headerTintColor: "#000", // Color del texto del encabezado
 
                 }}
-                initialRouteName={isAuthenticated ? "HomeScreen" : "Login"}
+                initialRouteName={isAuthenticated ? "Home" : "Login"}
 
             >
                 {/*  Ruta para HomeScreen */}
