@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { View, StyleSheet, Text, Switch, Platform, Linking, Alert } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
 import { usePermissionsStore } from "@/store/usePermissions";
 import { PermissionStatus } from "@/infrastructure/interface/location";
-import { RootStackParamList } from "../HomeStack";
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { requestLocationPermission } from "@/core/actions/permissions/locations";
 import { registerForPushNotificationsAsync } from "@/utils/notifications";
 
-
-
-type SettingsScreenNavigationProp = NativeStackNavigationProp<RootStackParamList>
 
 export default function SettingsScreen() {
     const { locationStatus, checkLocationPermission } = usePermissionsStore();

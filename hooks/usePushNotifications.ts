@@ -1,83 +1,173 @@
-// src/hooks/usePushNotifications.ts
-import { useState, useEffect, useRef } from "react";
-import * as Notifications from "expo-notifications";
-import { playAlarmSound, stopAlarmSound } from "@/utils/sound";
-import { registerForPushNotificationsAsync } from "@/utils/notifications";
-import { useAuthStore } from "@/store/authStore";
+import { useState, useEffect } from 'react';
+import { Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuthStore } from '@/store/authStore';
+import { stopAlarmSound } from '@/utils/sound';
+import { notificationService } from './NotificationService';
 
+// Tipo para las notificaciones guardadas
+export interface Notification {
+    id: string;
+    title: string;
+    body: string;
+    data: any;
+    date: Date;
+    isAlarm?: boolean;
+}
+
+/**
+ * Hook para manejar los permisos de notificaciones
+ */
+export const useNotificationPermission = () => {
+    const [hasPermission, setHasPermission] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    // Verificar y solicitar permisos
+    const requestPermission = async () => {
+        try {
+            setLoading(true);
+
+            // Verificar si ya preguntamos antes
+            const hasAskedBefore = await AsyncStorage.getItem('hasAskedForNotifications');
+            if (hasAskedBefore === 'true') {
+                // Verificar si tenemos permiso actual
+                const token = await AsyncStorage.getItem('fcmToken');
+                setHasPermission(!!token);
+                setLoading(false);
+                return !!token;
+            }
+
+            return new Promise<boolean>((resolve) => {
+                Alert.alert(
+                    "Notificaciones",
+                    "¿Deseas recibir notificaciones de alarmas?",
+                    [
+                        {
+                            text: "No",
+                            style: "cancel",
+                            onPress: async () => {
+                                setHasPermission(false);
+                                await AsyncStorage.setItem('hasAskedForNotifications', 'true');
+                                setLoading(false);
+                                resolve(false);
+                            }
+                        },
+                        {
+                            text: "Sí",
+                            onPress: async () => {
+                                try {
+                                    const token = await notificationService.registerDevice();
+                                    setHasPermission(!!token);
+                                    await AsyncStorage.setItem('hasAskedForNotifications', 'true');
+                                    setLoading(false);
+                                    resolve(!!token);
+                                } catch (error) {
+                                    console.error('Error al solicitar permisos:', error);
+                                    setHasPermission(false);
+                                    setLoading(false);
+                                    resolve(false);
+                                }
+                            }
+                        }
+                    ]
+                );
+            });
+        } catch (error) {
+            console.error('Error al manejar permisos de notificaciones:', error);
+            setLoading(false);
+            return false;
+        }
+    };
+
+    // Verificar el estado al cargar
+    useEffect(() => {
+        const checkPermission = async () => {
+            try {
+                const token = await AsyncStorage.getItem('fcmToken');
+                setHasPermission(!!token);
+                setLoading(false);
+            } catch (error) {
+                console.error('Error verificando permisos:', error);
+                setLoading(false);
+            }
+        };
+
+        checkPermission();
+    }, []);
+
+    return { hasPermission, loading, requestPermission };
+};
+
+/**
+ * Hook para manejar las notificaciones y WebSocket
+ */
 export const usePushNotifications = () => {
     const { userId } = useAuthStore();
-    const [expoPushToken, setExpoPushToken] = useState<string | null>(null);
-    const [notifications, setNotifications] = useState<Notifications.Notification[]>([]);
-    const socketRef = useRef<WebSocket | null>(null);
-    const reconnectInterval = useRef<NodeJS.Timeout | null>(null);
+    const [devicePushToken, setDevicePushToken] = useState<string | null>(null);
+    const [notifications, setNotifications] = useState<Notification[]>([]);
 
-    // Registrar token y conectar WebSocket cuando se loguea el usuario
+    // Inicializar el servicio de notificaciones
     useEffect(() => {
-        if (userId) {
-            registerForPushNotificationsAsync().then((token) => {
-                if (token) {
-                    setExpoPushToken(token);
-                    console.log("Token de notificación actualizado:", token);
-                }
-            });
-            connectWebSocket();
-        }
+        if (!userId) return;
 
-        return () => {
-            socketRef.current?.close();
-            if (reconnectInterval.current) {
-                clearTimeout(reconnectInterval.current);
+        const initializeNotifications = async () => {
+            try {
+                // Cargar notificaciones guardadas
+                const savedNotifications = await AsyncStorage.getItem('savedNotifications');
+                if (savedNotifications) {
+                    setNotifications(JSON.parse(savedNotifications));
+                }
+
+                // Obtener token existente o registrar dispositivo
+                const storedToken = await AsyncStorage.getItem('fcmToken');
+
+                if (storedToken) {
+                    setDevicePushToken(storedToken);
+                    // Registramos igualmente para configurar los listeners
+                    await notificationService.registerDevice(userId);
+                } else {
+                    const newToken = await notificationService.registerDevice(userId);
+                    setDevicePushToken(newToken);
+                }
+            } catch (error) {
+                console.error('Error inicializando notificaciones:', error);
             }
+        };
+
+        initializeNotifications();
+
+        // Limpieza al desmontar
+        return () => {
+            stopAlarmSound();
         };
     }, [userId]);
 
-    // Escuchar notificaciones en primer plano
-    useEffect(() => {
-        const subscription = Notifications.addNotificationReceivedListener((notification) => {
-            console.log("Notificación recibida:", notification);
-            setNotifications((prev) => [...prev, notification]);
-            const data = notification.request.content.data || {};
-            if (data.action === "STOP_ALARM") {
-                stopAlarmSound();
-            } else {
-                playAlarmSound();
-            }
-        });
-        return () => subscription.remove();
-    }, []);
+    // Función para agregar una nueva notificación
+    const addNotification = (notification: Notification) => {
+        setNotifications(prev => {
+            const updated = [notification, ...prev].slice(0, 50); // Mantener solo las últimas 50
 
-    // Función para conectar a WebSocket
-    const connectWebSocket = () => {
-        if (socketRef.current) return;
-        socketRef.current = new WebSocket("ws://37.187.180.179:8032");
-        socketRef.current.onopen = () => {
-            console.log("Conectado al WebSocket");
-            socketRef.current?.send(JSON.stringify({ action: "subscribe" }));
-        };
-        socketRef.current.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            console.log("Alarma recibida:", data);
-            if (data.status === 1) {
-                playAlarmSound();
-                Notifications.scheduleNotificationAsync({
-                    content: {
-                        title: "¡Alarma activada!",
-                        body: `Granja: ${data.farmName}\nSitio: ${data.siteName}\nAlarma: ${data.texto}`,
-                        data: { action: "STOP_ALARM" },
-                    },
-                    trigger: null,
-                });
-            }
-        };
-        socketRef.current.onclose = () => {
-            console.log("WebSocket cerrado. Intentando reconectar...");
-            socketRef.current = null;
-            if (!reconnectInterval.current) {
-                reconnectInterval.current = setTimeout(connectWebSocket, 3000);
-            }
-        };
+            // Guardar en AsyncStorage
+            AsyncStorage.setItem('savedNotifications', JSON.stringify(updated))
+                .catch(error => console.error('Error guardando notificaciones:', error));
+
+            return updated;
+        });
     };
 
-    return { expoPushToken, notifications };
+    // Función para borrar notificaciones
+    const clearNotifications = () => {
+        setNotifications([]);
+        AsyncStorage.removeItem('savedNotifications')
+            .catch(error => console.error('Error eliminando notificaciones guardadas:', error));
+    };
+
+
+
+    return {
+        devicePushToken,
+        notifications,
+        addNotification,
+        clearNotifications,
+    };
 };

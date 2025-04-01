@@ -1,6 +1,8 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
+//apply plugin: 'com.google.gms.google-services'   //Esta linea es la que se agrega para Firebase
+
 
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
 
@@ -93,6 +95,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0.0"
+        multiDexEnabled true
     }
     signingConfigs {
         debug {
@@ -103,6 +106,7 @@ android {
         }
     }
     buildTypes {
+
         debug {
             signingConfig signingConfigs.debug
         }
@@ -175,26 +179,19 @@ dependencies {
         implementation jscFlavor
     }
 
-    // Dependencias de Firebase (corrigiendo error de tipeo)
-    implementation 'com.google.firebase:firebase-core:19.0.0'
+    // Quita esta implementación antigua de Firebase
+    // implementation 'com.google.firebase:firebase-core:19.0.0'
    
-   
-    //Esto es lo ultimo que he agreado a la espera de pprbar si funciona al generar el apk
-    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
-    //implementation("com.google.firebase:firebase-inappmessaging-display")
-    //implementation("com.google.firebase:firebase-analytics")
+    // Usa solo estas implementaciones de Firebase
+    implementation platform('com.google.firebase:firebase-bom:32.7.4')
+    implementation 'com.google.firebase:firebase-messaging'
+    implementation 'com.google.firebase:firebase-analytics'
+   // implementation 'com.google.firebase:firebase-core'
+    //implementation 'com.google.firebase:firebase-app'
 
-    // Depedencia de Fresco correctamente definida
-    //implementation 'com.facebook.fresco:fresco:3.2.0'
-    //implementation 'com.facebook.fresco:animated-gif:3.2.0'
-    //implementation 'com.facebook.fresco:webpsupport:3.2.0'
-    //implementation 'com.facebook.fresco:animated-webp:3.2.0'
-    //implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.24"
-
-    //implementation "com.google.android.gms:play-services-measurement:22.1.2"
-   // implementation "com.google.android.gms:play-services-measurement-api:22.1.2"
-
-
+    // Añade soporte para multidex
+    implementation 'androidx.multidex:multidex:2.0.1'
+    
     // Hermes (motor de ejecución opcional)
     if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
@@ -202,7 +199,5 @@ dependencies {
         implementation jscFlavor
     }
 }
-
-
-
 apply plugin: 'com.google.gms.google-services'   //Esta linea es la que se agrega para Firebase
+

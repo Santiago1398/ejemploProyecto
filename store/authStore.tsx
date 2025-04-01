@@ -4,6 +4,7 @@ import zustandStorage from "./zustandStorage";
 import { post, postxxx } from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { registerForPushNotificationsAsync } from "@/utils/notifications";
+import { notificationService } from "@/hooks/NotificationService";
 
 interface AuthState {
     username: string | null;
@@ -37,7 +38,7 @@ export const useAuthStore = create<AuthState>()(
 
                     await AsyncStorage.setItem("token", data.token);
                     await AsyncStorage.setItem("userId", data.userId.toString());
-                    await registerForPushNotificationsAsync(data.userId);
+                    await notificationService.registerDevice(data.userId);
 
 
 
@@ -57,6 +58,8 @@ export const useAuthStore = create<AuthState>()(
             },
             logout: async () => {
                 try {
+                    notificationService.disconnect();
+
                     await AsyncStorage.removeItem("token");
                     await AsyncStorage.removeItem("userId");
 

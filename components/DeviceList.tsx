@@ -8,12 +8,14 @@ import { get } from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RootStackParamList } from "@/types/navigation";
 import { ResponseAlarmaSite } from "@/infrastructure/interface/listapi.interface";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 
 export default function DeviceList() {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const { token, userId } = useAuthStore();
     const [devices, setDevices] = useState<ResponseAlarmaSite[]>([]);
     const [loading, setLoading] = useState(true);
+    const { fcmToken } = usePushNotifications();
 
     // Función para obtener los datos desde la API
     const fetchDevices = async () => {
@@ -118,6 +120,13 @@ export default function DeviceList() {
 
     return (
         <View style={styles.container}>
+
+            {fcmToken && (
+                <View style={styles.tokenContainer}>
+                    <Text style={styles.tokenLabel}>Token del dispositivo:</Text>
+                    <Text style={styles.tokenText} selectable>{fcmToken}</Text>
+                </View>
+            )}
             {devices.length === 0 ? (
                 <Text style={styles.loadingText}>No hay dispositivos disponibles</Text>
             ) : (
@@ -176,4 +185,32 @@ const styles = StyleSheet.create({
         textAlign: "center",
         marginTop: 20,
     },
+    tokenContainer: {
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        padding: 12,
+        margin: 16,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#ddd',
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        elevation: 3,
+    },
+    tokenLabel: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#333',
+        marginBottom: 8,
+    },
+    tokenText: {
+        fontSize: 12,
+        color: '#666',
+        backgroundColor: '#f5f5f5',
+        padding: 8,
+        borderRadius: 4,
+        borderWidth: 1,
+        borderColor: '#eee',
+    }
 });

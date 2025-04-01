@@ -21,7 +21,7 @@ extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
   }
 }
 
-rootProject.name = 'Mi-Proyecto'
+rootProject.name = 'Aplicacion-TC5'
 
 dependencyResolutionManagement {
   versionCatalogs {

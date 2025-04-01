@@ -17,6 +17,7 @@ export default function HomeScreen() {
                         <Text style={styles.cti}>CTI</Text>
                         <Text style={styles.control}>Control</Text>
                     </Text>
+
                 </View>
                 <DeviceList />
             </View>
