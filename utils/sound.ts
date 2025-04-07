@@ -18,7 +18,8 @@ export const prepareAlarmSound = async () => {
             playsInSilentModeIOS: true,  // Reproduce incluso en modo silencio en iOS
             staysActiveInBackground: true, // Mantiene la reproducción en segundo plano
             shouldDuckAndroid: true,  // Baja el volumen de otras apps en Android
-            playThroughEarpieceAndroid: false // Usar altavoz en lugar de auricular
+            playThroughEarpieceAndroid: false, // Usar altavoz en lugar de auricular
+
         });
 
         console.log('Audio configurado correctamente');

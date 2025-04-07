@@ -8,6 +8,11 @@
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splashscreen_logo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#e5f4ec"
+    },
     "ios": {
       "config": {
         "googleMapsApiKey": "AIzaSyCwza5VRj3Rxh7ljMDrUO0pfiBfBxflC1g"
@@ -35,7 +40,7 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
-      "@react-native-firebase/app",
+      "expo-notifications",
       "expo-router",
       [
         "expo-splash-screen",

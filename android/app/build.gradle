@@ -1,8 +1,6 @@
 apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
-//apply plugin: 'com.google.gms.google-services'   //Esta linea es la que se agrega para Firebase
-
 
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
 
@@ -88,14 +86,13 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.santicticontrol.notificationtc5'
+    namespace "com.santicticontrol.notificationtc5"
     defaultConfig {
-        applicationId 'com.santicticontrol.notificationtc5'
+        applicationId "com.santicticontrol.notificationtc5"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0.0"
-        multiDexEnabled true
+        versionName "1.0"
     }
     signingConfigs {
         debug {
@@ -106,7 +103,6 @@ android {
         }
     }
     buildTypes {
-
         debug {
             signingConfig signingConfigs.debug
         }
@@ -151,13 +147,12 @@ android {
 }
 
 dependencies {
-    // La versión de react-native se establece por el React Native Gradle Plugin
+    // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
     def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";
-
 
     if (isGifEnabled) {
         // For animated gif support
@@ -178,14 +173,9 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-
-    // Quita esta implementación antigua de Firebase
-    // implementation 'com.google.firebase:firebase-core:19.0.0'
-   
-    // Usa solo estas implementaciones de Firebase
-    implementation platform('com.google.firebase:firebase-bom:32.7.4')
-    implementation 'com.google.firebase:firebase-messaging'
-    implementation 'com.google.firebase:firebase-analytics'
+       implementation platform('com.google.firebase:firebase-bom:32.7.4')
+       implementation 'com.google.firebase:firebase-messaging:23.4.1'
+   // implementation 'com.google.firebase:firebase-analytics'
    // implementation 'com.google.firebase:firebase-core'
     //implementation 'com.google.firebase:firebase-app'
 
@@ -199,5 +189,5 @@ dependencies {
         implementation jscFlavor
     }
 }
-apply plugin: 'com.google.gms.google-services'   //Esta linea es la que se agrega para Firebase
+apply plugin: 'com.google.gms.google-services'
 

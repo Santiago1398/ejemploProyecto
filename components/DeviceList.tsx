@@ -15,7 +15,6 @@ export default function DeviceList() {
     const { token, userId } = useAuthStore();
     const [devices, setDevices] = useState<ResponseAlarmaSite[]>([]);
     const [loading, setLoading] = useState(true);
-    const { fcmToken } = usePushNotifications();
 
     // Función para obtener los datos desde la API
     const fetchDevices = async () => {
@@ -121,12 +120,7 @@ export default function DeviceList() {
     return (
         <View style={styles.container}>
 
-            {fcmToken && (
-                <View style={styles.tokenContainer}>
-                    <Text style={styles.tokenLabel}>Token del dispositivo:</Text>
-                    <Text style={styles.tokenText} selectable>{fcmToken}</Text>
-                </View>
-            )}
+
             {devices.length === 0 ? (
                 <Text style={styles.loadingText}>No hay dispositivos disponibles</Text>
             ) : (

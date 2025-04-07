@@ -1,53 +1,51 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
 buildscript {
     ext {
         buildToolsVersion = findProperty('android.buildToolsVersion') ?: '35.0.0'
         minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '24')
         compileSdkVersion = Integer.parseInt(findProperty('android.compileSdkVersion') ?: '35')
         targetSdkVersion = Integer.parseInt(findProperty('android.targetSdkVersion') ?: '34')
-        kotlinVersion = '1.9.25'
-        composeCompilerVersion = '1.5.15' // Versión compatible con Kotlin 1.9.25
+        kotlinVersion = findProperty('android.kotlinVersion') ?: '1.9.25'
         ndkVersion = "26.1.10909125"
-        firebaseMessagingVersion = "23.4.0"
     }
+
     repositories {
         google()
         mavenCentral()
-        gradlePluginPortal()
-
     }
+
     dependencies {
-        classpath 'com.android.tools.build:gradle:8.1.0'
-        classpath 'com.google.gms:google-services:4.4.1'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
-        // Usamos la versión que trae React Native; puede que debas forzar la versión en resolutions
-        classpath 'com.facebook.react:react-native-gradle-plugin:0.76.7'
+        classpath("com.android.tools.build:gradle:8.2.1") // ✅ fija versión
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+        classpath("com.facebook.react:react-native-gradle-plugin")
+    classpath 'com.google.gms:google-services:4.4.0'
+
     }
 }
 
-
+apply plugin: "com.facebook.react.rootproject"
 
 allprojects {
     repositories {
+        // React Native
+        maven {
+            url(new File(
+                ['node', '--print', "require.resolve('react-native/package.json')"]
+                    .execute(null, rootDir)
+                    .text.trim(), '../android'))
+        }
+
+        // JavaScriptCore for Android
+        maven {
+            url(new File(
+                ['node', '--print', "require.resolve('jsc-android/package.json', { paths: [require.resolve('react-native/package.json')] })"]
+                    .execute(null, rootDir)
+                    .text.trim(), '../dist'))
+        }
+
         google()
         mavenCentral()
         maven { url 'https://www.jitpack.io' }
-    }
-}
-
-/*subprojects {
-    afterEvaluate { project ->
-        if (project.hasProperty("android")) {
-            android {
-                compileSdkVersion = 35
-            }
-        }
-    }
-}*/
-
-configurations.all {
-    resolutionStrategy.eachDependency { details ->
-        if (details.requested.group == 'org.jetbrains.kotlin') {
-            details.useVersion "1.7.20"
-        }
     }
 }

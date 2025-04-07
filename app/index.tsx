@@ -25,15 +25,17 @@ const PushApp = () => {
 
             <FlatList
                 data={notifications}
-                keyExtractor={(item) => item.request.identifier}
+                keyExtractor={(_, index) => index.toString()}
                 renderItem={({ item }) => (
                     <View>
                         <ThemedText style={{ fontWeight: 'bold' }}>
-                            {item.request.content.title}
+                            {item.title}
                         </ThemedText>
-                        <ThemedText>{item.request.content.body}</ThemedText>
                         <ThemedText>
-                            {JSON.stringify(item.request.content.data, null, 2)}
+                            {item.data.alarmText || ''}
+                        </ThemedText>
+                        <ThemedText>
+                            {JSON.stringify(item.data, null, 2)}
                         </ThemedText>
                     </View>
                 )}

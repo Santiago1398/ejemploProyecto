@@ -1,27 +1,18 @@
-import firebase from '@react-native-firebase/app';
-import messaging from '@react-native-firebase/messaging';
+
+import { initializeApp } from "firebase/app";
+
 
 const firebaseConfig = {
-    apiKey: "AIzaSyDydjxyrSrgos_Bhq6iGQM90OUjQaxbhOY",
+    apiKey: "AIzaSyBqrNqrA8NEOhdflFJ334PsAMUHSatgkwk",
     authDomain: "mi-proyecto-e32ff.firebaseapp.com",
     projectId: "mi-proyecto-e32ff",
-    storageBucket: "mi-proyecto-e32ff.firebasestorage.app",
+    storageBucket: "mi-proyecto-e32ff.appspot.com",
     messagingSenderId: "503923979781",
-    appId: "1:503923979781:web:ffaccf2ed9d4a685d6ce6c",
-    measurementId: "G-8PEBV6Y9JK"
+    appId: "1:503923979781:android:65a46594edac9480d6ce6c",
 };
 
-export const initializeFirebase = async () => {
-    try {
-        // Verifica si Firebase ya está inicializado
-        if (!firebase.apps.length) {
-            await firebase.initializeApp(firebaseConfig);
-        }
-        return true;
-    } catch (error) {
-        console.error('Error initializing Firebase:', error);
-        return false;
-    }
-};
+// Inicializa solo una vez
+const app = initializeApp(firebaseConfig);
 
-export { firebase, messaging };
+
+export default app;

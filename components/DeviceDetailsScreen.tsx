@@ -18,6 +18,10 @@ import ButtonMaster from "./BottonMaster";
 import { ParamTC } from "@/infrastructure/interface/listapi.interface";
 import Menu3Puntos from "@/components/Menu3Puntos";
 
+import { notificationService } from '@/hooks/NotificationService';
+import { playAlarmSound } from '@/utils/sound';
+import { Notification } from '@/hooks/usePushNotifications';
+
 type DeviceDetailsRouteProp = RouteProp<RootStackParamList, "DeviceDetails">;
 
 export default function AlarmList() {
@@ -144,8 +148,54 @@ export default function AlarmList() {
         );
     };
 
+    // Función para enviar notificación de alarma de prueba
+    const sendTestAlarm = async () => {
+        try {
+            if (!device || !farmName || !siteName) {
+                Alert.alert("Error", "Información del dispositivo incompleta");
+                return;
+            }
+
+            // Crear objeto de notificación según la interfaz
+            const notification: Notification = {
+                title: '¡ALARMA ACTIVADA!',
+                data: {
+                    farmName: farmName,
+                    siteName: siteName,
+                    alarmText: selectedAlarm?.texto || 'Alarma activada',
+                    type: 'alarm'
+                },
+                isAlarm: true
+            };
+
+            // Mostrar notificación usando el servicio
+            await notificationService.showLocalNotification(notification);
+
+            // Reproducir sonido de alarma
+            await playAlarmSound();
+
+            Alert.alert(
+                'Alarma Enviada',
+                'La alarma sonará hasta que toques la notificación o abras la app desde ella'
+            );
+        } catch (error) {
+            console.error('Error al enviar notificación de alarma:', error);
+            Alert.alert('Error', 'No se pudo enviar la notificación de alarma');
+        }
+    };
+
     return (
         <View style={styles.container}>
+
+            {/* Botón de prueba de alarma */}
+            <TouchableOpacity
+                style={styles.testAlarmButton}
+                onPress={sendTestAlarm}
+            >
+                <Ionicons name="notifications" size={20} color="#fff" style={styles.buttonIcon} />
+                <Text style={styles.testAlarmButtonText}>Probar Notificación de ALARMA</Text>
+            </TouchableOpacity>
+
             {loading ? (
                 <Text style={styles.loadingText}>Cargando alarmas...</Text>
             ) : alarms.length === 0 ? (
@@ -298,5 +348,29 @@ const styles = StyleSheet.create({
         borderColor: "#999",
         marginRight: 10,
         backgroundColor: "transparent",
+    },
+    // Añade estos estilos al objeto styles
+    testAlarmButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#FF3B30",
+        marginHorizontal: 16,
+        marginVertical: 10,
+        padding: 12,
+        borderRadius: 12,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5,
+    },
+    testAlarmButtonText: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "#fff",
+    },
+    buttonIcon: {
+        marginRight: 8,
     },
 });
