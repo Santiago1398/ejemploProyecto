@@ -1,15 +1,6 @@
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { post } from '@/services/api';
 
-Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-        shouldShowAlert: true,
-        shouldPlaySound: true,
-        shouldSetBadge: true
-    }),
-});
 
 export async function registerForPushNotificationsAsync() {
     if (!Device.isDevice) {
@@ -34,9 +25,6 @@ export async function registerForPushNotificationsAsync() {
     try {
         const token = (await Notifications.getExpoPushTokenAsync()).data;
         console.log('Token obtenido:', token);
-        // Guarda el token en AsyncStorage
-        await AsyncStorage.setItem('pushToken', token);
-        await post('users/push-token', { token });
         return token;
     } catch (error) {
         console.error('Error obteniendo el token:', error);

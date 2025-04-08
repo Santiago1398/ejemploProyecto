@@ -3,6 +3,8 @@ import { persist } from "zustand/middleware";
 import zustandStorage from "./zustandStorage";
 import { post, postxxx } from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { registerForPushNotificationsAsync } from "@/utils/notifications";
+import { notificationService } from "@/hooks/NotificationService";
 
 interface AuthState {
     username: string | null;
@@ -36,6 +38,8 @@ export const useAuthStore = create<AuthState>()(
 
                     await AsyncStorage.setItem("token", data.token);
                     await AsyncStorage.setItem("userId", data.userId.toString());
+                    await notificationService.registerDevice(data.userId);
+
 
 
                     set({
@@ -52,20 +56,26 @@ export const useAuthStore = create<AuthState>()(
                     return false;
                 }
             },
+            logout: async () => {
+                try {
+                    notificationService.disconnect();
 
+                    await AsyncStorage.removeItem("token");
+                    await AsyncStorage.removeItem("userId");
 
-
-
-            logout: () => {
-                set({
-                    username: null,
-                    password: null,
-                    token: null,
-                    userId: null,
-                    isAuthenticated: false,
-                    isActive: false,
-                });
+                    set({
+                        username: null,
+                        password: null,
+                        token: null,
+                        userId: null,
+                        isAuthenticated: false,
+                        isActive: false,
+                    });
+                } catch (error) {
+                    console.error("Error durante el logout:", error);
+                }
             },
+
         }),
         {
             name: "auth-storage",
@@ -73,4 +83,3 @@ export const useAuthStore = create<AuthState>()(
         }
     )
 );
-
