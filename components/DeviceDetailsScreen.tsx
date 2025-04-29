@@ -21,6 +21,9 @@ import Menu3Puntos from "@/components/Menu3Puntos";
 import { notificationService } from '@/hooks/NotificationService';
 import { playAlarmSound } from '@/utils/sound';
 import { Notification } from "@/types/notifications";
+import * as Notifications from 'expo-notifications';
+
+
 type DeviceDetailsRouteProp = RouteProp<RootStackParamList, "DeviceDetails">;
 
 export default function AlarmList() {
@@ -35,7 +38,12 @@ export default function AlarmList() {
     const [masterAlarmState, setMasterAlarmState] = useState<boolean>(true); // Estado de la alarma 1000
 
     const navigation = useNavigation<any>();
+    /////
+    const [pushToken, setPushToken] = useState<string | null>(null);
+    const [fcmToken, setFcmToken] = useState<string | null>(null);
 
+
+    /////
     // 1. Obtener las alarmas (GET)
     const fetchAlarms = async () => {
         try {
@@ -96,7 +104,7 @@ export default function AlarmList() {
         });
     }, [navigation, device, farmName, siteName, mac]);
 
-    // 4. Manejo de armado/desarmado de alarma
+
     const handleOptionSelect = async (option: string) => {
         if (selectedAlarm) {
             const status = option === "Armada" ? 1 : 0;
@@ -183,6 +191,35 @@ export default function AlarmList() {
         }
     };
 
+    /////////////////
+
+    // const getPushToken = async () => {
+    //     const { status } = await Notifications.requestPermissionsAsync();
+    //     if (status !== 'granted') {
+    //         Alert.alert('Permiso de notificaciones denegado');
+    //         return;
+    //     }
+
+    //     const token = (await Notifications.getExpoPushTokenAsync()).data;
+    //     console.log(' Token Expo:', token);
+    //     setPushToken(token);
+    //     Alert.alert('Expo Push Token', token); 
+    // };
+
+    const getDeviceToken = async () => {
+        const token = await notificationService.getFCMToken();
+        if (token) {
+            setFcmToken(token);
+            Alert.alert("FCM Token obtenido", token);
+        } else {
+            Alert.alert("Error", "No se pudo obtener el token");
+        }
+    };
+
+
+
+    /////////////
+
     return (
         <View style={styles.container}>
 
@@ -193,6 +230,32 @@ export default function AlarmList() {
             >
                 <Ionicons name="notifications" size={20} color="#fff" style={styles.buttonIcon} />
                 <Text style={styles.testAlarmButtonText}>Probar Notificación de ALARMA</Text>
+            </TouchableOpacity>
+
+            {/* Botón para obtener token
+            <TouchableOpacity
+                style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    backgroundColor: '#3478F6',
+                    padding: 12,
+                    borderRadius: 12
+                }}
+                onPress={getPushToken}
+            ></TouchableOpacity> */}
+
+            <TouchableOpacity
+                style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    backgroundColor: '#3478F6',
+                    padding: 12,
+                    borderRadius: 12
+                }}
+                onPress={getDeviceToken}
+            >
+                <Ionicons name="key-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
+                <Text style={{ color: '#fff', fontWeight: 'bold' }}>Obtener Token FCM</Text>
             </TouchableOpacity>
 
             {loading ? (
@@ -283,7 +346,6 @@ const styles = StyleSheet.create({
         marginVertical: 6,
         padding: 16,
         borderRadius: 12,
-        // Sombras
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.15,
@@ -293,7 +355,7 @@ const styles = StyleSheet.create({
     alarmRow: {
         flexDirection: "row",
         alignItems: "center",
-        flex: 1, // Para que el texto ocupe el espacio restante
+        flex: 1,
     },
     alarmIcon: {
         marginRight: 8,
@@ -348,7 +410,7 @@ const styles = StyleSheet.create({
         marginRight: 10,
         backgroundColor: "transparent",
     },
-    // Añade estos estilos al objeto styles
+
     testAlarmButton: {
         flexDirection: "row",
         alignItems: "center",

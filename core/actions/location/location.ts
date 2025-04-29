@@ -1,7 +1,7 @@
 import { LatLng } from '@/infrastructure/intercafe/lat-Ing';
 import * as Location from 'expo-location'
 
-
+//
 
 
 export const getCurrentLocation = async (): Promise<LatLng> => {

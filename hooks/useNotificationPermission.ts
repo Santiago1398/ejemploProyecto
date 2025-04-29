@@ -12,7 +12,7 @@ export const useNotificationPermission = () => {
             const hasAskedBefore = await AsyncStorage.getItem('hasAskedForNotifications');
             if (hasAskedBefore === 'true') {
                 // Si ya preguntamos antes, no volver a preguntar
-                return;
+                return false;
             }
 
             return new Promise((resolve) => {

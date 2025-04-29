@@ -1,27 +1,38 @@
 import { Audio } from "expo-av";
 
-export const globalAlarmSound: { sound: Audio.Sound | null } = { sound: null };
+let soundObject: Audio.Sound | null = null;
 
 export const playAlarmSound = async () => {
     try {
-        if (globalAlarmSound.sound) return;
-        console.log("Reproduciendo sonido de alarma");
+        if (soundObject) {
+            console.log(" Sonido ya en reproducción.");
+            return;
+        }
+
+        console.log(" Reproduciendo sonido de alarma...");
         const { sound } = await Audio.Sound.createAsync(
-            require("../assets/images/alarm-car-or-home-62554.mp3"),
+            require("../assets/images/alarmcar.mp3"),
             { shouldPlay: true, isLooping: true }
         );
-        globalAlarmSound.sound = sound;
+
+        soundObject = sound;
         await sound.playAsync();
     } catch (error) {
-        console.error("Error al reproducir el sonido:", error);
+        console.error(" Error al reproducir el sonido:", error);
     }
-}
+};
 
 export const stopAlarmSound = async () => {
-    if (globalAlarmSound.sound) {
-        console.log("Deteniendo sonido de alarma...");
-        await globalAlarmSound.sound.stopAsync();
-        await globalAlarmSound.sound.unloadAsync();
-        globalAlarmSound.sound = null;
+    try {
+        if (soundObject) {
+            console.log(" Deteniendo sonido...");
+            await soundObject.stopAsync();
+            await soundObject.unloadAsync();
+            soundObject = null;
+        } else {
+            console.log(" No hay sonido activo para detener.");
+        }
+    } catch (error) {
+        console.error(" Error al detener el sonido:", error);
     }
-}
+};

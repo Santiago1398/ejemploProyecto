@@ -13,6 +13,11 @@
       "bundleIdentifier": "com.santicticontrol.notificationtc5"
     },
     "android": {
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyBqrNqrA8NEOhdflFJ334PsAMUHSatgkwk"
+        }
+      },
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"

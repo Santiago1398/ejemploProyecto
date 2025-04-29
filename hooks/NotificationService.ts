@@ -3,6 +3,10 @@ import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { post } from '@/services/api';
 import { playAlarmSound, stopAlarmSound } from '@/utils/sound';
+import { EventSubscription } from 'expo-modules-core';
+//import messaging from '@react-native-firebase/messaging';
+
+
 
 // Configuración global del manejador de notificaciones
 Notifications.setNotificationHandler({
@@ -15,13 +19,14 @@ Notifications.setNotificationHandler({
 });
 
 class NotificationService {
-    subscribeToTopic(arg0: string) {
-        throw new Error('Method not implemented.');
-    }
+
     private webSocket: WebSocket | null = null;
     private reconnectInterval: NodeJS.Timeout | null = null;
-    private notificationSubscription: Notifications.Subscription | null = null;
+    //private notificationSubscription: EventSubscription | null = null;
     private receivedNotifications: Notifications.Notification[] = [];
+    private foregroundSubscription: EventSubscription | null = null;
+    private responseSubscription: EventSubscription | null = null;
+
     public get notifications() {
         return this.receivedNotifications;
     }
@@ -30,32 +35,36 @@ class NotificationService {
     constructor() {
         this.setupNotificationResponse();
         this.setupForegroundListener();
+
     }
 
     private setupForegroundListener() {
-        const Subscription = Notifications.addNotificationReceivedListener(notification => {
-            console.log('🔔 Notificación recibida en primer plano:', notification);
+        this.foregroundSubscription = Notifications.addNotificationReceivedListener(notification => {
+            console.log(' Notificación recibida en primer plano:', notification);
             this.receivedNotifications.push(notification);
+
             const data = notification.request.content.data;
             if (data?.isAlarm) playAlarmSound();
-
         });
-        // Almacena la suscripción para poder cancelarla más tarde
-        this.notificationSubscription = Subscription;
     }
+
 
     // Maneja respuesta cuando se toca una notificación
     private setupNotificationResponse() {
-        const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
+        this.responseSubscription = Notifications.addNotificationResponseReceivedListener(response => {
             const data = response.notification.request.content.data;
-            console.log('🔔 Notificación tocada:', data);
+            console.log(' Notificación tocada:', data);
 
+            if (data?.isAlarm) {
+                console.log(" Deteniendo sonido de alarma desde notificación");
+                setTimeout(() => {
+                    stopAlarmSound();
+                }, 100);
+            }
 
-            if (data?.isAlarm) stopAlarmSound();
         });
-
-        this.notificationSubscription = responseListener;
     }
+
 
     // Registro del dispositivo y obtención del token push
     async registerDevice(userId?: number): Promise<string | null> {
@@ -69,29 +78,56 @@ class NotificationService {
             }
 
             if (finalStatus !== 'granted') {
-                console.log('❌ Permisos de notificación denegados');
+                console.log(' Permisos de notificación denegados');
                 return null;
             }
 
-            const expoToken = (await Notifications.getExpoPushTokenAsync()).data;
-            console.log('📲 Expo Push Token:', expoToken);
+            const { data: fcmToken } = await Notifications.getDevicePushTokenAsync();
+            console.log(' FCM Token:', fcmToken);
 
-            if (expoToken) {
-                await AsyncStorage.setItem('deviceToken', expoToken);
-
+            if (fcmToken) {
+                await AsyncStorage.setItem('deviceToken', fcmToken);
                 if (userId) {
-                    await this.sendTokenToServer(expoToken, userId);
+                    await this.sendTokenToServer(fcmToken, userId);
                 }
-
-                return expoToken;
+                return fcmToken;
             }
 
             return null;
         } catch (error) {
-            console.error('💥 Error registrando dispositivo:', error);
+            console.error(' Error registrando dispositivo:', error);
             return null;
         }
     }
+
+    public async getFCMToken(): Promise<string | null> {
+        try {
+            const { status } = await Notifications.getPermissionsAsync();
+            let finalStatus = status;
+
+            if (status !== 'granted') {
+                const { status: newStatus } = await Notifications.requestPermissionsAsync();
+                finalStatus = newStatus;
+            }
+
+            if (finalStatus !== 'granted') {
+                console.log(' Permisos de notificaciones denegados');
+                return null;
+            }
+
+            const { data: fcmToken } = await Notifications.getDevicePushTokenAsync();
+
+            //const fcmToken = await messaging().getToken();
+            console.log(' Token FCM:', fcmToken);
+
+            await AsyncStorage.setItem('deviceToken', fcmToken);
+            return fcmToken;
+        } catch (error) {
+            console.error('Error obteniendo FCM token:', error);
+            return null;
+        }
+    }
+
 
     private async sendTokenToServer(token: string, userId: number) {
         try {
@@ -100,38 +136,40 @@ class NotificationService {
                 userId,
                 deviceType: Platform.OS,
             });
-            console.log('✅ Token enviado al servidor');
+            console.log(' Token enviado al servidor');
         } catch (error) {
-            console.error('❌ Error enviando token al servidor:', error);
+            console.error(' Error enviando token al servidor:', error);
         }
     }
 
     // 🔧 WebSocket para recibir alarmas en tiempo real
     public setupWebSocket(token: string) {
-        console.log("🚀 setupWebSocket fue llamado con token:", token);
+        console.log(" setupWebSocket fue llamado con token:", token);
 
         if (!token) {
-            console.warn("⚠️ Token vacío, cancelando conexión WebSocket.");
+            console.warn(" Token vacío, cancelando conexión WebSocket.");
             return;
         }
 
         if (this.webSocket && this.webSocket.readyState === WebSocket.OPEN) {
-            console.log("⚠️ WebSocket ya estaba conectado.");
+            console.log(" WebSocket ya estaba conectado.");
             return;
         }
 
         try {
-            console.log("🌐 Intentando conectar al WebSocket...");
+            console.log(" Intentando conectar al WebSocket...");
+            // this.webSocket = new WebSocket("wss://37.187.180.179:8032");
             this.webSocket = new WebSocket("wss://portaltest.cticontrol.com/ws-test");
 
+
             this.webSocket.onopen = () => {
-                console.log("✅ WebSocket conectado correctamente.");
+                console.log(" WebSocket conectado correctamente.");
                 const message = { action: "subscribe", token };
                 this.webSocket?.send(JSON.stringify(message));
             };
 
             this.webSocket.onmessage = (event) => {
-                console.log("📨 Mensaje recibido del WebSocket:", event.data);
+                console.log(" Mensaje recibido del WebSocket:", event.data);
 
                 try {
                     const data = JSON.parse(event.data);
@@ -151,16 +189,16 @@ class NotificationService {
                         });
                     }
                 } catch (error) {
-                    console.error('❌ Error procesando mensaje WebSocket:', error);
+                    console.error(' Error procesando mensaje WebSocket:', error);
                 }
             };
 
             this.webSocket.onerror = (error) => {
-                console.error("❌ Error en WebSocket:", error);
+                console.error(" Error en WebSocket:", error);
             };
 
             this.webSocket.onclose = (event) => {
-                console.warn("⚠️ WebSocket cerrado:", event.code, event.reason);
+                console.warn(" WebSocket cerrado:", event.code, event.reason);
                 this.webSocket = null;
 
                 if (event.code !== 1000) {
@@ -171,7 +209,7 @@ class NotificationService {
                 }
             };
         } catch (error) {
-            console.error('💥 Error iniciando WebSocket:', error);
+            console.error(' Error iniciando WebSocket:', error);
             if (this.reconnectInterval) clearTimeout(this.reconnectInterval);
             this.reconnectInterval = setTimeout(() => {
                 this.reconnectWebSocket();
@@ -182,7 +220,7 @@ class NotificationService {
     private async reconnectWebSocket() {
         const token = await AsyncStorage.getItem('deviceToken');
         if (token) {
-            console.log("🔄 Reintentando conexión WebSocket...");
+            console.log(" Reintentando conexión WebSocket...");
             this.setupWebSocket(token);
         }
     }
@@ -221,7 +259,7 @@ class NotificationService {
                 playAlarmSound();
             }
         } catch (error) {
-            console.error('❌ Error mostrando notificación local:', error);
+            console.error(' Error mostrando notificación local:', error);
         }
     }
 
@@ -230,9 +268,14 @@ class NotificationService {
     disconnect() {
         stopAlarmSound();
 
-        if (this.notificationSubscription) {
-            this.notificationSubscription.remove();
-            this.notificationSubscription = null;
+        if (this.foregroundSubscription) {
+            this.foregroundSubscription.remove();
+            this.foregroundSubscription = null;
+        }
+
+        if (this.responseSubscription) {
+            this.responseSubscription.remove();
+            this.responseSubscription = null;
         }
 
         if (this.webSocket) {
@@ -245,6 +288,7 @@ class NotificationService {
             this.reconnectInterval = null;
         }
     }
+
 }
 
 export const notificationService = new NotificationService();
