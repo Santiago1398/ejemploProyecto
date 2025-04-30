@@ -24,7 +24,15 @@
       },
       "package": "com.santicticontrol.notificationtc5",
       "googleServicesFile": "./android/app/google-services.json",
-      "usesCleartextTraffic": true
+      "usesCleartextTraffic": true,
+      "manifest": {
+        "metaData": [
+          {
+            "android:name": "com.google.firebase.messaging.default_notification_channel_id",
+            "android:value": "alarm-channel"
+          }
+        ]
+      }
     },
     "web": {
       "bundler": "metro",

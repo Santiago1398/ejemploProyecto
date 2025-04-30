@@ -192,29 +192,24 @@ export default function AlarmList() {
     };
 
     /////////////////
-
-    // const getPushToken = async () => {
-    //     const { status } = await Notifications.requestPermissionsAsync();
-    //     if (status !== 'granted') {
-    //         Alert.alert('Permiso de notificaciones denegado');
-    //         return;
-    //     }
-
-    //     const token = (await Notifications.getExpoPushTokenAsync()).data;
-    //     console.log(' Token Expo:', token);
-    //     setPushToken(token);
-    //     Alert.alert('Expo Push Token', token); 
-    // };
-
-    const getDeviceToken = async () => {
-        const token = await notificationService.getFCMToken();
+    const getPushToken = async () => {
+        const token = await notificationService.getExpoPushToken();
         if (token) {
-            setFcmToken(token);
-            Alert.alert("FCM Token obtenido", token);
-        } else {
-            Alert.alert("Error", "No se pudo obtener el token");
+            setPushToken(token);
+            Alert.alert('Expo Push Token', token);
         }
     };
+
+
+    // const getDeviceToken = async () => {
+    //     const token = await notificationService.getFCMToken();
+    //     if (token) {
+    //         setFcmToken(token);
+    //         Alert.alert("FCM Token obtenido", token);
+    //     } else {
+    //         Alert.alert("Error", "No se pudo obtener el token");
+    //     }
+    // };
 
 
 
@@ -232,7 +227,7 @@ export default function AlarmList() {
                 <Text style={styles.testAlarmButtonText}>Probar Notificación de ALARMA</Text>
             </TouchableOpacity>
 
-            {/* Botón para obtener token
+            {/* Botón para obtener token */}
             <TouchableOpacity
                 style={{
                     flexDirection: 'row',
@@ -242,7 +237,7 @@ export default function AlarmList() {
                     borderRadius: 12
                 }}
                 onPress={getPushToken}
-            ></TouchableOpacity> */}
+            ></TouchableOpacity>
 
             <TouchableOpacity
                 style={{
@@ -252,7 +247,7 @@ export default function AlarmList() {
                     padding: 12,
                     borderRadius: 12
                 }}
-                onPress={getDeviceToken}
+            //onPress={getDeviceToken}
             >
                 <Ionicons name="key-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
                 <Text style={{ color: '#fff', fontWeight: 'bold' }}>Obtener Token FCM</Text>

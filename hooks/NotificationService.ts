@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { post } from '@/services/api';
@@ -17,6 +17,9 @@ Notifications.setNotificationHandler({
         priority: Notifications.AndroidNotificationPriority.MAX
     }),
 });
+
+
+
 
 class NotificationService {
 
@@ -39,8 +42,12 @@ class NotificationService {
     }
 
     private setupForegroundListener() {
+        console.log(' Configurando listener de notificaciones en primer plano...');
         this.foregroundSubscription = Notifications.addNotificationReceivedListener(notification => {
             console.log(' Notificación recibida en primer plano:', notification);
+            Alert.alert("Notificación", "Recibida en primer plano: " + notification.request.content.title);
+            console.log(' Notificación:', notification.request.content.data);
+            console.log(' Notificación:', notification.request.content.body);
             this.receivedNotifications.push(notification);
 
             const data = notification.request.content.data;
@@ -54,6 +61,7 @@ class NotificationService {
         this.responseSubscription = Notifications.addNotificationResponseReceivedListener(response => {
             const data = response.notification.request.content.data;
             console.log(' Notificación tocada:', data);
+            console.log(' Respuesta de notificación:', response);
 
             if (data?.isAlarm) {
                 console.log(" Deteniendo sonido de alarma desde notificación");
@@ -100,33 +108,53 @@ class NotificationService {
         }
     }
 
-    public async getFCMToken(): Promise<string | null> {
+    // public async getFCMToken(): Promise<string | null> {
+    //     try {
+    //         const { status } = await Notifications.getPermissionsAsync();
+    //         let finalStatus = status;
+
+    //         if (status !== 'granted') {
+    //             const { status: newStatus } = await Notifications.requestPermissionsAsync();
+    //             finalStatus = newStatus;
+    //         }
+
+    //         if (finalStatus !== 'granted') {
+    //             console.log(' Permisos de notificaciones denegados');
+    //             return null;
+    //         }
+
+    //         //const { data: fcmToken } = await Notifications.getDevicePushTokenAsync();
+
+    //         //const fcmToken = await messaging().getToken();
+    //        // console.log(' Token FCM:', fcmToken);
+
+    //         await AsyncStorage.setItem('deviceToken', fcmToken);
+    //         //return fcmToken;
+    //     } catch (error) {
+    //         console.error('Error obteniendo FCM token:', error);
+    //         return null;
+    //     }
+    // }
+
+    public async getExpoPushToken(): Promise<string | null> {
         try {
-            const { status } = await Notifications.getPermissionsAsync();
-            let finalStatus = status;
-
+            const { status } = await Notifications.requestPermissionsAsync();
             if (status !== 'granted') {
-                const { status: newStatus } = await Notifications.requestPermissionsAsync();
-                finalStatus = newStatus;
-            }
-
-            if (finalStatus !== 'granted') {
-                console.log(' Permisos de notificaciones denegados');
+                Alert.alert('Permiso de notificaciones denegado');
                 return null;
             }
 
-            const { data: fcmToken } = await Notifications.getDevicePushTokenAsync();
-
-            //const fcmToken = await messaging().getToken();
-            console.log(' Token FCM:', fcmToken);
-
-            await AsyncStorage.setItem('deviceToken', fcmToken);
-            return fcmToken;
+            const token = (await Notifications.getExpoPushTokenAsync()).data;
+            console.log('Expo Push Token:', token);
+            await AsyncStorage.setItem('expoPushToken', token);
+            return token;
         } catch (error) {
-            console.error('Error obteniendo FCM token:', error);
+            console.error('Error obteniendo Expo push token:', error);
             return null;
         }
     }
+
+
 
 
     private async sendTokenToServer(token: string, userId: number) {
@@ -232,7 +260,11 @@ class NotificationService {
     }) {
         try {
             let body = '';
+            console.log(' Mostrando notificación local...');
+            console.log(' Notificación:', notification);
             const { farmName, siteName, alarmText, body: messageBody } = notification.data;
+            console.log(' Notificación local:', notification);
+            console.log(' Datos de la notificación:', notification.data);
 
             if (messageBody) {
                 body = messageBody;
@@ -292,3 +324,4 @@ class NotificationService {
 }
 
 export const notificationService = new NotificationService();
+

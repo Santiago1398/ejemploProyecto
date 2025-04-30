@@ -11,7 +11,6 @@ export const useNotificationPermission = () => {
             // Verificar si ya preguntamos antes
             const hasAskedBefore = await AsyncStorage.getItem('hasAskedForNotifications');
             if (hasAskedBefore === 'true') {
-                // Si ya preguntamos antes, no volver a preguntar
                 return false;
             }
 
