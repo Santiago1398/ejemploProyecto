@@ -201,15 +201,15 @@ export default function AlarmList() {
     };
 
 
-    // const getDeviceToken = async () => {
-    //     const token = await notificationService.getFCMToken();
-    //     if (token) {
-    //         setFcmToken(token);
-    //         Alert.alert("FCM Token obtenido", token);
-    //     } else {
-    //         Alert.alert("Error", "No se pudo obtener el token");
-    //     }
-    // };
+    const getDeviceToken = async () => {
+        const token = await notificationService.getFCMToken();
+        if (token) {
+            setFcmToken(token);
+            Alert.alert("FCM Token obtenido", token);
+        } else {
+            Alert.alert("Error", "No se pudo obtener el token");
+        }
+    };
 
 
 
@@ -247,7 +247,7 @@ export default function AlarmList() {
                     padding: 12,
                     borderRadius: 12
                 }}
-            //onPress={getDeviceToken}
+                onPress={getDeviceToken}
             >
                 <Ionicons name="key-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
                 <Text style={{ color: '#fff', fontWeight: 'bold' }}>Obtener Token FCM</Text>

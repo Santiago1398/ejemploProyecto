@@ -108,33 +108,40 @@ class NotificationService {
         }
     }
 
-    // public async getFCMToken(): Promise<string | null> {
-    //     try {
-    //         const { status } = await Notifications.getPermissionsAsync();
-    //         let finalStatus = status;
+    public async getFCMToken(userId?: number): Promise<string | null> {
+        try {
+            const { status: existingStatus } = await Notifications.getPermissionsAsync();
+            let finalStatus = existingStatus;
 
-    //         if (status !== 'granted') {
-    //             const { status: newStatus } = await Notifications.requestPermissionsAsync();
-    //             finalStatus = newStatus;
-    //         }
+            if (existingStatus !== 'granted') {
+                const { status } = await Notifications.requestPermissionsAsync();
+                finalStatus = status;
+            }
 
-    //         if (finalStatus !== 'granted') {
-    //             console.log(' Permisos de notificaciones denegados');
-    //             return null;
-    //         }
+            if (finalStatus !== 'granted') {
+                console.log(' Permisos de notificaciones denegados');
+                return null;
+            }
 
-    //         //const { data: fcmToken } = await Notifications.getDevicePushTokenAsync();
+            const { data: fcmToken } = await Notifications.getDevicePushTokenAsync();
+            if (!fcmToken) {
+                console.log('❌ No se pudo obtener el token FCM');
+                return null;
+            }
 
-    //         //const fcmToken = await messaging().getToken();
-    //        // console.log(' Token FCM:', fcmToken);
+            console.log('✅ FCM Token:', fcmToken);
+            await AsyncStorage.setItem('deviceToken', fcmToken);
 
-    //         await AsyncStorage.setItem('deviceToken', fcmToken);
-    //         //return fcmToken;
-    //     } catch (error) {
-    //         console.error('Error obteniendo FCM token:', error);
-    //         return null;
-    //     }
-    // }
+            if (userId) {
+                await this.sendTokenToServer(fcmToken, userId);
+            }
+
+            return fcmToken;
+        } catch (error) {
+            console.error('❌ Error obteniendo FCM token:', error);
+            return null;
+        }
+    }
 
     public async getExpoPushToken(): Promise<string | null> {
         try {
