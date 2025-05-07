@@ -22,6 +22,8 @@ import { notificationService } from '@/hooks/NotificationService';
 import { playAlarmSound } from '@/utils/sound';
 import { Notification } from "@/types/notifications";
 import * as Notifications from 'expo-notifications';
+import * as Clipboard from 'expo-clipboard';
+
 
 
 type DeviceDetailsRouteProp = RouteProp<RootStackParamList, "DeviceDetails">;
@@ -205,11 +207,13 @@ export default function AlarmList() {
         const token = await notificationService.getFCMToken();
         if (token) {
             setFcmToken(token);
-            Alert.alert("FCM Token obtenido", token);
+            await Clipboard.setStringAsync(token); // 👈 Copia al portapapeles
+            Alert.alert("FCM Token obtenido", "Copiado al portapapeles:\n\n" + token);
         } else {
             Alert.alert("Error", "No se pudo obtener el token");
         }
     };
+
 
 
 
