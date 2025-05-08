@@ -40,12 +40,12 @@ export default function AlarmList() {
     const [masterAlarmState, setMasterAlarmState] = useState<boolean>(true); // Estado de la alarma 1000
 
     const navigation = useNavigation<any>();
-    /////
-    const [pushToken, setPushToken] = useState<string | null>(null);
+
+    //const [pushToken, setPushToken] = useState<string | null>(null);
     const [fcmToken, setFcmToken] = useState<string | null>(null);
 
 
-    /////
+
     // 1. Obtener las alarmas (GET)
     const fetchAlarms = async () => {
         try {
@@ -61,10 +61,13 @@ export default function AlarmList() {
             }
 
             // Filtramos las alarmas habilitadas y distintas de 1000
-            const enabledAlarms = data.filter(
-                (alarm: { habilitado: boolean; idAlarm: number }) =>
-                    alarm.habilitado === true && alarm.idAlarm !== 1000
-            );
+            const enabledAlarms = data
+                .filter((alarm: { habilitado: boolean; idAlarm: number }) => alarm.habilitado && alarm.idAlarm !== 1000)
+                .map((alarm: ParamTC) => ({
+                    ...alarm,
+                    activada: false, // <- nueva propiedad
+                }));
+
             console.table("Alarmas habilitadas:", enabledAlarms);
 
             setAlarms(enabledAlarms);
@@ -129,6 +132,25 @@ export default function AlarmList() {
             }
         }
     };
+    const handleAlarmDetected = (idAlarm: number) => {
+        console.log(" Alarma detectada con id:", idAlarm);
+        setAlarms(prev =>
+            prev.map(alarm =>
+                alarm.idAlarm === idAlarm
+                    ? { ...alarm, disparado: true }
+                    : alarm
+            )
+        );
+    };
+
+    useEffect(() => {
+        notificationService.setOnAlarmDetected(handleAlarmDetected);
+        return () => {
+            notificationService.setOnAlarmDetected(() => { });
+        };
+    }, []);
+
+
 
     // 5. Abre el modal para la alarma seleccionada
     const openOptionModal = (alarm: ParamTC) => {
@@ -138,20 +160,20 @@ export default function AlarmList() {
 
     // 6. Render de cada alarma (con mejoras visuales)
     const renderAlarmItem = ({ item }: { item: ParamTC }) => {
+        let backgroundColor = "#8a9bb9"; // desarmada
+
+        if (item.disparado) backgroundColor = "#FF3B30"; // 🔴 Alarma disparada (activada)
+        else if (item.armado) backgroundColor = "#76db36"; // ✅ Armada
+
         return (
             <TouchableOpacity
-                style={[
-                    styles.alarmContainer,
-                    { backgroundColor: item.armado ? "#76db36" : "#8a9bb9" },
-                ]}
+                style={[styles.alarmContainer, { backgroundColor }]}
                 onPress={() => openOptionModal(item)}
             >
                 <View style={styles.alarmRow}>
-                    {/* Ícono de campana u otro representativo */}
                     <Ionicons name="alert-circle-outline" size={24} color="#fff" style={styles.alarmIcon} />
                     <Text style={styles.alarmText}>{item.texto}</Text>
                 </View>
-                {/* Flecha a la derecha */}
                 <Entypo name="chevron-thin-right" size={20} color="#fff" />
             </TouchableOpacity>
         );
@@ -193,14 +215,14 @@ export default function AlarmList() {
         }
     };
 
-    /////////////////
-    const getPushToken = async () => {
-        const token = await notificationService.getExpoPushToken();
-        if (token) {
-            setPushToken(token);
-            Alert.alert('Expo Push Token', token);
-        }
-    };
+    // /////////////////
+    // const getPushToken = async () => {
+    //     const token = await notificationService.getExpoPushToken();
+    //     if (token) {
+    //         setPushToken(token);
+    //         Alert.alert('Expo Push Token', token);
+    //     }
+    // };
 
 
     const getDeviceToken = async () => {
@@ -214,10 +236,6 @@ export default function AlarmList() {
         }
     };
 
-
-
-
-    /////////////
 
     return (
         <View style={styles.container}>
@@ -240,7 +258,7 @@ export default function AlarmList() {
                     padding: 12,
                     borderRadius: 12
                 }}
-                onPress={getPushToken}
+            //onPress={getPushToken}
             ></TouchableOpacity>
 
             <TouchableOpacity
@@ -434,3 +452,4 @@ const styles = StyleSheet.create({
         marginRight: 8,
     },
 });
+

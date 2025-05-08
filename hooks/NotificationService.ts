@@ -30,6 +30,31 @@ class NotificationService {
     private foregroundSubscription: EventSubscription | null = null;
     private responseSubscription: EventSubscription | null = null;
 
+    private onAlarmDetectedCallback?: (idAlarm: number) => void;
+
+    public setOnAlarmDetected(callback: (idAlarm: number) => void) {
+        this.onAlarmDetectedCallback = callback;
+    }
+
+    private notifyAlarm(idAlarm: number) {
+        if (this.onAlarmDetectedCallback) {
+            this.onAlarmDetectedCallback(idAlarm);
+        }
+    }
+
+    private onSiteAlarmDetectedCallback?: (mac: number) => void;
+
+    public setOnSiteAlarmDetected(callback: (mac: number) => void) {
+        this.onSiteAlarmDetectedCallback = callback;
+    }
+
+    private notifySiteAlarm(mac: string) {
+        if (this.onSiteAlarmDetectedCallback) {
+            this.onSiteAlarmDetectedCallback(Number(mac));
+        }
+    }
+
+
     public get notifications() {
         return this.receivedNotifications;
     }
@@ -44,14 +69,15 @@ class NotificationService {
     private setupForegroundListener() {
         console.log(' Configurando listener de notificaciones en primer plano...');
         this.foregroundSubscription = Notifications.addNotificationReceivedListener(notification => {
-            console.log(' Notificación recibida en primer plano:', notification);
-            Alert.alert("Notificación", "Recibida en primer plano: " + notification.request.content.title);
-            console.log(' Notificación:', notification.request.content.data);
-            console.log(' Notificación:', notification.request.content.body);
+            //Alert.alert("Notificación", "Recibida en primer plano: " + notification.request.content.title);
             this.receivedNotifications.push(notification);
 
             const data = notification.request.content.data;
-            if (data?.isAlarm) playAlarmSound();
+            if (data?.isAlarm) {
+                if (data.idAlarm) this.notifyAlarm(Number(data.idAlarm));
+                if (data.mac) this.notifySiteAlarm(data.mac); // 👈 nuevo
+                playAlarmSound();
+            }
         });
     }
 
@@ -63,7 +89,8 @@ class NotificationService {
             console.log(' Notificación tocada:', data);
             console.log(' Respuesta de notificación:', response);
 
-            if (data?.isAlarm) {
+            if (data?.isAlarm && data?.idAlarm) {
+                this.notifyAlarm(Number(data.idAlarm));
                 console.log(" Deteniendo sonido de alarma desde notificación");
                 setTimeout(() => {
                     stopAlarmSound();
@@ -143,23 +170,23 @@ class NotificationService {
         }
     }
 
-    public async getExpoPushToken(): Promise<string | null> {
-        try {
-            const { status } = await Notifications.requestPermissionsAsync();
-            if (status !== 'granted') {
-                Alert.alert('Permiso de notificaciones denegado');
-                return null;
-            }
+    // public async getExpoPushToken(): Promise<string | null> {
+    //     try {
+    //         const { status } = await Notifications.requestPermissionsAsync();
+    //         if (status !== 'granted') {
+    //             Alert.alert('Permiso de notificaciones denegado');
+    //             return null;
+    //         }
 
-            const token = (await Notifications.getExpoPushTokenAsync()).data;
-            console.log('Expo Push Token:', token);
-            await AsyncStorage.setItem('expoPushToken', token);
-            return token;
-        } catch (error) {
-            console.error('Error obteniendo Expo push token:', error);
-            return null;
-        }
-    }
+    //         const token = (await Notifications.getExpoPushTokenAsync()).data;
+    //         console.log('Expo Push Token:', token);
+    //         await AsyncStorage.setItem('expoPushToken', token);
+    //         return token;
+    //     } catch (error) {
+    //         console.error('Error obteniendo Expo push token:', error);
+    //         return null;
+    //     }
+    // }
 
 
 
@@ -204,27 +231,28 @@ class NotificationService {
             };
 
             this.webSocket.onmessage = (event) => {
-                console.log(" Mensaje recibido del WebSocket:", event.data);
-
                 try {
                     const data = JSON.parse(event.data);
-
-                    if (data.status === 1) {
+                    if (data.status === 1 && data.idAlarm) {
+                        this.notifyAlarm(data.idAlarm);
+                        if (data.mac) this.notifySiteAlarm(data.mac); // 👈 nuevo
+                        // 👈 Notifica UI
                         playAlarmSound();
-
                         this.showLocalNotification({
                             title: "¡Alarma activada!",
                             data: {
                                 farmName: data.farmName,
                                 siteName: data.siteName,
                                 alarmText: data.texto,
+                                idAlarm: data.idAlarm,
+                                mac: data.mac, // Importante incluir esto
                                 type: 'alarm'
                             },
                             isAlarm: true
                         });
                     }
                 } catch (error) {
-                    console.error(' Error procesando mensaje WebSocket:', error);
+                    console.error('Error procesando mensaje WebSocket:', error);
                 }
             };
 

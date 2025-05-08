@@ -1,11 +1,23 @@
 import { NavigationContainer } from "@react-navigation/native";
 import Layout from "./_layout";
-import { useEffect } from "react";
-import { Platform } from "react-native";
-import * as Notifications from 'expo-notifications';
-import { stopAlarmSound } from '@/utils/sound';
-console.log("App.tsx");
+import { useEffect, useState } from "react";
+import { handleInitialNotification } from "@/utils/notificationHandler";
+
+
 export default function App() {
+    const [ready, setReady] = useState(false);
+
+
+    useEffect(() => {
+        const prepare = async () => {
+            await handleInitialNotification(); // 🔔 Revisa si la notificación encendió la app
+            setReady(true); // Espera a que eso termine antes de cargar Layout
+        };
+
+        prepare();
+    }, []);
+
+    if (!ready) return null;
 
     // const configureNotificationChannel = async () => {
     //     try {

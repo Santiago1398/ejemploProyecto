@@ -6,12 +6,15 @@ import TabsNavigator from "./(tabs)/TabsNavigator";
 import PermissionsCkeckProvider from "@/presentation/providers/PermissionsCkeckProvider";
 //import ExtraStack from "./extra/Extra";
 import { useAuthStore } from "@/store/authStore";
-import HomeScreen from "./(tabs)/HomeScreen";
+//import HomeScreen from "./(tabs)/HomeScreen";
 import PermissionsScreen from "./extra/permissions/PermissionScreen";
 import MapsScreen from "./extra/map/MapsScreen";
 import { stopAlarmSound } from "@/utils/sound";
 import { Platform } from "react-native";
 import * as Notifications from 'expo-notifications';
+import { AppState } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 //import { Stack } from "expo-router";
 
@@ -39,6 +42,47 @@ export default function Layout() {
             console.error("Error configurando canal:", err);
         }
     };
+
+
+    useEffect(() => {
+        const subscription = AppState.addEventListener("change", async (nextAppState) => {
+            if (nextAppState === "active") {
+                const alarm = await AsyncStorage.getItem("alarmPlaying");
+
+                if (alarm === "true") {
+                    console.log("App abierta mientras alarma activa. Deteniendo...");
+                    await stopAlarmSound();
+                    await AsyncStorage.removeItem("alarmPlaying");
+                }
+            }
+        });
+
+        return () => {
+            subscription.remove();
+        };
+    }, []);
+
+    useEffect(() => {
+        stopAlarmSound(); // Forzamos
+        AsyncStorage.removeItem("alarmPlaying");
+    }, []);
+
+
+    // useEffect(() => {
+    //     const checkIfAlarmWasActive = async () => {
+    //         const alarm = await AsyncStorage.getItem("alarmPlaying");
+    //         if (alarm === "true") {
+    //             console.log("⛔ App abierta mientras la alarma seguía sonando. Deteniéndola.");
+    //             await stopAlarmSound();
+    //             await AsyncStorage.removeItem("alarmPlaying");
+    //         }
+    //     };
+
+    //     checkIfAlarmWasActive();
+    // }, []);
+
+
+
 
 
 

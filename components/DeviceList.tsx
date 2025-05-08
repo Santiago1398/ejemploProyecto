@@ -8,6 +8,7 @@ import { get } from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RootStackParamList } from "@/types/navigation";
 import { ResponseAlarmaSite } from "@/infrastructure/intercafe/listapi.interface";
+import { notificationService } from "@/hooks/NotificationService";
 
 export default function DeviceList() {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -28,9 +29,11 @@ export default function DeviceList() {
 
             // Realiza la solicitud GET
             const data: ResponseAlarmaSite[] = await get(`alarmtc/sites/user/${storedUserId}`);
+            console.log("Dispositivos obtenidos:", data); // Debug
             const formattedData = data.map((device) => ({
                 ...device,
-                mac: Number(device.mac), // Convierte `mac` a número
+                mac: Number(device.mac),
+                alarmType: device.alarmType ?? 1,
             }));
             setDevices(formattedData);
         } catch (error) {
@@ -57,6 +60,28 @@ export default function DeviceList() {
         };
         checkToken();
     }, []);
+
+    useEffect(() => {
+        notificationService.setOnSiteAlarmDetected((macStr) => {
+            const mac = Number(macStr);
+            console.log(" MAC detectado:", mac); // Debug
+
+            setDevices((prev) =>
+                prev.map((device) =>
+                    device.mac === mac
+                        ? { ...device, alarmType: 2 } //  Rojo
+                        : device
+                )
+            );
+        });
+
+        return () => {
+            notificationService.setOnSiteAlarmDetected(() => { });
+        };
+    }, []);
+
+
+
 
     // Colores de fondo según estado
     const getBackgroundColor = (alarmType: number) => {

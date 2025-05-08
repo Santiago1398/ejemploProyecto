@@ -32,5 +32,5 @@ export interface ParamTC {
     consignaMaxima: number;
     texto: string;
     //passwordCorrection: boolean;
-
+    //activada : boolean;
 }
