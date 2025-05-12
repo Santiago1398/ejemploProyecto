@@ -23,6 +23,7 @@ import { playAlarmSound } from '@/utils/sound';
 import { Notification } from "@/types/notifications";
 import * as Notifications from 'expo-notifications';
 import * as Clipboard from 'expo-clipboard';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 
@@ -204,6 +205,8 @@ export default function AlarmList() {
 
             // Reproducir sonido de alarma
             await playAlarmSound();
+            //await AsyncStorage.setItem("alarmPlaying", "true");
+
 
             Alert.alert(
                 'Alarma Enviada',

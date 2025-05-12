@@ -1,62 +1,59 @@
-import { NavigationContainer } from "@react-navigation/native";
-import Layout from "./_layout";
 import { useEffect, useState } from "react";
-import { handleInitialNotification } from "@/utils/notificationHandler";
-
+import { NavigationContainer } from "@react-navigation/native";
+import * as Notifications from "expo-notifications";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Layout from "./_layout";
+import { stopAlarmSound } from "@/utils/sound";
+import { Text, View, Button, Modal } from 'react-native';
 
 export default function App() {
     const [ready, setReady] = useState(false);
+    // const [showAlarmDialog, setShowAlarmDialog] = useState(false);
+
+    // useEffect(() => {
+    //     const checkAlarm = async () => {
+    //         const alarm = await AsyncStorage.getItem("alarmPlaying");
+    //         if (alarm === "true") {
+    //             console.log("🔔 Mostrando diálogo porque hay alarma activa");
+    //             setShowAlarmDialog(true);
+    //         }
+    //         setReady(true);
+    //     };s
+
+    //     checkAlarm();
+    // }, []);
 
 
     useEffect(() => {
         const prepare = async () => {
-            await handleInitialNotification(); // 🔔 Revisa si la notificación encendió la app
-            setReady(true); // Espera a que eso termine antes de cargar Layout
+            const last = await Notifications.getLastNotificationResponseAsync();
+            const data = last?.notification?.request?.content?.data;
+
+            if (data?.isAlarm) {
+                console.log("🔥 App abierta desde notificación con isAlarm");
+                await AsyncStorage.setItem("alarmPlaying", "true");
+            }
+
+            setReady(true); // Siempre después de eso
         };
 
         prepare();
+
+
+        // 🔔 Listener permanente por si tocan la notificación estando ya abierta
+        const subscription = Notifications.addNotificationResponseReceivedListener(async response => {
+            const data = response.notification.request.content.data;
+            if (data?.isAlarm) {
+                console.log("📲 Notificación tocada con app viva o background");
+                await stopAlarmSound();
+                await AsyncStorage.removeItem("alarmPlaying");
+            }
+        });
+
+        return () => subscription.remove();
     }, []);
 
     if (!ready) return null;
-
-    // const configureNotificationChannel = async () => {
-    //     try {
-    //         if (Platform.OS === 'android') {
-    //             console.log("Configurando para android");
-    //             await Notifications.setNotificationChannelAsync('alarm-channel', {
-    //                 name: 'Notificaciones por defecto',
-    //                 importance: Notifications.AndroidImportance.MAX,
-    //                 sound: 'alarmcar',
-    //                 vibrationPattern: [0, 250, 250, 250],
-    //                 lightColor: '#FF231F7C',
-    //             });
-    //         } else {
-    //             console.log("Configurando para ios");
-    //         }
-    //     } catch (err) {
-    //         console.error("Error configurando canal:", err);
-    //     }
-    // };
-
-
-    // useEffect(() => {
-    //     // Ejecutar canal + revisar si la notificación fue la que abrió la app
-    //     console.log("Configurando useEffect canal de notificaciones");
-    //     configureNotificationChannel();
-
-
-    //     const checkInitialNotification = async () => {
-    //         const response = await Notifications.getLastNotificationResponseAsync();
-    //         const data = response?.notification?.request?.content?.data;
-
-    //         if (data?.isAlarm) {
-    //             console.log("App abierta desde notificación de alarma");
-    //             stopAlarmSound();
-    //         }
-    //     };
-
-    //     checkInitialNotification();
-    // }, []);
 
     return (
         <NavigationContainer>
