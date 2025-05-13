@@ -24,6 +24,7 @@ import { Notification } from "@/types/notifications";
 import * as Notifications from 'expo-notifications';
 import * as Clipboard from 'expo-clipboard';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import EstadoAlarmaCircle from "./EstadoAlarmaCircle";
 
 
 
@@ -177,8 +178,8 @@ export default function AlarmList() {
     const renderAlarmItem = ({ item }: { item: ParamTC }) => {
         let backgroundColor = "#8a9bb9"; // desarmada
 
-        if (item.disparado) backgroundColor = "#FF3B30"; // 🔴 Alarma disparada (activada)
-        else if (item.armado) backgroundColor = "#76db36"; // ✅ Armada
+        if (item.disparado) backgroundColor = "#FF3B30";
+        else if (item.armado) backgroundColor = "#76db36";
 
         return (
             <TouchableOpacity
@@ -186,6 +187,7 @@ export default function AlarmList() {
                 onPress={() => openOptionModal(item)}
             >
                 <View style={styles.alarmRow}>
+                    <EstadoAlarmaCircle armado={item.armado} disparado={item.disparado} />
                     <Ionicons name="alert-circle-outline" size={24} color="#fff" style={styles.alarmIcon} />
                     <Text style={styles.alarmText}>{item.texto}</Text>
                 </View>
@@ -193,6 +195,8 @@ export default function AlarmList() {
             </TouchableOpacity>
         );
     };
+
+
 
     // Función para enviar notificación de alarma de prueba
     const sendTestAlarm = async () => {
@@ -468,6 +472,13 @@ const styles = StyleSheet.create({
     buttonIcon: {
         marginRight: 8,
     },
+    statusCircle: {
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+        marginRight: 8,
+    },
+
 });
 
 
