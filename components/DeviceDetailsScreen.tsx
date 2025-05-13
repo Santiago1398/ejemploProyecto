@@ -42,7 +42,7 @@ export default function AlarmList() {
     const [masterAlarmState, setMasterAlarmState] = useState<boolean>(true); // Estado de la alarma 1000
     const [showAlarmDialog, setShowAlarmDialog] = useState(false);
 
-
+    //Impelmetando el dtema del cicule
     const navigation = useNavigation<any>();
 
     //const [pushToken, setPushToken] = useState<string | null>(null);
