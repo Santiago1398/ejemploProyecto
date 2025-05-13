@@ -1,3 +1,5 @@
+// 1. notificationService.ts - Agrega WebSocket y lógica integrada
+
 import { Alert, Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -5,7 +7,6 @@ import { post } from "@/services/api";
 import { playAlarmSound, stopAlarmSound } from "@/utils/sound";
 import { EventSubscription } from "expo-modules-core";
 
-//  Muy importante para notificaciones locales
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
         shouldShowAlert: true,
@@ -27,35 +28,46 @@ class NotificationService {
     private responseSubscription: EventSubscription | null = null;
     private onAlarmDetectedCallback?: (idAlarm: number) => void;
     private onSiteAlarmDetectedCallback?: (mac: number) => void;
+    private lastAlarmKey: string | null = null;
+    private ws: WebSocket | null = null;
 
     constructor() {
         this.setupForegroundListener();
         this.setupNotificationResponseListener();
     }
 
-    // Reproduce sonido y marca persistencia
     private async startAlarmPlayback() {
         console.log("🚨 Reproduciendo sonido y marcando flags");
         await marcarAlarmaActiva();
         await playAlarmSound();
     }
 
-    //  Se activa cuando se recibe notificación en primer plano
+    private _shouldTriggerAlarm(mac: number, idAlarm: number): boolean {
+        const key = `${mac}_${idAlarm}`;
+        if (this.lastAlarmKey === key) return false;
+        this.lastAlarmKey = key;
+        return true;
+    }
+
     private setupForegroundListener() {
         this.foregroundSubscription = Notifications.addNotificationReceivedListener(
             async (notification) => {
                 const data = notification.request.content.data;
-                if (data?.isAlarm) {
-                    console.log(" Notificación en foreground con isAlarm");
-                    if (data?.idAlarm) this.onAlarmDetectedCallback?.(Number(data.idAlarm));
-                    if (data?.mac) this.onSiteAlarmDetectedCallback?.(Number(data.mac));
-                    await this.startAlarmPlayback();
+                if (data?.isAlarm && data?.mac && data?.idAlarm) {
+                    const mac = Number(data.mac);
+                    const idAlarm = Number(data.idAlarm);
+
+                    if (this._shouldTriggerAlarm(mac, idAlarm)) {
+                        console.log("🔔 Foreground alarm:", mac, idAlarm);
+                        this.onAlarmDetectedCallback?.(idAlarm);
+                        this.onSiteAlarmDetectedCallback?.(mac);
+                        await this.startAlarmPlayback();
+                    }
                 }
             }
         );
     }
 
-    //  Se activa cuando tocas una notificación
     private setupNotificationResponseListener() {
         this.responseSubscription = Notifications.addNotificationResponseReceivedListener(
             async (response) => {
@@ -69,7 +81,48 @@ class NotificationService {
             }
         );
     }
-    // Dentro de la clase NotificationService
+
+    public shouldTriggerAlarm(mac: number, idAlarm: number): boolean {
+        return this._shouldTriggerAlarm(mac, idAlarm);
+    }
+
+    public connectWebSocket() {
+        if (this.ws) return;
+
+        this.ws = new WebSocket("wss://portaltest.cticontrol.com/ws-test");
+
+        this.ws.onmessage = async (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                const mac = data.mac;
+                const idAlarm = data.idAlarm;
+
+                if (data.isAlarm && this._shouldTriggerAlarm(mac, idAlarm)) {
+                    console.log("🌐 WebSocket: alarma recibida", mac, idAlarm);
+                    this.onAlarmDetectedCallback?.(idAlarm);
+                    this.onSiteAlarmDetectedCallback?.(mac);
+                    await this.startAlarmPlayback();
+                }
+            } catch (e) {
+                console.error("❌ Error procesando mensaje WebSocket:", e);
+            }
+        };
+
+        this.ws.onclose = () => {
+            console.log("🔌 WebSocket cerrado");
+            this.ws = null;
+        };
+
+        this.ws.onerror = (err) => {
+            console.error("⚠️ WebSocket error:", err);
+        };
+    }
+
+    public disconnectWebSocket() {
+        this.ws?.close();
+        this.ws = null;
+    }
+
     public async registerDevice(userId: number): Promise<void> {
         try {
             const { status: existingStatus } = await Notifications.getPermissionsAsync();
@@ -86,11 +139,9 @@ class NotificationService {
             }
 
             const { data: token } = await Notifications.getDevicePushTokenAsync();
-
             console.log(" Token FCM obtenido:", token);
             await AsyncStorage.setItem("deviceToken", token);
 
-            // Lógica opcional: enviar token al backend
             await post("alarmtc/users/push-token", {
                 token,
                 userId,
@@ -101,8 +152,6 @@ class NotificationService {
         }
     }
 
-
-    // 💡 Listeners externos
     public setOnAlarmDetected(callback: (idAlarm: number) => void) {
         this.onAlarmDetectedCallback = callback;
     }
@@ -111,7 +160,6 @@ class NotificationService {
         this.onSiteAlarmDetectedCallback = callback;
     }
 
-    //  Mostrar notificación local
     public async showLocalNotification(notification: {
         title: string;
         data: any;
@@ -150,11 +198,11 @@ class NotificationService {
         }
     }
 
-    //  Cleanup (opcional)
     public disconnect() {
         stopAlarmSound();
         this.foregroundSubscription?.remove();
         this.responseSubscription?.remove();
+        this.disconnectWebSocket();
         this.foregroundSubscription = null;
         this.responseSubscription = null;
     }

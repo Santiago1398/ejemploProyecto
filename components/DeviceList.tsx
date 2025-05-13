@@ -27,6 +27,10 @@ export default function DeviceList() {
     const [loading, setLoading] = useState(true);
     const [showAlarmDialog, setShowAlarmDialog] = useState(false);
 
+
+
+
+
     //  Loop para verificar estado de alarma cada 4s
     useEffect(() => {
         const checkAlarmLoop = async () => {
@@ -80,6 +84,14 @@ export default function DeviceList() {
             notificationService.setOnSiteAlarmDetected(() => { });
         };
     }, []);
+
+    useEffect(() => {
+        notificationService.connectWebSocket();
+        return () => {
+            notificationService.disconnect(); // asegúrate de cerrar el socket aquí también si lo implementas
+        };
+    }, []);
+
 
     const getBackgroundColor = (alarmType: number) => {
         switch (alarmType) {
