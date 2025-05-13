@@ -8,7 +8,6 @@ import {
     Alert,
     Modal,
     AppState,
-    AppStateStatus,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -22,90 +21,29 @@ import { notificationService } from "@/hooks/NotificationService";
 import { ResponseAlarmaSite } from "@/infrastructure/intercafe/listapi.interface";
 
 export default function DeviceList() {
-    useEffect(() => {
-        const checkAlarm = async () => {
-            const alarm = await AsyncStorage.getItem("alarmPlaying");
-            if (alarm === "true") {
-                console.log("✅ Alarma activa detectada al abrir la app o volver");
-                setShowAlarmDialog(true);
-            }
-        };
-
-        // 1️⃣ Verificación al montar (incluso en cold start)
-        setTimeout(checkAlarm, 300);
-
-        // 2️⃣ Verificación cada vez que la app entra en foreground
-        const appStateListener = AppState.addEventListener("change", (state) => {
-            if (state === "active") {
-                setTimeout(checkAlarm, 500);
-            }
-        });
-
-        return () => {
-            appStateListener.remove();
-        };
-    }, []);
-
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const { token, userId } = useAuthStore();
     const [devices, setDevices] = useState<ResponseAlarmaSite[]>([]);
     const [loading, setLoading] = useState(true);
     const [showAlarmDialog, setShowAlarmDialog] = useState(false);
 
-    // Al montar: revisa si había una alarma activa
-    // useEffect(() => {
-    //     const checkAlarm = async () => {
-    //         const alarm = await AsyncStorage.getItem("alarmPlaying");
-    //         if (alarm === "true") {
-    //             console.log("✅ Alarma detectada al abrir app");
-    //             setShowAlarmDialog(true);
-    //         }
-    //     };
-    //     checkAlarm();
-    // }, []);
-
-    // // Al volver del background
-    // useEffect(() => {
-    //     const handleAppStateChange = async (state: AppStateStatus) => {
-    //         if (state === "active") {
-    //             const alarm = await AsyncStorage.getItem("alarmPlaying");
-    //             if (alarm === "true") {
-    //                 console.log("🔁 App reactivada con alarma activa");
-    //                 setShowAlarmDialog(true);
-    //             }
-    //         }
-    //     };
-
-    //     const subscription = AppState.addEventListener("change", handleAppStateChange);
-    //     return () => subscription.remove();
-    // }, []);
+    //  Loop para verificar estado de alarma cada 4s
     useEffect(() => {
-        const checkAlarmState = async () => {
+        const checkAlarmLoop = async () => {
             const alarm = await AsyncStorage.getItem("alarmPlaying");
             if (alarm === "true") {
-                console.log("✅ Alarma activa detectada");
                 setShowAlarmDialog(true);
+            } else {
+                setShowAlarmDialog(false);
             }
         };
 
-        // Chequeo inicial con retardo por seguridad
-        const initialTimeout = setTimeout(checkAlarmState, 300);
-
-        // App entra en foreground
-        const subscription = AppState.addEventListener("change", (state) => {
-            if (state === "active") {
-                setTimeout(checkAlarmState, 500);
-            }
-        });
-
-        return () => {
-            clearTimeout(initialTimeout);
-            subscription.remove();
-        };
+        checkAlarmLoop(); // inicial
+        const interval = setInterval(checkAlarmLoop, 4000);
+        return () => clearInterval(interval);
     }, []);
 
-
-    // Carga los dispositivos
+    // Cargar dispositivos
     useEffect(() => {
         if (token && userId) fetchDevices();
     }, [token, userId]);
@@ -128,7 +66,7 @@ export default function DeviceList() {
         }
     };
 
-    // Detecta alarmas en tiempo real
+    // Alarmas en tiempo real
     useEffect(() => {
         notificationService.setOnSiteAlarmDetected((macStr) => {
             const mac = Number(macStr);
@@ -138,27 +76,10 @@ export default function DeviceList() {
                 )
             );
         });
-
         return () => {
             notificationService.setOnSiteAlarmDetected(() => { });
         };
     }, []);
-
-    ////////
-    useEffect(() => {
-        const interval = setInterval(async () => {
-            const alarm = await AsyncStorage.getItem("alarmPlaying");
-            if (alarm === "true") {
-                setShowAlarmDialog(true);
-            }
-        }, 5000); // cada 5 segundos
-
-        return () => clearInterval(interval);
-    }, []);
-
-    ///////
-
-
 
     const getBackgroundColor = (alarmType: number) => {
         switch (alarmType) {
@@ -226,7 +147,6 @@ export default function DeviceList() {
                                     await AsyncStorage.multiRemove(["alarmPlaying", "alarma_activa_pendiente"]);
                                     setShowAlarmDialog(false);
                                 }}
-                                style={styles.modalButton}
                             >
                                 <Text style={styles.modalButtonText}>OK, detener sonido</Text>
                             </TouchableOpacity>
@@ -293,15 +213,12 @@ const styles = StyleSheet.create({
         fontSize: 18,
         marginBottom: 10,
     },
-    modalButton: {
-        backgroundColor: "#FF3B30",
-        padding: 10,
-        borderRadius: 8,
-        marginTop: 10,
-    },
     modalButtonText: {
         color: "white",
         fontWeight: "bold",
         textAlign: "center",
+        backgroundColor: "#FF3B30",
+        padding: 10,
+        borderRadius: 8,
     },
 });

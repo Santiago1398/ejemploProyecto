@@ -4,7 +4,7 @@ import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Layout from "./_layout";
 import { stopAlarmSound } from "@/utils/sound";
-import { Text, View, Button, Modal } from 'react-native';
+
 
 export default function App() {
     const [ready, setReady] = useState(false);
@@ -14,7 +14,7 @@ export default function App() {
     //     const checkAlarm = async () => {
     //         const alarm = await AsyncStorage.getItem("alarmPlaying");
     //         if (alarm === "true") {
-    //             console.log("🔔 Mostrando diálogo porque hay alarma activa");
+    //             console.log(" Mostrando diálogo porque hay alarma activa");
     //             setShowAlarmDialog(true);
     //         }
     //         setReady(true);
@@ -26,19 +26,19 @@ export default function App() {
 
     useEffect(() => {
         const prepare = async () => {
-            // 🟢 Nuevo: detectar si ya hay una alarma activa al abrir app
+            //  Nuevo: detectar si ya hay una alarma activa al abrir app
             const alarm = await AsyncStorage.getItem("alarmPlaying");
             if (alarm === "true") {
-                console.log("🔊 App iniciada con alarma activa");
+                console.log(" App iniciada con alarma activa");
                 await AsyncStorage.setItem("alarma_activa_pendiente", "true");
             }
 
-            // 🔥 Si se abrió desde una notificación tocada
+            //  Si se abrió desde una notificación tocada
             const last = await Notifications.getLastNotificationResponseAsync();
             const data = last?.notification?.request?.content?.data;
 
             if (data?.isAlarm) {
-                console.log("🔥 App abierta desde notificación con isAlarm");
+                console.log(" App abierta desde notificación con isAlarm");
                 await AsyncStorage.setItem("alarmPlaying", "true");
             }
 
@@ -47,7 +47,7 @@ export default function App() {
 
         prepare();
 
-        // 🔔 Listener permanente por si tocan la notificación estando ya abierta
+        // Listener permanente por si tocan la notificación estando ya abierta
         const subscription = Notifications.addNotificationResponseReceivedListener(async response => {
             const data = response.notification.request.content.data;
             if (data?.isAlarm) {

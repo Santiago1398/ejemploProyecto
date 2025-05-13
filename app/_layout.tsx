@@ -8,8 +8,15 @@ import { useAuthStore } from "@/store/authStore";
 import PermissionsScreen from "./extra/permissions/PermissionScreen";
 import MapsScreen from "./extra/map/MapsScreen";
 import { stopAlarmSound } from "@/utils/sound";
-import { Platform, AppState, Modal, View, Text, Button } from "react-native";
-import * as Notifications from 'expo-notifications';
+import {
+    Platform,
+    AppState,
+    Modal,
+    View,
+    Text,
+    Button,
+} from "react-native";
+import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Drawer = createDrawerNavigator();
@@ -17,26 +24,24 @@ const Drawer = createDrawerNavigator();
 export default function Layout() {
     const { isAuthenticated } = useAuthStore();
     const [showAlarmDialog, setShowAlarmDialog] = useState(false);
+    const [ready, setReady] = useState(false);
 
     const configureNotificationChannel = async () => {
         try {
-            if (Platform.OS === 'android') {
-                console.log("Configurando para android");
-                await Notifications.setNotificationChannelAsync('alarm-channel', {
-                    name: 'Notificaciones por defecto',
+            if (Platform.OS === "android") {
+                console.log("Configurando canal para Android");
+                await Notifications.setNotificationChannelAsync("alarm-channel", {
+                    name: "Notificaciones de alarma",
                     importance: Notifications.AndroidImportance.MAX,
-                    sound: 'alarmcar',
+                    sound: "alarmcar",
                     vibrationPattern: [0, 250, 250, 250],
-                    lightColor: '#FF231F7C',
+                    lightColor: "#FF231F7C",
                 });
-            } else {
-                console.log("Configurando para ios");
             }
         } catch (err) {
             console.error("Error configurando canal:", err);
         }
     };
-
 
     const handleAlarmState = async (isActive: boolean) => {
         if (isActive) {
@@ -46,48 +51,52 @@ export default function Layout() {
         } else {
             console.log("🛑 Desactivando alarma");
             await stopAlarmSound();
-            await AsyncStorage.removeItem("alarmPlaying");
+            await AsyncStorage.multiRemove(["alarmPlaying", "alarma_activa_pendiente"]);
             setShowAlarmDialog(false);
         }
     };
 
+    // Inicializar y verificar si hay notificación o alarma activa
     // useEffect(() => {
-    //     const checkIfAlarmIsActive = async () => {
-    //         const alarm = await AsyncStorage.getItem("alarmPlaying");
-    //         if (alarm === "true") {
-    //             await handleAlarmState(true);
+    //     const prepare = async () => {
+    //         try {
+    //             const alarm = await AsyncStorage.getItem("alarmPlaying");
+    //             if (alarm === "true") {
+    //                 console.log("⏰ App detecta alarma activa al arrancar");
+    //                 await AsyncStorage.setItem("alarma_activa_pendiente", "true");
+    //             }
+
+    //             const last = await Notifications.getLastNotificationResponseAsync();
+    //             const data = last?.notification?.request?.content?.data;
+    //             if (data?.isAlarm === "true" || data?.isAlarm === true) {
+    //                 await AsyncStorage.setItem("alarmPlaying", "true");
+    //             }
+    //         } catch (e) {
+    //             console.error("❌ Error al preparar app:", e);
+    //         } finally {
+    //             setReady(true);
     //         }
     //     };
 
-    //     checkIfAlarmIsActive();
+    //     prepare();
     // }, []);
+
+    // Mostrar el modal cuando esté lista la app y detecte alarma pendiente
     useEffect(() => {
         const checkAlarmFlag = async () => {
             const flag = await AsyncStorage.getItem("alarma_activa_pendiente");
             if (flag === "true") {
-                console.log("🟡 alarma_activa_pendiente detectada en DeviceList");
+                console.log("🟡 alarma_activa_pendiente detectada");
                 setShowAlarmDialog(true);
             }
         };
 
-        const timeout = setTimeout(checkAlarmFlag, 400);
-        return () => clearTimeout(timeout);
-    }, []);
+        if (ready) {
+            checkAlarmFlag();
+        }
+    }, [ready]);
 
-    useEffect(() => {
-        const checkInitialNotification = async () => {
-            const response = await Notifications.getLastNotificationResponseAsync();
-            const data = response?.notification?.request?.content?.data;
-
-            if (data?.isAlarm) {
-                console.log("App abierta desde notificación de alarma");
-                await handleAlarmState(true);
-            }
-        };
-
-        checkInitialNotification();
-    }, []);
-
+    // Escuchar si la app vuelve al foreground
     useEffect(() => {
         const subscription = AppState.addEventListener("change", async (nextAppState) => {
             if (nextAppState === "active") {
@@ -98,9 +107,7 @@ export default function Layout() {
             }
         });
 
-        return () => {
-            subscription.remove();
-        };
+        return () => subscription.remove();
     }, []);
 
     useEffect(() => {
@@ -116,9 +123,7 @@ export default function Layout() {
                             <Text style={{ marginBottom: 10 }}>🚨 Alarma activa</Text>
                             <Button
                                 title="OK, detener sonido"
-                                onPress={async () => {
-                                    await handleAlarmState(false);
-                                }}
+                                onPress={() => handleAlarmState(false)}
                             />
                         </View>
                     </View>
@@ -138,11 +143,7 @@ export default function Layout() {
                 initialRouteName={isAuthenticated ? "Home" : "Login"}
             >
                 {isAuthenticated ? (
-                    <Drawer.Screen
-                        name="Home"
-                        component={TabsNavigator}
-                        options={{ headerTitle: "Home" }}
-                    />
+                    <Drawer.Screen name="Home" component={TabsNavigator} options={{ headerTitle: "Home" }} />
                 ) : (
                     <Drawer.Screen
                         name="Login"
