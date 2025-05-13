@@ -39,6 +39,8 @@ export default function AlarmList() {
     const [alarms, setAlarms] = useState<ParamTC[]>([]);
     const [loading, setLoading] = useState(true);
     const [masterAlarmState, setMasterAlarmState] = useState<boolean>(true); // Estado de la alarma 1000
+    const [showAlarmDialog, setShowAlarmDialog] = useState(false);
+
 
     const navigation = useNavigation<any>();
 
@@ -159,6 +161,18 @@ export default function AlarmList() {
         setOptionModalVisible(true);
     };
 
+    useEffect(() => {
+        const checkPendiente = async () => {
+            const flag = await AsyncStorage.getItem("alarma_activa_pendiente");
+            if (flag === "true") {
+                console.log("📦 alarma_activa_pendiente detectada al abrir app");
+                setTimeout(() => setShowAlarmDialog(true), 500);
+            }
+        };
+        checkPendiente();
+    }, []);
+
+
     // 6. Render de cada alarma (con mejoras visuales)
     const renderAlarmItem = ({ item }: { item: ParamTC }) => {
         let backgroundColor = "#8a9bb9"; // desarmada
@@ -228,16 +242,16 @@ export default function AlarmList() {
     // };
 
 
-    const getDeviceToken = async () => {
-        const token = await notificationService.getFCMToken();
-        if (token) {
-            setFcmToken(token);
-            await Clipboard.setStringAsync(token); // 👈 Copia al portapapeles
-            Alert.alert("FCM Token obtenido", "Copiado al portapapeles:\n\n" + token);
-        } else {
-            Alert.alert("Error", "No se pudo obtener el token");
-        }
-    };
+    // const getDeviceToken = async () => {
+    //     const token = await notificationService.getFCMToken();
+    //     if (token) {
+    //         setFcmToken(token);
+    //         await Clipboard.setStringAsync(token); // 👈 Copia al portapapeles
+    //         Alert.alert("FCM Token obtenido", "Copiado al portapapeles:\n\n" + token);
+    //     } else {
+    //         Alert.alert("Error", "No se pudo obtener el token");
+    //     }
+    // };
 
 
     return (
@@ -272,7 +286,7 @@ export default function AlarmList() {
                     padding: 12,
                     borderRadius: 12
                 }}
-                onPress={getDeviceToken}
+            //onPress={getDeviceToken}
             >
                 <Ionicons name="key-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
                 <Text style={{ color: '#fff', fontWeight: 'bold' }}>Obtener Token FCM</Text>
@@ -455,4 +469,6 @@ const styles = StyleSheet.create({
         marginRight: 8,
     },
 });
+
+
 

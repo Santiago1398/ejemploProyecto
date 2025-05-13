@@ -37,19 +37,41 @@ export default function Layout() {
         }
     };
 
-    const checkIfAlarmIsActive = async () => {
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Espera 1 segundo
-        const alarm = await AsyncStorage.getItem("alarmPlaying");
-        if (alarm === "true") {
-            console.log("✅ Mostrando diálogo desde Layout");
+
+    const handleAlarmState = async (isActive: boolean) => {
+        if (isActive) {
+            console.log("✅ Activando alarma");
+            await AsyncStorage.setItem("alarmPlaying", "true");
             setShowAlarmDialog(true);
         } else {
+            console.log("🛑 Desactivando alarma");
+            await stopAlarmSound();
+            await AsyncStorage.removeItem("alarmPlaying");
             setShowAlarmDialog(false);
         }
     };
 
+    // useEffect(() => {
+    //     const checkIfAlarmIsActive = async () => {
+    //         const alarm = await AsyncStorage.getItem("alarmPlaying");
+    //         if (alarm === "true") {
+    //             await handleAlarmState(true);
+    //         }
+    //     };
+
+    //     checkIfAlarmIsActive();
+    // }, []);
     useEffect(() => {
-        checkIfAlarmIsActive();
+        const checkAlarmFlag = async () => {
+            const flag = await AsyncStorage.getItem("alarma_activa_pendiente");
+            if (flag === "true") {
+                console.log("🟡 alarma_activa_pendiente detectada en DeviceList");
+                setShowAlarmDialog(true);
+            }
+        };
+
+        const timeout = setTimeout(checkAlarmFlag, 400);
+        return () => clearTimeout(timeout);
     }, []);
 
     useEffect(() => {
@@ -59,8 +81,7 @@ export default function Layout() {
 
             if (data?.isAlarm) {
                 console.log("App abierta desde notificación de alarma");
-                await AsyncStorage.setItem("alarmPlaying", "true");
-                setShowAlarmDialog(true);
+                await handleAlarmState(true);
             }
         };
 
@@ -70,7 +91,10 @@ export default function Layout() {
     useEffect(() => {
         const subscription = AppState.addEventListener("change", async (nextAppState) => {
             if (nextAppState === "active") {
-                await checkIfAlarmIsActive();
+                const alarm = await AsyncStorage.getItem("alarmPlaying");
+                if (alarm === "true") {
+                    await handleAlarmState(true);
+                }
             }
         });
 
@@ -85,7 +109,7 @@ export default function Layout() {
 
     return (
         <PermissionsCkeckProvider>
-            {showAlarmDialog && (
+            {/* {showAlarmDialog && (
                 <Modal transparent animationType="fade" visible={true}>
                     <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#00000080" }}>
                         <View style={{ backgroundColor: "white", padding: 20, borderRadius: 10 }}>
@@ -93,15 +117,13 @@ export default function Layout() {
                             <Button
                                 title="OK, detener sonido"
                                 onPress={async () => {
-                                    await stopAlarmSound();
-                                    await AsyncStorage.removeItem("alarmPlaying");
-                                    setShowAlarmDialog(false);
+                                    await handleAlarmState(false);
                                 }}
                             />
                         </View>
                     </View>
                 </Modal>
-            )}
+            )} */}
 
             <Drawer.Navigator
                 drawerContent={(props) => <DrawerContent {...props} />}

@@ -1,35 +1,120 @@
 import React, { useEffect, useState } from "react";
+import {
+    FlatList,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+    Alert,
+    Modal,
+    AppState,
+    AppStateStatus,
+} from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { FlatList, StyleSheet, Text, TouchableOpacity, View, Alert } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useAuthStore } from "@/store/authStore";
-import { get } from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuthStore } from "@/store/authStore";
 import { RootStackParamList } from "@/types/navigation";
-import { ResponseAlarmaSite } from "@/infrastructure/intercafe/listapi.interface";
+import { get } from "@/services/api";
+import { stopAlarmSound } from "@/utils/sound";
 import { notificationService } from "@/hooks/NotificationService";
+import { ResponseAlarmaSite } from "@/infrastructure/intercafe/listapi.interface";
 
 export default function DeviceList() {
+    useEffect(() => {
+        const checkAlarm = async () => {
+            const alarm = await AsyncStorage.getItem("alarmPlaying");
+            if (alarm === "true") {
+                console.log("✅ Alarma activa detectada al abrir la app o volver");
+                setShowAlarmDialog(true);
+            }
+        };
+
+        // 1️⃣ Verificación al montar (incluso en cold start)
+        setTimeout(checkAlarm, 300);
+
+        // 2️⃣ Verificación cada vez que la app entra en foreground
+        const appStateListener = AppState.addEventListener("change", (state) => {
+            if (state === "active") {
+                setTimeout(checkAlarm, 500);
+            }
+        });
+
+        return () => {
+            appStateListener.remove();
+        };
+    }, []);
+
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const { token, userId } = useAuthStore();
     const [devices, setDevices] = useState<ResponseAlarmaSite[]>([]);
     const [loading, setLoading] = useState(true);
+    const [showAlarmDialog, setShowAlarmDialog] = useState(false);
 
-    // Función para obtener los datos desde la API
+    // Al montar: revisa si había una alarma activa
+    // useEffect(() => {
+    //     const checkAlarm = async () => {
+    //         const alarm = await AsyncStorage.getItem("alarmPlaying");
+    //         if (alarm === "true") {
+    //             console.log("✅ Alarma detectada al abrir app");
+    //             setShowAlarmDialog(true);
+    //         }
+    //     };
+    //     checkAlarm();
+    // }, []);
+
+    // // Al volver del background
+    // useEffect(() => {
+    //     const handleAppStateChange = async (state: AppStateStatus) => {
+    //         if (state === "active") {
+    //             const alarm = await AsyncStorage.getItem("alarmPlaying");
+    //             if (alarm === "true") {
+    //                 console.log("🔁 App reactivada con alarma activa");
+    //                 setShowAlarmDialog(true);
+    //             }
+    //         }
+    //     };
+
+    //     const subscription = AppState.addEventListener("change", handleAppStateChange);
+    //     return () => subscription.remove();
+    // }, []);
+    useEffect(() => {
+        const checkAlarmState = async () => {
+            const alarm = await AsyncStorage.getItem("alarmPlaying");
+            if (alarm === "true") {
+                console.log("✅ Alarma activa detectada");
+                setShowAlarmDialog(true);
+            }
+        };
+
+        // Chequeo inicial con retardo por seguridad
+        const initialTimeout = setTimeout(checkAlarmState, 300);
+
+        // App entra en foreground
+        const subscription = AppState.addEventListener("change", (state) => {
+            if (state === "active") {
+                setTimeout(checkAlarmState, 500);
+            }
+        });
+
+        return () => {
+            clearTimeout(initialTimeout);
+            subscription.remove();
+        };
+    }, []);
+
+
+    // Carga los dispositivos
+    useEffect(() => {
+        if (token && userId) fetchDevices();
+    }, [token, userId]);
+
     const fetchDevices = async () => {
         try {
             setLoading(true);
-            const storedToken = await AsyncStorage.getItem("token");
             const storedUserId = await AsyncStorage.getItem("userId");
-
-            if (!storedToken || !storedUserId) {
-                throw new Error("Token o userId no encontrado en AsyncStorage.");
-            }
-
-            // Realiza la solicitud GET
             const data: ResponseAlarmaSite[] = await get(`alarmtc/sites/user/${storedUserId}`);
-            console.log("Dispositivos obtenidos:", data); // Debug
             const formattedData = data.map((device) => ({
                 ...device,
                 mac: Number(device.mac),
@@ -37,40 +122,19 @@ export default function DeviceList() {
             }));
             setDevices(formattedData);
         } catch (error) {
-            console.error("Error al cargar los dispositivos:", error);
             Alert.alert("Error", "No se pudieron cargar los dispositivos.");
         } finally {
             setLoading(false);
         }
     };
 
-    useEffect(() => {
-        if (token && userId) {
-            fetchDevices();
-        }
-    }, [token, userId]);
-
-    // Para verificar token/usuario en consola (opcional)
-    useEffect(() => {
-        const checkToken = async () => {
-            const storedToken = await AsyncStorage.getItem("token");
-            const storedUserId = await AsyncStorage.getItem("userId");
-            console.log("Token en AsyncStorage:", storedToken);
-            console.log("UserId guardado en AsyncStorage:", storedUserId);
-        };
-        checkToken();
-    }, []);
-
+    // Detecta alarmas en tiempo real
     useEffect(() => {
         notificationService.setOnSiteAlarmDetected((macStr) => {
             const mac = Number(macStr);
-            console.log(" MAC detectado:", mac); // Debug
-
             setDevices((prev) =>
                 prev.map((device) =>
-                    device.mac === mac
-                        ? { ...device, alarmType: 2 } //  Rojo
-                        : device
+                    device.mac === mac ? { ...device, alarmType: 2 } : device
                 )
             );
         });
@@ -80,52 +144,50 @@ export default function DeviceList() {
         };
     }, []);
 
+    ////////
+    useEffect(() => {
+        const interval = setInterval(async () => {
+            const alarm = await AsyncStorage.getItem("alarmPlaying");
+            if (alarm === "true") {
+                setShowAlarmDialog(true);
+            }
+        }, 5000); // cada 5 segundos
+
+        return () => clearInterval(interval);
+    }, []);
+
+    ///////
 
 
 
-    // Colores de fondo según estado
     const getBackgroundColor = (alarmType: number) => {
         switch (alarmType) {
-            case 0:
-                return "#8a9bb9"; // Fuera de línea, gris
-            case 1:
-                return "#76db36"; // En línea sin alarma, verde brillante
-            case 2:
-                return "#e94b3c"; // En línea con alarma, rojo
-            case 3:
-                return "#9E75C6"; // Contraseña incorrecta, violeta
-            case 4:
-                return "#F6BC31"; // En línea desarmada, amarilla
-            default:
-                return "#ffffff";
+            case 0: return "#8a9bb9";
+            case 1: return "#76db36";
+            case 2: return "#e94b3c";
+            case 3: return "#9E75C6";
+            case 4: return "#F6BC31";
+            default: return "#ffffff";
         }
     };
 
-    // Render de cada tarjeta
     const renderDeviceItem = ({ item }: { item: ResponseAlarmaSite }) => {
         const backgroundColor = getBackgroundColor(item.alarmType);
-        function capitalize(str: string) {
-            if (!str) return '';
-            return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
-        }
+        const capitalize = (str: string) => str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";
 
         return (
             <TouchableOpacity
                 style={[styles.deviceContainer, { backgroundColor }]}
                 onPress={() => {
-                    if (item.mac) {
-                        navigation.navigate("DeviceDetails", {
-                            device: {
-                                mac: Number(item.mac),
-                                farmName: capitalize(item.farmName),
-                                siteName: capitalize(item.siteName),
-                                latitude: item.latitude,
-                                longitude: item.longitude,
-                            },
-                        });
-                    } else {
-                        Alert.alert("Error", "El dispositivo no tiene una MAC válida.");
-                    }
+                    navigation.navigate("DeviceDetails", {
+                        device: {
+                            mac: Number(item.mac),
+                            farmName: capitalize(item.farmName),
+                            siteName: capitalize(item.siteName),
+                            latitude: item.latitude,
+                            longitude: item.longitude,
+                        },
+                    });
                 }}
             >
                 <View style={styles.row}>
@@ -140,11 +202,8 @@ export default function DeviceList() {
         );
     };
 
-
     return (
         <View style={styles.container}>
-
-
             {devices.length === 0 ? (
                 <Text style={styles.loadingText}>No hay dispositivos disponibles</Text>
             ) : (
@@ -155,23 +214,37 @@ export default function DeviceList() {
                     contentContainerStyle={styles.listContainer}
                 />
             )}
+
+            {showAlarmDialog && (
+                <Modal transparent animationType="fade" visible={true}>
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.modalContent}>
+                            <Text style={styles.modalTitle}>🚨 Alarma activa</Text>
+                            <TouchableOpacity
+                                onPress={async () => {
+                                    await stopAlarmSound();
+                                    await AsyncStorage.multiRemove(["alarmPlaying", "alarma_activa_pendiente"]);
+                                    setShowAlarmDialog(false);
+                                }}
+                                style={styles.modalButton}
+                            >
+                                <Text style={styles.modalButtonText}>OK, detener sonido</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </Modal>
+            )}
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#f2f2f2", // Fondo suave de la pantalla
-    },
-    listContainer: {
-        padding: 16,
-    },
+    container: { flex: 1, backgroundColor: "#f2f2f2" },
+    listContainer: { padding: 16 },
     deviceContainer: {
         padding: 16,
         marginVertical: 8,
         borderRadius: 12,
-        // Sombras
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.15,
@@ -186,7 +259,7 @@ const styles = StyleSheet.create({
     deviceTitle: {
         fontSize: 18,
         fontWeight: "bold",
-        color: "#fff", // Texto blanco para contrastar con el verde o rojo
+        color: "#fff",
     },
     deviceSubtitle: {
         fontSize: 16,
@@ -203,32 +276,32 @@ const styles = StyleSheet.create({
         textAlign: "center",
         marginTop: 20,
     },
-    tokenContainer: {
-        backgroundColor: 'rgba(255, 255, 255, 0.9)',
-        padding: 12,
-        margin: 16,
+    modalOverlay: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#00000080",
+    },
+    modalContent: {
+        backgroundColor: "white",
+        padding: 20,
+        borderRadius: 10,
+        width: "80%",
+        alignItems: "center",
+    },
+    modalTitle: {
+        fontSize: 18,
+        marginBottom: 10,
+    },
+    modalButton: {
+        backgroundColor: "#FF3B30",
+        padding: 10,
         borderRadius: 8,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.2,
-        shadowRadius: 2,
-        elevation: 3,
+        marginTop: 10,
     },
-    tokenLabel: {
-        fontSize: 14,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 8,
+    modalButtonText: {
+        color: "white",
+        fontWeight: "bold",
+        textAlign: "center",
     },
-    tokenText: {
-        fontSize: 12,
-        color: '#666',
-        backgroundColor: '#f5f5f5',
-        padding: 8,
-        borderRadius: 4,
-        borderWidth: 1,
-        borderColor: '#eee',
-    }
 });

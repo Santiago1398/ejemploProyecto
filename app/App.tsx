@@ -26,6 +26,14 @@ export default function App() {
 
     useEffect(() => {
         const prepare = async () => {
+            // 🟢 Nuevo: detectar si ya hay una alarma activa al abrir app
+            const alarm = await AsyncStorage.getItem("alarmPlaying");
+            if (alarm === "true") {
+                console.log("🔊 App iniciada con alarma activa");
+                await AsyncStorage.setItem("alarma_activa_pendiente", "true");
+            }
+
+            // 🔥 Si se abrió desde una notificación tocada
             const last = await Notifications.getLastNotificationResponseAsync();
             const data = last?.notification?.request?.content?.data;
 
@@ -34,11 +42,10 @@ export default function App() {
                 await AsyncStorage.setItem("alarmPlaying", "true");
             }
 
-            setReady(true); // Siempre después de eso
+            setReady(true); // Siempre al final
         };
 
         prepare();
-
 
         // 🔔 Listener permanente por si tocan la notificación estando ya abierta
         const subscription = Notifications.addNotificationResponseReceivedListener(async response => {
@@ -46,12 +53,13 @@ export default function App() {
             if (data?.isAlarm) {
                 console.log("📲 Notificación tocada con app viva o background");
                 await stopAlarmSound();
-                await AsyncStorage.removeItem("alarmPlaying");
+                await AsyncStorage.multiRemove(["alarmPlaying", "alarma_activa_pendiente"]);
             }
         });
 
         return () => subscription.remove();
     }, []);
+
 
     if (!ready) return null;
 
