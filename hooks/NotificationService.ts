@@ -1,6 +1,6 @@
 // 1. notificationService.ts - Agrega WebSocket y lógica integrada
 
-import { Alert, Platform } from "react-native";
+import { Alert, AppState, Platform } from "react-native";
 import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { post } from "@/services/api";
@@ -53,6 +53,14 @@ class NotificationService {
         this.foregroundSubscription = Notifications.addNotificationReceivedListener(
             async (notification) => {
                 const data = notification.request.content.data;
+
+                // ❌ Si estamos en foreground y llega una notificación del sistema, NO hacer nada
+                if (AppState.currentState === "active" && data?.isAlarm) {
+                    console.log("🔕 Ignorando notificación de sistema en foreground");
+                    return;
+                }
+
+                // ✅ Si no está en foreground (o viene por otro medio), seguir como antes
                 if (data?.isAlarm && data?.mac && data?.idAlarm) {
                     const mac = Number(data.mac);
                     const idAlarm = Number(data.idAlarm);
