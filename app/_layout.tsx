@@ -95,6 +95,9 @@ export default function Layout() {
             checkAlarmFlag();
         }
     }, [ready]);
+    useEffect(() => {
+        Notifications.dismissAllNotificationsAsync();
+    }, []);
 
     // Escuchar si la app vuelve al foreground
     useEffect(() => {

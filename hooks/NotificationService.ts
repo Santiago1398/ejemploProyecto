@@ -90,6 +90,8 @@ class NotificationService {
         if (this.ws) return;
 
         this.ws = new WebSocket("wss://portaltest.cticontrol.com/ws-test");
+        //{"mac":20600001,"idAlarm":12,"isAlarm":true}
+
 
         this.ws.onmessage = async (event) => {
             try {
@@ -101,7 +103,9 @@ class NotificationService {
                     console.log("🌐 WebSocket: alarma recibida", mac, idAlarm);
                     this.onAlarmDetectedCallback?.(idAlarm);
                     this.onSiteAlarmDetectedCallback?.(mac);
-                    await this.startAlarmPlayback();
+                    //await this.startAlarmPlayback();
+                    //await AsyncStorage.setItem("alarma_activa_pendiente", "true");
+
                 }
             } catch (e) {
                 console.error("❌ Error procesando mensaje WebSocket:", e);

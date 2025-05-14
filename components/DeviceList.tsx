@@ -19,6 +19,8 @@ import { get } from "@/services/api";
 import { stopAlarmSound } from "@/utils/sound";
 import { notificationService } from "@/hooks/NotificationService";
 import { ResponseAlarmaSite } from "@/infrastructure/intercafe/listapi.interface";
+import * as Notifications from "expo-notifications";
+
 
 export default function DeviceList() {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
@@ -28,24 +30,50 @@ export default function DeviceList() {
     const [showAlarmDialog, setShowAlarmDialog] = useState(false);
 
 
+    useEffect(() => {
+        notificationService.setOnAlarmDetected((idAlarm) => {
+            console.log("🟢 WebSocket callback ejecutado con idAlarm:", idAlarm);
+            //Notifications.dismissAllNotificationsAsync();
+
+            setShowAlarmDialog(true); // Muestra el diálogo en el momento
+        });
+
+        return () => {
+            notificationService.setOnAlarmDetected(() => { });
+        };
+    }, []);
 
 
 
     //  Loop para verificar estado de alarma cada 4s
+    // useEffect(() => {
+    //     const checkAlarmLoop = async () => {
+    //         const alarm = await AsyncStorage.getItem("alarmPlaying");
+    //         if (alarm === "true") {
+    //             setShowAlarmDialog(true);
+    //         } else {
+    //             setShowAlarmDialog(false);
+    //         }
+    //     };
+
+    //     checkAlarmLoop(); // inicial
+    //     const interval = setInterval(checkAlarmLoop, 4000);
+    //     return () => clearInterval(interval);
+    // }, []);
+
     useEffect(() => {
-        const checkAlarmLoop = async () => {
-            const alarm = await AsyncStorage.getItem("alarmPlaying");
-            if (alarm === "true") {
+        const checkAlarm = async () => {
+            const pendiente = await AsyncStorage.getItem("alarma_activa_pendiente");
+            if (pendiente === "true") {
                 setShowAlarmDialog(true);
-            } else {
-                setShowAlarmDialog(false);
             }
         };
 
-        checkAlarmLoop(); // inicial
-        const interval = setInterval(checkAlarmLoop, 4000);
-        return () => clearInterval(interval);
+        checkAlarm();
     }, []);
+
+
+
 
     // Cargar dispositivos
     useEffect(() => {
@@ -108,6 +136,8 @@ export default function DeviceList() {
         const backgroundColor = getBackgroundColor(item.alarmType);
         const capitalize = (str: string) => str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";
 
+
+
         return (
             <TouchableOpacity
                 style={[styles.deviceContainer, { backgroundColor }]}
@@ -156,6 +186,7 @@ export default function DeviceList() {
                             <TouchableOpacity
                                 onPress={async () => {
                                     await stopAlarmSound();
+                                    //await playSilentSound(); // 👈 reproducir el silencioso
                                     await AsyncStorage.multiRemove(["alarmPlaying", "alarma_activa_pendiente"]);
                                     setShowAlarmDialog(false);
                                 }}
