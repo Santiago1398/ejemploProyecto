@@ -31,8 +31,21 @@ export default function DeviceList() {
 
 
     useEffect(() => {
+        const subscription = AppState.addEventListener("change", async (state) => {
+            if (state === "active") {
+                console.log("🧼 App volvió del background, matando notificaciones...");
+                await Notifications.dismissAllNotificationsAsync();
+            }
+        });
+
+        return () => subscription.remove();
+    }, []);
+
+
+
+    useEffect(() => {
         notificationService.setOnAlarmDetected((idAlarm) => {
-            console.log("🟢 WebSocket callback ejecutado con idAlarm:", idAlarm);
+            console.log(" WebSocket callback ejecutado con idAlarm:", idAlarm);
             //Notifications.dismissAllNotificationsAsync();
 
             setShowAlarmDialog(true); // Muestra el diálogo en el momento

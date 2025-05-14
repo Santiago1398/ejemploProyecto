@@ -21,6 +21,7 @@ export const playAlarmSound = async () => {
         );
 
         soundObject = sound;
+        //await sound.setIsLoopingAsync(true);
         await sound.playAsync();
         await AsyncStorage.setItem("alarmPlaying", "true");
     } catch (error) {

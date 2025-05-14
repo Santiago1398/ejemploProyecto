@@ -51,7 +51,7 @@ export default function App() {
         const subscription = Notifications.addNotificationResponseReceivedListener(async response => {
             const data = response.notification.request.content.data;
             if (data?.isAlarm) {
-                console.log("📲 Notificación tocada con app viva o background");
+                console.log(" Notificación tocada con app viva o background");
                 await stopAlarmSound();
                 await AsyncStorage.multiRemove(["alarmPlaying", "alarma_activa_pendiente"]);
             }

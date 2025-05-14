@@ -21,8 +21,8 @@ import Menu3Puntos from "@/components/Menu3Puntos";
 import { notificationService } from '@/hooks/NotificationService';
 import { playAlarmSound } from '@/utils/sound';
 import { Notification } from "@/types/notifications";
-import * as Notifications from 'expo-notifications';
-import * as Clipboard from 'expo-clipboard';
+//import * as Notifications from 'expo-notifications';
+//import * as Clipboard from 'expo-clipboard';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import EstadoAlarmaCircle from "./EstadoAlarmaCircle";
 
@@ -46,7 +46,7 @@ export default function AlarmList() {
     const navigation = useNavigation<any>();
 
     //const [pushToken, setPushToken] = useState<string | null>(null);
-    const [fcmToken, setFcmToken] = useState<string | null>(null);
+    //const [fcmToken, setFcmToken] = useState<string | null>(null);
 
 
 
@@ -162,16 +162,16 @@ export default function AlarmList() {
         setOptionModalVisible(true);
     };
 
-    useEffect(() => {
-        const checkPendiente = async () => {
-            const flag = await AsyncStorage.getItem("alarma_activa_pendiente");
-            if (flag === "true") {
-                console.log("📦 alarma_activa_pendiente detectada al abrir app");
-                setTimeout(() => setShowAlarmDialog(true), 500);
-            }
-        };
-        checkPendiente();
-    }, []);
+    // useEffect(() => {
+    //     const checkPendiente = async () => {
+    //         const flag = await AsyncStorage.getItem("alarma_activa_pendiente");
+    //         if (flag === "true") {
+    //             console.log("📦 alarma_activa_pendiente detectada al abrir app");
+    //             setTimeout(() => setShowAlarmDialog(true), 500);
+    //         }
+    //     };
+    //     checkPendiente();
+    // }, []);
 
 
     // 6. Render de cada alarma (con mejoras visuales)
@@ -250,7 +250,7 @@ export default function AlarmList() {
     //     const token = await notificationService.getFCMToken();
     //     if (token) {
     //         setFcmToken(token);
-    //         await Clipboard.setStringAsync(token); // 👈 Copia al portapapeles
+    //         await Clipboard.setStringAsync(token); //  Copia al portapapeles
     //         Alert.alert("FCM Token obtenido", "Copiado al portapapeles:\n\n" + token);
     //     } else {
     //         Alert.alert("Error", "No se pudo obtener el token");

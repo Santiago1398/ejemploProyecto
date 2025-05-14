@@ -37,7 +37,7 @@ class NotificationService {
     }
 
     private async startAlarmPlayback() {
-        console.log("🚨 Reproduciendo sonido y marcando flags");
+        console.log(" Reproduciendo sonido y marcando flags");
         await marcarAlarmaActiva();
         await playAlarmSound();
     }
@@ -54,19 +54,17 @@ class NotificationService {
             async (notification) => {
                 const data = notification.request.content.data;
 
-                // ❌ Si estamos en foreground y llega una notificación del sistema, NO hacer nada
                 if (AppState.currentState === "active" && data?.isAlarm) {
-                    console.log("🔕 Ignorando notificación de sistema en foreground");
+                    console.log(" Ignorando notificación de sistema en foreground");
                     return;
                 }
 
-                // ✅ Si no está en foreground (o viene por otro medio), seguir como antes
                 if (data?.isAlarm && data?.mac && data?.idAlarm) {
                     const mac = Number(data.mac);
                     const idAlarm = Number(data.idAlarm);
 
                     if (this._shouldTriggerAlarm(mac, idAlarm)) {
-                        console.log("🔔 Foreground alarm:", mac, idAlarm);
+                        console.log(" Foreground alarm:", mac, idAlarm);
                         this.onAlarmDetectedCallback?.(idAlarm);
                         this.onSiteAlarmDetectedCallback?.(mac);
                         await this.startAlarmPlayback();
@@ -108,7 +106,7 @@ class NotificationService {
                 const idAlarm = data.idAlarm;
 
                 if (data.isAlarm && this._shouldTriggerAlarm(mac, idAlarm)) {
-                    console.log("🌐 WebSocket: alarma recibida", mac, idAlarm);
+                    console.log(" WebSocket: alarma recibida", mac, idAlarm);
                     this.onAlarmDetectedCallback?.(idAlarm);
                     this.onSiteAlarmDetectedCallback?.(mac);
                     //await this.startAlarmPlayback();
@@ -116,7 +114,7 @@ class NotificationService {
 
                 }
             } catch (e) {
-                console.error("❌ Error procesando mensaje WebSocket:", e);
+                console.error(" Error procesando mensaje WebSocket:", e);
             }
         };
 
@@ -126,7 +124,7 @@ class NotificationService {
         };
 
         this.ws.onerror = (err) => {
-            console.error("⚠️ WebSocket error:", err);
+            console.error(" WebSocket error:", err);
         };
     }
 

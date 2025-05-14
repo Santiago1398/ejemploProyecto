@@ -18,6 +18,8 @@ import {
 } from "react-native";
 import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback } from "react";
 
 const Drawer = createDrawerNavigator();
 
@@ -45,11 +47,11 @@ export default function Layout() {
 
     const handleAlarmState = async (isActive: boolean) => {
         if (isActive) {
-            console.log("✅ Activando alarma");
+            console.log(" Activando alarma");
             await AsyncStorage.setItem("alarmPlaying", "true");
             setShowAlarmDialog(true);
         } else {
-            console.log("🛑 Desactivando alarma");
+            console.log(" Desactivando alarma");
             await stopAlarmSound();
             await AsyncStorage.multiRemove(["alarmPlaying", "alarma_activa_pendiente"]);
             setShowAlarmDialog(false);
@@ -86,7 +88,7 @@ export default function Layout() {
         const checkAlarmFlag = async () => {
             const flag = await AsyncStorage.getItem("alarma_activa_pendiente");
             if (flag === "true") {
-                console.log("🟡 alarma_activa_pendiente detectada");
+                console.log(" alarma_activa_pendiente detectada");
                 setShowAlarmDialog(true);
             }
         };
@@ -95,9 +97,11 @@ export default function Layout() {
             checkAlarmFlag();
         }
     }, [ready]);
-    useEffect(() => {
-        Notifications.dismissAllNotificationsAsync();
-    }, []);
+    // useFocusEffect(
+    //     useCallback(() => {
+    //         Notifications.dismissAllNotificationsAsync();
+    //     }, [])
+    // );
 
     // Escuchar si la app vuelve al foreground
     useEffect(() => {
