@@ -11,15 +11,10 @@ import { stopAlarmSound } from "@/utils/sound";
 import {
     Platform,
     AppState,
-    Modal,
-    View,
-    Text,
-    Button,
 } from "react-native";
 import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useFocusEffect } from "@react-navigation/native";
-import { useCallback } from "react";
+
 
 const Drawer = createDrawerNavigator();
 

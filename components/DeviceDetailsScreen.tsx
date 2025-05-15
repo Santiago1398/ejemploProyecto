@@ -19,11 +19,6 @@ import { ParamTC } from "@/infrastructure/intercafe/listapi.interface";
 import Menu3Puntos from "@/components/Menu3Puntos";
 
 import { notificationService } from '@/hooks/NotificationService';
-import { playAlarmSound } from '@/utils/sound';
-import { Notification } from "@/types/notifications";
-//import * as Notifications from 'expo-notifications';
-//import * as Clipboard from 'expo-clipboard';
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import EstadoAlarmaCircle from "./EstadoAlarmaCircle";
 
 
@@ -67,7 +62,7 @@ export default function AlarmList() {
                 .filter((alarm: { habilitado: boolean; idAlarm: number }) => alarm.habilitado && alarm.idAlarm !== 1000)
                 .map((alarm: ParamTC) => ({
                     ...alarm,
-                    activada: false, // <- nueva propiedad
+                    activada: false,
                 }));
 
             console.table("Alarmas habilitadas:", enabledAlarms);
@@ -164,12 +159,20 @@ export default function AlarmList() {
     //     const checkPendiente = async () => {
     //         const flag = await AsyncStorage.getItem("alarma_activa_pendiente");
     //         if (flag === "true") {
-    //             console.log("📦 alarma_activa_pendiente detectada al abrir app");
+    //             console.log(" alarma_activa_pendiente detectada al abrir app");
     //             setTimeout(() => setShowAlarmDialog(true), 500);
     //         }
     //     };
     //     checkPendiente();
     // }, []);
+
+    const getIconNameForAlarm = (texto: string): keyof typeof Ionicons.glyphMap => {
+        const lowerText = texto.toLowerCase();
+        if (lowerText.includes("electrico")) return "flash-outline";
+        if (lowerText.includes("temperatura")) return "thermometer-outline";
+        if (lowerText.includes("humedad")) return "water-outline";
+        return "alert-circle-outline"; // genérico
+    };
 
 
     // 6. Render de cada alarma (con mejoras visuales)
@@ -179,6 +182,8 @@ export default function AlarmList() {
         if (item.disparado) backgroundColor = "#FF3B30";
         else if (item.armado) backgroundColor = "#76db36";
 
+
+
         return (
             <TouchableOpacity
                 style={[styles.alarmContainer, { backgroundColor }]}
@@ -186,11 +191,21 @@ export default function AlarmList() {
             >
                 <View style={styles.alarmRow}>
                     <EstadoAlarmaCircle armado={item.armado} disparado={item.disparado} activo={item.activo} />
-                    <View style={styles.iconAndText}>
 
-                        <Ionicons name="alert-circle-outline" size={24} color="#fff" style={styles.alarmIcon} />
-                        <Text style={styles.alarmText}>{item.texto}</Text>
+                    <View style={styles.iconAndText}>
+                        <View style={styles.iconAndText}>
+                            {item.disparado && (
+                                <Ionicons
+                                    name={getIconNameForAlarm(item.texto)}
+                                    size={24}
+                                    color="#fff"
+                                    style={styles.alarmIcon}
+                                />
+                            )}
+                            <Text style={styles.alarmText}>{item.texto}</Text>
+                        </View>
                     </View>
+
                 </View>
                 <Entypo name="chevron-thin-right" size={20} color="#fff" />
             </TouchableOpacity>
@@ -219,12 +234,12 @@ export default function AlarmList() {
     //             isAlarm: true,
     //         };
 
-    //         // Mostrar notificación usando el servicio
+    //          Mostrar notificación usando el servicio
     //         await notificationService.showLocalNotification(notification);
 
-    //         // Reproducir sonido de alarma
+    //          Reproducir sonido de alarma
     //         await playAlarmSound();
-    //         //await AsyncStorage.setItem("alarmPlaying", "true");
+    //         await AsyncStorage.setItem("alarmPlaying", "true");
 
 
     //         Alert.alert(
@@ -237,7 +252,7 @@ export default function AlarmList() {
     //     }
     // };
 
-    // /////////////////
+
     // const getPushToken = async () => {
     //     const token = await notificationService.getExpoPushToken();
     //     if (token) {

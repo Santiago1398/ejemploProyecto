@@ -34,7 +34,7 @@ export default function DeviceList() {
     useEffect(() => {
         const subscription = AppState.addEventListener("change", async (state) => {
             if (state === "active") {
-                console.log("🧼 App volvió del background, matando notificaciones...");
+                console.log(" App volvió del background, matando notificaciones...");
                 await Notifications.dismissAllNotificationsAsync();
             }
         });

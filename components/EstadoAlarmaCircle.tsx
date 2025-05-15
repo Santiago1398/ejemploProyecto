@@ -12,7 +12,7 @@ export default function EstadoAlarmaCircle({ armado, disparado, activo }: Props)
     let backgroundColor = "transparent"; // por defecto, para evitar el salto visual
 
     if (armado && !disparado) {
-        backgroundColor = "#2ecc71"; // verde claro cuando está todo OK
+        backgroundColor = "#77dc36"; // verde  claro cuando está todo OK
     } else if (!armado && disparado && activo) {
         backgroundColor = "#FF3B30"; // rojo
     } else if (!armado && !disparado) {
