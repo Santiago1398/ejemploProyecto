@@ -4,16 +4,19 @@ import { View, StyleSheet } from "react-native";
 interface Props {
     armado: boolean;
     disparado: boolean;
+    activo: boolean;
 }
 
-export default function EstadoAlarmaCircle({ armado, disparado }: Props) {
-    if (armado && !disparado) return null; // todo OK, no se muestra nada y ninguna alrma disparada
-    if (armado && disparado) return null;  //  ya se volvió a armar, no se muestra
+export default function EstadoAlarmaCircle({ armado, disparado, activo }: Props) {
 
-    let backgroundColor = "#8a9bb9"; // gris por defecto
+    let backgroundColor = "transparent"; // por defecto, para evitar el salto visual
 
-    if (!armado && disparado) {
-        backgroundColor = "#FF3B30"; //  alerta pendiente estado rojo 
+    if (armado && !disparado) {
+        backgroundColor = "#2ecc71"; // verde claro cuando está todo OK
+    } else if (!armado && disparado && activo) {
+        backgroundColor = "#FF3B30"; // rojo
+    } else if (!armado && !disparado) {
+        backgroundColor = "#8a9bb9"; // gris
     }
 
     return <View style={[styles.circle, { backgroundColor }]} />;
@@ -21,9 +24,12 @@ export default function EstadoAlarmaCircle({ armado, disparado }: Props) {
 
 const styles = StyleSheet.create({
     circle: {
-        width: 14,
-        height: 14,
-        borderRadius: 7,
-        marginRight: 8,
+        width: 22,
+        height: 22,
+        borderRadius: 11,
+        marginRight: 10,
+        borderWidth: 2,
+        borderColor: "#fff",
     },
 });
+

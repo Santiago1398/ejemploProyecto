@@ -58,30 +58,6 @@ export default function Layout() {
         }
     };
 
-    // Inicializar y verificar si hay notificación o alarma activa
-    // useEffect(() => {
-    //     const prepare = async () => {
-    //         try {
-    //             const alarm = await AsyncStorage.getItem("alarmPlaying");
-    //             if (alarm === "true") {
-    //                 console.log("⏰ App detecta alarma activa al arrancar");
-    //                 await AsyncStorage.setItem("alarma_activa_pendiente", "true");
-    //             }
-
-    //             const last = await Notifications.getLastNotificationResponseAsync();
-    //             const data = last?.notification?.request?.content?.data;
-    //             if (data?.isAlarm === "true" || data?.isAlarm === true) {
-    //                 await AsyncStorage.setItem("alarmPlaying", "true");
-    //             }
-    //         } catch (e) {
-    //             console.error("❌ Error al preparar app:", e);
-    //         } finally {
-    //             setReady(true);
-    //         }
-    //     };
-
-    //     prepare();
-    // }, []);
 
     // Mostrar el modal cuando esté lista la app y detecte alarma pendiente
     useEffect(() => {
@@ -123,20 +99,6 @@ export default function Layout() {
 
     return (
         <PermissionsCkeckProvider>
-            {/* {showAlarmDialog && (
-                <Modal transparent animationType="fade" visible={true}>
-                    <View style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "#00000080" }}>
-                        <View style={{ backgroundColor: "white", padding: 20, borderRadius: 10 }}>
-                            <Text style={{ marginBottom: 10 }}>🚨 Alarma activa</Text>
-                            <Button
-                                title="OK, detener sonido"
-                                onPress={() => handleAlarmState(false)}
-                            />
-                        </View>
-                    </View>
-                </Modal>
-            )} */}
-
             <Drawer.Navigator
                 drawerContent={(props) => <DrawerContent {...props} />}
                 screenOptions={{

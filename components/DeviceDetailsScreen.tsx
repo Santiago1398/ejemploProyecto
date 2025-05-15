@@ -40,9 +40,7 @@ export default function AlarmList() {
     const [alarms, setAlarms] = useState<ParamTC[]>([]);
     const [loading, setLoading] = useState(true);
     const [masterAlarmState, setMasterAlarmState] = useState<boolean>(true); // Estado de la alarma 1000
-    const [showAlarmDialog, setShowAlarmDialog] = useState(false);
-
-    //Impelmetando el dtema del cicule
+    //const [showAlarmDialog, setShowAlarmDialog] = useState(false);
     const navigation = useNavigation<any>();
 
     //const [pushToken, setPushToken] = useState<string | null>(null);
@@ -187,9 +185,12 @@ export default function AlarmList() {
                 onPress={() => openOptionModal(item)}
             >
                 <View style={styles.alarmRow}>
-                    <EstadoAlarmaCircle armado={item.armado} disparado={item.disparado} />
-                    <Ionicons name="alert-circle-outline" size={24} color="#fff" style={styles.alarmIcon} />
-                    <Text style={styles.alarmText}>{item.texto}</Text>
+                    <EstadoAlarmaCircle armado={item.armado} disparado={item.disparado} activo={item.activo} />
+                    <View style={styles.iconAndText}>
+
+                        <Ionicons name="alert-circle-outline" size={24} color="#fff" style={styles.alarmIcon} />
+                        <Text style={styles.alarmText}>{item.texto}</Text>
+                    </View>
                 </View>
                 <Entypo name="chevron-thin-right" size={20} color="#fff" />
             </TouchableOpacity>
@@ -199,42 +200,42 @@ export default function AlarmList() {
 
 
     // Función para enviar notificación de alarma de prueba
-    const sendTestAlarm = async () => {
-        try {
-            if (!device || !farmName || !siteName) {
-                Alert.alert("Error", "Información del dispositivo incompleta");
-                return;
-            }
+    // const sendTestAlarm = async () => {
+    //     try {
+    //         if (!device || !farmName || !siteName) {
+    //             Alert.alert("Error", "Información del dispositivo incompleta");
+    //             return;
+    //         }
 
-            // Crear objeto de notificación según la interfaz
-            const notification: Notification = {
-                title: '¡ALARMA ACTIVADA!',
-                data: {
-                    farmName: farmName,
-                    siteName: siteName,
-                    alarmText: selectedAlarm?.texto || 'Alarma activada',
-                    type: 'alarm'
-                },
-                isAlarm: true,
-            };
+    //         // Crear objeto de notificación según la interfaz
+    //         const notification: Notification = {
+    //             title: '¡ALARMA ACTIVADA!',
+    //             data: {
+    //                 farmName: farmName,
+    //                 siteName: siteName,
+    //                 alarmText: selectedAlarm?.texto || 'Alarma activada',
+    //                 type: 'alarm'
+    //             },
+    //             isAlarm: true,
+    //         };
 
-            // Mostrar notificación usando el servicio
-            await notificationService.showLocalNotification(notification);
+    //         // Mostrar notificación usando el servicio
+    //         await notificationService.showLocalNotification(notification);
 
-            // Reproducir sonido de alarma
-            await playAlarmSound();
-            //await AsyncStorage.setItem("alarmPlaying", "true");
+    //         // Reproducir sonido de alarma
+    //         await playAlarmSound();
+    //         //await AsyncStorage.setItem("alarmPlaying", "true");
 
 
-            Alert.alert(
-                'Alarma Enviada',
-                'La alarma sonará hasta que toques la notificación o abras la app desde ella'
-            );
-        } catch (error) {
-            console.error('Error al enviar notificación de alarma:', error);
-            Alert.alert('Error', 'No se pudo enviar la notificación de alarma');
-        }
-    };
+    //         Alert.alert(
+    //             'Alarma Enviada',
+    //             'La alarma sonará hasta que toques la notificación o abras la app desde ella'
+    //         );
+    //     } catch (error) {
+    //         console.error('Error al enviar notificación de alarma:', error);
+    //         Alert.alert('Error', 'No se pudo enviar la notificación de alarma');
+    //     }
+    // };
 
     // /////////////////
     // const getPushToken = async () => {
@@ -261,16 +262,16 @@ export default function AlarmList() {
     return (
         <View style={styles.container}>
 
-            {/* Botón de prueba de alarma */}
+            {/* Botón de prueba de alarma
             <TouchableOpacity
                 style={styles.testAlarmButton}
                 onPress={sendTestAlarm}
             >
                 <Ionicons name="notifications" size={20} color="#fff" style={styles.buttonIcon} />
                 <Text style={styles.testAlarmButtonText}>Probar Notificación de ALARMA</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
-            {/* Botón para obtener token */}
+            {/* Botón para obtener token
             <TouchableOpacity
                 style={{
                     flexDirection: 'row',
@@ -279,10 +280,10 @@ export default function AlarmList() {
                     padding: 12,
                     borderRadius: 12
                 }}
-            //onPress={getPushToken}
-            ></TouchableOpacity>
+            onPress={getPushToken}
+            ></TouchableOpacity> */}
 
-            <TouchableOpacity
+            {/* <TouchableOpacity
                 style={{
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -290,11 +291,11 @@ export default function AlarmList() {
                     padding: 12,
                     borderRadius: 12
                 }}
-            //onPress={getDeviceToken}
+            onPress={getDeviceToken}
             >
                 <Ionicons name="key-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
                 <Text style={{ color: '#fff', fontWeight: 'bold' }}>Obtener Token FCM</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             {loading ? (
                 <Text style={styles.loadingText}>Cargando alarmas...</Text>
@@ -393,8 +394,13 @@ const styles = StyleSheet.create({
     alarmRow: {
         flexDirection: "row",
         alignItems: "center",
-        flex: 1,
     },
+
+    iconAndText: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+
     alarmIcon: {
         marginRight: 8,
     },

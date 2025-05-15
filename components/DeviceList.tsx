@@ -30,6 +30,7 @@ export default function DeviceList() {
     const [showAlarmDialog, setShowAlarmDialog] = useState(false);
 
 
+
     useEffect(() => {
         const subscription = AppState.addEventListener("change", async (state) => {
             if (state === "active") {
@@ -136,12 +137,12 @@ export default function DeviceList() {
 
     const getBackgroundColor = (alarmType: number) => {
         switch (alarmType) {
-            case 0: return "#8a9bb9";
-            case 1: return "#76db36";
-            case 2: return "#e94b3c";
-            case 3: return "#9E75C6";
-            case 4: return "#F6BC31";
-            default: return "#ffffff";
+            case 0: return "#8a9bb9"; //Gris
+            case 1: return "#76db36"; // Verde
+            case 2: return "#e94b3c"; // Rojo
+            case 3: return "#9E75C6"; // Amarillo
+            case 4: return "#F6BC31"; // Naranja
+            default: return "#000000"; // negro
         }
     };
 
@@ -199,7 +200,7 @@ export default function DeviceList() {
                             <TouchableOpacity
                                 onPress={async () => {
                                     await stopAlarmSound();
-                                    //await playSilentSound(); // 👈 reproducir el silencioso
+                                    //await playSilentSound(); //  reproducir el silencioso
                                     await AsyncStorage.multiRemove(["alarmPlaying", "alarma_activa_pendiente"]);
                                     setShowAlarmDialog(false);
                                 }}
@@ -256,25 +257,36 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#00000080",
+        backgroundColor: "rgba(0, 0, 0, 0.6)",
     },
     modalContent: {
-        backgroundColor: "white",
-        padding: 20,
-        borderRadius: 10,
+        backgroundColor: "#fff",
+        padding: 30,
+        borderRadius: 20,
         width: "80%",
         alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
     },
     modalTitle: {
-        fontSize: 18,
+        fontSize: 22,
+        fontWeight: "bold",
         marginBottom: 10,
+        color: "#FF3B30",
+        textAlign: "center",
     },
     modalButtonText: {
-        color: "white",
+        backgroundColor: "#FF3B30",
+        color: "#fff",
+        paddingVertical: 12,
+        paddingHorizontal: 24,
+        fontSize: 16,
         fontWeight: "bold",
         textAlign: "center",
-        backgroundColor: "#FF3B30",
-        padding: 10,
-        borderRadius: 8,
+        overflow: "hidden",
+        marginTop: 10,
     },
 });
