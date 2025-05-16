@@ -17,6 +17,7 @@ export default function LoginScreen({ navigation }: any) {
     const [email, setEmail] = useState(savedEmail || "");
     const [password, setPassword] = useState(savedPassword || "");
     const { requestPermission } = useNotificationPermission();
+    const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
         const initializePermissions = async () => {
@@ -73,13 +74,17 @@ export default function LoginScreen({ navigation }: any) {
                     <View style={styles.inputContainer}>
                         <Feather name="lock" size={20} color="#666" style={styles.icon} />
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, { paddingRight: 35 }]} // deja espacio para el ícono
                             placeholder="Contraseña"
                             value={password}
                             onChangeText={setPassword}
-                            secureTextEntry
+                            secureTextEntry={!showPassword}
                         />
+                        <TouchableOpacity onPress={() => setShowPassword(!showPassword)} style={styles.eyeIcon}>
+                            <Feather name={showPassword ? "eye" : "eye-off"} size={20} color="#666" />
+                        </TouchableOpacity>
                     </View>
+
 
                     <TouchableOpacity style={styles.button} onPress={handleLogin}>
                         <Text style={styles.buttonText}>Ingresar</Text>
@@ -158,4 +163,9 @@ const styles = StyleSheet.create({
     buttonIcon: {
         marginLeft: 8,
     },
+    eyeIcon: {
+        position: "absolute",
+        right: 12,
+    }
+
 });

@@ -9,15 +9,15 @@ export function Home() {
 }
 
 const PushApp = () => {
-    const [notifications, setNotifications] = useState(notificationService.notifications);
+    // const [notifications, setNotifications] = useState(notificationService.notifications);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setNotifications([...notificationService.notifications]);
-        }, 1000); // puedes ajustar esto a menos frecuencia si prefieres
+    // useEffect(() => {
+    //     const interval = setInterval(() => {
+    //         setNotifications([...notificationService.notifications]);
+    //     }, 1000); // puedes ajustar esto a menos frecuencia si prefieres
 
-        return () => clearInterval(interval);
-    }, []);
+    //     return () => clearInterval(interval);
+    // }, []);
 
     return (
         <View style={{ marginHorizontal: 10, marginTop: 5 }}>
@@ -31,8 +31,8 @@ const PushApp = () => {
                 Notificaciones
             </ThemedText>
 
-            <FlatList
-                data={notifications}
+            {/* <FlatList
+                //data={notifications}
                 keyExtractor={(item) => item.request.identifier}
                 renderItem={({ item }) => (
                     <View>
@@ -48,7 +48,7 @@ const PushApp = () => {
                 ItemSeparatorComponent={() => (
                     <View style={{ height: 1, backgroundColor: "grey", opacity: 0.3 }} />
                 )}
-            />
+            /> */}
         </View>
     );
 };

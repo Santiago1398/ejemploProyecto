@@ -18,9 +18,6 @@ export default function TabsNavigator() {
                         case "Home":
                             iconName = "home-outline" as const;
                             break;
-                        case "Profile":
-                            iconName = "person-outline" as const;
-                            break;
                         case "Settings":
                             iconName = "settings-outline" as const;
                             break;
@@ -37,42 +34,25 @@ export default function TabsNavigator() {
                 tabBarStyle: {
                     backgroundColor: "rgba(255, 255, 255, 0.9)",
                 },
-
                 headerShown: false,
             })}
         >
             <Tab.Screen
                 name="Home"
                 component={HomeStack}
-                options={{
-                    tabBarLabel: 'Inicio',
-
-                }}
-            />
-            <Tab.Screen
-                name="Profile"
-                component={ProfileScreen}
-                options={{
-                    tabBarLabel: 'Perfil',
-
-                }}
+                options={{ tabBarLabel: 'Inicio' }}
             />
             <Tab.Screen
                 name="Settings"
                 component={SettingsScreen}
-                options={{
-                    tabBarLabel: 'Configuracion',
-
-                }}
+                options={{ tabBarLabel: 'Configuracion' }}
             />
             <Tab.Screen
                 name="Maps"
                 component={ExtraStack}
-                options={{
-                    tabBarLabel: 'Mapas',
-
-                }}
+                options={{ tabBarLabel: 'Mapas' }}
             />
         </Tab.Navigator>
+
     );
 }

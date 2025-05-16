@@ -137,10 +137,10 @@ export default function DeviceList() {
 
     const getBackgroundColor = (alarmType: number) => {
         switch (alarmType) {
-            case 0: return "#8a9bb9"; //Gris
+            case 0: return "#FFD700"; //Gris
             case 1: return "#76db36"; // Verde
             case 2: return "#e94b3c"; // Rojo
-            case 3: return "#9E75C6"; // Amarillo
+            case 3: return "#9E75C6"; // Violeta
             case 4: return "#F6BC31"; // Naranja
             default: return "#000000"; // negro
         }

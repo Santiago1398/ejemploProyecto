@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { TouchableOpacity, Alert, StyleSheet } from "react-native";
+import React, { useEffect, useState, } from "react";
+import { TouchableOpacity, Alert, StyleSheet, Text, View } from "react-native";
 import { post } from "@/services/api";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 
@@ -52,31 +52,74 @@ const ButtonMaster: React.FC<ButtonMasterProps> = ({ mac, fetchAlarms, masterAla
     return (
         <TouchableOpacity
             style={[
-                styles.button,
-                { backgroundColor: isEnabled ? "red" : "green" },
+                styles.masterButtonFull,
+                { backgroundColor: isEnabled ? "#FF3B30" : "#4CD964" }, // rojo o verde
             ]}
             onPress={handleToggleMaster}
         >
-            <MaterialCommunityIcons name="power" size={40} color="white" />
+            <Text style={styles.masterLabel}>Master</Text>
+            <MaterialCommunityIcons name="power" size={32} color="white" />
         </TouchableOpacity>
+
+
+
     );
 };
 
 const styles = StyleSheet.create({
-    button: {
+    masterButtonFull: {
         position: "absolute",
-        bottom: 8, // Ajuste para evitar que se corte
-        right: 20, // Asegurar que esté bien alineado a la derecha
-        width: 73, // Aumentar tamaño para evitar corte
-        height: 73, // Asegurar el tamaño uniforme
-        borderRadius: 37.5, // Circular
-        justifyContent: "center",
+        bottom: 20,
+        right: 20,
+        flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "red",
+        paddingHorizontal: 20,
+        paddingVertical: 14,
+        borderRadius: 16,
         elevation: 6,
+        shadowColor: "#000",
         shadowOpacity: 0.3,
         shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 4,
     },
+
+    masterLabel: {
+        color: "white",
+        fontSize: 20,
+        fontWeight: "bold",
+        marginRight: 12,
+    },
+
+    masterButtonContainer: {
+        width: 60,
+        height: 60,
+        borderRadius: 16,
+        justifyContent: "center",
+        alignItems: "center",
+        elevation: 6,
+        shadowColor: "#000",
+        shadowOpacity: 0.3,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 4,
+    },
+
+    masterText: {
+        marginTop: 4,
+        color: "white",
+        fontSize: 12,
+        fontWeight: "bold",
+    },
+    wrapper: {
+        position: "absolute",
+        bottom: 20,
+        right: 20,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 12, // si usas React Native >= 0.71
+    },
+
+
+
 });
 
 export default ButtonMaster;

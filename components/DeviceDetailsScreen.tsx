@@ -339,30 +339,23 @@ export default function AlarmList() {
             >
                 <Pressable style={styles.modalOverlay} onPress={() => setOptionModalVisible(false)}>
                     <Pressable style={styles.modalContent}>
+                        <TouchableOpacity style={styles.closeButton} onPress={() => setOptionModalVisible(false)}>
+                            <Ionicons name="close" size={24} color="#333" />
+                        </TouchableOpacity>
+
                         <Text style={styles.modalTitle}>{selectedAlarm?.texto}</Text>
+
                         <TouchableOpacity style={styles.optionRow} onPress={() => handleOptionSelect("Armada")}>
-                            <View
-                                style={[
-                                    styles.circle,
-                                    selectedAlarm?.armado ? { backgroundColor: "#76db36" } : {},
-                                ]}
-                            />
+                            <View style={[styles.circle, selectedAlarm?.armado ? { backgroundColor: "#76db36" } : {}]} />
                             <Text style={styles.optionText}>Armada</Text>
                         </TouchableOpacity>
 
-                        <TouchableOpacity
-                            style={styles.optionRow}
-                            onPress={() => handleOptionSelect("Desarmada")}
-                        >
-                            <View
-                                style={[
-                                    styles.circle,
-                                    !selectedAlarm?.armado ? { backgroundColor: "#8a9bb9" } : {},
-                                ]}
-                            />
+                        <TouchableOpacity style={styles.optionRow} onPress={() => handleOptionSelect("Desarmada")}>
+                            <View style={[styles.circle, !selectedAlarm?.armado ? { backgroundColor: "#8a9bb9" } : {}]} />
                             <Text style={styles.optionText}>Desarmada</Text>
                         </TouchableOpacity>
                     </Pressable>
+
                 </Pressable>
             </Modal>
         </View>
@@ -501,6 +494,13 @@ const styles = StyleSheet.create({
         borderRadius: 6,
         marginRight: 8,
     },
+    closeButton: {
+        position: "absolute",
+        top: 12,
+        right: 12,
+        zIndex: 1,
+    }
+
 
 });
 
