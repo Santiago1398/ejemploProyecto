@@ -2,6 +2,8 @@ import React from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { DrawerContentComponentProps } from "@react-navigation/drawer"; // Importa el tipo correcto
 import { useAuthStore } from "../store/authStore";
+import { Ionicons } from '@expo/vector-icons';
+
 
 export default function DrawerContent(props: DrawerContentComponentProps) {
     const { username: email, isActive, logout, isAuthenticated } = useAuthStore();
@@ -36,6 +38,17 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
                     <Text style={styles.logoutText}>Cerrar sesión</Text>
                 </TouchableOpacity>
             )}
+
+            <View style={styles.footer}>
+                <View style={styles.separator} />
+                <TouchableOpacity onPress={() => navigation.navigate("Settings")} style={styles.footerButton}>
+                    <Ionicons name="settings-outline" size={20} color="#000" style={{ marginRight: 8 }} />
+                    <Text style={styles.footerText}>Ajustes</Text>
+                </TouchableOpacity>
+            </View>
+
+
+
         </View>
     );
 }
@@ -85,4 +98,36 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         textAlign: "center",
     },
+    footer: {
+        position: "absolute",
+        bottom: 40, // más arriba del borde inferior
+        left: 0,
+        right: 0,
+        alignItems: "center",
+    },
+
+    separator: {
+        height: 1,
+        width: "100%",
+        backgroundColor: "#ccc",
+        marginBottom: 12,
+    },
+
+    footerButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 10,
+        backgroundColor: "#f0f0f0",
+    },
+
+    footerText: {
+        fontSize: 18,
+        color: "#000",
+        fontWeight: "600",
+    },
+
+
+
 });

@@ -1,7 +1,6 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import SettingsScreen from "./SettingsScreen";
-import ProfileScreen from "./ProfileScreen";
+//import SettingsScreen from "./SettingsScreen";
 import HomeStack from "../HomeStack";
 import ExtraStack from "../extra/Extra";
 import { Ionicons } from "@expo/vector-icons";
@@ -18,9 +17,9 @@ export default function TabsNavigator() {
                         case "Home":
                             iconName = "home-outline" as const;
                             break;
-                        case "Settings":
-                            iconName = "settings-outline" as const;
-                            break;
+                        // case "Settings":
+                        //     iconName = "settings-outline" as const;
+                        //     break;
                         case "Maps":
                             iconName = "map-outline" as const;
                             break;
@@ -42,11 +41,11 @@ export default function TabsNavigator() {
                 component={HomeStack}
                 options={{ tabBarLabel: 'Inicio' }}
             />
-            <Tab.Screen
+            {/* <Tab.Screen
                 name="Settings"
                 component={SettingsScreen}
                 options={{ tabBarLabel: 'Configuracion' }}
-            />
+            /> */}
             <Tab.Screen
                 name="Maps"
                 component={ExtraStack}

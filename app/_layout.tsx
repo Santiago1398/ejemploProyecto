@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import SettingsScreen from "./(tabs)/SettingsScreen";
 
 
 const Drawer = createDrawerNavigator();
@@ -121,6 +122,8 @@ export default function Layout() {
                 )}
                 <Drawer.Screen name="Map" component={MapsScreen} />
                 <Drawer.Screen name="permissions" component={PermissionsScreen} />
+                <Drawer.Screen name="Settings" component={SettingsScreen} />
+
             </Drawer.Navigator>
         </PermissionsCkeckProvider>
     );
