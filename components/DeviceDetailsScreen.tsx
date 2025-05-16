@@ -409,6 +409,8 @@ const styles = StyleSheet.create({
     alarmRow: {
         flexDirection: "row",
         alignItems: "center",
+        justifyContent: "flex-start",
+        paddingVertical: 2,
     },
 
     iconAndText: {
