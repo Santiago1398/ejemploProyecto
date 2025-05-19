@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
 import {
     View,
     Text,
@@ -37,9 +37,68 @@ export default function AlarmList() {
     const [masterAlarmState, setMasterAlarmState] = useState<boolean>(true); // Estado de la alarma 1000
     //const [showAlarmDialog, setShowAlarmDialog] = useState(false);
     const navigation = useNavigation<any>();
+    const [headerText, setHeaderText] = useState<string>("Alarmas Activas"); // Texto del header para controlarlo
+    const [headerColor, setHeaderColor] = useState<string>("#76db36"); // Color del header para controlarloconst flatListRef = useRef<FlatList>(null);
+    const flatListRef = useRef<FlatList>(null);
+
+    const COLORS = {
+        yellowBackground: "#fef9c3",
+        yellowText: "#ca8a04",
+        greenBackground: "#dcfe7f",
+        greenText: "#16a34a",
+        redBackground: "#FFCDD2",
+        redText: "#C62828",
+        greyBackground: "#CFD8DC",
+        greyText: "#37474F",
+    };
+
+    const scrollOffset = useRef(0); // valor persistente
+
+    const handleScroll = (event: any) => {
+        scrollOffset.current = event.nativeEvent.contentOffset.y;
+    };
+
+
+
+
+
 
     //const [pushToken, setPushToken] = useState<string | null>(null);
     //const [fcmToken, setFcmToken] = useState<string | null>(null);
+
+    const updateHeaderStatus = (alarms: ParamTC[], masterState: boolean) => {
+        const alarmaDisparada = alarms.some(alarm => alarm.disparado);
+        if (alarmaDisparada) {
+            setHeaderText("Alarma Activada");
+            setHeaderColor("#FF3B30"); // rojo
+        } else if (masterState) {
+            setHeaderText("Alarmas Activadas");
+            setHeaderColor("#76db36"); // verde
+        } else {
+            setHeaderText("Alarmas Desarmadas");
+            setHeaderColor("#8a9bb9"); // gris
+        }
+    };
+
+    const handleToggleMaster = async () => {
+        const status = masterAlarmState ? 0 : 1;
+        try {
+            const response = await post(`alarmtc/armMaster?mac=${mac}&status=${status}`, {});
+            if (response.status === "Master Button Alarm Armed" || response.status === "Master Button Alarm Disarmed") {
+                Alert.alert("Éxito", `Las alarmas han sido ${status === 1 ? "activadas" : "desactivadas"}.`);
+                const nuevoEstado = !masterAlarmState;
+                setMasterAlarmState(nuevoEstado);
+                updateHeaderStatus(alarms, nuevoEstado);
+                if (status === 1) {
+                    fetchAlarms(); // solo si se activan
+                }
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            Alert.alert("Error", "No se pudo cambiar el estado de las alarmas.");
+        }
+    };
+
 
 
 
@@ -47,6 +106,8 @@ export default function AlarmList() {
     const fetchAlarms = async () => {
         try {
             setLoading(true);
+            const scrollY = scrollOffset.current; // guarda antes
+
             console.log("Petición GET:", `alarmtc/status?mac=${mac}`);
             const data = await get(`alarmtc/status?mac=${mac}`);
             console.table("Datos obtenidos:", data);
@@ -68,6 +129,11 @@ export default function AlarmList() {
             console.table("Alarmas habilitadas:", enabledAlarms);
 
             setAlarms(enabledAlarms);
+            updateHeaderStatus(enabledAlarms, masterAlarm?.armado ?? false);
+            // Actualiza el estado del header
+            setTimeout(() => {
+                flatListRef.current?.scrollToOffset({ offset: scrollY, animated: false });
+            }, 50);
         } catch (error) {
             console.error("Error en la solicitud GET:", error);
             Alert.alert("Error", "No se pudieron cargar las alarmas.");
@@ -85,26 +151,35 @@ export default function AlarmList() {
 
     // 3. useLayoutEffect para configurar el header con Menu3Puntos
     useLayoutEffect(() => {
-        if (!device || !farmName || !siteName || !mac) {
-            console.error("Faltan datos necesarios", { device, farmName, siteName, mac });
-        }
         const latitude = device.latitude || 0;
         const longitude = device.longitude || 0;
+
         navigation.setOptions({
-            headerTitle: false,
+            headerTitle: () => (
+                <Text style={{
+                    fontSize: 20,
+                    fontWeight: "bold",
+                    color: "#FFFFFF",
+                    textAlign: "center"
+                }}>
+                    {headerText}
+                </Text>
+            ),
+            headerStyle: {
+                backgroundColor: headerColor, // Usa los tonos suaves sugeridos
+                elevation: 0, // Android: quita sombra si no la necesitas
+                shadowOpacity: 0, // iOS: quita sombra
+            },
+            headerTintColor: "#000000",
             headerRight: () => (
                 <Menu3Puntos
-                    device={{
-                        latitude,
-                        longitude,
-                        farmName,
-                        siteName,
-                        mac,
-                    }}
+                    device={{ latitude, longitude, farmName, siteName, mac }}
                 />
             ),
         });
-    }, [navigation, device, farmName, siteName, mac]);
+    }, [navigation, device, farmName, siteName, mac, headerText, headerColor]);
+
+
 
 
     const handleOptionSelect = async (option: string) => {
@@ -129,16 +204,31 @@ export default function AlarmList() {
             }
         }
     };
+    // const handleAlarmDetected = (idAlarm: number) => {
+    //     console.log(" Alarma detectada con id:", idAlarm);
+    //     setAlarms(prev =>
+    //         prev.map(alarm =>
+    //             alarm.idAlarm === idAlarm
+    //                 ? { ...alarm, disparado: true }
+    //                 : alarm
+    //         )
+    //     );
+
+    // };
+
     const handleAlarmDetected = (idAlarm: number) => {
         console.log(" Alarma detectada con id:", idAlarm);
-        setAlarms(prev =>
-            prev.map(alarm =>
+        setAlarms(prev => {
+            const nuevas = prev.map(alarm =>
                 alarm.idAlarm === idAlarm
                     ? { ...alarm, disparado: true }
                     : alarm
-            )
-        );
+            );
+            updateHeaderStatus(nuevas, masterAlarmState); // 👉 Añadir esta línea
+            return nuevas;
+        });
     };
+
 
     useEffect(() => {
         notificationService.setOnAlarmDetected(handleAlarmDetected);
@@ -177,12 +267,19 @@ export default function AlarmList() {
 
     // 6. Render de cada alarma (con mejoras visuales)
     const renderAlarmItem = ({ item }: { item: ParamTC }) => {
-        let backgroundColor = "#8a9bb9"; // desarmada
+        let backgroundColor = "#8a9bb9"; // gris más fuerte
+        let textColor = "#000000"; // negro por defecto
 
-        if (item.disparado) backgroundColor = "#FF3B30";
-        else if (item.armado) backgroundColor = "#76db36";
-
-
+        if (item.disparado) {
+            backgroundColor = "#FF0000"; // rojo fuerte
+            textColor = "#000000";
+        } else if (!masterAlarmState) {
+            backgroundColor = "#fde047"; // amarillo fuerte
+            textColor = "#000000";
+        } else if (item.armado) {
+            backgroundColor = "#a3e635"; // verde fuerte
+            textColor = "#000000";
+        }
 
         return (
             <TouchableOpacity
@@ -193,24 +290,23 @@ export default function AlarmList() {
                     <EstadoAlarmaCircle armado={item.armado} disparado={item.disparado} activo={item.activo} />
 
                     <View style={styles.iconAndText}>
-                        <View style={styles.iconAndText}>
-                            {item.disparado && (
-                                <Ionicons
-                                    name={getIconNameForAlarm(item.texto)}
-                                    size={24}
-                                    color="#fff"
-                                    style={styles.alarmIcon}
-                                />
-                            )}
-                            <Text style={styles.alarmText}>{item.texto}</Text>
-                        </View>
+                        {item.disparado && (
+                            <Ionicons
+                                name={getIconNameForAlarm(item.texto)}
+                                size={24}
+                                color="#000"
+                                style={styles.alarmIcon}
+                            />
+                        )}
+                        <Text style={[styles.alarmText, { color: textColor }]}>{item.texto}</Text>
                     </View>
-
                 </View>
-                <Entypo name="chevron-thin-right" size={20} color="#fff" />
+                <Entypo name="chevron-thin-right" size={20} color="#000" />
             </TouchableOpacity>
         );
     };
+
+
 
 
 
@@ -320,15 +416,23 @@ export default function AlarmList() {
                 </View>
             ) : (
                 <FlatList
+                    ref={flatListRef}
                     data={alarms}
                     keyExtractor={(item) => `${item.idAlarm}`}
                     renderItem={renderAlarmItem}
+                    onScroll={handleScroll}
+                    scrollEventThrottle={16}
                     contentContainerStyle={{ paddingBottom: 100 }}
                 />
             )}
 
             {/* Botón Master en la esquina inferior derecha */}
-            <ButtonMaster mac={mac} fetchAlarms={fetchAlarms} masterAlarmState={masterAlarmState} />
+            <ButtonMaster
+                mac={mac}
+                fetchAlarms={fetchAlarms}
+                masterAlarmState={masterAlarmState}
+                onToggleMaster={handleToggleMaster}
+            />
 
             {/* Modal para armar/desarmar la alarma */}
             <Modal

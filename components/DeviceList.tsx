@@ -134,17 +134,17 @@ export default function DeviceList() {
         };
     }, []);
 
-
     const getBackgroundColor = (alarmType: number) => {
         switch (alarmType) {
-            case 0: return "#FFD700"; //Gris
-            case 1: return "#76db36"; // Verde
-            case 2: return "#e94b3c"; // Rojo
-            case 3: return "#9E75C6"; // Violeta
-            case 4: return "#F6BC31"; // Naranja
+            case 0: return "#facc15"; // amarillo fuerte
+            case 1: return "#bef264"; // verde más fuerte
+            case 2: return "red";     // rojo total
+            case 3: return "#9E75C6"; // violeta (opcional)
+            case 4: return "#F6BC31"; // naranja (opcional)
             default: return "#000000"; // negro
         }
     };
+
 
     const renderDeviceItem = ({ item }: { item: ResponseAlarmaSite }) => {
         const backgroundColor = getBackgroundColor(item.alarmType);
@@ -168,7 +168,7 @@ export default function DeviceList() {
                 }}
             >
                 <View style={styles.row}>
-                    <Ionicons name="home-outline" size={24} color="#fff" style={{ marginRight: 8 }} />
+                    <Ionicons name="home-outline" size={24} color="#000" style={{ marginRight: 8 }} />
                     <Text style={styles.deviceTitle}>{capitalize(item.farmName)}</Text>
                 </View>
                 <Text style={styles.deviceSubtitle}>{capitalize(item.siteName)}</Text>
@@ -205,7 +205,7 @@ export default function DeviceList() {
                                     setShowAlarmDialog(false);
                                 }}
                             >
-                                <Text style={styles.modalButtonText}>OK, detener sonido</Text>
+                                <Text style={styles.modalButtonText}>Aceptar y detener alarma</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -236,16 +236,16 @@ const styles = StyleSheet.create({
     deviceTitle: {
         fontSize: 18,
         fontWeight: "bold",
-        color: "#fff",
+        color: "#000",
     },
     deviceSubtitle: {
         fontSize: 16,
-        color: "#f0f0f0",
+        color: "#000",
         marginBottom: 4,
     },
     deviceLocation: {
         fontSize: 14,
-        color: "#f0f0f0",
+        color: "#000",
     },
     loadingText: {
         fontSize: 18,
