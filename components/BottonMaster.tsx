@@ -55,9 +55,9 @@ const ButtonMaster: React.FC<ButtonMasterProps> = ({ mac, fetchAlarms, masterAla
         <TouchableOpacity
             style={[
                 styles.masterButtonFull,
-                { backgroundColor: isEnabled ? "#FF3B30" : "#8a9bb9" }, // rojo o verde
+                { backgroundColor: isEnabled ? "#FF3B30" : "#8a9bb9" },
             ]}
-            onPress={onToggleMaster} // ✅ Usamos la función pasada por props
+            onPress={onToggleMaster}
         >
             <Text style={styles.masterLabel}>Master</Text>
             <MaterialCommunityIcons name="power" size={32} color="white" />
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingHorizontal: 20,
         paddingVertical: 14,
-        borderRadius: 16,
+        borderRadius: 30,
         elevation: 6,
         shadowColor: "#000",
         shadowOpacity: 0.3,
@@ -119,6 +119,15 @@ const styles = StyleSheet.create({
         alignItems: "center",
         gap: 12, // si usas React Native >= 0.71
     },
+    shadowColor: {
+        shadowColor: "#000",
+        shadowOpacity: 0.3,
+        shadowOffset: { width: 0, height: 2 },
+        shadowRadius: 4,
+        elevation: 5,
+    },
+
+
 
 });
 

@@ -208,12 +208,9 @@ export default function AlarmList() {
     //     console.log(" Alarma detectada con id:", idAlarm);
     //     setAlarms(prev =>
     //         prev.map(alarm =>
-    //             alarm.idAlarm === idAlarm
-    //                 ? { ...alarm, disparado: true }
-    //                 : alarm
+    //             alarm.idAlarm === idAlarm? { ...alarm, disparado: true } : alarm
     //         )
     //     );
-
     // };
 
     const handleAlarmDetected = (idAlarm: number) => {
@@ -224,7 +221,7 @@ export default function AlarmList() {
                     ? { ...alarm, disparado: true }
                     : alarm
             );
-            updateHeaderStatus(nuevas, masterAlarmState); // 👉 Añadir esta línea
+            updateHeaderStatus(nuevas, masterAlarmState);
             return nuevas;
         });
     };
@@ -267,13 +264,13 @@ export default function AlarmList() {
 
     // 6. Render de cada alarma (con mejoras visuales)
     const renderAlarmItem = ({ item }: { item: ParamTC }) => {
-        let backgroundColor = "#8a9bb9"; // gris más fuerte
+        let backgroundColor = "#8a9bb9"; // gris 
         let textColor = "#000000"; // negro por defecto
 
         if (item.disparado) {
             backgroundColor = "#FF0000"; // rojo fuerte
             textColor = "#000000";
-        } else if (!masterAlarmState) {
+        } else if (!masterAlarmState && item.armado) {
             backgroundColor = "#fde047"; // amarillo fuerte
             textColor = "#000000";
         } else if (item.armado) {
