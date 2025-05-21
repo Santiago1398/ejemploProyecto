@@ -15,6 +15,7 @@ import {
 import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SettingsScreen from "./(tabs)/SettingsScreen";
+import AlarmasScreen from "./(tabs)/AlarmasScreen";
 
 
 const Drawer = createDrawerNavigator();
@@ -123,7 +124,14 @@ export default function Layout() {
                 <Drawer.Screen name="Map" component={MapsScreen} />
                 <Drawer.Screen name="permissions" component={PermissionsScreen} />
                 <Drawer.Screen name="Settings" component={SettingsScreen} />
-
+                <Drawer.Screen
+                    name="Alarmas"
+                    component={AlarmasScreen}
+                    options={{
+                        headerTitle: "Alarmas",
+                        drawerItemStyle: { display: "none" },
+                    }}
+                />
             </Drawer.Navigator>
         </PermissionsCkeckProvider>
     );
