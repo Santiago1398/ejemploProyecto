@@ -42,9 +42,9 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
             <View style={styles.footer}>
                 <View style={styles.separator} />
                 <TouchableOpacity onPress={() => navigation.navigate("Settings")} style={styles.footerButton}>
-                    <Ionicons name="settings-outline" size={20} color="#000" style={{ marginRight: 8 }} />
                     <Text style={styles.footerText}>Ajustes</Text>
                 </TouchableOpacity>
+
             </View>
 
 
@@ -100,33 +100,29 @@ const styles = StyleSheet.create({
     },
     footer: {
         position: "absolute",
-        bottom: 40, // más arriba del borde inferior
-        left: 0,
-        right: 0,
-        alignItems: "center",
+        bottom: 20, // puedes ajustar esto si quieres que esté más o menos cerca del borde
+        left: 20,   // para alinearlo con el contenido
+        right: 20,
+        alignItems: "flex-start", // alinea el texto a la izquierda
     },
 
     separator: {
-        height: 1,
+        height: 0.4, // mucho más fino
         width: "100%",
         backgroundColor: "#ccc",
-        marginBottom: 12,
+        marginBottom: 8,
     },
 
     footerButton: {
-        flexDirection: "row",
-        alignItems: "center",
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 10,
-        backgroundColor: "#f0f0f0",
+        paddingVertical: 6,
     },
 
     footerText: {
-        fontSize: 18,
-        color: "#000",
-        fontWeight: "600",
+        fontSize: 16,
+        color: "#555",
+        fontWeight: "500",
     },
+
 
 
 
