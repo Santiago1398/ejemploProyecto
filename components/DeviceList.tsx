@@ -28,7 +28,7 @@ export default function DeviceList() {
     const [devices, setDevices] = useState<ResponseAlarmaSite[]>([]);
     const [loading, setLoading] = useState(true);
     const [showAlarmDialog, setShowAlarmDialog] = useState(false);
-
+    const [isError, setIsError] = useState(false);
 
 
     useEffect(() => {
@@ -57,24 +57,6 @@ export default function DeviceList() {
         };
     }, []);
 
-
-
-    //  Loop para verificar estado de alarma cada 4s
-    // useEffect(() => {
-    //     const checkAlarmLoop = async () => {
-    //         const alarm = await AsyncStorage.getItem("alarmPlaying");
-    //         if (alarm === "true") {
-    //             setShowAlarmDialog(true);
-    //         } else {
-    //             setShowAlarmDialog(false);
-    //         }
-    //     };
-
-    //     checkAlarmLoop(); // inicial
-    //     const interval = setInterval(checkAlarmLoop, 4000);
-    //     return () => clearInterval(interval);
-    // }, []);
-
     useEffect(() => {
         const checkAlarm = async () => {
             const pendiente = await AsyncStorage.getItem("alarma_activa_pendiente");
@@ -87,8 +69,6 @@ export default function DeviceList() {
     }, []);
 
 
-
-
     // Cargar dispositivos
     useEffect(() => {
         if (token && userId) fetchDevices();
@@ -96,6 +76,7 @@ export default function DeviceList() {
 
     const fetchDevices = async () => {
         try {
+            setIsError(false);
             setLoading(true);
             const storedUserId = await AsyncStorage.getItem("userId");
             const data: ResponseAlarmaSite[] = await get(`alarmtc/sites/user/${storedUserId}`);
@@ -106,8 +87,10 @@ export default function DeviceList() {
             }));
             setDevices(formattedData);
         } catch (error) {
-            Alert.alert("Error", "No se pudieron cargar los dispositivos.");
-        } finally {
+    console.error("Error al cargar dispositivos:", error);
+    setIsError(true);
+    Alert.alert("Error", "No se pudieron cargar los dispositivos.");
+} finally {
             setLoading(false);
         }
     };
@@ -181,16 +164,22 @@ export default function DeviceList() {
 
     return (
         <View style={styles.container}>
-            {devices.length === 0 ? (
-                <Text style={styles.loadingText}>No hay dispositivos disponibles</Text>
-            ) : (
-                <FlatList
-                    data={devices}
-                    keyExtractor={(item) => item.idSite.toString()}
-                    renderItem={renderDeviceItem}
-                    contentContainerStyle={styles.listContainer}
-                />
-            )}
+  {loading ? (
+    <Text style={styles.loadingText}>Cargando dispositivos...</Text>
+  ) : isError ? (
+    <View style={styles.centeredContainer}>
+      <Text style={styles.loadingText}>Hay desconexión con el servidor. Inténtelo más tarde.</Text>
+    </View>
+  ) : devices.length === 0 ? (
+    <Text style={styles.loadingText}>No hay ubicaciones disponibles</Text>
+  ) : (
+    <FlatList
+      data={devices}
+      keyExtractor={(item) => item.idSite.toString()}
+      renderItem={renderDeviceItem}
+      contentContainerStyle={styles.listContainer}
+    />
+  )}
 
             {showAlarmDialog && (
                 <Modal transparent animationType="fade" visible={true}>
@@ -216,8 +205,13 @@ export default function DeviceList() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: "#f2f2f2" },
-    listContainer: { padding: 16 },
+    container: {
+        flex: 1, 
+        backgroundColor: "#f2f2f2" 
+    },
+    listContainer: {
+        padding: 16 
+    },
     deviceContainer: {
         padding: 16,
         marginVertical: 8,
@@ -289,4 +283,10 @@ const styles = StyleSheet.create({
         overflow: "hidden",
         marginTop: 10,
     },
+    centeredContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 16,
+},
 });

@@ -174,56 +174,14 @@ public async getFCMToken(): Promise<string | null> {
 
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
-    Alert.alert(
+   /*  Alert.alert(
       "ERROR CRÍTICO",
       `Error general:\n${errorMessage}\n\nVerifica:\n1. Bundle ID correcto\n2. Certificados APNs en Firebase\n3. GoogleService-Info.plist`
-    );
+    ); */
     return null;
   }
 }
 
-
-
-  /* public async debugFirebaseStatus() {
-    try {
-      console.log(" === FIREBASE DEBUG ===");
-      Alert.alert(" Debug", "Iniciando diagnóstico Firebase...");
-      
-      console.log("Platform:", Platform.OS);
-      
-      // Verificar si Firebase está disponible
-      const app = messaging().app;
-      console.log("Firebase app name:", app?.name || "No disponible");
-      console.log("Firebase app options:", app?.options || "No disponible");
-      
-      Alert.alert("Firebase Status", `App: ${app?.name || "No disponible"}\nOptions: ${JSON.stringify(app?.options) || "No disponible"}`);
-      
-      // Verificar registro para notificaciones remotas (iOS)
-      if (Platform.OS === 'ios') {
-        const isRegistered = messaging().isDeviceRegisteredForRemoteMessages;
-        console.log("iOS Remote Messages Registered:", isRegistered);
-        Alert.alert("📱 iOS Status", `Remote Messages Registered: ${isRegistered}`);
-      }
-      
-      // Intentar obtener token
-      const token = await this.getFCMToken();
-      console.log("Token result:", token ? " SUCCESS" : " FAILED");
-      
-      if (token) {
-        const tokenType = token.includes(':') ? "FCM" : "APNs/Otro";
-        console.log("Token type:", tokenType);
-        console.log("Token length:", token.length);
-        Alert.alert(" Token Result", `Type: ${tokenType}\nLength: ${token.length}\nPreview: ${token.substring(0, 50)}...`);
-      } else {
-        Alert.alert("Token Failed", "No se pudo obtener ningún token");
-      }
-      
-    } catch (error) {
-      console.error(" Debug error:", error);
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      Alert.alert("Debug Error", errorMessage);
-    }
-  } */
 
   public setOnAlarmDetected(callback: (idAlarm: number) => void) {
     this.onAlarmDetectedCallback = callback;

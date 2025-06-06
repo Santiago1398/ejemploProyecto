@@ -8,10 +8,11 @@ interface ButtonMasterProps {
     fetchAlarms: () => void; // Función para actualizar alarmas
     masterAlarmState: boolean; // Estado de la alarma 1000
     onToggleMaster: () => void | Promise<void>;
+    disabled?: boolean; // Propiedad opcional para deshabilitar el botón
 }
 
 
-const ButtonMaster: React.FC<ButtonMasterProps> = ({ mac, fetchAlarms, masterAlarmState, onToggleMaster }) => {
+const ButtonMaster: React.FC<ButtonMasterProps> = ({ mac, fetchAlarms, masterAlarmState, onToggleMaster , disabled}) => {
     const [isEnabled, setIsEnabled] = useState(masterAlarmState);
     useEffect(() => {
         setIsEnabled(masterAlarmState);
@@ -52,16 +53,19 @@ const ButtonMaster: React.FC<ButtonMasterProps> = ({ mac, fetchAlarms, masterAla
 
 
     return (
-        <TouchableOpacity
-            style={[
-                styles.masterButtonFull,
-                { backgroundColor: isEnabled ? "#FF3B30" : "#8a9bb9" },
-            ]}
-            onPress={onToggleMaster}
-        >
-            <Text style={styles.masterLabel}>Master</Text>
-            <MaterialCommunityIcons name="power" size={32} color="white" />
-        </TouchableOpacity>
+       <TouchableOpacity
+    disabled={disabled}
+    style={[
+        styles.masterButtonFull,
+        { backgroundColor: isEnabled ? "#FF3B30" : "#8a9bb9" },
+        disabled && { opacity: 0.5 } // <- opacidad visual
+    ]}
+    onPress={onToggleMaster}
+>
+    <Text style={styles.masterLabel}>Master</Text>
+    <MaterialCommunityIcons name="power" size={32} color="white" />
+</TouchableOpacity>
+
 
 
 
