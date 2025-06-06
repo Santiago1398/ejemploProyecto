@@ -40,28 +40,24 @@ export default function AlarmList() {
     const [headerText, setHeaderText] = useState<string>("Alarmas Activas"); // Texto del header para controlarlo
     const [headerColor, setHeaderColor] = useState<string>("#76db36"); // Color del header para controlarloconst flatListRef = useRef<FlatList>(null);
     const flatListRef = useRef<FlatList>(null);
+    const [tc5Disconnected, setTc5Disconnected] = useState<boolean>(false);
 
-    const COLORS = {
-        yellowBackground: "#fef9c3",
-        yellowText: "#ca8a04",
-        greenBackground: "#dcfe7f",
-        greenText: "#16a34a",
-        redBackground: "#FFCDD2",
-        redText: "#C62828",
-        greyBackground: "#CFD8DC",
-        greyText: "#37474F",
-    };
+    // const COLORS = {
+    //     yellowBackground: "#fef9c3",
+    //     yellowText: "#ca8a04",
+    //     greenBackground: "#dcfe7f",
+    //     greenText: "#16a34a",
+    //     redBackground: "#FFCDD2",
+    //     redText: "#C62828",
+    //     greyBackground: "#CFD8DC",
+    //     greyText: "#37474F",
+    // };
 
     const scrollOffset = useRef(0); // valor persistente
 
     const handleScroll = (event: any) => {
         scrollOffset.current = event.nativeEvent.contentOffset.y;
     };
-
-
-
-
-
 
     //const [pushToken, setPushToken] = useState<string | null>(null);
     //const [fcmToken, setFcmToken] = useState<string | null>(null);
@@ -99,38 +95,88 @@ export default function AlarmList() {
         }
     };
 
-
-
-
     // 1. Obtener las alarmas (GET)
+    // const fetchAlarms = async () => {
+    //     try {
+    //         setLoading(true);
+    //         const scrollY = scrollOffset.current; // guarda antes
+
+    //         console.log("Petición GET:", `alarmtc/status?mac=${mac}`);
+    //         const data = await get(`alarmtc/status?mac=${mac}`);
+    //         console.table("Datos obtenidos:", data);
+
+    //         // Guardamos el estado de la alarma del Botón Master
+    //         const masterAlarm = data.find((alarm: { idAlarm: number }) => alarm.idAlarm === 1000);
+    //         if (masterAlarm) {
+    //             setMasterAlarmState(masterAlarm.armado);
+    //         }
+
+    //         // Filtramos las alarmas habilitadas y distintas de 1000
+    //         const enabledAlarms = data
+    //             .filter((alarm: { habilitado: boolean; idAlarm: number }) => alarm.habilitado && alarm.idAlarm !== 1000)
+    //             .map((alarm: ParamTC) => ({
+    //                 ...alarm,
+    //                 activada: false,
+    //             }));
+
+    //         console.table("Alarmas habilitadas:", enabledAlarms);
+
+    //         setAlarms(enabledAlarms);
+    //         updateHeaderStatus(enabledAlarms, masterAlarm?.armado ?? false);
+    //         // Actualiza el estado del header
+    //         setTimeout(() => {
+    //             flatListRef.current?.scrollToOffset({ offset: scrollY, animated: false });
+    //         }, 50);
+    //     } catch (error) {
+    //         console.error("Error en la solicitud GET:", error);
+    //         Alert.alert("Error", "No se pudieron cargar las alarmas.");
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+
     const fetchAlarms = async () => {
         try {
             setLoading(true);
-            const scrollY = scrollOffset.current; // guarda antes
+            const scrollY = scrollOffset.current;
 
             console.log("Petición GET:", `alarmtc/status?mac=${mac}`);
             const data = await get(`alarmtc/status?mac=${mac}`);
             console.table("Datos obtenidos:", data);
 
-            // Guardamos el estado de la alarma del Botón Master
+            // 
+            //  Verifica si el TC5 (alarma 2000) está disparado
+            const alarm2000 = data.find((alarm: { idAlarm: number }) => alarm.idAlarm === 2000);
+            if (alarm2000 && alarm2000.disparado) {
+                setTc5Disconnected(true);
+                setAlarms([]);
+                setHeaderText("TC5 Desconectado");
+                setHeaderColor("#8a9bb9");
+                return;
+            } else {
+                setTc5Disconnected(false);
+            }
+
+            // Estado del botón master (id 1000)
             const masterAlarm = data.find((alarm: { idAlarm: number }) => alarm.idAlarm === 1000);
             if (masterAlarm) {
                 setMasterAlarmState(masterAlarm.armado);
             }
 
-            // Filtramos las alarmas habilitadas y distintas de 1000
+            // Filtrar alarmas válidas (excluyendo 1000 y 2000)
             const enabledAlarms = data
-                .filter((alarm: { habilitado: boolean; idAlarm: number }) => alarm.habilitado && alarm.idAlarm !== 1000)
+                .filter((alarm: { habilitado: boolean; idAlarm: number }) =>
+                    alarm.habilitado && ![1000, 2000].includes(alarm.idAlarm)
+                )
                 .map((alarm: ParamTC) => ({
                     ...alarm,
                     activada: false,
                 }));
 
             console.table("Alarmas habilitadas:", enabledAlarms);
-
             setAlarms(enabledAlarms);
             updateHeaderStatus(enabledAlarms, masterAlarm?.armado ?? false);
-            // Actualiza el estado del header
+
             setTimeout(() => {
                 flatListRef.current?.scrollToOffset({ offset: scrollY, animated: false });
             }, 50);
@@ -141,6 +187,7 @@ export default function AlarmList() {
             setLoading(false);
         }
     };
+
 
     // 2. useEffect para cargar las alarmas al montar
     useEffect(() => {
@@ -180,8 +227,6 @@ export default function AlarmList() {
     }, [navigation, device, farmName, siteName, mac, headerText, headerColor]);
 
 
-
-
     const handleOptionSelect = async (option: string) => {
         if (selectedAlarm) {
             const status = option === "Armada" ? 1 : 0;
@@ -204,6 +249,7 @@ export default function AlarmList() {
             }
         }
     };
+
     // const handleAlarmDetected = (idAlarm: number) => {
     //     console.log(" Alarma detectada con id:", idAlarm);
     //     setAlarms(prev =>
@@ -235,23 +281,11 @@ export default function AlarmList() {
     }, []);
 
 
-
     // 5. Abre el modal para la alarma seleccionada
     const openOptionModal = (alarm: ParamTC) => {
         setSelectedAlarm(alarm);
         setOptionModalVisible(true);
     };
-
-    // useEffect(() => {
-    //     const checkPendiente = async () => {
-    //         const flag = await AsyncStorage.getItem("alarma_activa_pendiente");
-    //         if (flag === "true") {
-    //             console.log(" alarma_activa_pendiente detectada al abrir app");
-    //             setTimeout(() => setShowAlarmDialog(true), 500);
-    //         }
-    //     };
-    //     checkPendiente();
-    // }, []);
 
     const getIconNameForAlarm = (texto: string): keyof typeof Ionicons.glyphMap => {
         const lowerText = texto.toLowerCase();
@@ -303,81 +337,8 @@ export default function AlarmList() {
         );
     };
 
-
-
-
-
-    // Función para enviar notificación de alarma de prueba
-    // const sendTestAlarm = async () => {
-    //     try {
-    //         if (!device || !farmName || !siteName) {
-    //             Alert.alert("Error", "Información del dispositivo incompleta");
-    //             return;
-    //         }
-
-    //         // Crear objeto de notificación según la interfaz
-    //         const notification: Notification = {
-    //             title: '¡ALARMA ACTIVADA!',
-    //             data: {
-    //                 farmName: farmName,
-    //                 siteName: siteName,
-    //                 alarmText: selectedAlarm?.texto || 'Alarma activada',
-    //                 type: 'alarm'
-    //             },
-    //             isAlarm: true,
-    //         };
-
-    //          Mostrar notificación usando el servicio
-    //         await notificationService.showLocalNotification(notification);
-
-    //          Reproducir sonido de alarma
-    //         await playAlarmSound();
-    //         await AsyncStorage.setItem("alarmPlaying", "true");
-
-
-    //         Alert.alert(
-    //             'Alarma Enviada',
-    //             'La alarma sonará hasta que toques la notificación o abras la app desde ella'
-    //         );
-    //     } catch (error) {
-    //         console.error('Error al enviar notificación de alarma:', error);
-    //         Alert.alert('Error', 'No se pudo enviar la notificación de alarma');
-    //     }
-    // };
-
-
-    // const getPushToken = async () => {
-    //     const token = await notificationService.getExpoPushToken();
-    //     if (token) {
-    //         setPushToken(token);
-    //         Alert.alert('Expo Push Token', token);
-    //     }
-    // };
-
-
-    // const getDeviceToken = async () => {
-    //     const token = await notificationService.getFCMToken();
-    //     if (token) {
-    //         setFcmToken(token);
-    //         await Clipboard.setStringAsync(token); //  Copia al portapapeles
-    //         Alert.alert("FCM Token obtenido", "Copiado al portapapeles:\n\n" + token);
-    //     } else {
-    //         Alert.alert("Error", "No se pudo obtener el token");
-    //     }
-    // };
-
-
     return (
         <View style={styles.container}>
-
-            {/* Botón de prueba de alarma
-            <TouchableOpacity
-                style={styles.testAlarmButton}
-                onPress={sendTestAlarm}
-            >
-                <Ionicons name="notifications" size={20} color="#fff" style={styles.buttonIcon} />
-                <Text style={styles.testAlarmButtonText}>Probar Notificación de ALARMA</Text>
-            </TouchableOpacity> */}
 
             {/* Botón para obtener token
             <TouchableOpacity
@@ -407,6 +368,11 @@ export default function AlarmList() {
 
             {loading ? (
                 <Text style={styles.loadingText}>Cargando alarmas...</Text>
+            ) : tc5Disconnected ? (
+                <View style={styles.centeredContainer}>
+                    <Ionicons name="alert-circle" size={64} color="#8a9bb9" />
+                    <Text style={styles.noAlarmsText}>TC5 Desconectado</Text>
+                </View>
             ) : alarms.length === 0 ? (
                 <View style={styles.centeredContainer}>
                     <Text style={styles.noAlarmsText}>No hay alarmas habilitadas</Text>
@@ -423,12 +389,15 @@ export default function AlarmList() {
                 />
             )}
 
+
             {/* Botón Master en la esquina inferior derecha */}
             <ButtonMaster
                 mac={mac}
                 fetchAlarms={fetchAlarms}
                 masterAlarmState={masterAlarmState}
                 onToggleMaster={handleToggleMaster}
+                disabled={tc5Disconnected}
+
             />
 
             {/* Modal para armar/desarmar la alarma */}
@@ -604,6 +573,3 @@ const styles = StyleSheet.create({
 
 
 });
-
-
-
