@@ -9,6 +9,7 @@ import DeviceMaps from "./extra/map/DeviceMaps";
 import MapsScreen from "./extra/map/MapsScreen";
 import PermissionsScreen from "./extra/permissions/PermissionScreen";
 import AlarmasScreen from "./(tabs)/AlarmasScreen";
+import Explotacion from "@/components/Explotacion";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 
@@ -38,6 +39,13 @@ export type RootStackParamList = {
     SettingsScreen: undefined;
     Settings: undefined;
     AlarmasScreen: undefined;
+    Explotacion: {
+        mac: number;
+        token: string;
+        idioma: string; // Idioma opcional, por defecto es español
+        siteName: string;
+        farmName: string;
+    };
 
 };
 
@@ -89,6 +97,14 @@ export default function HomeStack() {
                     name="MapsScreen"
                     component={MapsScreen}
                     options={{ headerTitle: "Mapas" }}
+                />
+                <Stack.Screen
+                    name="Explotacion"
+                    component={Explotacion}
+                    options={({ route }) => ({
+                        headerShown: true,
+                        title: route.params.farmName,
+                    })}
                 />
             </Stack.Navigator>
         </PaperProvider>

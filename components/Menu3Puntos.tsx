@@ -13,6 +13,7 @@ import { Portal } from "react-native-paper";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/app/HomeStack";
+import { useAuthStore } from "@/store/authStore";
 
 type DeviceDetailsNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -40,6 +41,7 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({ device, options }) => {
 
     const [visible, setVisible] = useState(false);
     const buttonRef = useRef<View>(null);
+    const token = useAuthStore((state) => state.token);
 
     // Opciones por defecto. Se pueden modificar según necesidad.
     const defaultOptions: MenuOption[] = [
@@ -67,6 +69,27 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({ device, options }) => {
             icon: "trash",
             onPress: () => console.log("Eliminar Ubicación"),
         },
+        {
+            id: "explotacion",
+            label: "Explotación",
+            icon: "external-link",
+            onPress: () => {
+                if (!token) {
+                    console.warn("No hay token disponible");
+                    return;
+                }
+
+                navigation.navigate("Explotacion", {
+                    mac: device.mac,
+                    token,
+                    idioma: "es",
+                    siteName: device.siteName,
+                    farmName: device.farmName,
+                });
+            },
+        }
+
+
     ];
 
     // Si se pasan opciones por props, las usamos; de lo contrario, usamos las por defecto.
@@ -113,6 +136,7 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({ device, options }) => {
                                     <TouchableOpacity
                                         style={styles.menuItem}
                                         onPress={() => handleOptionPress(option)}
+                                        activeOpacity={0.7}
                                     >
                                         <Feather
                                             name={option.icon as any}
@@ -143,31 +167,38 @@ const styles = StyleSheet.create({
     menuContainer: {
         position: "absolute",
         backgroundColor: "#fff",
-        borderRadius: 8,
-        paddingVertical: 12,
-        paddingHorizontal: 16,
+        borderRadius: 12,
+        paddingVertical: 8,
+        paddingHorizontal: 8,
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.2,
+        shadowRadius: 6,
+        elevation: 6,
+        minWidth: 200,
     },
     menuItem: {
         flexDirection: "row",
         alignItems: "center",
-        paddingVertical: 8,
+        paddingVertical: 12,
+        paddingHorizontal: 12,
+        borderRadius: 10,
+        marginVertical: 4,
+        backgroundColor: "#F7F7F7",
     },
     menuItemIcon: {
-        marginRight: 10,
+        marginRight: 12,
+        color: "#2F80ED",
     },
     menuItemText: {
         fontSize: 16,
         color: "#333",
+        fontWeight: "500",
     },
     divider: {
         height: 1,
-        backgroundColor: "#e0e0e0",
-        marginVertical: 8,
+        backgroundColor: "#E0E0E0",
+        marginVertical: 4,
     },
 });
 

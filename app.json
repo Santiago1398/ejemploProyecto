@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "Mi-Proyecto",
+    "name": "TC5",
     "slug": "notification-tc5",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/TC5-CTICONTROL.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -19,7 +19,7 @@
         }
       },
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "foregroundImage": "./assets/images/TC5-CTICONTROL.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.santicticontrol.notificationtc5",
