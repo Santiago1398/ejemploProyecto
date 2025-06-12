@@ -30,7 +30,7 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="myapp"/>
-        <data android:scheme="com.santicticontrol.notificationtc5"/>
+        <data android:scheme="com.control.notificationtc5"/>
         <data android:scheme="exp+notification-tc5"/>
       </intent-filter>
     </activity>

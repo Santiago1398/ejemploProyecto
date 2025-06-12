@@ -4,13 +4,13 @@
     "slug": "notification-tc5",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/TC5-CTICONTROL.png",
+    "icon": "./assets/images/TC5-3-RAYAS.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.santicticontrol.notificationtc5"
+      "bundleIdentifier": "com.control.notificationtc5"
     },
     "android": {
       "config": {
@@ -19,10 +19,10 @@
         }
       },
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/TC5-CTICONTROL.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/TC5-3-RAYAS.png",
+        "backgroundColor": "#000000"
       },
-      "package": "com.santicticontrol.notificationtc5",
+      "package": "com.control.notificationtc5",
       "googleServicesFile": "./android/app/google-services.json",
       "usesCleartextTraffic": true,
       "manifest": {

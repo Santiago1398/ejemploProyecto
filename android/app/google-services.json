@@ -7,6 +7,28 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:503923979781:android:1c4d276414d74172d6ce6c",
+        "android_client_info": {
+          "package_name": "com.control.notificationtc5"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBVjSuhEsBMHlcUxtr_0mGDHykadg2Ju_0"
+        },
+        {
+          "current_key": "AIzaSyBqrNqrA8NEOhdflFJ334PsAMUHSatgkwk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:503923979781:android:65a46594edac9480d6ce6c",
         "android_client_info": {
           "package_name": "com.santicticontrol.notificationtc5"
@@ -14,6 +36,9 @@
       },
       "oauth_client": [],
       "api_key": [
+        {
+          "current_key": "AIzaSyBVjSuhEsBMHlcUxtr_0mGDHykadg2Ju_0"
+        },
         {
           "current_key": "AIzaSyBqrNqrA8NEOhdflFJ334PsAMUHSatgkwk"
         }
