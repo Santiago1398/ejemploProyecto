@@ -213,21 +213,33 @@ export default function AlarmList() {
 
         navigation.setOptions({
             headerTitle: () => (
-                <View>
-                    <Text style={{ fontSize: 14, color: "#fff", textAlign: "center" }}>
+                <View style={{ paddingTop: 4 }}>
+                    <Text style={{
+                        fontSize: 16,
+                        color: "#fff",
+                        textAlign: "center",
+                        fontWeight: "500"
+                    }}>
                         {farmName} - {siteName}
                     </Text>
-                    <Text style={{ fontSize: 18, fontWeight: "bold", color: "#fff", textAlign: "center" }}>
+                    <Text style={{
+                        fontSize: 20,
+                        fontWeight: "bold",
+                        color: "#fff",
+                        textAlign: "center"
+                    }}>
                         {headerText}
                     </Text>
                 </View>
             ),
             headerStyle: {
-                backgroundColor: headerColor, // Usa los tonos suaves sugeridos
-                elevation: 0, // Android: quita sombra si no la necesitas
-                shadowOpacity: 0, // iOS: quita sombra
+                backgroundColor: headerColor,
+                height: 100, // aumentamos la altura
+                elevation: 0,
+                shadowOpacity: 0,
             },
-            headerTintColor: "#000000",
+            headerTitleAlign: "center",
+            headerTintColor: "#fff",
             headerRight: () => (
                 <Menu3Puntos
                     device={{ latitude, longitude, farmName, siteName, mac }}
@@ -235,6 +247,7 @@ export default function AlarmList() {
             ),
         });
     }, [navigation, device, farmName, siteName, mac, headerText, headerColor]);
+
 
 
     const handleOptionSelect = async (option: string) => {

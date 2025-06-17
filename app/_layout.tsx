@@ -117,7 +117,7 @@ export default function Layout() {
                 {isAuthenticated ? (
                     <Drawer.Screen name="Home"
                         component={TabsNavigator}
-                    //options={{ headerShown: false }}
+                        options={{ headerShown: false }}
 
                     />
                 ) : (

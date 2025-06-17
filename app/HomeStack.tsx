@@ -11,11 +11,15 @@ import PermissionsScreen from "./extra/permissions/PermissionScreen";
 import AlarmasScreen from "./(tabs)/AlarmasScreen";
 import Explotacion from "@/components/Explotacion";
 import ConfiguracionTC5 from "@/components/ConfiguracionTC5";
+import { DrawerActions, useNavigation } from '@react-navigation/native';
+import { TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 
 export type RootStackParamList = {
-    HomeScreen: undefined;
+    Home: undefined;
+    openDrawer: undefined;
     DeviceDetails: {
         device: {
             mac: number;
@@ -64,19 +68,30 @@ export default function HomeStack() {
         <PaperProvider>
             <Stack.Navigator >
                 <Stack.Screen
-                    name="HomeScreen"
+                    name="Home"
                     component={HomeScreen}
-                    options={{ headerShown: false }}
-
+                    options={({ navigation }) => ({
+                        headerShown: true,
+                        headerTitle: "Home",
+                        headerTitleAlign: "center",
+                        headerLeft: () => (
+                            <TouchableOpacity onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
+                                <Ionicons name="menu" size={28} color="#000" style={{ marginLeft: 12 }} />
+                            </TouchableOpacity>
+                        ),
+                    })}
                 />
+
                 <Stack.Screen
                     name="DeviceDetails"
                     component={DeviceDetailsScreen}
                     options={({ route }) => ({
+                        // headerShown: false,
                         headerTitleAlign: "center",
                         title: route.params.device.farmName,
                         headerLeft: () => null,
                         headerRight: () => <Menu3Puntos device={route.params.device}
+
                         />,
                     })}
                 />
