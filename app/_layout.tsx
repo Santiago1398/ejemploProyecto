@@ -16,6 +16,7 @@ import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SettingsScreen from "./(tabs)/SettingsScreen";
 import AlarmasScreen from "./(tabs)/AlarmasScreen";
+import EditarPrioridadScreen from "@/components/EditarPrioridadScreen";
 
 
 
@@ -146,6 +147,13 @@ export default function Layout() {
                         headerShown: false
                     }}
                 />
+                <Drawer.Screen
+                    name="EditarPrioridadScreen"
+                    component={EditarPrioridadScreen}
+                    options={{ headerTitle: "Nivel Prioridad" }}
+
+                />
+
             </Drawer.Navigator>
         </PermissionsCkeckProvider>
     );

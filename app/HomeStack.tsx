@@ -14,6 +14,7 @@ import ConfiguracionTC5 from "@/components/ConfiguracionTC5";
 import { DrawerActions, useNavigation } from '@react-navigation/native';
 import { TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import EditarPrioridadScreen from "@/components/EditarPrioridadScreen";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 
@@ -61,6 +62,9 @@ export type RootStackParamList = {
         siteName: string;
         farmName: string;
     };
+    EditarPrioridadScreen: undefined;
+
+
 }
 
 export default function HomeStack() {
@@ -144,6 +148,8 @@ export default function HomeStack() {
                         title: route.params.farmName,
                     })}
                 />
+                {/* <Stack.Screen name="EditarPrioridadScreen" component={EditarPrioridadScreen} /> */}
+
             </Stack.Navigator>
         </PaperProvider>
     );

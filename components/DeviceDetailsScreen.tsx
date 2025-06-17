@@ -341,7 +341,7 @@ export default function AlarmList() {
                 onPress={() => openOptionModal(item)}
             >
                 <View style={styles.alarmRow}>
-                    <EstadoAlarmaCircle armado={item.armado} disparado={item.disparado} activo={item.activo} />
+                    <EstadoAlarmaCircle armado={item.armado} disparado={item.disparado} producido={item.producido} />
 
                     <View style={styles.iconAndText}>
                         {item.disparado && (
