@@ -308,33 +308,9 @@ PODS:
     - nanopb (~> 3.30910.0)
   - fmt (9.1.0)
   - glog (0.3.5)
-  - Google-Maps-iOS-Utils (4.2.2):
-    - Google-Maps-iOS-Utils/Clustering (= 4.2.2)
-    - Google-Maps-iOS-Utils/Geometry (= 4.2.2)
-    - Google-Maps-iOS-Utils/GeometryUtils (= 4.2.2)
-    - Google-Maps-iOS-Utils/Heatmap (= 4.2.2)
-    - Google-Maps-iOS-Utils/QuadTree (= 4.2.2)
-    - GoogleMaps (~> 7.3)
-  - Google-Maps-iOS-Utils/Clustering (4.2.2):
-    - Google-Maps-iOS-Utils/QuadTree
-    - GoogleMaps (~> 7.3)
-  - Google-Maps-iOS-Utils/Geometry (4.2.2):
-    - GoogleMaps (~> 7.3)
-  - Google-Maps-iOS-Utils/GeometryUtils (4.2.2):
-    - GoogleMaps (~> 7.3)
-  - Google-Maps-iOS-Utils/Heatmap (4.2.2):
-    - Google-Maps-iOS-Utils/QuadTree
-    - GoogleMaps (~> 7.3)
-  - Google-Maps-iOS-Utils/QuadTree (4.2.2):
-    - GoogleMaps (~> 7.3)
   - GoogleDataTransport (10.1.0):
     - nanopb (~> 3.30910.0)
     - PromisesObjC (~> 2.4)
-  - GoogleMaps (7.4.0):
-    - GoogleMaps/Maps (= 7.4.0)
-  - GoogleMaps/Base (7.4.0)
-  - GoogleMaps/Maps (7.4.0):
-    - GoogleMaps/Base
   - GoogleUtilities/AppDelegateSwizzler (8.1.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -1603,10 +1579,6 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-google-maps (1.18.0):
-    - Google-Maps-iOS-Utils (= 4.2.2)
-    - GoogleMaps (= 7.4.0)
-    - React-Core
   - react-native-maps (1.18.0):
     - React-Core
   - react-native-safe-area-context (4.12.0):
@@ -2095,7 +2067,6 @@ DEPENDENCIES:
   - ExpoWebBrowser (from `../node_modules/expo-web-browser/ios`)
   - EXUpdatesInterface (from `../node_modules/expo-updates-interface/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
-  - Firebase/Messaging
   - fmt (from `../node_modules/react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
@@ -2130,7 +2101,6 @@ DEPENDENCIES:
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
-  - react-native-google-maps (from `/Users/cticontrol/Documents/TC5/node_modules/react-native-maps`)
   - react-native-maps (from `../node_modules/react-native-maps`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - react-native-webview (from `../node_modules/react-native-webview`)
@@ -2178,9 +2148,7 @@ SPEC REPOS:
     - FirebaseCoreInternal
     - FirebaseInstallations
     - FirebaseMessaging
-    - Google-Maps-iOS-Utils
     - GoogleDataTransport
-    - GoogleMaps
     - GoogleUtilities
     - nanopb
     - PromisesObjC
@@ -2314,8 +2282,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   React-microtasksnativemodule:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
-  react-native-google-maps:
-    :path: "/Users/cticontrol/Documents/TC5/node_modules/react-native-maps"
   react-native-maps:
     :path: "../node_modules/react-native-maps"
   react-native-safe-area-context:
@@ -2433,9 +2399,7 @@ SPEC CHECKSUMS:
   FirebaseMessaging: 3a5de79d8dce82b70815123c05dfb8825111f15d
   fmt: 10c6e61f4be25dc963c36bd73fc7b1705fe975be
   glog: 08b301085f15bcbb6ff8632a8ebaf239aae04e6a
-  Google-Maps-iOS-Utils: f77eab4c4326d7e6a277f8e23a0232402731913a
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
-  GoogleMaps: 032f676450ba0779bd8ce16840690915f84e57ac
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   hermes-engine: eb4a80f6bf578536c58a44198ec93a30f6e69218
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
@@ -2469,7 +2433,6 @@ SPEC CHECKSUMS:
   React-logger: 5cad0c76d056809523289e589309012215a393b5
   React-Mapbuffer: bfec84fd4dc022fcd29656030d0ddba0092376bd
   React-microtasksnativemodule: bd7c624bb83ddc4f8449cadc62674e8107a2bd99
-  react-native-google-maps: a3a01acdc5e15d1b74d600ba270c454bac6239b4
   react-native-maps: 3b0c8378ff774053bdd8954c820e987fdd7b4d72
   react-native-safe-area-context: 8b8404e70b0cbf2a56428a17017c14c1dcc16448
   react-native-webview: cf76748d6a6012799fdb26ad37f8d3e6f6139519
@@ -2510,6 +2473,6 @@ SPEC CHECKSUMS:
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
   Yoga: d213adae4f2c5518e9b19f919afa25a73848ecfb
 
-PODFILE CHECKSUM: 49e8462f28d2832e58414c22ecc08c3dfeaa0685
+PODFILE CHECKSUM: 88e2c0643dff10d974ee80eeef23e0b199f9abd1
 
 COCOAPODS: 1.16.2

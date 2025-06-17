@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-               BuildableName = "MiProyecto.app"
-               BlueprintName = "MiProyecto"
-               ReferencedContainer = "container:MiProyecto.xcodeproj">
+               BuildableName = "TC5.app"
+               BlueprintName = "TC5"
+               ReferencedContainer = "container:TC5.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "00E356ED1AD99517003FC87E"
-               BuildableName = "MiProyectoTests.xctest"
-               BlueprintName = "MiProyectoTests"
-               ReferencedContainer = "container:MiProyecto.xcodeproj">
+               BuildableName = "TC5Tests.xctest"
+               BlueprintName = "TC5Tests"
+               ReferencedContainer = "container:TC5.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
@@ -55,9 +55,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "MiProyecto.app"
-            BlueprintName = "MiProyecto"
-            ReferencedContainer = "container:MiProyecto.xcodeproj">
+            BuildableName = "TC5.app"
+            BlueprintName = "TC5"
+            ReferencedContainer = "container:TC5.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -72,9 +72,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "13B07F861A680F5B00A75B9A"
-            BuildableName = "MiProyecto.app"
-            BlueprintName = "MiProyecto"
-            ReferencedContainer = "container:MiProyecto.xcodeproj">
+            BuildableName = "TC5.app"
+            BlueprintName = "TC5"
+            ReferencedContainer = "container:TC5.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
