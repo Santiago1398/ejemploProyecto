@@ -27,6 +27,7 @@ type DeviceDetailsRouteProp = RouteProp<RootStackParamList, "DeviceDetails">;
 
 export default function AlarmList() {
     const route = useRoute<DeviceDetailsRouteProp>();
+
     const { device } = route.params;
     const { mac, farmName, siteName } = device;
 
@@ -36,6 +37,8 @@ export default function AlarmList() {
     const [loading, setLoading] = useState(true);
     const [masterAlarmState, setMasterAlarmState] = useState<boolean>(true); // Estado de la alarma 1000
     //const [showAlarmDialog, setShowAlarmDialog] = useState(false);
+    const [initialLoad, setInitialLoad] = useState(true);
+
     const navigation = useNavigation<any>();
     const [headerText, setHeaderText] = useState<string>("Alarmas Activas"); // Texto del header para controlarlo
     const [headerColor, setHeaderColor] = useState<string>("#76db36"); // Color del header para controlarloconst flatListRef = useRef<FlatList>(null);
@@ -52,6 +55,7 @@ export default function AlarmList() {
     //     greyBackground: "#CFD8DC",
     //     greyText: "#37474F",
     // };
+
 
     const scrollOffset = useRef(0); // valor persistente
 
@@ -135,17 +139,16 @@ export default function AlarmList() {
     //     }
     // };
 
-    const fetchAlarms = async () => {
+    const fetchAlarms = async (isAutoRefresh = false) => {
         try {
-            setLoading(true);
+            if (!isAutoRefresh) {
+                setLoading(true);         // solo muestra "Cargando alarmas..." en carga inicial
+            }
+
             const scrollY = scrollOffset.current;
 
-            console.log("Petición GET:", `alarmtc/status?mac=${mac}`);
             const data = await get(`alarmtc/status?mac=${mac}`);
-            console.table("Datos obtenidos:", data);
 
-            // 
-            //  Verifica si el TC5 (alarma 2000) está disparado
             const alarm2000 = data.find((alarm: { idAlarm: number }) => alarm.idAlarm === 2000);
             if (alarm2000 && alarm2000.disparado) {
                 setTc5Disconnected(true);
@@ -157,13 +160,11 @@ export default function AlarmList() {
                 setTc5Disconnected(false);
             }
 
-            // Estado del botón master (id 1000)
             const masterAlarm = data.find((alarm: { idAlarm: number }) => alarm.idAlarm === 1000);
             if (masterAlarm) {
                 setMasterAlarmState(masterAlarm.armado);
             }
 
-            // Filtrar alarmas válidas (excluyendo 1000 y 2000)
             const enabledAlarms = data
                 .filter((alarm: { habilitado: boolean; idAlarm: number }) =>
                     alarm.habilitado && ![1000, 2000].includes(alarm.idAlarm)
@@ -173,7 +174,6 @@ export default function AlarmList() {
                     activada: false,
                 }));
 
-            console.table("Alarmas habilitadas:", enabledAlarms);
             setAlarms(enabledAlarms);
             updateHeaderStatus(enabledAlarms, masterAlarm?.armado ?? false);
 
@@ -184,17 +184,27 @@ export default function AlarmList() {
             console.error("Error en la solicitud GET:", error);
             Alert.alert("Error", "No se pudieron cargar las alarmas.");
         } finally {
-            setLoading(false);
+            if (!isAutoRefresh) {
+                setLoading(false);         // solo quitamos loading si no es auto-refresh
+                setInitialLoad(false);     // ya se hizo la carga inicial
+            }
         }
     };
 
 
+
     // 2. useEffect para cargar las alarmas al montar
     useEffect(() => {
-        if (mac) {
-            fetchAlarms();
-        }
+        const interval = setInterval(() => {
+            fetchAlarms(true); // 👈 pasamos true para indicar que es auto-refresh
+        }, 5000);
+
+        return () => clearInterval(interval);
     }, [mac]);
+    useEffect(() => {
+        fetchAlarms(false); // 👈 primera vez = false
+    }, []);
+
 
     // 3. useLayoutEffect para configurar el header con Menu3Puntos
     useLayoutEffect(() => {
@@ -203,14 +213,14 @@ export default function AlarmList() {
 
         navigation.setOptions({
             headerTitle: () => (
-                <Text style={{
-                    fontSize: 20,
-                    fontWeight: "bold",
-                    color: "#FFFFFF",
-                    textAlign: "center"
-                }}>
-                    {headerText}
-                </Text>
+                <View>
+                    <Text style={{ fontSize: 14, color: "#fff", textAlign: "center" }}>
+                        {farmName} - {siteName}
+                    </Text>
+                    <Text style={{ fontSize: 18, fontWeight: "bold", color: "#fff", textAlign: "center" }}>
+                        {headerText}
+                    </Text>
+                </View>
             ),
             headerStyle: {
                 backgroundColor: headerColor, // Usa los tonos suaves sugeridos

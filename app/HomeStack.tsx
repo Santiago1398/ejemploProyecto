@@ -10,18 +10,22 @@ import MapsScreen from "./extra/map/MapsScreen";
 import PermissionsScreen from "./extra/permissions/PermissionScreen";
 import AlarmasScreen from "./(tabs)/AlarmasScreen";
 import Explotacion from "@/components/Explotacion";
+import ConfiguracionTC5 from "@/components/ConfiguracionTC5";
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 
 export type RootStackParamList = {
     HomeScreen: undefined;
     DeviceDetails: {
-        mac: number;
-        farmName: string;
-        siteName: string;
-        latitude: number;
-        longitude: number;
+        device: {
+            mac: number;
+            farmName: string;
+            siteName: string;
+            latitude: number;
+            longitude: number;
+        };
     };
+
     BottonMaster: {
         mac: number
     };
@@ -42,12 +46,18 @@ export type RootStackParamList = {
     Explotacion: {
         mac: number;
         token: string;
-        idioma: string; // Idioma opcional, por defecto es español
+        idioma: string;
         siteName: string;
         farmName: string;
     };
-
-};
+    ConfiguracionTC5: {
+        mac: number;
+        token: string;
+        idioma: string;
+        siteName: string;
+        farmName: string;
+    };
+}
 
 export default function HomeStack() {
     return (
@@ -63,11 +73,15 @@ export default function HomeStack() {
                     name="DeviceDetails"
                     component={DeviceDetailsScreen}
                     options={({ route }) => ({
-                        title: "Detalles del Dispositivo",
-                        headerRight: () => <Menu3Puntos device={route.params} />
+                        headerTitleAlign: "center",
+                        title: route.params.device.farmName,
+                        headerLeft: () => null,
+                        headerRight: () => <Menu3Puntos device={route.params.device}
+                        />,
                     })}
-
                 />
+
+
                 <Stack.Screen
                     name="DeviceMaps"
                     component={DeviceMaps}
@@ -101,6 +115,15 @@ export default function HomeStack() {
                 <Stack.Screen
                     name="Explotacion"
                     component={Explotacion}
+                    options={({ route }) => ({
+                        headerShown: true,
+                        title: route.params.farmName,
+                    })}
+                />
+
+                <Stack.Screen
+                    name="ConfiguracionTC5"
+                    component={ConfiguracionTC5}
                     options={({ route }) => ({
                         headerShown: true,
                         title: route.params.farmName,

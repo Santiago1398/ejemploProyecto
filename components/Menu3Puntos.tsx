@@ -71,7 +71,7 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({ device, options }) => {
         },
         {
             id: "explotacion",
-            label: "Explotación",
+            label: "Ir Explotación",
             icon: "external-link",
             onPress: () => {
                 if (!token) {
@@ -80,6 +80,26 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({ device, options }) => {
                 }
 
                 navigation.navigate("Explotacion", {
+                    mac: device.mac,
+                    token,
+                    idioma: "es",
+                    siteName: device.siteName,
+                    farmName: device.farmName,
+                });
+            },
+        },
+
+        {
+            id: "configuracion",
+            label: "Configuración TC5",
+            icon: "settings",
+            onPress: () => {
+                if (!token) {
+                    console.warn("No hay token disponible");
+                    return;
+                }
+
+                navigation.navigate("ConfiguracionTC5", {
                     mac: device.mac,
                     token,
                     idioma: "es",
@@ -180,26 +200,26 @@ const styles = StyleSheet.create({
     menuItem: {
         flexDirection: "row",
         alignItems: "center",
-        paddingVertical: 12,
-        paddingHorizontal: 12,
-        borderRadius: 10,
-        marginVertical: 4,
-        backgroundColor: "#F7F7F7",
+        paddingVertical: 10,
+        paddingHorizontal: 14,
+        borderRadius: 8,
+        backgroundColor: "#fff",
     },
     menuItemIcon: {
-        marginRight: 12,
-        color: "#2F80ED",
+        marginRight: 10,
+        color: "#2563EB", // Azul moderno
     },
     menuItemText: {
-        fontSize: 16,
-        color: "#333",
+        fontSize: 15,
+        color: "#111827",
         fontWeight: "500",
     },
     divider: {
         height: 1,
-        backgroundColor: "#E0E0E0",
-        marginVertical: 4,
+        backgroundColor: "#E5E7EB",
+        marginVertical: 6,
     },
+
 });
 
 export default Menu3Puntos;

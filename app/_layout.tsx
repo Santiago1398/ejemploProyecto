@@ -18,6 +18,8 @@ import SettingsScreen from "./(tabs)/SettingsScreen";
 import AlarmasScreen from "./(tabs)/AlarmasScreen";
 
 
+
+
 const Drawer = createDrawerNavigator();
 
 export default function Layout() {
@@ -66,6 +68,8 @@ export default function Layout() {
             }
         };
 
+
+
         if (ready) {
             checkAlarmFlag();
         }
@@ -94,6 +98,8 @@ export default function Layout() {
         configureNotificationChannel();
     }, []);
 
+
+
     return (
         <PermissionsCkeckProvider>
             <Drawer.Navigator
@@ -109,7 +115,11 @@ export default function Layout() {
                 initialRouteName={isAuthenticated ? "Home" : "Login"}
             >
                 {isAuthenticated ? (
-                    <Drawer.Screen name="Home" component={TabsNavigator} options={{ headerTitle: "Home" }} />
+                    <Drawer.Screen name="Home"
+                        component={TabsNavigator}
+                    //options={{ headerShown: false }}
+
+                    />
                 ) : (
                     <Drawer.Screen
                         name="Login"
@@ -118,6 +128,8 @@ export default function Layout() {
                             headerTitle: "Iniciar Sesión",
                             swipeEnabled: false,
                             drawerItemStyle: { display: "none" },
+
+
                         }}
                     />
                 )}
@@ -128,8 +140,10 @@ export default function Layout() {
                     name="Alarmas"
                     component={AlarmasScreen}
                     options={{
+
                         headerTitle: "Alarmas",
                         drawerItemStyle: { display: "none" },
+                        headerShown: false
                     }}
                 />
             </Drawer.Navigator>

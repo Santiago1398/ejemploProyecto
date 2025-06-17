@@ -41,7 +41,7 @@ export default function TabsNavigator() {
             <Tab.Screen
                 name="Home"
                 component={HomeStack}
-                options={{ tabBarLabel: 'Inicio' }}
+            //options={{ tabBarLabel: 'Inicio' }}
             />
             {/* <Tab.Screen
                 name="Settings"

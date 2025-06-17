@@ -6,6 +6,7 @@ import AlarmasScreen from "./(tabs)/AlarmasScreen";
 import { PaperProvider } from "react-native-paper";
 import DeviceMaps from "./extra/map/DeviceMaps";
 import Explotacion from "@/components/Explotacion";
+import ConfiguracionTC5 from "@/components/ConfiguracionTC5";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 export type RootStackParamList = {
@@ -32,6 +33,12 @@ export type RootStackParamList = {
         token: string;
         idioma: string;
         siteName: string;
+        farmName: string;
+    };
+    ConfiguracionTC5: {
+        mac: number;
+        token: string;
+        idioma: string;
         farmName: string;
     };
 
@@ -64,6 +71,15 @@ export default function AlarmasStack() {
                 <Stack.Screen
                     name="Explotacion"
                     component={Explotacion}
+                    options={({ route }) => ({
+                        headerShown: true,
+                        title: route.params.farmName,
+                    })}
+                />
+
+                <Stack.Screen
+                    name="ConfiguracionTC5"
+                    component={ConfiguracionTC5}
                     options={({ route }) => ({
                         headerShown: true,
                         title: route.params.farmName,

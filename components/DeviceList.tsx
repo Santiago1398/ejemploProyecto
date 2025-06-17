@@ -29,6 +29,9 @@ export default function DeviceList() {
     const [loading, setLoading] = useState(true);
     const [showAlarmDialog, setShowAlarmDialog] = useState(false);
     const [isError, setIsError] = useState(false);
+    const [initialLoad, setInitialLoad] = useState(true);
+
+
 
 
     useEffect(() => {
@@ -72,14 +75,26 @@ export default function DeviceList() {
 
 
     // Cargar dispositivos
+    // Actualización periódica cada 5 segundos
     useEffect(() => {
-        if (token && userId) fetchDevices();
-    }, [token, userId]);
+        const interval = setInterval(() => {
+            if (token && userId) fetchDevices(true); // 👈 true = es auto-refresh
+        }, 5000);
 
-    const fetchDevices = async () => {
+        return () => clearInterval(interval);
+    }, [token, userId]);
+    useEffect(() => {
+        fetchDevices(false); // 👈 carga inicial
+    }, []);
+
+
+
+
+    const fetchDevices = async (isAutoRefresh = false) => {
         try {
+            if (!isAutoRefresh) setLoading(true);
+
             setIsError(false);
-            setLoading(true);
             const storedUserId = await AsyncStorage.getItem("userId");
             const data: ResponseAlarmaSite[] = await get(`alarmtc/sites/user/${storedUserId}`);
             const formattedData = data.map((device) => ({
@@ -87,15 +102,38 @@ export default function DeviceList() {
                 mac: Number(device.mac),
                 alarmType: device.alarmType ?? 1,
             }));
+
+            // Ordena primero por farmName, luego por siteName (nave)
+            formattedData.sort((a, b) => {
+                const nameA = a.farmName.toLowerCase();
+                const nameB = b.farmName.toLowerCase();
+                const siteA = a.siteName?.toLowerCase() ?? "";
+                const siteB = b.siteName?.toLowerCase() ?? "";
+
+                if (nameA < nameB) return -1;
+                if (nameA > nameB) return 1;
+
+                // Si el nombre del emplazamiento es el mismo, ordena por nave
+                if (siteA < siteB) return -1;
+                if (siteA > siteB) return 1;
+
+                return 0;
+            });
+
             setDevices(formattedData);
+
         } catch (error) {
             console.error("Error al cargar dispositivos:", error);
             setIsError(true);
             Alert.alert("Error", "No se pudieron cargar los dispositivos.");
         } finally {
-            setLoading(false);
+            if (!isAutoRefresh) {
+                setLoading(false);
+                setInitialLoad(false);
+            }
         }
     };
+
 
     // Alarmas en tiempo real
     useEffect(() => {
@@ -148,7 +186,7 @@ export default function DeviceList() {
                             siteName: capitalize(item.siteName),
                             latitude: item.latitude,
                             longitude: item.longitude,
-                        },
+                        }
                     });
                 }}
             >
@@ -166,7 +204,7 @@ export default function DeviceList() {
 
     return (
         <View style={styles.container}>
-            {loading ? (
+            {initialLoad ? (
                 <Text style={styles.loadingText}>Cargando dispositivos...</Text>
             ) : isError ? (
                 <View style={styles.centeredContainer}>
@@ -181,8 +219,8 @@ export default function DeviceList() {
                     renderItem={renderDeviceItem}
                     contentContainerStyle={styles.listContainer}
                 />
-
             )}
+
 
             {showAlarmDialog && (
                 <Modal transparent animationType="fade" visible={true}>
