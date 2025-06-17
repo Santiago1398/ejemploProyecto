@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text, Switch, Platform, Linking, Alert } from "react-native";
+import { View, StyleSheet, Text, Switch, Platform, Linking, Alert, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { usePermissionsStore } from "@/store/usePermissions";
 import { PermissionStatus } from "@/infrastructure/intercafe/location";
@@ -8,11 +8,24 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { requestLocationPermission } from "@/core/actions/permissions/locations";
 import { registerForPushNotificationsAsync } from "@/utils/notifications";
+import { TextInput, Button, } from "react-native";
+import { post } from "@/services/api";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "@/app/HomeStack"; // ajusta según ruta real
+
+
+
 
 
 export default function SettingsScreen() {
     const { locationStatus, checkLocationPermission } = usePermissionsStore();
     const [notificationStatus, setNotificationStatus] = useState<boolean>(false);
+    const [telefonoGuardado, setTelefonoGuardado] = useState<string | null>(null);
+    const [prioridadGuardada, setPrioridadGuardada] = useState<string | null>(null);
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
+
 
 
     useEffect(() => {
@@ -23,6 +36,18 @@ export default function SettingsScreen() {
 
         initializePermissions();
     }, []);
+
+    useEffect(() => {
+        const cargarDatosGuardados = async () => {
+            const tel = await AsyncStorage.getItem("telefono");
+            const prio = await AsyncStorage.getItem("prioridad");
+            setTelefonoGuardado(tel);
+            setPrioridadGuardada(prio);
+        };
+
+        const unsubscribe = navigation.addListener("focus", cargarDatosGuardados);
+        return unsubscribe;
+    }, [navigation]);
 
     const checkNotificationStatus = async () => {
         const { status } = await Notifications.getPermissionsAsync();
@@ -77,7 +102,9 @@ export default function SettingsScreen() {
                 ]
             );
         }
+
     };
+
 
     const handleToggle = async () => {
         if (locationStatus === PermissionStatus.GRANTED) {
@@ -110,7 +137,9 @@ export default function SettingsScreen() {
                     : await Linking.openSettings();
             }
         }
+
     };
+
 
     return (
         <View style={styles.screen}>
@@ -146,7 +175,22 @@ export default function SettingsScreen() {
                         value={notificationStatus}
                     />
                 </View>
+
             </View>
+            <TouchableOpacity
+                style={[styles.section, { marginTop: 24 }]}
+                onPress={() => navigation.navigate("EditarPrioridadScreen")} // asegúrate de tener esta ruta
+            >
+                <Text style={styles.sectionTitle}>Nivel de Prioridad</Text>
+                {telefonoGuardado && prioridadGuardada ? (
+                    <Text style={{ fontSize: 16 }}>
+                        Tel: {telefonoGuardado} | Prioridad: {prioridadGuardada}
+                    </Text>
+                ) : (
+                    <Text style={{ fontSize: 16, color: '#999' }}>Sin datos asignados</Text>
+                )}
+            </TouchableOpacity>
+
         </View>
     );
 }
@@ -192,4 +236,62 @@ const styles = StyleSheet.create({
         gap: 8,
         color: '#333',
     },
+    input: {
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 8,
+        padding: 10,
+        marginBottom: 10,
+        backgroundColor: "#fff",
+    },
+    pickerContainer: {
+        marginBottom: 10,
+    },
+    picker: {
+        height: 40,
+        backgroundColor: "#fff",
+    },
+    label: {
+        fontSize: 16,
+        fontWeight: "500",
+        marginBottom: 4,
+    },
+    priorityContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 8,
+        marginBottom: 16,
+    },
+    priorityButton: {
+        flex: 1,
+        alignItems: 'center',
+        padding: 10,
+        borderWidth: 1,
+        borderColor: '#007AFF',
+        borderRadius: 8,
+        marginHorizontal: 4,
+    },
+    priorityButtonSelected: {
+        backgroundColor: '#007AFF',
+    },
+    priorityText: {
+        color: '#007AFF',
+        fontWeight: 'bold',
+    },
+    priorityTextSelected: {
+        color: '#fff',
+    },
+    sendButton: {
+        backgroundColor: '#28a745',
+        padding: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    sendButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+
+
 });

@@ -1,4 +1,4 @@
-package com.santicticontrol.notificationtc5
+package com.tc5
 
 import android.app.Application
 import android.content.res.Configuration

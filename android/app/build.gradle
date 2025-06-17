@@ -86,13 +86,13 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.santicticontrol.notificationtc5'
+    namespace "com.tc5"
     defaultConfig {
-        applicationId 'com.santicticontrol.notificationtc5'
+        applicationId "com.tc5"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0.0"
+        versionName "1.0"
     }
     signingConfigs {
         debug {
@@ -147,13 +147,12 @@ android {
 }
 
 dependencies {
-    // La versión de react-native se establece por el React Native Gradle Plugin
+    // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";
     def isWebpAnimatedEnabled = (findProperty('expo.webp.animated') ?: "") == "true";
-
 
     if (isGifEnabled) {
         // For animated gif support
@@ -174,35 +173,4 @@ dependencies {
     } else {
         implementation jscFlavor
     }
-
-    // Dependencias de Firebase (corrigiendo error de tipeo)
-    //implementation 'com.google.firebase:firebase-core:19.0.0'
-   
-   
-    //Esto es lo ultimo que he agreado a la espera de pprbar si funciona al generar el apk
-    //implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
-    //implementation("com.google.firebase:firebase-inappmessaging-display")
-    //implementation("com.google.firebase:firebase-analytics")
-
-    // Depedencia de Fresco correctamente definida
-    //implementation 'com.facebook.fresco:fresco:3.2.0'
-    //implementation 'com.facebook.fresco:animated-gif:3.2.0'
-    //implementation 'com.facebook.fresco:webpsupport:3.2.0'
-    //implementation 'com.facebook.fresco:animated-webp:3.2.0'
-    //implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.24"
-
-    //implementation "com.google.android.gms:play-services-measurement:22.1.2"
-   // implementation "com.google.android.gms:play-services-measurement-api:22.1.2"
-
-
-    // Hermes (motor de ejecución opcional)
-    if (hermesEnabled.toBoolean()) {
-        implementation("com.facebook.react:hermes-android")
-    } else {
-        implementation jscFlavor
-    }
 }
-
-
-
-apply plugin: 'com.google.gms.google-services'   //Esta linea es la que se agrega para Firebase

@@ -1,22 +1,19 @@
+// src/screens/WebViewExplotacion.tsx
 import React, { useState } from "react";
-import {
-    SafeAreaView,
-    StyleSheet,
-    View,
-    ActivityIndicator,
-} from "react-native";
+import { ActivityIndicator, SafeAreaView, StyleSheet, View } from "react-native";
 import { WebView } from "react-native-webview";
 import { RouteProp, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "@/app/HomeStack";
 
 type WebViewRouteProp = RouteProp<RootStackParamList, "Explotacion">;
 
-export default function WebViewExplotacion() {
+export default function WebViewConfiguracionTC5() {
     const route = useRoute<WebViewRouteProp>();
-    const { mac, token, idioma = "es", siteName } = route.params;
-    const url = `https://ctiportal.cticontrol.com?mac=${mac}&token=${token}&idioma=${idioma}&nave=${siteName}&app=appmovilv3&type=nave`;
+    const { mac, token, idioma = "es" } = route.params;
 
     const [loading, setLoading] = useState(true);
+
+    const url = `https://ctiportal.cticontrol.com?mac=${mac}&token=${token}&idioma=${idioma}&app=appmovilv3&type=control-remoto`;
 
     return (
         <SafeAreaView style={styles.container}>

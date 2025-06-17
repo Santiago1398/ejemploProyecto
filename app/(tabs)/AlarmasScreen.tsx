@@ -26,7 +26,61 @@ export default function Alarmas() {
         str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";
 
     useEffect(() => {
-        fetchDevices();
+        let isMounted = true;
+
+        const fetchAll = async () => {
+            try {
+                const storedUserId = await AsyncStorage.getItem("userId");
+                const data: ResponseAlarmaSite[] = await get(`alarmtc/sites/user/${storedUserId}`);
+
+                const formattedData = data.map((device) => ({
+                    ...device,
+                    mac: Number(device.mac),
+                    alarmType: device.alarmType ?? 1,
+                }));
+
+                // Ordenamos por farmName y luego por siteName
+                formattedData.sort((a, b) => {
+                    const nameA = a.farmName.toLowerCase();
+                    const nameB = b.farmName.toLowerCase();
+                    const siteA = a.siteName?.toLowerCase() ?? "";
+                    const siteB = b.siteName?.toLowerCase() ?? "";
+
+                    if (nameA < nameB) return -1;
+                    if (nameA > nameB) return 1;
+                    if (siteA < siteB) return -1;
+                    if (siteA > siteB) return 1;
+                    return 0;
+                });
+
+                if (isMounted) setDevices(formattedData);
+
+                // Carga alarmas por cada MAC
+                const newAlarmas: Record<string, string[]> = {};
+                for (const device of formattedData) {
+                    const alarmas: ParamTC[] = await get(`alarmtc/status?mac=${device.mac}`);
+                    const textos = alarmas
+                        .filter(a => a.habilitado && a.idAlarm !== 1000)
+                        .map(a => capitalize(a.texto));
+                    newAlarmas[device.mac] = textos;
+                }
+
+                if (isMounted) setAlarmasPorMac(newAlarmas);
+            } catch (error) {
+                if (isMounted) {
+                    Alert.alert("Error", "No se pudieron cargar los dispositivos o alarmas.");
+                }
+            }
+        };
+
+        fetchAll(); // primera carga
+
+        const interval = setInterval(fetchAll, 5000); // refrescar cada 5 segundos
+
+        return () => {
+            isMounted = false;
+            clearInterval(interval);
+        };
     }, []);
 
     const fetchDevices = async () => {

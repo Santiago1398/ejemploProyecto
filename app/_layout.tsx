@@ -16,8 +16,8 @@ import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SettingsScreen from "./(tabs)/SettingsScreen";
 import AlarmasScreen from "./(tabs)/AlarmasScreen";
-import {  Alert } from 'react-native';
-import firebase from '@react-native-firebase/app';
+import EditarPrioridadScreen from "@/components/EditarPrioridadScreen";
+
 
 
 
@@ -44,22 +44,7 @@ export default function Layout() {
             console.error("Error configurando canal:", err);
         }
     };
-    
 
-
-
-/* if (Platform.OS === 'ios') {
-  try {
-    if (firebase) {
-      Alert.alert('✅ Firebase', '🔥 Firebase disponible en iOS');
-      console.log('🔥 Firebase disponible en iOS');
-    }
-  } catch (error: any) {
-    Alert.alert('❌ Firebase Error', `No disponible en iOS: ${error.message}`);
-    console.error('❌ Firebase no disponible en iOS:', error);
-  }
-} */
-    
     const handleAlarmState = async (isActive: boolean) => {
         if (isActive) {
             console.log(" Activando alarma");
@@ -83,6 +68,8 @@ export default function Layout() {
                 setShowAlarmDialog(true);
             }
         };
+
+
 
         if (ready) {
             checkAlarmFlag();
@@ -112,6 +99,8 @@ export default function Layout() {
         configureNotificationChannel();
     }, []);
 
+
+
     return (
         <PermissionsCkeckProvider>
             <Drawer.Navigator
@@ -127,7 +116,11 @@ export default function Layout() {
                 initialRouteName={isAuthenticated ? "Home" : "Login"}
             >
                 {isAuthenticated ? (
-                    <Drawer.Screen name="Home" component={TabsNavigator} options={{ headerTitle: "Home" }} />
+                    <Drawer.Screen name="Home"
+                        component={TabsNavigator}
+                        options={{ headerShown: false }}
+
+                    />
                 ) : (
                     <Drawer.Screen
                         name="Login"
@@ -136,6 +129,8 @@ export default function Layout() {
                             headerTitle: "Iniciar Sesión",
                             swipeEnabled: false,
                             drawerItemStyle: { display: "none" },
+
+
                         }}
                     />
                 )}
@@ -146,10 +141,19 @@ export default function Layout() {
                     name="Alarmas"
                     component={AlarmasScreen}
                     options={{
+
                         headerTitle: "Alarmas",
                         drawerItemStyle: { display: "none" },
+                        headerShown: false
                     }}
                 />
+                <Drawer.Screen
+                    name="EditarPrioridadScreen"
+                    component={EditarPrioridadScreen}
+                    options={{ headerTitle: "Nivel Prioridad" }}
+
+                />
+
             </Drawer.Navigator>
         </PermissionsCkeckProvider>
     );

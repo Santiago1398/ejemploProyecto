@@ -20,12 +20,14 @@ import Menu3Puntos from "@/components/Menu3Puntos";
 
 import { notificationService } from '@/hooks/NotificationService';
 import EstadoAlarmaCircle from "./EstadoAlarmaCircle";
-import * as Clipboard from "expo-clipboard";
+
+
 
 type DeviceDetailsRouteProp = RouteProp<RootStackParamList, "DeviceDetails">;
 
 export default function AlarmList() {
     const route = useRoute<DeviceDetailsRouteProp>();
+
     const { device } = route.params;
     const { mac, farmName, siteName } = device;
 
@@ -35,33 +37,34 @@ export default function AlarmList() {
     const [loading, setLoading] = useState(true);
     const [masterAlarmState, setMasterAlarmState] = useState<boolean>(true); // Estado de la alarma 1000
     //const [showAlarmDialog, setShowAlarmDialog] = useState(false);
+    const [initialLoad, setInitialLoad] = useState(true);
+
     const navigation = useNavigation<any>();
     const [headerText, setHeaderText] = useState<string>("Alarmas Activas"); // Texto del header para controlarlo
     const [headerColor, setHeaderColor] = useState<string>("#76db36"); // Color del header para controlarloconst flatListRef = useRef<FlatList>(null);
     const flatListRef = useRef<FlatList>(null);
     const [tc5Disconnected, setTc5Disconnected] = useState<boolean>(false);
 
+    // const COLORS = {
+    //     yellowBackground: "#fef9c3",
+    //     yellowText: "#ca8a04",
+    //     greenBackground: "#dcfe7f",
+    //     greenText: "#16a34a",
+    //     redBackground: "#FFCDD2",
+    //     redText: "#C62828",
+    //     greyBackground: "#CFD8DC",
+    //     greyText: "#37474F",
+    // };
 
-   // const COLORS = {
-     //   yellowBackground: "#fef9c3",
-       // yellowText: "#ca8a04",
-         //greenBackground: "#dcfe7f",
-        //greenText: "#16a34a",
-        //redBackground: "#FFCDD2",
-        //redText: "#C62828",
-        //greyBackground: "#CFD8DC",
-        //greyText: "#37474F",
-    //};
 
     const scrollOffset = useRef(0); // valor persistente
 
     const handleScroll = (event: any) => {
         scrollOffset.current = event.nativeEvent.contentOffset.y;
     };
-        
 
     //const [pushToken, setPushToken] = useState<string | null>(null);
-    const [fcmToken, setFcmToken] = useState<string | null>(null);
+    //const [fcmToken, setFcmToken] = useState<string | null>(null);
 
     const updateHeaderStatus = (alarms: ParamTC[], masterState: boolean) => {
         const alarmaDisparada = alarms.some(alarm => alarm.disparado);
@@ -95,35 +98,85 @@ export default function AlarmList() {
             Alert.alert("Error", "No se pudo cambiar el estado de las alarmas.");
         }
     };
+
     // 1. Obtener las alarmas (GET)
-    /* const fetchAlarms = async () => {
+    // const fetchAlarms = async () => {
+    //     try {
+    //         setLoading(true);
+    //         const scrollY = scrollOffset.current; // guarda antes
+
+    //         console.log("Petición GET:", `alarmtc/status?mac=${mac}`);
+    //         const data = await get(`alarmtc/status?mac=${mac}`);
+    //         console.table("Datos obtenidos:", data);
+
+    //         // Guardamos el estado de la alarma del Botón Master
+    //         const masterAlarm = data.find((alarm: { idAlarm: number }) => alarm.idAlarm === 1000);
+    //         if (masterAlarm) {
+    //             setMasterAlarmState(masterAlarm.armado);
+    //         }
+
+    //         // Filtramos las alarmas habilitadas y distintas de 1000
+    //         const enabledAlarms = data
+    //             .filter((alarm: { habilitado: boolean; idAlarm: number }) => alarm.habilitado && alarm.idAlarm !== 1000)
+    //             .map((alarm: ParamTC) => ({
+    //                 ...alarm,
+    //                 activada: false,
+    //             }));
+
+    //         console.table("Alarmas habilitadas:", enabledAlarms);
+
+    //         setAlarms(enabledAlarms);
+    //         updateHeaderStatus(enabledAlarms, masterAlarm?.armado ?? false);
+    //         // Actualiza el estado del header
+    //         setTimeout(() => {
+    //             flatListRef.current?.scrollToOffset({ offset: scrollY, animated: false });
+    //         }, 50);
+    //     } catch (error) {
+    //         console.error("Error en la solicitud GET:", error);
+    //         Alert.alert("Error", "No se pudieron cargar las alarmas.");
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+
+    const fetchAlarms = async (isAutoRefresh = false) => {
         try {
-            setLoading(true);
-            const scrollY = scrollOffset.current; // guarda antes
+            if (!isAutoRefresh) {
+                setLoading(true);         // solo muestra "Cargando alarmas..." en carga inicial
+            }
 
-            console.log("Petición GET:", `alarmtc/status?mac=${mac}`);
+            const scrollY = scrollOffset.current;
+
             const data = await get(`alarmtc/status?mac=${mac}`);
-            console.table("Datos obtenidos:", data);
 
-            // Guardamos el estado de la alarma del Botón Master
+            const alarm2000 = data.find((alarm: { idAlarm: number }) => alarm.idAlarm === 2000);
+            if (alarm2000 && alarm2000.disparado) {
+                setTc5Disconnected(true);
+                setAlarms([]);
+                setHeaderText("TC5 Desconectado");
+                setHeaderColor("#8a9bb9");
+                return;
+            } else {
+                setTc5Disconnected(false);
+            }
+
             const masterAlarm = data.find((alarm: { idAlarm: number }) => alarm.idAlarm === 1000);
             if (masterAlarm) {
                 setMasterAlarmState(masterAlarm.armado);
             }
 
-            // Filtramos las alarmas habilitadas y distintas de 1000
             const enabledAlarms = data
-                .filter((alarm: { habilitado: boolean; idAlarm: number }) => alarm.habilitado && alarm.idAlarm !== 1000)
+                .filter((alarm: { habilitado: boolean; idAlarm: number }) =>
+                    alarm.habilitado && ![1000, 2000].includes(alarm.idAlarm)
+                )
                 .map((alarm: ParamTC) => ({
                     ...alarm,
                     activada: false,
                 }));
 
-            console.table("Alarmas habilitadas:", enabledAlarms);
-
             setAlarms(enabledAlarms);
             updateHeaderStatus(enabledAlarms, masterAlarm?.armado ?? false);
-            // Actualiza el estado del header
+
             setTimeout(() => {
                 flatListRef.current?.scrollToOffset({ offset: scrollY, animated: false });
             }, 50);
@@ -131,69 +184,27 @@ export default function AlarmList() {
             console.error("Error en la solicitud GET:", error);
             Alert.alert("Error", "No se pudieron cargar las alarmas.");
         } finally {
-            setLoading(false);
+            if (!isAutoRefresh) {
+                setLoading(false);         // solo quitamos loading si no es auto-refresh
+                setInitialLoad(false);     // ya se hizo la carga inicial
+            }
         }
-    }; */
+    };
 
-    const fetchAlarms = async () => {
-    try {
-        setLoading(true);
-        const scrollY = scrollOffset.current;
-
-        console.log("Petición GET:", `alarmtc/status?mac=${mac}`);
-        const data = await get(`alarmtc/status?mac=${mac}`);
-        console.table("Datos obtenidos:", data);
-
-        //Verifica si el TC5 (alarma 2000) está disparado
-        const alarm2000 = data.find((alarm: { idAlarm: number }) => alarm.idAlarm === 2000);
-        if (alarm2000 && alarm2000.disparado) {
-            setTc5Disconnected(true);
-            setAlarms([]); // Limpia lista
-            setHeaderText("TC5 Desconectado");
-            setHeaderColor("#8a9bb9"); // gris
-            return; 
-        } else {
-            setTc5Disconnected(false);
-        }
-
-        // Estado del botón master (id 1000)
-        const masterAlarm = data.find((alarm: { idAlarm: number }) => alarm.idAlarm === 1000);
-        if (masterAlarm) {
-            setMasterAlarmState(masterAlarm.armado);
-        }
-
-        // Filtrar alarmas válidas (excluyendo 1000 y 2000)
-        const enabledAlarms = data
-            .filter((alarm: { habilitado: boolean; idAlarm: number }) =>
-                alarm.habilitado && ![1000, 2000].includes(alarm.idAlarm)
-            )
-            .map((alarm: ParamTC) => ({
-                ...alarm,
-                activada: false,
-            }));
-
-        console.table("Alarmas habilitadas:", enabledAlarms);
-        setAlarms(enabledAlarms);
-        updateHeaderStatus(enabledAlarms, masterAlarm?.armado ?? false);
-
-        setTimeout(() => {
-            flatListRef.current?.scrollToOffset({ offset: scrollY, animated: false });
-        }, 50);
-    } catch (error) {
-        console.error("Error en la solicitud GET:", error);
-        Alert.alert("Error", "No se pudieron cargar las alarmas.");
-    } finally {
-        setLoading(false);
-    }
-};
 
 
     // 2. useEffect para cargar las alarmas al montar
     useEffect(() => {
-        if (mac) {
-            fetchAlarms();
-        }
+        const interval = setInterval(() => {
+            fetchAlarms(true); // 👈 pasamos true para indicar que es auto-refresh
+        }, 5000);
+
+        return () => clearInterval(interval);
     }, [mac]);
+    useEffect(() => {
+        fetchAlarms(false); // 👈 primera vez = false
+    }, []);
+
 
     // 3. useLayoutEffect para configurar el header con Menu3Puntos
     useLayoutEffect(() => {
@@ -202,21 +213,33 @@ export default function AlarmList() {
 
         navigation.setOptions({
             headerTitle: () => (
-                <Text style={{
-                    fontSize: 20,
-                    fontWeight: "bold",
-                    color: "#FFFFFF",
-                    textAlign: "center"
-                }}>
-                    {headerText}
-                </Text>
+                <View style={{ paddingTop: 4 }}>
+                    <Text style={{
+                        fontSize: 16,
+                        color: "#fff",
+                        textAlign: "center",
+                        fontWeight: "500"
+                    }}>
+                        {farmName} - {siteName}
+                    </Text>
+                    <Text style={{
+                        fontSize: 20,
+                        fontWeight: "bold",
+                        color: "#fff",
+                        textAlign: "center"
+                    }}>
+                        {headerText}
+                    </Text>
+                </View>
             ),
             headerStyle: {
-                backgroundColor: headerColor, // Usa los tonos suaves sugeridos
-                elevation: 0, // Android: quita sombra si no la necesitas
-                shadowOpacity: 0, // iOS: quita sombra
+                backgroundColor: headerColor,
+                height: 100, // aumentamos la altura
+                elevation: 0,
+                shadowOpacity: 0,
             },
-            headerTintColor: "#000000",
+            headerTitleAlign: "center",
+            headerTintColor: "#fff",
             headerRight: () => (
                 <Menu3Puntos
                     device={{ latitude, longitude, farmName, siteName, mac }}
@@ -224,6 +247,8 @@ export default function AlarmList() {
             ),
         });
     }, [navigation, device, farmName, siteName, mac, headerText, headerColor]);
+
+
 
     const handleOptionSelect = async (option: string) => {
         if (selectedAlarm) {
@@ -247,6 +272,7 @@ export default function AlarmList() {
             }
         }
     };
+
     // const handleAlarmDetected = (idAlarm: number) => {
     //     console.log(" Alarma detectada con id:", idAlarm);
     //     setAlarms(prev =>
@@ -272,12 +298,10 @@ export default function AlarmList() {
 
     useEffect(() => {
         notificationService.setOnAlarmDetected(handleAlarmDetected);
-        getDeviceToken(); 
         return () => {
             notificationService.setOnAlarmDetected(() => { });
         };
     }, []);
-
 
 
     // 5. Abre el modal para la alarma seleccionada
@@ -291,7 +315,7 @@ export default function AlarmList() {
         if (lowerText.includes("electrico")) return "flash-outline";
         if (lowerText.includes("temperatura")) return "thermometer-outline";
         if (lowerText.includes("humedad")) return "water-outline";
-        return "alert-circle-outline"; 
+        return "alert-circle-outline"; // genérico
     };
 
 
@@ -317,7 +341,7 @@ export default function AlarmList() {
                 onPress={() => openOptionModal(item)}
             >
                 <View style={styles.alarmRow}>
-                    <EstadoAlarmaCircle armado={item.armado} disparado={item.disparado} activo={item.activo} />
+                    <EstadoAlarmaCircle armado={item.armado} disparado={item.disparado} producido={item.producido} />
 
                     <View style={styles.iconAndText}>
                         {item.disparado && (
@@ -336,34 +360,22 @@ export default function AlarmList() {
         );
     };
 
-const getDeviceToken = async () => {
-  try {
-    const token = await notificationService.getFCMToken();
-    console.log("📦 Token obtenido:", token);
-
-    if (token) {
-      setFcmToken(token);
-      await Clipboard.setStringAsync(token);
-      Alert.alert("FCM Token obtenido", "Copiado al portapapeles:\n\n" + token);
-    } else {
-      console.warn(" Token devuelto vacío o nulo");
-      Alert.alert("Error", "No se pudo obtener el token (vacío o nulo)");
-    }
-  } catch (error) {
-    console.error("Error al obtener FCM token:", error);
-    if (error instanceof Error) {
-      Alert.alert("FCM Token Error", error.message);
-    } else {
-      Alert.alert("FCM Token Error", JSON.stringify(error));
-    }
-  }
-};
-
-//funciona todo y se obtiene el token FCM
     return (
         <View style={styles.container}>
 
-            {/*  <TouchableOpacity
+            {/* Botón para obtener token
+            <TouchableOpacity
+                style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    backgroundColor: '#3478F6',
+                    padding: 12,
+                    borderRadius: 12
+                }}
+            onPress={getPushToken}
+            ></TouchableOpacity> */}
+
+            {/* <TouchableOpacity
                 style={{
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -372,33 +384,34 @@ const getDeviceToken = async () => {
                     borderRadius: 12
                 }}
             onPress={getDeviceToken}
-            > 
+            >
                 <Ionicons name="key-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
                 <Text style={{ color: '#fff', fontWeight: 'bold' }}>Obtener Token FCM</Text>
             </TouchableOpacity> */}
 
-        {loading ? (
-    <Text style={styles.loadingText}>Cargando alarmas...</Text>
-) : tc5Disconnected ? (
-    <View style={styles.centeredContainer}>
-        <Ionicons name="alert-circle" size={64} color="#8a9bb9" />
-        <Text style={styles.noAlarmsText}>TC5 Desconectado</Text>
-    </View>
-) : alarms.length === 0 ? (
-    <View style={styles.centeredContainer}>
-        <Text style={styles.noAlarmsText}>No hay alarmas habilitadas</Text>
-    </View>
-) : (
-    <FlatList
-        ref={flatListRef}
-        data={alarms}
-        keyExtractor={(item) => `${item.idAlarm}`}
-        renderItem={renderAlarmItem}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
-        contentContainerStyle={{ paddingBottom: 100 }}
-    />
-)}
+            {loading ? (
+                <Text style={styles.loadingText}>Cargando alarmas...</Text>
+            ) : tc5Disconnected ? (
+                <View style={styles.centeredContainer}>
+                    <Ionicons name="alert-circle" size={64} color="#8a9bb9" />
+                    <Text style={styles.noAlarmsText}>TC5 Desconectado</Text>
+                </View>
+            ) : alarms.length === 0 ? (
+                <View style={styles.centeredContainer}>
+                    <Text style={styles.noAlarmsText}>No hay alarmas habilitadas</Text>
+                </View>
+            ) : (
+                <FlatList
+                    ref={flatListRef}
+                    data={alarms}
+                    keyExtractor={(item) => `${item.idAlarm}`}
+                    renderItem={renderAlarmItem}
+                    onScroll={handleScroll}
+                    scrollEventThrottle={16}
+                    contentContainerStyle={{ paddingBottom: 100 }}
+                />
+            )}
+
 
             {/* Botón Master en la esquina inferior derecha */}
             <ButtonMaster
@@ -406,7 +419,7 @@ const getDeviceToken = async () => {
                 fetchAlarms={fetchAlarms}
                 masterAlarmState={masterAlarmState}
                 onToggleMaster={handleToggleMaster}
-                    disabled={tc5Disconnected}
+                disabled={tc5Disconnected}
 
             />
 
@@ -434,7 +447,8 @@ const getDeviceToken = async () => {
                             <View style={[styles.circle, !selectedAlarm?.armado ? { backgroundColor: "#8a9bb9" } : {}]} />
                             <Text style={styles.optionText}>Desarmada</Text>
                         </TouchableOpacity>
-                    </Pressable>    
+                    </Pressable>
+
                 </Pressable>
             </Modal>
         </View>
@@ -579,4 +593,6 @@ const styles = StyleSheet.create({
         right: 12,
         zIndex: 1,
     }
+
+
 });

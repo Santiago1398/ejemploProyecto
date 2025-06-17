@@ -1,22 +1,23 @@
 {
   "expo": {
-    "name": "Mi-Proyecto",
+    "name": "TC5",
     "slug": "notification-tc5",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/TC5-3-RAYAS.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": false,
     "ios": {
+      "name": "TC5",
+      "icon": "./assets/images/TC5-3-RAYAS.png",
       "supportsTablet": true,
       "bundleIdentifier": "com.cticontrol.notificationtc5",
       "buildNumber": "14",
-  "googleServicesFile": "./ios/MiProyecto/GoogleService-Info.plist",
+      "googleServicesFile": "./ios/TC5/GoogleService-Info.plist",
       "config": {
         "googleMapsApiKey": "AIzaSyBqrNqrA8NEOhdflFJ334PsAMUHSatgkwk"
       },
-
       "infoPlist": {
         "UIBackgroundModes": [
           "fetch",
@@ -90,9 +91,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "bb9fc46f-7372-4540-b4d3-db9fd370196b"
+        "projectId": "ac5a5f62-f7b4-4e22-b614-a8e5abd6f349"
       }
     },
-    "owner": "yingyan1398"
+    "owner": ""
   }
 }

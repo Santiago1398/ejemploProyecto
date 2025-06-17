@@ -38,7 +38,7 @@ class NotificationService {
   }
 
   private setupFirebaseListeners() {
-    console.log(" Configurando SOLO Firebase listeners...");
+    console.log(" Configurando Firebase listeners...");
     
     // Firebase para foreground
     messaging().onMessage(async (remoteMessage) => {
@@ -85,7 +85,7 @@ class NotificationService {
     if (this.ws) return;
 
     this.ws = new WebSocket("wss://portaltest.cticontrol.com/ws-test");
-
+      //{"mac":20600001,"idAlarm":1,"isAlarm":true}
     this.ws.onmessage = async (event) => {
       try {
         const data = JSON.parse(event.data);
@@ -141,7 +141,7 @@ public async getFCMToken(): Promise<string | null> {
   try {
     const savedToken = await AsyncStorage.getItem("deviceToken");
     if (savedToken) {
-      console.log("📦 Token FCM recuperado desde AsyncStorage:", savedToken);
+      console.log("Token FCM recuperado desde AsyncStorage:", savedToken);
       return savedToken;
     }
 
@@ -168,7 +168,7 @@ public async getFCMToken(): Promise<string | null> {
       return null;
     }
 
-    console.log("🔐 Nuevo token FCM obtenido:", fcmToken);
+    console.log(" Nuevo token FCM obtenido:", fcmToken);
     await AsyncStorage.setItem("deviceToken", fcmToken);
     return fcmToken;
 
