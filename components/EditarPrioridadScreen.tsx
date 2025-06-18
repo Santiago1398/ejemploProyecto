@@ -14,7 +14,13 @@ import { post } from "@/services/api";
 export default function EditarPrioridadScreen() {
     const [telefono, setTelefono] = useState("");
     const [prioridad, setPrioridad] = useState<number | null>(null);
+    const [prefijo, setPrefijo] = useState("+34"); // predeterminado
+    const [mostrarModalPrefijos, setMostrarModalPrefijos] = useState(false);
     const navigation = useNavigation();
+    const paises = [
+        { nombre: "España", codigo: "+34" },
+    ];
+
 
     // Cargar valores guardados (opcional)
     useEffect(() => {
@@ -56,16 +62,23 @@ export default function EditarPrioridadScreen() {
             <Text style={styles.title}>Prioridad</Text>
 
             <Text style={styles.label}>Número de teléfono:</Text>
-            <TextInput
-                placeholder="Ingrese su número de teléfono"
-                style={styles.input}
-                keyboardType="phone-pad"
-                value={telefono}
-                onChangeText={(text) => {
-                    const numericText = text.replace(/[^0-9]/g, ''); // solo números
-                    if (numericText.length <= 9) setTelefono(numericText);
-                }}
-            />
+            <View style={styles.phoneInputContainer}>
+                <TouchableOpacity onPress={() => setMostrarModalPrefijos(true)}>
+                    <Text style={styles.prefix}>{prefijo}</Text>
+                </TouchableOpacity>
+                <TextInput
+                    placeholder="123456789"
+                    style={styles.phoneInput}
+                    keyboardType="phone-pad"
+                    value={telefono}
+                    onChangeText={(text) => {
+                        const numericText = text.replace(/[^0-9]/g, '');
+                        if (numericText.length <= 9) setTelefono(numericText);
+                    }}
+                />
+            </View>
+
+
 
             <Text style={styles.label}>Prioridad:</Text>
             <View style={styles.priorityContainer}>
@@ -95,7 +108,31 @@ export default function EditarPrioridadScreen() {
                     <Text style={styles.sendButtonText}>Guardar</Text>
                 </TouchableOpacity>
             )}
+            {mostrarModalPrefijos && (
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Selecciona país</Text>
+                        {paises.map((pais) => (
+                            <TouchableOpacity
+                                key={pais.codigo}
+                                style={styles.modalItem}
+                                onPress={() => {
+                                    setPrefijo(pais.codigo);
+                                    setMostrarModalPrefijos(false);
+                                }}
+                            >
+                                <Text>{pais.nombre} ({pais.codigo})</Text>
+                            </TouchableOpacity>
+                        ))}
+                        <TouchableOpacity onPress={() => setMostrarModalPrefijos(false)}>
+                            <Text style={{ marginTop: 12, color: 'red' }}>Cancelar</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )}
+
         </View>
+
     );
 }
 
@@ -160,4 +197,59 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold",
     },
+    phoneInputContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 8,
+        backgroundColor: "#fff",
+        paddingHorizontal: 10,
+        marginBottom: 16,
+    },
+
+    prefix: {
+        fontSize: 16,
+        fontWeight: "bold",
+        marginRight: 8,
+        color: "#333",
+    },
+
+    phoneInput: {
+        flex: 1,
+        fontSize: 16,
+        paddingVertical: 10,
+    },
+    modalOverlay: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 10,
+    },
+    modalContent: {
+        backgroundColor: "#fff",
+        padding: 20,
+        borderRadius: 10,
+        width: "80%",
+        alignItems: "center",
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+        marginBottom: 10,
+    },
+    modalItem: {
+        paddingVertical: 8,
+        width: "100%",
+        alignItems: "center",
+        borderBottomWidth: 0.5,
+        borderBottomColor: "#ccc",
+    },
+
+
 });

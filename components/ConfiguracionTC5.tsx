@@ -9,11 +9,11 @@ type WebViewRouteProp = RouteProp<RootStackParamList, "Explotacion">;
 
 export default function WebViewConfiguracionTC5() {
     const route = useRoute<WebViewRouteProp>();
-    const { mac, token, idioma = "es" } = route.params;
+    const { mac, token, idioma = "es" , idSite} = route.params;
 
     const [loading, setLoading] = useState(true);
 
-    const url = `https://ctiportal.cticontrol.com?mac=${mac}&token=${token}&idioma=${idioma}&app=appmovilv3&type=control-remoto`;
+    const url = `https://ctiportal.cticontrol.com?mac=${mac}&token=${token}&idioma=${idioma}&idNave=${idSite}&app=appmovilv3&type=control-remoto`;
 
     return (
         <SafeAreaView style={styles.container}>

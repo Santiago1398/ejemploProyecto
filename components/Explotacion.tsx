@@ -13,8 +13,8 @@ type WebViewRouteProp = RouteProp<RootStackParamList, "Explotacion">;
 
 export default function WebViewExplotacion() {
     const route = useRoute<WebViewRouteProp>();
-    const { mac, token, idioma = "es", siteName } = route.params;
-    const url = `https://ctiportal.cticontrol.com?mac=${mac}&token=${token}&idioma=${idioma}&nave=${siteName}&app=appmovilv3&type=nave`;
+    const { mac, token, idioma = "es", siteName , idSite} = route.params;
+    const url = `https://ctiportal.cticontrol.com?mac=${mac}&token=${token}&idioma=${idioma}&nave=${siteName}&idNave=${idSite}&app=appmovilv3&type=nave`;
 
     const [loading, setLoading] = useState(true);
 

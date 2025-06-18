@@ -242,7 +242,7 @@ export default function AlarmList() {
             headerTintColor: "#fff",
             headerRight: () => (
                 <Menu3Puntos
-                    device={{ latitude, longitude, farmName, siteName, mac }}
+                    device={{ latitude, longitude, farmName, siteName, mac , idSite: device.idSite }}
                 />
             ),
         });

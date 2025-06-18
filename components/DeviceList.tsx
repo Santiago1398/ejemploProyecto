@@ -84,8 +84,9 @@ export default function DeviceList() {
         return () => clearInterval(interval);
     }, [token, userId]);
     useEffect(() => {
-        fetchDevices(false); // 👈 carga inicial
+        fetchDevices(false); 
     }, []);
+
 
 
 
@@ -186,6 +187,7 @@ export default function DeviceList() {
                             siteName: capitalize(item.siteName),
                             latitude: item.latitude,
                             longitude: item.longitude,
+                            idSite : item.idSite,
                         }
                     });
                 }}

@@ -27,6 +27,7 @@ export type RootStackParamList = {
             siteName: string;
             latitude: number;
             longitude: number;
+            idSite: number;
         };
     };
 
@@ -53,6 +54,7 @@ export type RootStackParamList = {
         idioma: string;
         siteName: string;
         farmName: string;
+        idSite: number;
     };
     ConfiguracionTC5: {
         mac: number;
@@ -60,6 +62,7 @@ export type RootStackParamList = {
         idioma: string;
         siteName: string;
         farmName: string;
+        idSite: number;
     };
     EditarPrioridadScreen: undefined;
 
