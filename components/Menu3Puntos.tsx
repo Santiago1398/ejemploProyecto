@@ -1,5 +1,4 @@
 "use client"
-
 import React, { useRef, useState } from "react";
 import {
     View,
@@ -31,6 +30,7 @@ export interface Menu3PuntosProps {
         farmName: string;
         siteName: string;
         mac: number;
+        idSite: number;
     };
     options?: MenuOption[];
 }
@@ -85,6 +85,7 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({ device, options }) => {
                     idioma: "es",
                     siteName: device.siteName,
                     farmName: device.farmName,
+                    idSite: device.idSite
                 });
             },
         },
@@ -105,6 +106,7 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({ device, options }) => {
                     idioma: "es",
                     siteName: device.siteName,
                     farmName: device.farmName,
+                    idSite: device.idSite
                 });
             },
         }
@@ -160,7 +162,7 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({ device, options }) => {
                                     >
                                         <Feather
                                             name={option.icon as any}
-                                            size={30}
+                                            size={27}
                                             color="#333"
                                             style={styles.menuItemIcon}
                                         />
@@ -187,37 +189,37 @@ const styles = StyleSheet.create({
     menuContainer: {
         position: "absolute",
         backgroundColor: "#fff",
-        borderRadius: 12,
-        paddingVertical: 8,
-        paddingHorizontal: 8,
+        borderRadius: 10,
+        paddingVertical: 4,
+        paddingHorizontal: 4,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 3 },
         shadowOpacity: 0.2,
         shadowRadius: 6,
         elevation: 6,
-        minWidth: 200,
+        minWidth: 160,
     },
     menuItem: {
         flexDirection: "row",
         alignItems: "center",
-        paddingVertical: 10,
-        paddingHorizontal: 14,
+        paddingVertical: 8,
+        paddingHorizontal: 10,
         borderRadius: 8,
         backgroundColor: "#fff",
     },
     menuItemIcon: {
-        marginRight: 10,
+        marginRight: 8,
         color: "#2563EB", // Azul moderno
     },
     menuItemText: {
-        fontSize: 15,
+        fontSize: 14,
         color: "#111827",
         fontWeight: "500",
     },
     divider: {
         height: 1,
         backgroundColor: "#E5E7EB",
-        marginVertical: 6,
+        marginVertical: 4,
     },
 
 });

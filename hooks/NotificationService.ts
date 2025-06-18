@@ -54,22 +54,18 @@ class NotificationService {
             async (notification) => {
                 const data = notification.request.content.data;
 
-                if (AppState.currentState === "active" && data?.isAlarm) {
-                    console.log(" Ignorando notificación de sistema en foreground");
-                    return;
-                }
-
-                if (data?.isAlarm && data?.mac && data?.idAlarm) {
+                if (AppState.currentState === "active" && data?.isAlarm && data?.mac && data?.idAlarm) {
                     const mac = Number(data.mac);
                     const idAlarm = Number(data.idAlarm);
 
                     if (this._shouldTriggerAlarm(mac, idAlarm)) {
-                        console.log(" Foreground alarm:", mac, idAlarm);
+                        console.log(" Foreground alarm activa:", mac, idAlarm);
                         this.onAlarmDetectedCallback?.(idAlarm);
                         this.onSiteAlarmDetectedCallback?.(mac);
-                        await this.startAlarmPlayback();
+                        await this.startAlarmPlayback(); // ⬅️ sonido solo si está en foreground
                     }
                 }
+
             }
         );
     }
@@ -132,6 +128,31 @@ class NotificationService {
         this.ws?.close();
         this.ws = null;
     }
+
+    public async getFCMToken(): Promise<string | null> {
+        try {
+            const { status: existingStatus } = await Notifications.getPermissionsAsync();
+            let finalStatus = existingStatus;
+
+            if (existingStatus !== "granted") {
+                const { status } = await Notifications.requestPermissionsAsync();
+                finalStatus = status;
+            }
+
+            if (finalStatus !== "granted") {
+                console.warn("Permisos de notificaciones denegados");
+                return null;
+            }
+
+            const { data: token } = await Notifications.getDevicePushTokenAsync();
+            console.log("📦 Token desde getFCMToken:", token);
+            return token;
+        } catch (error) {
+            console.error("❌ Error en getFCMToken:", error);
+            return null;
+        }
+    }
+
 
     public async registerDevice(userId: number): Promise<void> {
         try {

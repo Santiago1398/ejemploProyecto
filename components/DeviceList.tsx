@@ -186,6 +186,7 @@ export default function DeviceList() {
                             siteName: capitalize(item.siteName),
                             latitude: item.latitude,
                             longitude: item.longitude,
+                            idSite: item.idSite,
                         }
                     });
                 }}
