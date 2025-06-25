@@ -6,6 +6,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { post } from "@/services/api";
 import { playAlarmSound, stopAlarmSound } from "@/utils/sound";
 import { EventSubscription } from "expo-modules-core";
+import axios from "axios";
+import { deviceType } from "expo-device";
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -173,15 +175,67 @@ class NotificationService {
             console.log(" Token FCM obtenido:", token);
             await AsyncStorage.setItem("deviceToken", token);
 
-            await post("alarmtc/users/push-token", {
-                token,
-                userId,
-                deviceType: Platform.OS,
+
+            const deviceType = Platform.OS; // "ios" o "android"
+            const LOCAL_API = "http://192.168.10.157:8032/api";
+
+            await fetch(`${LOCAL_API}/push-token`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ token, userId, deviceType: Platform.OS }),
             });
+            console.log("✅ Token registrado en el backend");
+
+
+            // await post("alarmtc/users/push-token", {
+            //     token,
+            //     userId,
+            //     deviceType: Platform.OS,
+            // });
         } catch (error) {
             console.error("Error registrando dispositivo:", error);
         }
     }
+
+    // public async registerDeviceAndSendTestNotification(userId: number): Promise<void> {
+    //     try {
+    //         const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    //         let finalStatus = existingStatus;
+
+    //         if (existingStatus !== "granted") {
+    //             const { status } = await Notifications.requestPermissionsAsync();
+    //             finalStatus = status;
+    //         }
+
+    //         if (finalStatus !== "granted") {
+    //             console.warn("Permisos de notificaciones denegados");
+    //             return;
+    //         }
+
+    //         const { data: token } = await Notifications.getDevicePushTokenAsync();
+    //         console.log("📦 Token FCM obtenido:", token);
+    //         await AsyncStorage.setItem("deviceToken", token);
+
+    //         await post("http://37.187.180.179:8032/api/alarmtc/users/push-token", {
+    //             token,
+    //             userId,
+    //             deviceType: Platform.OS,
+    //         });
+
+    //         console.log("✅ Token registrado. Enviando notificación de prueba...");
+
+    //         // Llama a tu backend para disparar una notificación de prueba
+    //         await axios.post("http://37.187.180.179:8032/api/notifications/test-send", {
+    //             userId: "testuser",
+    //         });
+
+
+    //         console.log("🚀 Notificación de prueba enviada.");
+    //     } catch (error) {
+    //         console.error("❌ Error en registerDeviceAndSendTestNotification:", error);
+    //     }
+    // }
+
 
     public setOnAlarmDetected(callback: (idAlarm: number) => void) {
         this.onAlarmDetectedCallback = callback;

@@ -17,6 +17,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import SettingsScreen from "./(tabs)/SettingsScreen";
 import AlarmasScreen from "./(tabs)/AlarmasScreen";
 import EditarPrioridadScreen from "@/components/EditarPrioridadScreen";
+import { notificationService } from "@/hooks/NotificationService";
 
 
 
@@ -98,6 +99,25 @@ export default function Layout() {
     useEffect(() => {
         configureNotificationChannel();
     }, []);
+
+    //!! Prueba de notificaciones
+
+    // useEffect(() => {
+    //     const registerAndSend = async () => {
+    //         try {
+    //             const { userId } = useAuthStore.getState(); // Asegúrate de que tienes el userId
+    //             if (isAuthenticated && userId) {
+    //                 console.log("📲 Registrando dispositivo y enviando prueba...");
+    //                 await notificationService.registerDeviceAndSendTestNotification(userId);
+    //             }
+    //         } catch (error) {
+    //             console.error("❌ Error al registrar y enviar notificación:", error);
+    //         }
+    //     };
+
+    //     registerAndSend();
+    // }, [isAuthenticated]);
+    //!!
 
 
 

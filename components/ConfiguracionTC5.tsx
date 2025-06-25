@@ -10,6 +10,7 @@ type WebViewRouteProp = RouteProp<RootStackParamList, "Explotacion">;
 export default function WebViewConfiguracionTC5() {
     const route = useRoute<WebViewRouteProp>();
     const { mac, token, idioma = "es", idSite } = route.params;
+    console.log("Parametros recibidos:", { mac, token, idioma, idSite });
 
     const [loading, setLoading] = useState(true);
 
