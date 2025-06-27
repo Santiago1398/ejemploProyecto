@@ -8,6 +8,7 @@ import { playAlarmSound, stopAlarmSound } from "@/utils/sound";
 import { EventSubscription } from "expo-modules-core";
 import axios from "axios";
 import { deviceType } from "expo-device";
+import { getApiUrl } from "@/utils/apiconfig";
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -64,7 +65,7 @@ class NotificationService {
                         console.log(" Foreground alarm activa:", mac, idAlarm);
                         this.onAlarmDetectedCallback?.(idAlarm);
                         this.onSiteAlarmDetectedCallback?.(mac);
-                        await this.startAlarmPlayback(); // ⬅️ sonido solo si está en foreground
+                        await this.startAlarmPlayback();
                     }
                 }
 
@@ -160,6 +161,8 @@ class NotificationService {
         try {
             const { status: existingStatus } = await Notifications.getPermissionsAsync();
             let finalStatus = existingStatus;
+            const telefono = await AsyncStorage.getItem("telefono");
+
 
             if (existingStatus !== "granted") {
                 const { status } = await Notifications.requestPermissionsAsync();
@@ -176,13 +179,13 @@ class NotificationService {
             await AsyncStorage.setItem("deviceToken", token);
 
 
-            const deviceType = Platform.OS; // "ios" o "android"
-            const LOCAL_API = "http://192.168.10.157:8032/api";
+            //const deviceType = Platform.OS; // "ios" o "android"
+            const LOCAL_API = await getApiUrl();
 
             await fetch(`${LOCAL_API}/push-token`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token, userId, deviceType: Platform.OS }),
+                body: JSON.stringify({ token, userId, deviceType: Platform.OS, telefono }),
             });
             console.log("✅ Token registrado en el backend");
 
@@ -191,6 +194,7 @@ class NotificationService {
             //     token,
             //     userId,
             //     deviceType: Platform.OS,
+            //     telefono, // Agrega el número de teléfono si es necesario
             // });
         } catch (error) {
             console.error("Error registrando dispositivo:", error);

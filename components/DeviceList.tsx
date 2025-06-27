@@ -20,6 +20,7 @@ import { stopAlarmSound } from "@/utils/sound";
 import { notificationService } from "@/hooks/NotificationService";
 import { ResponseAlarmaSite } from "@/infrastructure/intercafe/listapi.interface";
 import * as Notifications from "expo-notifications";
+import PhoneNumberDialog from "./PhoneNumberDialog";
 
 
 export default function DeviceList() {
@@ -30,6 +31,9 @@ export default function DeviceList() {
     const [showAlarmDialog, setShowAlarmDialog] = useState(false);
     const [isError, setIsError] = useState(false);
     const [initialLoad, setInitialLoad] = useState(true);
+    const [dialogVisible, setDialogVisible] = useState(false);
+    const [resolver, setResolver] = useState<((telefono: string | null) => void) | null>(null);
+
 
 
 
@@ -86,7 +90,34 @@ export default function DeviceList() {
     useEffect(() => {
         fetchDevices(false); // 👈 carga inicial
     }, []);
+    useEffect(() => {
+        const checkTelefono = async () => {
+            const telefono = await AsyncStorage.getItem("telefono");
+            const preguntado = await AsyncStorage.getItem("telefonoPreguntado");
 
+            if (!telefono && !preguntado) {
+                setDialogVisible(true);
+            }
+        };
+
+        checkTelefono();
+    }, []);
+    const handleConfirmTelefono = async (telefono: string) => {
+        console.log("✅ Guardando teléfono desde DeviceList:", telefono);
+        setDialogVisible(false);
+        await AsyncStorage.setItem("telefono", telefono);
+
+        const userId = await AsyncStorage.getItem("userId");
+        if (userId) {
+            await notificationService.registerDevice(Number(userId)); // ✅ aquí ya existe el teléfono
+        }
+    };
+
+
+    const handleCancelTelefono = async () => {
+        setDialogVisible(false);
+        await AsyncStorage.setItem("telefonoPreguntado", "true"); // ✅ Solo si cancela
+    };
 
 
 
@@ -191,6 +222,14 @@ export default function DeviceList() {
                     });
                 }}
             >
+                {dialogVisible && (
+                    <PhoneNumberDialog
+                        visible={dialogVisible}
+                        onClose={handleCancelTelefono}
+                        onConfirm={handleConfirmTelefono}
+                    />
+                )}
+
                 <View style={styles.row}>
                     <Ionicons name="home-outline" size={24} color="#000" style={{ marginRight: 8 }} />
                     <Text style={styles.deviceTitle}>{capitalize(item.farmName)}</Text>

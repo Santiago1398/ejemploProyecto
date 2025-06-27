@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Text, Switch, Platform, Linking, Alert, TouchableOpacity } from "react-native";
+import {
+    View, StyleSheet, Text, Switch, Platform, Linking, Alert, TouchableOpacity, ScrollView,
+    KeyboardAvoidingView,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { usePermissionsStore } from "@/store/usePermissions";
 import { PermissionStatus } from "@/infrastructure/intercafe/location";
@@ -12,9 +15,10 @@ import { TextInput, Button, } from "react-native";
 import { post } from "@/services/api";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "@/app/HomeStack"; // ajusta según ruta real
+import { RootStackParamList } from "@/app/HomeStack";
+import { getApiUrl, setApiUrl } from "@/utils/apiconfig";
 
-
+//!Pruebas
 
 
 
@@ -22,10 +26,19 @@ export default function SettingsScreen() {
     const { locationStatus, checkLocationPermission } = usePermissionsStore();
     const [notificationStatus, setNotificationStatus] = useState<boolean>(false);
     const [telefonoGuardado, setTelefonoGuardado] = useState<string | null>(null);
-    const [prioridadGuardada, setPrioridadGuardada] = useState<string | null>(null);
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
+    const [apiUrl, setApiUrlState] = useState("");
 
+
+
+    useEffect(() => {
+        const loadApiUrl = async () => {
+            const url = await getApiUrl();
+            setApiUrlState(url);
+        };
+        loadApiUrl();
+    }, []);
 
 
     useEffect(() => {
@@ -39,10 +52,10 @@ export default function SettingsScreen() {
 
     useEffect(() => {
         const cargarDatosGuardados = async () => {
-            const tel = await AsyncStorage.getItem("telefono");
-            const prio = await AsyncStorage.getItem("prioridad");
-            setTelefonoGuardado(tel);
-            setPrioridadGuardada(prio);
+            // Cargar datos guardados de AsyncStorage
+            console.log("Cargando datos guardados de AsyncStorageSettingsScreen");
+            const telefono = await AsyncStorage.getItem("telefono");
+            setTelefonoGuardado(telefono);
         };
 
         const unsubscribe = navigation.addListener("focus", cargarDatosGuardados);
@@ -142,61 +155,83 @@ export default function SettingsScreen() {
 
 
     return (
-        <View style={styles.screen}>
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Permisos</Text>
-
-                {/* Control de Ubicación */}
-                <View style={styles.button}>
-                    <View style={styles.buttonText}>
-                        <Ionicons name="map-outline" size={24} color="#007AFF" />
-                        <Text style={styles.buttonText}>Permisos de Ubicación</Text>
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+        >
+            <ScrollView contentContainerStyle={styles.screen} keyboardShouldPersistTaps="handled">
+                <View style={styles.section}>
+                    <Text style={styles.sectionTitle}>Permisos</Text>
+                    {/* Control de Ubicación */}
+                    <View style={styles.button}>
+                        <View style={styles.buttonText}>
+                            <Ionicons name="map-outline" size={24} color="#007AFF" />
+                            <Text style={styles.buttonText}>Permisos de Ubicación</Text>
+                        </View>
+                        <Switch
+                            trackColor={{ false: "#767577", true: "#81b0ff" }}
+                            thumbColor={locationStatus === PermissionStatus.GRANTED ? "#007AFF" : "#f4f3f4"}
+                            ios_backgroundColor="#3e3e3e"
+                            onValueChange={handleToggle}
+                            value={locationStatus === PermissionStatus.GRANTED}
+                        />
                     </View>
-                    <Switch
-                        trackColor={{ false: "#767577", true: "#81b0ff" }}
-                        thumbColor={locationStatus === PermissionStatus.GRANTED ? "#007AFF" : "#f4f3f4"}
-                        ios_backgroundColor="#3e3e3e"
-                        onValueChange={handleToggle}
-                        value={locationStatus === PermissionStatus.GRANTED}
-                    />
+
+                    {/* Control de Notificaciones */}
+                    <View style={styles.button}>
+                        <View style={styles.buttonText}>
+                            <Ionicons name="notifications-outline" size={24} color="#007AFF" />
+                            <Text style={styles.buttonText}>Notificaciones</Text>
+                        </View>
+                        <Switch
+                            trackColor={{ false: "#767577", true: "#81b0ff" }}
+                            thumbColor={notificationStatus ? "#007AFF" : "#f4f3f4"}
+                            ios_backgroundColor="#3e3e3e"
+                            onValueChange={handleNotificationToggle}
+                            value={notificationStatus}
+                        />
+                    </View>
                 </View>
 
-                {/* Control de Notificaciones */}
-                <View style={styles.button}>
-                    <View style={styles.buttonText}>
-                        <Ionicons name="notifications-outline" size={24} color="#007AFF" />
-                        <Text style={styles.buttonText}>Notificaciones</Text>
-                    </View>
-                    <Switch
-                        trackColor={{ false: "#767577", true: "#81b0ff" }}
-                        thumbColor={notificationStatus ? "#007AFF" : "#f4f3f4"}
-                        ios_backgroundColor="#3e3e3e"
-                        onValueChange={handleNotificationToggle}
-                        value={notificationStatus}
+                <TouchableOpacity style={[styles.section, { marginTop: 24 }]} onPress={() => navigation.navigate("EditarPrioridadScreen")}>
+                    <Text style={styles.sectionTitle}>Nivel de Prioridad</Text>
+                    {telefonoGuardado ? (
+                        <Text style={{ fontSize: 16 }}>
+                            Tel: {telefonoGuardado}
+                        </Text>
+                    ) : (
+                        <Text style={{ fontSize: 16, color: '#999' }}>Sin número asignado</Text>
+                    )}
+                </TouchableOpacity>
+
+                <View style={[styles.section, { marginTop: 24 }]}>
+                    <Text style={styles.sectionTitle}>Servidor API</Text>
+                    <TextInput
+                        style={styles.input}
+                        value={apiUrl}
+                        onChangeText={setApiUrlState}
+                        placeholder="http://192.168.10.157:8032/api"
+                        autoCapitalize="none"
+                    />
+                    <Button
+                        title="Guardar URL"
+                        onPress={async () => {
+                            try {
+                                await setApiUrl(apiUrl);
+                                Alert.alert("Guardado", "La URL del servidor ha sido actualizada.");
+                            } catch {
+                                Alert.alert("Error", "No se pudo guardar la URL.");
+                            }
+                        }}
                     />
                 </View>
-
-            </View>
-            <TouchableOpacity
-                style={[styles.section, { marginTop: 24 }]}
-                onPress={() => navigation.navigate("EditarPrioridadScreen")} // asegúrate de tener esta ruta
-            >
-                <Text style={styles.sectionTitle}>Nivel de Prioridad</Text>
-                {telefonoGuardado && prioridadGuardada ? (
-                    <Text style={{ fontSize: 16 }}>
-                        Tel: {telefonoGuardado} | Prioridad: {prioridadGuardada}
-                    </Text>
-                ) : (
-                    <Text style={{ fontSize: 16, color: '#999' }}>Sin datos asignados</Text>
-                )}
-            </TouchableOpacity>
-
-        </View>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 }
+
 const styles = StyleSheet.create({
     screen: {
-        flex: 1,
         padding: 16,
         backgroundColor: '#f5f5f5',
     },

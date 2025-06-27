@@ -13,41 +13,42 @@ import { post } from "@/services/api";
 
 export default function EditarPrioridadScreen() {
     const [telefono, setTelefono] = useState("");
-    const [prioridad, setPrioridad] = useState<number | null>(null);
-    const [prefijo, setPrefijo] = useState("+34"); // predeterminado
-    const [mostrarModalPrefijos, setMostrarModalPrefijos] = useState(false);
+    // const [prefijo, setPrefijo] = useState("+34"); // predeterminado
+    // const [mostrarModalPrefijos, setMostrarModalPrefijos] = useState(false);
     const navigation = useNavigation();
-    const paises = [
-        { nombre: "España", codigo: "+34" },
-    ];
+    // const paises = [
+    //     { nombre: "España", codigo: "+34" },
+    // ];
+
 
     useEffect(() => {
         const cargarDatos = async () => {
-            const tel = await AsyncStorage.getItem("telefono");
-            const prio = await AsyncStorage.getItem("prioridad");
-            if (tel) setTelefono(tel);
-            if (prio) setPrioridad(parseInt(prio));
+            // Cargar datos de AsyncStorage
+            console.log("Cargando datos de AsyncStorage");
+            const telefono = await AsyncStorage.getItem("telefono");
+            if (telefono) setTelefono(telefono);
         };
         cargarDatos();
     }, []);
 
     const enviar = async () => {
-        if (!telefono || telefono.length !== 9 || !prioridad) {
-            Alert.alert("Error", "Introduce un número de teléfono válido de 9 dígitos y una prioridad.");
+        if (!telefono || telefono.length < 9) {
+            Alert.alert("Error", "Introduce un número de teléfono válido.");
             return;
         }
+        const userId = await AsyncStorage.getItem("userId");
+        const token = await AsyncStorage.getItem("deviceToken");
+
+
 
         try {
             // Enviar al backend
-            await post("/api/alarmtc/prioridad", { telefono, prioridad });
+            await post("/api/alarmtc/prioridad", { telefono, userId, token });
 
-            // Guardar localmente
             await AsyncStorage.setItem("telefono", telefono);
-            await AsyncStorage.setItem("prioridad", prioridad.toString());
 
             Alert.alert("Éxito", "Información guardada correctamente");
 
-            // Regresar a la pantalla anterior
             navigation.goBack();
         } catch (error) {
             console.error("Error al enviar:", error);
@@ -61,52 +62,29 @@ export default function EditarPrioridadScreen() {
 
             <Text style={styles.label}>Número de teléfono:</Text>
             <View style={styles.phoneInputContainer}>
-                <TouchableOpacity onPress={() => setMostrarModalPrefijos(true)}>
+                {/* <TouchableOpacity onPress={() => setMostrarModalPrefijos(true)}>
                     <Text style={styles.prefix}>{prefijo}</Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
                 <TextInput
                     placeholder="123456789"
                     style={styles.phoneInput}
                     keyboardType="phone-pad"
                     value={telefono}
                     onChangeText={(text) => {
-                        const numericText = text.replace(/[^0-9]/g, '');
-                        if (numericText.length <= 9) setTelefono(numericText);
+                        const cleaned = text.replace(/[^0-9+]/g, '');
+                        setTelefono(cleaned);
                     }}
+
                 />
             </View>
 
 
-
-            <Text style={styles.label}>Prioridad:</Text>
-            <View style={styles.priorityContainer}>
-                {[1, 2, 3].map((nivel) => (
-                    <TouchableOpacity
-                        key={nivel}
-                        style={[
-                            styles.priorityButton,
-                            prioridad === nivel && styles.priorityButtonSelected,
-                        ]}
-                        onPress={() => setPrioridad(nivel)}
-                    >
-                        <Text
-                            style={[
-                                styles.priorityText,
-                                prioridad === nivel && styles.priorityTextSelected,
-                            ]}
-                        >
-                            {nivel}
-                        </Text>
-                    </TouchableOpacity>
-                ))}
-            </View>
-
-            {(telefono && prioridad) && (
+            {(telefono) && (
                 <TouchableOpacity style={styles.sendButton} onPress={enviar}>
                     <Text style={styles.sendButtonText}>Guardar</Text>
                 </TouchableOpacity>
             )}
-            {mostrarModalPrefijos && (
+            {/* {mostrarModalPrefijos && (
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>Selecciona país</Text>
@@ -127,7 +105,7 @@ export default function EditarPrioridadScreen() {
                         </TouchableOpacity>
                     </View>
                 </View>
-            )}
+            )} */}
 
         </View>
 
