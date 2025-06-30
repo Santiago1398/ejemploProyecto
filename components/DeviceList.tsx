@@ -32,7 +32,7 @@ export default function DeviceList() {
     const [isError, setIsError] = useState(false);
     const [initialLoad, setInitialLoad] = useState(true);
     const [dialogVisible, setDialogVisible] = useState(false);
-    const [resolver, setResolver] = useState<((telefono: string | null) => void) | null>(null);
+    //const [resolver, setResolver] = useState<((telefono: string | null) => void) | null>(null);
 
 
 
@@ -90,6 +90,8 @@ export default function DeviceList() {
     useEffect(() => {
         fetchDevices(false); // 👈 carga inicial
     }, []);
+    // Preguntar por teléfono si no existe
+    // Solo si no se ha preguntado antes
     useEffect(() => {
         const checkTelefono = async () => {
             const telefono = await AsyncStorage.getItem("telefono");
@@ -102,21 +104,23 @@ export default function DeviceList() {
 
         checkTelefono();
     }, []);
+    // Confirmar teléfono
     const handleConfirmTelefono = async (telefono: string) => {
         console.log("✅ Guardando teléfono desde DeviceList:", telefono);
         setDialogVisible(false);
         await AsyncStorage.setItem("telefono", telefono);
+        await AsyncStorage.setItem("telefonoPreguntado", "true");
 
         const userId = await AsyncStorage.getItem("userId");
         if (userId) {
-            await notificationService.registerDevice(Number(userId)); // ✅ aquí ya existe el teléfono
+            await notificationService.registerDevice(Number(userId));
         }
     };
 
 
     const handleCancelTelefono = async () => {
         setDialogVisible(false);
-        await AsyncStorage.setItem("telefonoPreguntado", "true"); // ✅ Solo si cancela
+        await AsyncStorage.setItem("telefonoPreguntado", "true");
     };
 
 
@@ -222,13 +226,7 @@ export default function DeviceList() {
                     });
                 }}
             >
-                {dialogVisible && (
-                    <PhoneNumberDialog
-                        visible={dialogVisible}
-                        onClose={handleCancelTelefono}
-                        onConfirm={handleConfirmTelefono}
-                    />
-                )}
+
 
                 <View style={styles.row}>
                     <Ionicons name="home-outline" size={24} color="#000" style={{ marginRight: 8 }} />
@@ -258,6 +256,13 @@ export default function DeviceList() {
                     keyExtractor={(item) => item.idSite.toString()}
                     renderItem={renderDeviceItem}
                     contentContainerStyle={styles.listContainer}
+                />
+            )}
+            {dialogVisible && (
+                <PhoneNumberDialog
+                    visible={dialogVisible}
+                    onClose={handleCancelTelefono}
+                    onConfirm={handleConfirmTelefono}
                 />
             )}
 

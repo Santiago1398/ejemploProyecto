@@ -17,6 +17,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import SettingsScreen from "./(tabs)/SettingsScreen";
 import AlarmasScreen from "./(tabs)/AlarmasScreen";
 import EditarPrioridadScreen from "@/components/EditarPrioridadScreen";
+import { notificationService } from "@/hooks/NotificationService";
+import MantenimientoScreen from "./(tabs)/MantenimientoScreen";
+import SolicitarMantenimientoScreen from "@/utils/SolicitarMantenimiento";
+import HeaderLeftButton from "@/components/HeaderLeftButton";
+
 
 
 
@@ -99,6 +104,25 @@ export default function Layout() {
         configureNotificationChannel();
     }, []);
 
+    //!! Prueba de notificaciones
+
+    // useEffect(() => {
+    //     const registerAndSend = async () => {
+    //         try {
+    //             const { userId } = useAuthStore.getState(); // Asegúrate de que tienes el userId
+    //             if (isAuthenticated && userId) {
+    //                 console.log("📲 Registrando dispositivo y enviando prueba...");
+    //                 await notificationService.registerDeviceAndSendTestNotification(userId);
+    //             }
+    //         } catch (error) {
+    //             console.error("❌ Error al registrar y enviar notificación:", error);
+    //         }
+    //     };
+
+    //     registerAndSend();
+    // }, [isAuthenticated]);
+    //!!
+
 
 
     return (
@@ -112,6 +136,8 @@ export default function Layout() {
                         backgroundColor: "#fff",
                     },
                     headerTintColor: "#000",
+                    headerLeft: () => <HeaderLeftButton />,
+
                 }}
                 initialRouteName={isAuthenticated ? "Home" : "Login"}
             >
@@ -153,6 +179,22 @@ export default function Layout() {
                     options={{ headerTitle: "Nivel Prioridad" }}
 
                 />
+                <Drawer.Screen
+                    name="Mantenimiento"
+                    component={MantenimientoScreen}
+                    options={{
+                        headerTitle: "Mantenimiento",
+                    }}
+                />
+                <Drawer.Screen
+                    name="SolicitarMantenimiento"
+                    component={SolicitarMantenimientoScreen}
+                    options={{
+                        headerTitle: "Verificación",
+                        drawerItemStyle: { display: "none" }
+                    }}
+                />
+
 
             </Drawer.Navigator>
         </PermissionsCkeckProvider>
