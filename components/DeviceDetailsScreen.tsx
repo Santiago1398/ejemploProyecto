@@ -20,6 +20,8 @@ import Menu3Puntos from "@/components/Menu3Puntos";
 
 import { notificationService } from '@/hooks/NotificationService';
 import EstadoAlarmaCircle from "./EstadoAlarmaCircle";
+import * as Clipboard from 'expo-clipboard';
+
 
 
 
@@ -64,7 +66,7 @@ export default function AlarmList() {
     };
 
     //const [pushToken, setPushToken] = useState<string | null>(null);
-    //const [fcmToken, setFcmToken] = useState<string | null>(null);
+    const [fcmToken, setFcmToken] = useState<string | null>(null);
 
     const updateHeaderStatus = (alarms: ParamTC[], masterState: boolean) => {
         const alarmaDisparada = alarms.some(alarm => alarm.disparado);
@@ -242,7 +244,7 @@ export default function AlarmList() {
             headerTintColor: "#fff",
             headerRight: () => (
                 <Menu3Puntos
-                    device={{ latitude, longitude, farmName, siteName, mac , idSite: device.idSite }}
+                    device={{ latitude, longitude, farmName, siteName, mac, idSite: device.idSite, }}
                 />
             ),
         });
@@ -319,6 +321,30 @@ export default function AlarmList() {
     };
 
 
+    // const getDeviceToken = async () => {
+    //     try {
+    //         const token = await notificationService.getFCMToken();
+    //         console.log(" Token obtenido:", token);
+
+    //         if (token) {
+    //             setFcmToken(token);
+    //             await Clipboard.setStringAsync(token);
+    //             Alert.alert("FCM Token obtenido", "Copiado al portapapeles:\n\n" + token);
+    //         } else {
+    //             console.warn(" Token devuelto vacío o nulo");
+    //             Alert.alert("Error", "No se pudo obtener el token (vacío o nulo)");
+    //         }
+    //     } catch (error) {
+    //         console.error(" Error al obtener FCM token:", error);
+    //         if (error instanceof Error) {
+    //             Alert.alert("FCM Token Error", error.message);
+    //         } else {
+    //             Alert.alert("FCM Token Error", JSON.stringify(error));
+    //         }
+    //     }
+    // };
+
+
     // 6. Render de cada alarma (con mejoras visuales)
     const renderAlarmItem = ({ item }: { item: ParamTC }) => {
         let backgroundColor = "#8a9bb9"; // gris 
@@ -331,9 +357,13 @@ export default function AlarmList() {
             backgroundColor = "#fde047"; // amarillo fuerte
             textColor = "#000000";
         } else if (item.armado) {
-            backgroundColor = "#a3e635"; // verde fuerte
+            backgroundColor = "#77dc36"; // mismo verde que el header
             textColor = "#000000";
         }
+
+
+
+
 
         return (
             <TouchableOpacity
@@ -360,6 +390,7 @@ export default function AlarmList() {
         );
     };
 
+
     return (
         <View style={styles.container}>
 
@@ -383,7 +414,7 @@ export default function AlarmList() {
                     padding: 12,
                     borderRadius: 12
                 }}
-            onPress={getDeviceToken}
+                onPress={getDeviceToken}
             >
                 <Ionicons name="key-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
                 <Text style={{ color: '#fff', fontWeight: 'bold' }}>Obtener Token FCM</Text>

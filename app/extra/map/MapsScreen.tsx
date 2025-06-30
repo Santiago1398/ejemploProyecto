@@ -41,39 +41,51 @@ const MapsScreen = () => {
         const checkPermissionsAndLocation = async () => {
             try {
                 const { status } = await Location.getForegroundPermissionsAsync();
+
                 if (status !== 'granted') {
+                    // Mostrar alerta personalizada
                     Alert.alert(
                         "Permisos necesarios",
-                        "Necesitas habilitar los permisos de ubicación para usar esta función",
+                        "Habilite la geolocalización para posicionar su TC5 en el mapa",
                         [
                             {
-                                text: "Ir a Configuración",
-                                onPress: () => {
-                                    navigation.goBack();
-                                    navigation.navigate('Settings');
+                                text: "Aceptar",
+                                onPress: async () => {
+                                    const { status: newStatus } = await Location.requestForegroundPermissionsAsync();
+                                    if (newStatus === 'granted') {
+                                        await getLocation();
+                                        await fetchDeviceLocations();
+                                        setLoading(false);
+                                    } else {
+                                        Alert.alert(
+                                            "Permisos denegados",
+                                            "Debe permitir los permisos de ubicación para mostrar el mapa."
+                                        );
+                                        navigation.goBack();
+                                    }
                                 }
-                            },
-                            {
-                                text: "Cancelar",
-                                style: "cancel",
-                                onPress: () => navigation.goBack()
                             }
                         ]
                     );
-                    return;
+                } else {
+                    // Ya tenía permisos
+                    await getLocation();
+                    await fetchDeviceLocations();
+                    setLoading(false);
                 }
-                // Si hay permisos, obtener ubicación
-                await getLocation();
-                await fetchDeviceLocations();
-                setLoading(false);
             } catch (error) {
-                console.error("Error checking permissions:", error);
-                setLoading(false);
+                console.error("Error al verificar permisos:", error);
+                Alert.alert(
+                    "Error",
+                    "Ocurrió un error al verificar los permisos de ubicación."
+                );
+                navigation.goBack();
             }
         };
 
         checkPermissionsAndLocation();
     }, []);
+
 
     if (loading || lastKnownLocation === null) {
         return (

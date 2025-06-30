@@ -23,6 +23,7 @@ export type RootStackParamList = {
             siteName: string;
             latitude: number;
             longitude: number;
+            idSite: number;
         };
     };
 

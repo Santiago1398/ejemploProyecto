@@ -1,4 +1,3 @@
-// components/PhoneNumberDialog.tsx
 import React, { useState } from "react";
 import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 
@@ -25,7 +24,10 @@ export default function PhoneNumberDialog({ visible, onClose, onConfirm }: Props
         <Modal visible={visible} transparent animationType="fade">
             <View style={styles.overlay}>
                 <View style={styles.dialog}>
-                    <Text style={styles.title}>Introduce tu número de teléfono</Text>
+                    <Text style={styles.title}>Introduzca su número de teléfono</Text>
+                    <Text style={styles.subtitle}>
+                        Para que la app de TC5 sepa cuál es su número.
+                    </Text>
                     <TextInput
                         placeholder="Ej: 612345678"
                         keyboardType="phone-pad"
@@ -62,8 +64,13 @@ const styles = StyleSheet.create({
     },
     title: {
         fontSize: 16,
-        marginBottom: 12,
+        marginBottom: 8,
         fontWeight: "bold",
+    },
+    subtitle: {
+        fontSize: 14,
+        color: "#666",
+        marginBottom: 12,
     },
     input: {
         borderWidth: 1,
@@ -82,9 +89,13 @@ const styles = StyleSheet.create({
     cancelText: {
         color: "red",
     },
-    confirm: {},
     confirmText: {
         color: "blue",
         fontWeight: "bold",
     },
+    confirm: {
+        paddingHorizontal: 10,
+    },
+
+
 });

@@ -16,66 +16,59 @@ import { get } from "@/services/api";
 import { ResponseAlarmaSite, ParamTC } from "@/infrastructure/intercafe/listapi.interface";
 import { PaperProvider } from "react-native-paper";
 
+interface AlarmaDisparada {
+    mac: number;
+    farmName: string;
+    siteName: string;
+    latitude: number;
+    longitude: number;
+    texto: string;
+}
+
 export default function Alarmas() {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-    const [devices, setDevices] = useState<ResponseAlarmaSite[]>([]);
-    const [alarmasPorMac, setAlarmasPorMac] = useState<Record<string, string[]>>({});
+    const [alarmasDisparadas, setAlarmasDisparadas] = useState<AlarmaDisparada[]>([]);
 
-    // Capitaliza la primera letra
     const capitalize = (str: string) =>
         str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";
 
     useEffect(() => {
         let isMounted = true;
 
-        const fetchAll = async () => {
+        const fetchDisparadas = async () => {
             try {
                 const storedUserId = await AsyncStorage.getItem("userId");
                 const data: ResponseAlarmaSite[] = await get(`alarmtc/sites/user/${storedUserId}`);
+                const resultados: AlarmaDisparada[] = [];
 
-                const formattedData = data.map((device) => ({
-                    ...device,
-                    mac: Number(device.mac),
-                    alarmType: device.alarmType ?? 1,
-                }));
-
-                // Ordenamos por farmName y luego por siteName
-                formattedData.sort((a, b) => {
-                    const nameA = a.farmName.toLowerCase();
-                    const nameB = b.farmName.toLowerCase();
-                    const siteA = a.siteName?.toLowerCase() ?? "";
-                    const siteB = b.siteName?.toLowerCase() ?? "";
-
-                    if (nameA < nameB) return -1;
-                    if (nameA > nameB) return 1;
-                    if (siteA < siteB) return -1;
-                    if (siteA > siteB) return 1;
-                    return 0;
-                });
-
-                if (isMounted) setDevices(formattedData);
-
-                // Carga alarmas por cada MAC
-                const newAlarmas: Record<string, string[]> = {};
-                for (const device of formattedData) {
+                for (const device of data) {
                     const alarmas: ParamTC[] = await get(`alarmtc/status?mac=${device.mac}`);
-                    const textos = alarmas
-                        .filter(a => a.habilitado && a.idAlarm !== 1000)
-                        .map(a => capitalize(a.texto));
-                    newAlarmas[device.mac] = textos;
+                    const activas = alarmas.filter(a => a.habilitado && a.disparado);
+
+                    for (const alarma of activas) {
+                        resultados.push({
+                            mac: Number(device.mac),
+                            farmName: device.farmName,
+                            siteName: device.siteName,
+                            latitude: device.latitude,
+                            longitude: device.longitude,
+                            texto: capitalize(alarma.texto),
+                        });
+                    }
                 }
 
-                if (isMounted) setAlarmasPorMac(newAlarmas);
+                if (isMounted) {
+                    setAlarmasDisparadas(resultados);
+                }
             } catch (error) {
                 if (isMounted) {
-                    Alert.alert("Error", "No se pudieron cargar los dispositivos o alarmas.");
+                    Alert.alert("Error", "No se pudieron cargar las alarmas disparadas.");
                 }
             }
         };
 
-        fetchAll(); // primera carga
-
-        const interval = setInterval(fetchAll, 5000); // refrescar cada 5 segundos
+        fetchDisparadas();
+        const interval = setInterval(fetchDisparadas, 5000);
 
         return () => {
             isMounted = false;
@@ -83,78 +76,52 @@ export default function Alarmas() {
         };
     }, []);
 
-    const fetchDevices = async () => {
-        try {
-            const storedUserId = await AsyncStorage.getItem("userId");
-            const data: ResponseAlarmaSite[] = await get(`alarmtc/sites/user/${storedUserId}`);
-            const formattedData = data.map((device) => ({
-                ...device,
-                mac: Number(device.mac),
-                alarmType: device.alarmType ?? 1,
-            }));
-            setDevices(formattedData);
-
-            for (const device of formattedData) {
-                const alarmas: ParamTC[] = await get(`alarmtc/status?mac=${device.mac}`);
-                const textos = alarmas
-                    .filter(a => a.habilitado && a.idAlarm !== 1000)
-                    .map(a => capitalize(a.texto));
-                setAlarmasPorMac(prev => ({ ...prev, [device.mac]: textos }));
-            }
-        } catch (error) {
-            Alert.alert("Error", "No se pudieron cargar los dispositivos o alarmas.");
-        }
-    };
-    //const nombre = `${capitalize(item.farmName)} ${capitalize(item.siteName)}`;
-
-    const renderItem = ({ item }: { item: ResponseAlarmaSite }) => {
-
-        const alarmas = alarmasPorMac[item.mac] || [];
-
-        const alarmasTexto = alarmas.length > 0
-            ? `${alarmas.slice(0, 3).join(", ")}${alarmas.length > 3 ? ", ..." : ""}`
-            : "No tiene alarmas asignadas.";
-
-        return (
-            <TouchableOpacity
-                style={styles.card}
-                onPress={() => navigation.navigate("DeviceDetails", {
-                    device: {
-                        mac: Number(item.mac),
-                        farmName: item.farmName,
-                        siteName: item.siteName,
-                        latitude: item.latitude,
-                        longitude: item.longitude,
-                    }
-                })}
-            >
-                <View style={styles.row}>
-                    <Ionicons name="home-outline" size={20} color="#000" style={{ marginRight: 6 }} />
-                    <View style={styles.titleRow}>
-                        <Text style={styles.leftText}>{capitalize(item.farmName)}</Text>
-                        <Text style={styles.rightText}>{capitalize(item.siteName)}</Text>
-                    </View>
+    const renderItem = ({ item }: { item: AlarmaDisparada }) => (
+        <TouchableOpacity
+            style={styles.card}
+            onPress={() => navigation.navigate("DeviceDetails", {
+                device: {
+                    mac: item.mac,
+                    farmName: item.farmName,
+                    siteName: item.siteName,
+                    latitude: item.latitude,
+                    longitude: item.longitude,
+                }
+            })}
+        >
+            <View style={styles.row}>
+                <Ionicons name="alert-circle-outline" size={20} color="#000" style={{ marginRight: 6 }} />
+                <View style={styles.titleRow}>
+                    <Text style={styles.leftText}>{capitalize(item.farmName)}</Text>
+                    <Text style={styles.rightText}>{capitalize(item.siteName)}</Text>
                 </View>
-                <Text style={styles.alarmas}>{alarmasTexto}</Text>
-            </TouchableOpacity>
-        );
-    };
+            </View>
+            <Text style={styles.alarmas}>🚨 {item.texto}</Text>
+        </TouchableOpacity>
+    );
 
     return (
         <PaperProvider>
-            <FlatList
-                data={devices}
-                keyExtractor={(item, index) => `${item.mac}_${index}`}
-                renderItem={renderItem}
-                contentContainerStyle={{ padding: 16 }}
-            />
+            {alarmasDisparadas.length === 0 ? (
+                <View style={styles.centered}>
+                    <Ionicons name="checkmark-circle-outline" size={48} color="#4ade80" />
+                    <Text style={styles.noAlarmText}>No hay Alarmas disparadas</Text>
+                </View>
+            ) : (
+                <FlatList
+                    data={alarmasDisparadas}
+                    keyExtractor={(_, index) => index.toString()}
+                    renderItem={renderItem}
+                    contentContainerStyle={{ padding: 16 }}
+                />
+            )}
         </PaperProvider>
     );
 }
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: "#facc15",
+        backgroundColor: "#f87171", // rojo claro para alarmas activas
         borderRadius: 12,
         padding: 16,
         marginBottom: 12,
@@ -184,9 +151,18 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: "#000",
     },
-
     alarmas: {
         fontSize: 14,
         color: "#000",
+    },
+    centered: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    noAlarmText: {
+        fontSize: 18,
+        color: "#666",
+        marginTop: 10,
     },
 });

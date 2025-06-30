@@ -8,8 +8,13 @@ import {
     TextInput,
     Button,
     ScrollView,
+    TouchableOpacity,
 } from "react-native";
 import { getApiUrl, setApiUrl } from "@/utils/apiconfig";
+import { Ionicons } from "@expo/vector-icons";
+import * as Clipboard from 'expo-clipboard';
+import { notificationService } from '@/hooks/NotificationService';
+
 
 export default function MantenimientoScreen() {
     const [apiUrl, setApiUrlState] = useState("");
@@ -44,6 +49,29 @@ export default function MantenimientoScreen() {
                 />
                 <Button title="Guardar URL" onPress={handleSave} />
             </View>
+            <View style={{ marginTop: 24 }}>
+                <Text style={styles.sectionTitle}>Token FCM del dispositivo</Text>
+                <TouchableOpacity
+                    style={styles.tokenButton}
+                    onPress={async () => {
+                        try {
+                            const token = await notificationService.getFCMToken();
+                            if (token) {
+                                await Clipboard.setStringAsync(token);
+                                Alert.alert("Token copiado", "FCM token copiado al portapapeles:\n\n" + token);
+                            } else {
+                                Alert.alert("Error", "No se pudo obtener el token.");
+                            }
+                        } catch (error) {
+                            Alert.alert("Error", error instanceof Error ? error.message : JSON.stringify(error));
+                        }
+                    }}
+                >
+                    <Ionicons name="key-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
+                    <Text style={{ color: "#fff", fontWeight: "bold" }}>Obtener Token FCM</Text>
+                </TouchableOpacity>
+            </View>
+
         </ScrollView>
     );
 }
@@ -73,4 +101,13 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         backgroundColor: "#fff",
     },
+    tokenButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: "#3478F6",
+        padding: 12,
+        borderRadius: 12,
+        marginTop: 8,
+    },
+
 });
