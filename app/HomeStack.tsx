@@ -66,9 +66,21 @@ export type RootStackParamList = {
         idSite: number;
     };
     EditarPrioridadScreen: undefined;
-
-
+    Mantenimiento: undefined;
+    SolicitarMantenimiento: undefined;
 }
+
+export type RootDrawerParamList = {
+    Home: undefined;
+    Login: undefined;
+    Map: undefined;
+    permissions: undefined;
+    Settings: undefined;
+    Alarmas: undefined;
+    EditarPrioridadScreen: undefined;
+    Mantenimiento: undefined;
+};
+
 
 export default function HomeStack() {
     return (
@@ -152,6 +164,7 @@ export default function HomeStack() {
                     })}
                 />
                 {/* <Stack.Screen name="EditarPrioridadScreen" component={EditarPrioridadScreen} /> */}
+
 
             </Stack.Navigator>
         </PaperProvider>

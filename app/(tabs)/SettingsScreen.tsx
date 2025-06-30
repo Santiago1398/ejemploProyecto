@@ -203,28 +203,6 @@ export default function SettingsScreen() {
                         <Text style={{ fontSize: 16, color: '#999' }}>Sin número asignado</Text>
                     )}
                 </TouchableOpacity>
-
-                <View style={[styles.section, { marginTop: 24 }]}>
-                    <Text style={styles.sectionTitle}>Servidor API</Text>
-                    <TextInput
-                        style={styles.input}
-                        value={apiUrl}
-                        onChangeText={setApiUrlState}
-                        placeholder="http://192.168.10.157:8032/api"
-                        autoCapitalize="none"
-                    />
-                    <Button
-                        title="Guardar URL"
-                        onPress={async () => {
-                            try {
-                                await setApiUrl(apiUrl);
-                                Alert.alert("Guardado", "La URL del servidor ha sido actualizada.");
-                            } catch {
-                                Alert.alert("Error", "No se pudo guardar la URL.");
-                            }
-                        }}
-                    />
-                </View>
             </ScrollView>
         </KeyboardAvoidingView>
     );

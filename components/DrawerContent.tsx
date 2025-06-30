@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import { DrawerContentComponentProps } from "@react-navigation/drawer";
 import { useAuthStore } from "../store/authStore";
@@ -39,12 +39,18 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
             {/* Ajustes al fondo */}
             <View style={styles.footer}>
                 <View style={styles.separator} />
-                <TouchableOpacity
-                    onPress={() => navigation.navigate("Settings")}
-                    style={styles.footerButton}
-                >
+
+                <TouchableOpacity onPress={() => navigation.navigate("Settings")} style={styles.footerButton}>
                     <Text style={styles.footerText}>Ajustes</Text>
                 </TouchableOpacity>
+
+                <TouchableOpacity
+                    onPress={() => props.navigation.navigate("SolicitarMantenimiento")}
+                    style={styles.footerButton}
+                >
+                    <Text style={styles.footerText}>Mantenimiento</Text>
+                </TouchableOpacity>
+
             </View>
         </View>
     );

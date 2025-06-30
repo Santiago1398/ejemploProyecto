@@ -11,6 +11,8 @@ import {
 import { useAuthStore } from "../store/authStore";
 import { Feather } from "@expo/vector-icons";
 import { useNotificationPermission } from "@/hooks/useNotificationPermission";
+import { ActivityIndicator } from "react-native";
+
 
 export default function LoginScreen({ navigation }: any) {
     const { username: savedEmail, password: savedPassword, login } = useAuthStore();
@@ -18,6 +20,8 @@ export default function LoginScreen({ navigation }: any) {
     const [password, setPassword] = useState(savedPassword || "");
     const { requestPermission } = useNotificationPermission();
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
+
 
     useEffect(() => {
         const initializePermissions = async () => {
@@ -32,16 +36,18 @@ export default function LoginScreen({ navigation }: any) {
     }, []);
 
     const handleLogin = async () => {
+        setLoading(true);
         try {
             const success = await login(email, password);
             if (success) {
                 navigation.navigate("Home");
             } else {
-                console.log("Correo electrónico o contraseña incorrectos");
                 Alert.alert("Correo electrónico o contraseña incorrectos");
             }
         } catch (error) {
-            throw new Error("Algo salió mal");
+            Alert.alert("Error", "Algo salió mal");
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -85,11 +91,17 @@ export default function LoginScreen({ navigation }: any) {
                         </TouchableOpacity>
                     </View>
 
-
-                    <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                        <Text style={styles.buttonText}>Ingresar</Text>
-                        <Feather name="arrow-right" size={20} color="#fff" style={styles.buttonIcon} />
+                    <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
+                        {loading ? (
+                            <ActivityIndicator size="small" color="#fff" />
+                        ) : (
+                            <>
+                                <Text style={styles.buttonText}>Ingresar</Text>
+                                <Feather name="arrow-right" size={20} color="#fff" style={styles.buttonIcon} />
+                            </>
+                        )}
                     </TouchableOpacity>
+
                 </View>
             </ImageBackground>
         </View>
