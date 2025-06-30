@@ -321,28 +321,28 @@ export default function AlarmList() {
     };
 
 
-    const getDeviceToken = async () => {
-        try {
-            const token = await notificationService.getFCMToken();
-            console.log(" Token obtenido:", token);
+    // const getDeviceToken = async () => {
+    //     try {
+    //         const token = await notificationService.getFCMToken();
+    //         console.log(" Token obtenido:", token);
 
-            if (token) {
-                setFcmToken(token);
-                await Clipboard.setStringAsync(token);
-                Alert.alert("FCM Token obtenido", "Copiado al portapapeles:\n\n" + token);
-            } else {
-                console.warn(" Token devuelto vacío o nulo");
-                Alert.alert("Error", "No se pudo obtener el token (vacío o nulo)");
-            }
-        } catch (error) {
-            console.error(" Error al obtener FCM token:", error);
-            if (error instanceof Error) {
-                Alert.alert("FCM Token Error", error.message);
-            } else {
-                Alert.alert("FCM Token Error", JSON.stringify(error));
-            }
-        }
-    };
+    //         if (token) {
+    //             setFcmToken(token);
+    //             await Clipboard.setStringAsync(token);
+    //             Alert.alert("FCM Token obtenido", "Copiado al portapapeles:\n\n" + token);
+    //         } else {
+    //             console.warn(" Token devuelto vacío o nulo");
+    //             Alert.alert("Error", "No se pudo obtener el token (vacío o nulo)");
+    //         }
+    //     } catch (error) {
+    //         console.error(" Error al obtener FCM token:", error);
+    //         if (error instanceof Error) {
+    //             Alert.alert("FCM Token Error", error.message);
+    //         } else {
+    //             Alert.alert("FCM Token Error", JSON.stringify(error));
+    //         }
+    //     }
+    // };
 
 
     // 6. Render de cada alarma (con mejoras visuales)
@@ -406,7 +406,7 @@ export default function AlarmList() {
             onPress={getPushToken}
             ></TouchableOpacity> */}
 
-            <TouchableOpacity
+            {/* <TouchableOpacity
                 style={{
                     flexDirection: 'row',
                     alignItems: 'center',
@@ -418,7 +418,7 @@ export default function AlarmList() {
             >
                 <Ionicons name="key-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
                 <Text style={{ color: '#fff', fontWeight: 'bold' }}>Obtener Token FCM</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             {loading ? (
                 <Text style={styles.loadingText}>Cargando alarmas...</Text>

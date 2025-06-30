@@ -8,7 +8,6 @@ export const useNotificationPermission = () => {
 
     const requestPermission = async () => {
         try {
-            // Verificar si ya preguntamos antes
             const hasAskedBefore = await AsyncStorage.getItem('hasAskedForNotifications');
             if (hasAskedBefore === 'true') {
                 return false;
@@ -17,35 +16,26 @@ export const useNotificationPermission = () => {
             return new Promise((resolve) => {
                 Alert.alert(
                     "Notificaciones",
-                    "¿Deseas recibir notificaciones de alarmas?",
+                    "Habilite las notificaciones para las alarmas TC5",
                     [
                         {
-                            text: "No",
-                            style: "cancel",
-                            onPress: async () => {
-                                setHasPermission(false);
-                                // Guardar que ya preguntamos
-                                await AsyncStorage.setItem('hasAskedForNotifications', 'true');
-                                resolve(false);
-                            }
-                        },
-                        {
-                            text: "Sí",
+                            text: "Aceptar",
                             onPress: async () => {
                                 const token = await registerForPushNotificationsAsync();
                                 setHasPermission(!!token);
-                                // Guardar que ya preguntamos
                                 await AsyncStorage.setItem('hasAskedForNotifications', 'true');
                                 resolve(!!token);
                             }
                         }
-                    ]
+                    ],
+                    { cancelable: false } // 👈 Importante para que no pueda cerrarse tocando fuera
                 );
             });
         } catch (error) {
             console.error('Error al manejar permisos de notificaciones:', error);
         }
     };
+
 
     // Verificar el estado de los permisos al montar el componente
     useEffect(() => {
