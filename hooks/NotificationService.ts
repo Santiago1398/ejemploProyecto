@@ -4,6 +4,7 @@ import messaging from "@react-native-firebase/messaging";
 import { post } from "@/services/api";
 import { playAlarmSound, stopAlarmSound } from "@/utils/sound";
 import { useEffect } from "react";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 
 
@@ -120,16 +121,26 @@ class NotificationService {
   public async registerDevice(userId: number): Promise<void> {
     try {
       const token = await this.getFCMToken();
+      const telefono = await AsyncStorage.getItem("telefono");
       if (!token) {
         console.warn(" No se pudo obtener token");
         return;
       }
 
-      await post("alarmtc/users/push-token", {
+    /*   await post("alarmtc/users/push-token", {
         token,
         userId,
         deviceType: Platform.OS,
-      });
+        telefono
+      }); */
+
+      const LOCAL_API = await get
+      await fetch(`${LOCAL_API}/push-token`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ token, userId, deviceType: Platform.OS, telefono }),
+            });
+            console.log("✅ Token registrado en el backend");
 
       console.log("Dispositivo registrado exitosamente");
     } catch (error) {
