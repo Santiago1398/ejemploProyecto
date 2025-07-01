@@ -20,7 +20,6 @@ import Menu3Puntos from "@/components/Menu3Puntos";
 
 import { notificationService } from '@/hooks/NotificationService';
 import EstadoAlarmaCircle from "./EstadoAlarmaCircle";
-import * as Clipboard from 'expo-clipboard';
 
 
 
@@ -46,6 +45,8 @@ export default function AlarmList() {
     const [headerColor, setHeaderColor] = useState<string>("#76db36"); // Color del header para controlarloconst flatListRef = useRef<FlatList>(null);
     const flatListRef = useRef<FlatList>(null);
     const [tc5Disconnected, setTc5Disconnected] = useState<boolean>(false);
+    const [menuVisible, setMenuVisible] = useState(false);
+
 
     // const COLORS = {
     //     yellowBackground: "#fef9c3",
@@ -66,7 +67,7 @@ export default function AlarmList() {
     };
 
     //const [pushToken, setPushToken] = useState<string | null>(null);
-    const [fcmToken, setFcmToken] = useState<string | null>(null);
+    //const [fcmToken, setFcmToken] = useState<string | null>(null);
 
     const updateHeaderStatus = (alarms: ParamTC[], masterState: boolean) => {
         const alarmaDisparada = alarms.some(alarm => alarm.disparado);
@@ -198,21 +199,43 @@ export default function AlarmList() {
     // 2. useEffect para cargar las alarmas al montar
     useEffect(() => {
         const interval = setInterval(() => {
-            fetchAlarms(true); // 👈 pasamos true para indicar que es auto-refresh
+            fetchAlarms(true);
         }, 5000);
 
         return () => clearInterval(interval);
     }, [mac]);
     useEffect(() => {
-        fetchAlarms(false); // 👈 primera vez = false
+        fetchAlarms(false);
     }, []);
 
 
     // 3. useLayoutEffect para configurar el header con Menu3Puntos
+    // useLayoutEffect para configurar la estructura fija del header (SIN headerText y headerColor)
     useLayoutEffect(() => {
-        const latitude = device.latitude || 0;
-        const longitude = device.longitude || 0;
+        navigation.setOptions({
+            headerTitleAlign: "center",
+            headerTintColor: "#fff",
+            headerRight: () => (
+                <TouchableOpacity
+                    onPress={() => {
+                        console.log('Botón presionado');
+                        setMenuVisible(true);
+                    }}
+                    hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
+                    style={{
+                        padding: 10,
+                        marginRight: 10,
+                        borderRadius: 20,
+                        backgroundColor: 'rgba(255,255,255,0.1)',
+                    }}
+                >
+                    <Entypo name="dots-three-horizontal" size={24} color="#fff" />
+                </TouchableOpacity>
+            ),
+        });
+    }, [navigation, mac, farmName, siteName]);
 
+    useEffect(() => {
         navigation.setOptions({
             headerTitle: () => (
                 <View style={{ paddingTop: 4 }}>
@@ -236,20 +259,12 @@ export default function AlarmList() {
             ),
             headerStyle: {
                 backgroundColor: headerColor,
-                height: 100, // aumentamos la altura
+                height: 100,
                 elevation: 0,
                 shadowOpacity: 0,
             },
-            headerTitleAlign: "center",
-            headerTintColor: "#fff",
-            headerRight: () => (
-                <Menu3Puntos
-                    device={{ latitude, longitude, farmName, siteName, mac, idSite: device.idSite, }}
-                />
-            ),
         });
-    }, [navigation, device, farmName, siteName, mac, headerText, headerColor]);
-
+    }, [headerText, headerColor, farmName, siteName]);
 
 
     const handleOptionSelect = async (option: string) => {
@@ -481,7 +496,21 @@ export default function AlarmList() {
                     </Pressable>
 
                 </Pressable>
+
             </Modal>
+            <Menu3Puntos
+                visible={menuVisible}
+                onClose={() => setMenuVisible(false)}
+                device={{
+                    latitude: device.latitude,
+                    longitude: device.longitude,
+                    farmName: device.farmName,
+                    siteName: device.siteName,
+                    mac: device.mac,
+                    idSite: device.idSite
+                }}
+            />
+
         </View>
     );
 }

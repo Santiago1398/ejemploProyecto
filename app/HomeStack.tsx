@@ -109,9 +109,13 @@ export default function HomeStack() {
                         headerTitleAlign: "center",
                         title: route.params.device.farmName,
                         headerLeft: () => null,
-                        headerRight: () => <Menu3Puntos device={route.params.device}
-
-                        />,
+                        headerRight: () => (
+                            <Menu3Puntos
+                                device={route.params.device}
+                                visible={false}
+                                onClose={() => { }}
+                            />
+                        ),
                     })}
                 />
 

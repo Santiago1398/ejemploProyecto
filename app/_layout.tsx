@@ -18,10 +18,9 @@ import SettingsScreen from "./(tabs)/SettingsScreen";
 import AlarmasScreen from "./(tabs)/AlarmasScreen";
 import EditarPrioridadScreen from "@/components/EditarPrioridadScreen";
 import { notificationService } from "@/hooks/NotificationService";
+import HeaderLeftButton from "@/components/HeaderLeftButton";
 import MantenimientoScreen from "./(tabs)/MantenimientoScreen";
 import SolicitarMantenimientoScreen from "@/utils/SolicitarMantenimiento";
-import HeaderLeftButton from "@/components/HeaderLeftButton";
-
 
 
 
@@ -136,7 +135,7 @@ export default function Layout() {
                         backgroundColor: "#fff",
                     },
                     headerTintColor: "#000",
-                    headerLeft: () => <HeaderLeftButton />,
+                    headerLeft: undefined,
 
                 }}
                 initialRouteName={isAuthenticated ? "Home" : "Login"}

@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     tc5: {
         fontSize: 36,
         fontWeight: "bold",
-        color: "#A2D927", // Verde del logo
+        color: "#A2D927",
         marginBottom: 20,
         textAlign: "center",
     },
