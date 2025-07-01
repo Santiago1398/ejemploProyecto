@@ -135,7 +135,7 @@ export default function Layout() {
                         backgroundColor: "#fff",
                     },
                     headerTintColor: "#000",
-                    headerLeft: () => <HeaderLeftButton />,
+                    headerLeft: undefined,
 
                 }}
                 initialRouteName={isAuthenticated ? "Home" : "Login"}

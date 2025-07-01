@@ -60,7 +60,13 @@ export default function AlarmasStack() {
                     component={DeviceDetailsScreen}
                     options={({ route }) => ({
                         title: "Detalles del Dispositivo",
-                        headerRight: () => <Menu3Puntos device={route.params} />
+                        headerRight: () => (
+                            <Menu3Puntos
+                                device={route.params}
+                                visible={false}
+                                onClose={() => { }}
+                            />
+                        )
                     })}
                 />
 

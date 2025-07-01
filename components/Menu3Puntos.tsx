@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
     View,
     TouchableOpacity,
@@ -7,7 +7,7 @@ import {
     Text,
     Modal,
 } from "react-native";
-import { Entypo, Feather } from "@expo/vector-icons";
+import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/app/HomeStack";
@@ -23,6 +23,8 @@ export interface MenuOption {
 }
 
 export interface Menu3PuntosProps {
+    visible: boolean;
+    onClose: () => void;
     device: {
         latitude: number;
         longitude: number;
@@ -34,9 +36,8 @@ export interface Menu3PuntosProps {
     options?: MenuOption[];
 }
 
-const Menu3Puntos: React.FC<Menu3PuntosProps> = ({ device, options }) => {
+const Menu3Puntos: React.FC<Menu3PuntosProps> = ({ visible, onClose, device, options }) => {
     const navigation = useNavigation<DeviceDetailsNavigationProp>();
-    const [visible, setVisible] = useState(false);
     const token = useAuthStore((state) => state.token);
 
     const defaultOptions: MenuOption[] = [
@@ -106,54 +107,45 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({ device, options }) => {
 
     const handleOptionPress = (option: MenuOption) => {
         option.onPress();
-        setVisible(false);
+        onClose();
     };
 
     return (
-        <View>
-            <TouchableOpacity onPress={() => setVisible(true)} style={styles.menuButton}>
-                <Entypo name="dots-three-horizontal" size={30} color="#333" />
-            </TouchableOpacity>
-
-            <Modal
-                visible={visible}
-                transparent
-                animationType="fade"
-                onRequestClose={() => setVisible(false)}
-            >
-                <Pressable style={StyleSheet.absoluteFill} onPress={() => setVisible(false)}>
-                    <View style={[styles.menuContainer, { top: 50, right: 10 }]}>
-                        {finalOptions.map((option, index) => (
-                            <View key={option.id}>
-                                <TouchableOpacity
-                                    style={styles.menuItem}
-                                    onPress={() => handleOptionPress(option)}
-                                    activeOpacity={0.7}
-                                >
-                                    <Feather
-                                        name={option.icon as any}
-                                        size={27}
-                                        color="#333"
-                                        style={styles.menuItemIcon}
-                                    />
-                                    <Text style={styles.menuItemText}>{option.label}</Text>
-                                </TouchableOpacity>
-                                {index < finalOptions.length - 1 && (
-                                    <View style={styles.divider} />
-                                )}
-                            </View>
-                        ))}
-                    </View>
-                </Pressable>
-            </Modal>
-        </View>
+        <Modal
+            visible={visible}
+            transparent
+            animationType="fade"
+            onRequestClose={onClose}
+        >
+            <Pressable style={StyleSheet.absoluteFill} onPress={onClose}>
+                <View style={[styles.menuContainer, { top: 50, right: 10 }]}>
+                    {finalOptions.map((option, index) => (
+                        <View key={option.id}>
+                            <TouchableOpacity
+                                style={styles.menuItem}
+                                onPress={() => handleOptionPress(option)}
+                                activeOpacity={0.7}
+                            >
+                                <Feather
+                                    name={option.icon as any}
+                                    size={27}
+                                    color="#333"
+                                    style={styles.menuItemIcon}
+                                />
+                                <Text style={styles.menuItemText}>{option.label}</Text>
+                            </TouchableOpacity>
+                            {index < finalOptions.length - 1 && (
+                                <View style={styles.divider} />
+                            )}
+                        </View>
+                    ))}
+                </View>
+            </Pressable>
+        </Modal>
     );
 };
 
 const styles = StyleSheet.create({
-    menuButton: {
-        padding: 8,
-    },
     menuContainer: {
         position: "absolute",
         backgroundColor: "#fff",
@@ -192,4 +184,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Menu3Puntos;
+export default React.memo(Menu3Puntos);

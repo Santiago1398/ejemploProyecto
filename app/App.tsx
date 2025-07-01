@@ -4,10 +4,13 @@ import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Layout from "./_layout";
 import { stopAlarmSound } from "@/utils/sound";
+import TabsNavigator from "./(tabs)/TabsNavigator";
+import LoginScreen from "./login";
 
 
 export default function App() {
     const [ready, setReady] = useState(false);
+    const [userLoggedIn, setUserLoggedIn] = useState(false);
     // const [showAlarmDialog, setShowAlarmDialog] = useState(false);
 
     // useEffect(() => {
@@ -23,7 +26,6 @@ export default function App() {
     //     checkAlarm();
     // }, []);
 
-
     useEffect(() => {
         const prepare = async () => {
             //  Nuevo: detectar si ya hay una alarma activa al abrir app
@@ -32,6 +34,10 @@ export default function App() {
                 console.log(" App iniciada con alarma activa");
                 await AsyncStorage.setItem("alarma_activa_pendiente", "true");
             }
+
+            // Check user authentication (example: check for a token)
+            const token = await AsyncStorage.getItem("userToken");
+            setUserLoggedIn(!!token);
 
             //  Si se abrió desde una notificación tocada
             const last = await Notifications.getLastNotificationResponseAsync();
@@ -45,6 +51,7 @@ export default function App() {
             setReady(true); // Siempre al final
         };
 
+        prepare();
         prepare();
 
         // Listener permanente por si tocan la notificación estando ya abierta
@@ -65,7 +72,8 @@ export default function App() {
 
     return (
         <NavigationContainer>
-            <Layout />
+            {userLoggedIn ? <TabsNavigator /> : <LoginScreen />}
         </NavigationContainer>
     );
+
 }

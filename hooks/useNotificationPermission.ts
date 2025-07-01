@@ -16,7 +16,7 @@ export const useNotificationPermission = () => {
             return new Promise((resolve) => {
                 Alert.alert(
                     "Notificaciones",
-                    "Habilite las notificaciones para las alarmas TC5",
+                    "Habilite las notificaciones para recibir las alarmas TC5",
                     [
                         {
                             text: "Aceptar",
