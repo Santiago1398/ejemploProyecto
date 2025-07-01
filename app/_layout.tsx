@@ -110,11 +110,11 @@ export default function Layout() {
     //         try {
     //             const { userId } = useAuthStore.getState(); // Asegúrate de que tienes el userId
     //             if (isAuthenticated && userId) {
-    //                 console.log("📲 Registrando dispositivo y enviando prueba...");
+    //                 console.log(" Registrando dispositivo y enviando prueba...");
     //                 await notificationService.registerDeviceAndSendTestNotification(userId);
     //             }
     //         } catch (error) {
-    //             console.error("❌ Error al registrar y enviar notificación:", error);
+    //             console.error("Error al registrar y enviar notificación:", error);
     //         }
     //     };
 

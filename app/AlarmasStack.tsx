@@ -9,6 +9,7 @@ import Explotacion from "@/components/Explotacion";
 import ConfiguracionTC5 from "@/components/ConfiguracionTC5";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+// Define las interfaces para los parámetros de navegación 
 export type RootStackParamList = {
     HomeScreen: undefined;
     DeviceDetails: {

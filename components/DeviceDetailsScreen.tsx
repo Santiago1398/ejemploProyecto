@@ -145,7 +145,7 @@ export default function AlarmList() {
     const fetchAlarms = async (isAutoRefresh = false) => {
         try {
             if (!isAutoRefresh) {
-                setLoading(true);         // solo muestra "Cargando alarmas..." en carga inicial
+                setLoading(true);
             }
 
             const scrollY = scrollOffset.current;
@@ -188,8 +188,8 @@ export default function AlarmList() {
             Alert.alert("Error", "No se pudieron cargar las alarmas.");
         } finally {
             if (!isAutoRefresh) {
-                setLoading(false);         // solo quitamos loading si no es auto-refresh
-                setInitialLoad(false);     // ya se hizo la carga inicial
+                setLoading(false);
+                setInitialLoad(false);
             }
         }
     };
@@ -210,7 +210,6 @@ export default function AlarmList() {
 
 
     // 3. useLayoutEffect para configurar el header con Menu3Puntos
-    // useLayoutEffect para configurar la estructura fija del header (SIN headerText y headerColor)
     useLayoutEffect(() => {
         navigation.setOptions({
             headerTitleAlign: "center",
@@ -363,7 +362,7 @@ export default function AlarmList() {
     // 6. Render de cada alarma (con mejoras visuales)
     const renderAlarmItem = ({ item }: { item: ParamTC }) => {
         let backgroundColor = "#8a9bb9"; // gris 
-        let textColor = "#000000"; // negro por defecto
+        let textColor = "#000000"; // negro 
 
         if (item.disparado) {
             backgroundColor = "#FF0000"; // rojo fuerte

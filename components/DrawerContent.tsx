@@ -24,9 +24,20 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
 
             {/* Botón de sesión */}
             {isAuthenticated ? (
-                <TouchableOpacity onPress={logout} style={styles.logoutButton}>
+                <TouchableOpacity
+                    onPress={() => {
+                        props.navigation.closeDrawer();
+                        props.navigation.navigate("Login");
+                        setTimeout(() => {
+                            logout();
+                        }, 100); // da tiempo a navegar antes de borrar el estado
+                    }}
+                    style={styles.logoutButton}
+                >
                     <Text style={styles.logoutText}>Cerrar sesión</Text>
                 </TouchableOpacity>
+
+
             ) : (
                 <TouchableOpacity
                     onPress={() => navigation.navigate("Login")}
