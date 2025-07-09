@@ -1,0 +1,222 @@
+{
+    "AlarmasScreen": {
+        "errorLoadingAlarms": "Не вдалося завантажити спрацьовані тривоги",
+        "noAlarms": "Немає спрацьованих тривог"
+    },
+    "deviceList": {
+        "loadingDevices": "Завантаження пристроїв...",
+        "serverDisconnected": "Сервер відключено. Спробуйте пізніше.",
+        "noLocationsAvailable": "Немає доступних локацій",
+        "alarmActive": "🚨 Тривога активна",
+        "acceptAndStopAlarm": "Прийняти та зупинити тривогу",
+        "errorTitle": "Помилка",
+        "deviceLoadError": "Не вдалося завантажити пристрої."
+    },
+    "DeviceDetailsScreen": {
+        "alarmTriggered": "Тривога спрацювала",
+        "alarmsEnabled": "Тривоги увімкнені",
+        "alarmsDisabled": "Тривоги вимкнені",
+        "successTitle": "Успіх",
+        "alarmsActivated": "Тривоги було увімкнено.",
+        "alarmsDeactivated": "Тривоги було вимкнено.",
+        "changeStatusError": "Не вдалося змінити стан тривог.",
+        "errorTitle": "Помилка",
+        "errorLoadingAlarms": "Не вдалося завантажити тривоги.",
+        "errorChangeAlarmState": "Не вдалося змінити стан тривоги.",
+        "loadingAlarms": "Завантаження тривог...",
+        "tc5Disconnected": "TC5 відключено",
+        "noEnabledAlarms": "Немає з'єднання",
+        "armed": "Увімкнена",
+        "disarmed": "Вимкнена"
+    },
+    "DrawerContent": {
+        "logout": "Вийти",
+        "login": "Увійти",
+        "settings": "Налаштування",
+        "maintenance": "Обслуговування"
+    },
+    "EditarPrioridadScreen": {
+        "errorTitle": "Помилка",
+        "invalidPhone": "Введіть дійсний номер телефону.",
+        "successTitle": "Успіх",
+        "SaveInformacion": "Інформацію успішно збережено",
+        "sendError": "Не вдалося надіслати інформацію",
+        "title": "Пріоритет",
+        "label": "Номер телефону:",
+        "placeholder": "123456789",
+        "save": "Зберегти",
+        "selectCountry": "Виберіть країну",
+        "cancel": "Скасувати"
+    },
+    "BottonMaster": {
+        "label": "Майстер"
+    },
+    "CustomMaps": {
+        "saveTitle": "Зберегти розташування",
+        "saveMessage": "Бажаєте зберегти поточне розташування?",
+        "cancel": "Скасувати",
+        "save": "Зберегти"
+    },
+    "Menu3Puntos": {
+        "save": "Зберегти розташування",
+        "delete": "Видалити розташування",
+        "explotacion": "Перейти до господарства",
+        "configuracion": "Налаштування TC5"
+    },
+    "PhoneNumberDialog": {
+        "title": "Введіть свій номер телефону",
+        "subtitle": "Щоб застосунок TC5 знав ваш номер.",
+        "placeholder": "Напр.: 612345678",
+        "cancel": "Скасувати",
+        "save": "Зберегти",
+        "invalid": "Неправильний номер. Потрібно 9 цифр."
+    },
+    "HomeScreen": {
+        "cti": "CTI",
+        "control": "Control",
+        "Home": "Головна"
+    },
+    "CustomHeader": {
+        "home": "Головна"
+    },
+    "MantenimientoScreen": {
+        "apiTitle": "API-сервер",
+        "apiPlaceholder": "http://192.168.1.1:8032/api",
+        "saveButton": "Зберегти URL",
+        "saveSuccessTitle": "Збережено",
+        "saveSuccessMessage": "URL сервера оновлено.",
+        "saveErrorTitle": "Помилка",
+        "saveErrorMessage": "Не вдалося зберегти URL.",
+        "fcmTitle": "FCM-токен пристрою",
+        "fcmButton": "Отримати FCM-токен",
+        "fcmCopiedTitle": "Токен скопійовано",
+        "fcmCopiedMessage": "FCM-токен скопійовано до буфера обміну:\n\n{{token}}",
+        "fcmErrorTitle": "Помилка",
+        "fcmErrorMessage": "Не вдалося отримати токен."
+    },
+    "SettingsScreen": {
+        "notificaciones": {
+            "desactivar": {
+                "titulo": "Вимкнути сповіщення",
+                "mensaje": "Бажаєте вимкнути сповіщення застосунку?"
+            },
+            "activar": {
+                "titulo": "Увімкнути сповіщення",
+                "mensaje": "Бажаєте отримувати сповіщення про тривоги та оновлення?"
+            },
+            "cancelar": "Скасувати",
+            "desactivars": "Вимкнути",
+            "no": "Ні",
+            "si": "Так"
+        },
+        "ubicacion": {
+            "desactivar": "Вимкнути геолокацію",
+            "permisos": {
+                "desactivar": "Бажаєте вимкнути дозволи геолокації?"
+            },
+            "label": "Дозволи геолокації"
+        },
+        "titulo": {
+            "permisos": "Дозволи",
+            "notificaciones": "Сповіщення",
+            "nivelPrioridad": "Рівень пріоритету"
+        },
+        "telefono": {
+            "presente": "Тел:",
+            "ausente": "Номер не призначено"
+        },
+        "language": {
+            "title": "Мова"
+        }
+    },
+    "login": {
+        "titulo": "Увійти",
+        "subtitulo": "Будь ласка, увійдіть, щоб продовжити",
+        "correo": "Електронна пошта",
+        "contrasena": "Пароль",
+        "boton": "Увійти",
+        "error": {
+            "datos": "Невірна електронна пошта або пароль",
+            "general": "Помилка",
+            "mensaje": "Щось пішло не так"
+        }
+    },
+    "useNotificationPermission": {
+        "alerta": {
+            "titulo": "Сповіщення",
+            "mensaje": "Увімкніть сповіщення, щоб отримувати тривоги TC5",
+            "boton": "Прийняти"
+        },
+        "error": {
+            "permisos": "Помилка під час налаштування дозволів сповіщень",
+            "verificacion": "Помилка перевірки дозволів"
+        }
+    },
+    "locations": {
+        "alerta": {
+            "titulo": "Потрібен доступ до геолокації",
+            "mensaje": "Щоб продовжити, увімкніть доступ до геолокації в налаштуваннях застосунку",
+            "abrirAjustes": "Відкрити налаштування",
+            "cancelar": "Скасувати"
+        }
+    },
+    "DeviceMaps": {
+        "errorTitle": "Помилка",
+        "error": {
+            "mensaje": "Не вдалося отримати ваше розташування.",
+            "title": "Помилка",
+            "obtener": "Не вдалося отримати ваше розташування."
+        },
+        "titulo": {
+            "guardar": "Зберегти розташування"
+        },
+        "mensaje": {
+            "guardar": "Бажаєте зберегти поточне розташування?"
+        },
+        "cancelar": "Скасувати",
+        "guardar": "Зберегти",
+        "ubicacion": {
+            "guardada": {
+                "titulo": "Розташування збережено",
+                "mensaje": "Розташування пристрою успішно збережено."
+            },
+            "no": {
+                "guardada": "Не вдалося зберегти розташування пристрою."
+            }
+        },
+        "permiso": {
+            "necesario": {
+                "titulo": "Необхідні дозволи",
+                "mensaje": "Потрібно дозволити геолокацію для використання цієї функції"
+            },
+            "boton": {
+                "ir": "Перейти до налаштувань",
+                "cancelar": "Скасувати"
+            }
+        },
+        "loading": {
+            "verificando": "Перевірка дозволів...",
+            "cargando": "Завантаження розташування..."
+        }
+    },
+    "MapsScreen": {
+        "permission": {
+            "title": "Необхідні дозволи",
+            "message": "Увімкніть геолокацію, щоб розмістити ваш TC5 на карті",
+            "deniedTitle": "Дозволи відхилено",
+            "deniedMessage": "Потрібно дозволити геолокацію для відображення карти.",
+            "accept": "Прийняти"
+        },
+        "errorTitle": "Помилка",
+        "errorMessage": "Сталася помилка під час перевірки дозволів геолокації.",
+        "noDevices": {
+            "title": "Немає пристроїв",
+            "message": "Немає пристроїв для відображення на карті."
+        }
+    },
+    "HomeStack": {
+        "DeviceMaps": {
+            "title": "Встановити розташування пристрою"
+        }
+    }
+}

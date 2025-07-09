@@ -13,8 +13,10 @@ type WebViewRouteProp = RouteProp<RootStackParamList, "Explotacion">;
 
 export default function WebViewExplotacion() {
     const route = useRoute<WebViewRouteProp>();
-    const { mac, token, idioma = "es", siteName , idSite} = route.params;
-    const url = `https://ctiportal.cticontrol.com?mac=${mac}&token=${token}&idioma=${idioma}&nave=${siteName}&idNave=${idSite}&app=appmovilv3&type=nave`;
+    const { mac, token, idioma = "es", siteName, idSite, buildPortalRef } = route.params;
+    console.log("Parametros recibidos:", { mac, token, idioma, siteName, idSite, buildPortalRef });
+    const url = `https://ctiportal.cticontrol.com?mac=${mac}&token=${token}&idioma=${idioma}&nave=${siteName}&idNave=${buildPortalRef}&app=appmovilv3&type=nave`;
+
 
     const [loading, setLoading] = useState(true);
 
@@ -43,7 +45,7 @@ const styles = StyleSheet.create({
         ...StyleSheet.absoluteFillObject,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#fff", // fondo blanco hasta que cargue
+        backgroundColor: "#fff",
         zIndex: 10,
     },
 });

@@ -1,7 +1,6 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import DeviceDetailsScreen from "@/components/DeviceDetailsScreen";
-import Menu3Puntos from "@/components/Menu3Puntos";
 import AlarmasScreen from "./(tabs)/AlarmasScreen";
 import { PaperProvider } from "react-native-paper";
 import DeviceMaps from "./extra/map/DeviceMaps";
@@ -9,6 +8,7 @@ import Explotacion from "@/components/Explotacion";
 import ConfiguracionTC5 from "@/components/ConfiguracionTC5";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
 export type RootStackParamList = {
     HomeScreen: undefined;
     DeviceDetails: {
@@ -18,6 +18,7 @@ export type RootStackParamList = {
         latitude: number;
         longitude: number;
         idSite: number;
+        buildPortalRef: number;
     };
     DeviceMaps: {
         deviceLocation: {
@@ -35,6 +36,7 @@ export type RootStackParamList = {
         idioma: string;
         siteName: string;
         farmName: string;
+        buildPortalRef: number;
     };
     ConfiguracionTC5: {
         mac: number;
@@ -42,32 +44,25 @@ export type RootStackParamList = {
         idioma: string;
         farmName: string;
     };
-
 };
 
 export default function AlarmasStack() {
     return (
         <PaperProvider>
-
             <Stack.Navigator>
                 <Stack.Screen
                     name="AlarmasScreen"
                     component={AlarmasScreen}
                     options={{ headerShown: false }}
                 />
+
                 <Stack.Screen
                     name="DeviceDetails"
                     component={DeviceDetailsScreen}
-                    options={({ route }) => ({
+                    options={{
                         title: "Detalles del Dispositivo",
-                        headerRight: () => (
-                            <Menu3Puntos
-                                device={route.params}
-                                visible={false}
-                                onClose={() => { }}
-                            />
-                        )
-                    })}
+                        headerShown: false,
+                    }}
                 />
 
                 <Stack.Screen
@@ -75,6 +70,7 @@ export default function AlarmasStack() {
                     component={DeviceMaps}
                     options={{ headerTitle: "Ubicación del Dispositivo" }}
                 />
+
                 <Stack.Screen
                     name="Explotacion"
                     component={Explotacion}
@@ -92,9 +88,7 @@ export default function AlarmasStack() {
                         title: route.params.farmName,
                     })}
                 />
-
             </Stack.Navigator>
         </PaperProvider>
-
     );
 }

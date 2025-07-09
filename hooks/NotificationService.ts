@@ -5,6 +5,8 @@ import { post } from "@/services/api";
 import { playAlarmSound, stopAlarmSound } from "@/utils/sound";
 import { useEffect } from "react";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import { getApiUrl } from "@/utils/apiconfig";
+import { API_URL } from "@/config/apiConfig";
 
 
 
@@ -127,22 +129,26 @@ class NotificationService {
         return;
       }
 
-    /*   await post("alarmtc/users/push-token", {
-        token,
-        userId,
-        deviceType: Platform.OS,
-        telefono
-      }); */
 
-      const LOCAL_API = await get
-      await fetch(`${LOCAL_API}/push-token`, {
+      const LOCAL_API = await getApiUrl();
+
+            await fetch(`${LOCAL_API}/alarmtc/user/push-token`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ token, userId, deviceType: Platform.OS, telefono }),
             });
             console.log("✅ Token registrado en el backend");
 
-      console.log("Dispositivo registrado exitosamente");
+            console.log("🌐 Enviando a servidor:", `${API_URL}/push-token`);
+            console.log("📦 Datos enviados:", { token, userId, deviceType: Platform.OS, telefono });
+            // await post("alarmtc/user/push-token", {
+            //     token,
+            //     userId,
+            //     deviceType: Platform.OS,
+            //     telefono,
+            // });
+            //console.log("✅ Respuesta del servidor: Token registrado correctamente");
+            //Alert.alert("✅ Respuesta del servidor:", "Token registrado correctamente");
     } catch (error) {
       console.error(" Error registrando dispositivo:", error);
     }

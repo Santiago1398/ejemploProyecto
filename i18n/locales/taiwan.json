@@ -1,0 +1,222 @@
+{
+    "AlarmasScreen": {
+        "errorLoadingAlarms": "無法載入已觸發的警報",
+        "noAlarms": "沒有已觸發的警報"
+    },
+    "deviceList": {
+        "loadingDevices": "正在載入裝置...",
+        "serverDisconnected": "伺服器已斷線，請稍後再試。",
+        "noLocationsAvailable": "沒有可用的位置",
+        "alarmActive": "🚨 警報啟動",
+        "acceptAndStopAlarm": "接受並停止警報",
+        "errorTitle": "錯誤",
+        "deviceLoadError": "無法載入裝置。"
+    },
+    "DeviceDetailsScreen": {
+        "alarmTriggered": "警報已觸發",
+        "alarmsEnabled": "警報已啟用",
+        "alarmsDisabled": "警報已停用",
+        "successTitle": "成功",
+        "alarmsActivated": "警報已啟用。",
+        "alarmsDeactivated": "警報已停用。",
+        "changeStatusError": "無法變更警報狀態。",
+        "errorTitle": "錯誤",
+        "errorLoadingAlarms": "無法載入警報。",
+        "errorChangeAlarmState": "無法變更警報狀態。",
+        "loadingAlarms": "正在載入警報...",
+        "tc5Disconnected": "TC5 已斷線",
+        "noEnabledAlarms": "沒有連線",
+        "armed": "已啟用",
+        "disarmed": "已停用"
+    },
+    "DrawerContent": {
+        "logout": "登出",
+        "login": "登入",
+        "settings": "設定",
+        "maintenance": "維護"
+    },
+    "EditarPrioridadScreen": {
+        "errorTitle": "錯誤",
+        "invalidPhone": "請輸入有效的電話號碼。",
+        "successTitle": "成功",
+        "SaveInformacion": "資訊已成功儲存",
+        "sendError": "無法傳送資訊",
+        "title": "優先順序",
+        "label": "電話號碼：",
+        "placeholder": "123456789",
+        "save": "儲存",
+        "selectCountry": "選擇國家",
+        "cancel": "取消"
+    },
+    "BottonMaster": {
+        "label": "主控"
+    },
+    "CustomMaps": {
+        "saveTitle": "儲存位置",
+        "saveMessage": "是否要儲存目前位置？",
+        "cancel": "取消",
+        "save": "儲存"
+    },
+    "Menu3Puntos": {
+        "save": "儲存位置",
+        "delete": "刪除位置",
+        "explotacion": "前往農場",
+        "configuracion": "TC5 設定"
+    },
+    "PhoneNumberDialog": {
+        "title": "輸入您的電話號碼",
+        "subtitle": "讓 TC5 App 知道您的電話號碼。",
+        "placeholder": "例如：612345678",
+        "cancel": "取消",
+        "save": "儲存",
+        "invalid": "無效的號碼，需為 9 位數。"
+    },
+    "HomeScreen": {
+        "cti": "CTI",
+        "control": "Control",
+        "Home": "首頁"
+    },
+    "CustomHeader": {
+        "home": "首頁"
+    },
+    "MantenimientoScreen": {
+        "apiTitle": "API 伺服器",
+        "apiPlaceholder": "http://192.168.1.1:8032/api",
+        "saveButton": "儲存 URL",
+        "saveSuccessTitle": "已儲存",
+        "saveSuccessMessage": "伺服器 URL 已更新。",
+        "saveErrorTitle": "錯誤",
+        "saveErrorMessage": "無法儲存 URL。",
+        "fcmTitle": "裝置 FCM Token",
+        "fcmButton": "取得 FCM Token",
+        "fcmCopiedTitle": "已複製 Token",
+        "fcmCopiedMessage": "FCM Token 已複製至剪貼簿：\n\n{{token}}",
+        "fcmErrorTitle": "錯誤",
+        "fcmErrorMessage": "無法取得 Token。"
+    },
+    "SettingsScreen": {
+        "notificaciones": {
+            "desactivar": {
+                "titulo": "關閉通知",
+                "mensaje": "是否要關閉應用程式通知？"
+            },
+            "activar": {
+                "titulo": "開啟通知",
+                "mensaje": "是否要接收警報及更新通知？"
+            },
+            "cancelar": "取消",
+            "desactivars": "關閉",
+            "no": "否",
+            "si": "是"
+        },
+        "ubicacion": {
+            "desactivar": "關閉定位",
+            "permisos": {
+                "desactivar": "是否要關閉定位權限？"
+            },
+            "label": "定位權限"
+        },
+        "titulo": {
+            "permisos": "權限",
+            "notificaciones": "通知",
+            "nivelPrioridad": "優先等級"
+        },
+        "telefono": {
+            "presente": "電話：",
+            "ausente": "未設定電話號碼"
+        },
+        "language": {
+            "title": "語言"
+        }
+    },
+    "login": {
+        "titulo": "登入",
+        "subtitulo": "請登入以繼續",
+        "correo": "電子郵件",
+        "contrasena": "密碼",
+        "boton": "登入",
+        "error": {
+            "datos": "電子郵件或密碼錯誤",
+            "general": "錯誤",
+            "mensaje": "發生未知錯誤"
+        }
+    },
+    "useNotificationPermission": {
+        "alerta": {
+            "titulo": "通知",
+            "mensaje": "啟用通知以接收 TC5 警報",
+            "boton": "接受"
+        },
+        "error": {
+            "permisos": "處理通知權限時發生錯誤",
+            "verificacion": "檢查權限狀態時發生錯誤"
+        }
+    },
+    "locations": {
+        "alerta": {
+            "titulo": "需要定位權限",
+            "mensaje": "請在應用程式設定中啟用定位權限以繼續",
+            "abrirAjustes": "開啟設定",
+            "cancelar": "取消"
+        }
+    },
+    "DeviceMaps": {
+        "errorTitle": "錯誤",
+        "error": {
+            "mensaje": "無法取得您的位置。",
+            "title": "錯誤",
+            "obtener": "無法取得您的位置。"
+        },
+        "titulo": {
+            "guardar": "儲存位置"
+        },
+        "mensaje": {
+            "guardar": "是否要儲存目前位置？"
+        },
+        "cancelar": "取消",
+        "guardar": "儲存",
+        "ubicacion": {
+            "guardada": {
+                "titulo": "位置已儲存",
+                "mensaje": "裝置位置已成功儲存。"
+            },
+            "no": {
+                "guardada": "無法儲存裝置位置。"
+            }
+        },
+        "permiso": {
+            "necesario": {
+                "titulo": "需要權限",
+                "mensaje": "您必須允許定位權限才能使用此功能"
+            },
+            "boton": {
+                "ir": "前往設定",
+                "cancelar": "取消"
+            }
+        },
+        "loading": {
+            "verificando": "正在檢查權限...",
+            "cargando": "正在載入位置..."
+        }
+    },
+    "MapsScreen": {
+        "permission": {
+            "title": "需要權限",
+            "message": "啟用定位服務以在地圖上放置您的 TC5",
+            "deniedTitle": "權限已拒絕",
+            "deniedMessage": "必須允許定位權限才能顯示地圖。",
+            "accept": "接受"
+        },
+        "errorTitle": "錯誤",
+        "errorMessage": "檢查定位權限時發生錯誤。",
+        "noDevices": {
+            "title": "無設備",
+            "message": "沒有設備可在地圖上顯示。"
+        }
+    },
+    "HomeStack": {
+        "DeviceMaps": {
+            "title": "設定裝置位置"
+        }
+    }
+}

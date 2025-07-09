@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
+import { t } from "@/i18n/i18nConfig";
+
 
 interface Props {
     visible: boolean;
@@ -16,7 +18,7 @@ export default function PhoneNumberDialog({ visible, onClose, onConfirm }: Props
             onConfirm(telefono);
             setTelefono("");
         } else {
-            alert("Número inválido. Debe tener 9 dígitos.");
+            alert(t("PhoneNumberDialog.invalid"));
         }
     };
 
@@ -24,10 +26,8 @@ export default function PhoneNumberDialog({ visible, onClose, onConfirm }: Props
         <Modal visible={visible} transparent animationType="fade">
             <View style={styles.overlay}>
                 <View style={styles.dialog}>
-                    <Text style={styles.title}>Introduzca su número de teléfono</Text>
-                    <Text style={styles.subtitle}>
-                        Para que la app de TC5 sepa cuál es su número.
-                    </Text>
+                    <Text style={styles.title}>{t("PhoneNumberDialog.title")}</Text>
+                    <Text style={styles.subtitle}>{t("PhoneNumberDialog.subtitle")}</Text>
                     <TextInput
                         placeholder="Ej: 612345678"
                         keyboardType="phone-pad"
@@ -37,10 +37,10 @@ export default function PhoneNumberDialog({ visible, onClose, onConfirm }: Props
                     />
                     <View style={styles.buttons}>
                         <TouchableOpacity onPress={onClose} style={styles.cancel}>
-                            <Text style={styles.cancelText}>Cancelar</Text>
+                            <Text style={styles.cancelText}>{t("PhoneNumberDialog.cancel")}</Text>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={handleConfirm} style={styles.confirm}>
-                            <Text style={styles.confirmText}>Guardar</Text>
+                            <Text style={styles.confirmText}>{t("PhoneNumberDialog.save")}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>

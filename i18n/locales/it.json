@@ -1,0 +1,222 @@
+{
+    "AlarmasScreen": {
+        "errorLoadingAlarms": "Impossibile caricare le allarmi scattate",
+        "noAlarms": "Nessun allarme scattato"
+    },
+    "deviceList": {
+        "loadingDevices": "Caricamento dispositivi...",
+        "serverDisconnected": "Server disconnesso. Riprova più tardi.",
+        "noLocationsAvailable": "Nessuna posizione disponibile",
+        "alarmActive": "🚨 Allarme attivo",
+        "acceptAndStopAlarm": "Accetta e ferma l'allarme",
+        "errorTitle": "Errore",
+        "deviceLoadError": "Impossibile caricare i dispositivi."
+    },
+    "DeviceDetailsScreen": {
+        "alarmTriggered": "Allarme Attivato",
+        "alarmsEnabled": "Allarmi Armati",
+        "alarmsDisabled": "Allarmi Disarmati",
+        "successTitle": "Successo",
+        "alarmsActivated": "Gli allarmi sono stati attivati.",
+        "alarmsDeactivated": "Gli allarmi sono stati disattivati.",
+        "changeStatusError": "Impossibile cambiare lo stato degli allarmi.",
+        "errorTitle": "Errore",
+        "errorLoadingAlarms": "Impossibile caricare gli allarmi.",
+        "errorChangeAlarmState": "Impossibile cambiare lo stato dell'allarme.",
+        "loadingAlarms": "Caricamento allarmi...",
+        "tc5Disconnected": "TC5 disconnesso",
+        "noEnabledAlarms": "Nessuna connessione",
+        "armed": "Armata",
+        "disarmed": "Disarmata"
+    },
+    "DrawerContent": {
+        "logout": "Disconnetti",
+        "login": "Accedi",
+        "settings": "Impostazioni",
+        "maintenance": "Manutenzione"
+    },
+    "EditarPrioridadScreen": {
+        "errorTitle": "Errore",
+        "invalidPhone": "Inserisci un numero di telefono valido.",
+        "successTitle": "Successo",
+        "SaveInformacion": "Informazioni salvate con successo",
+        "sendError": "Impossibile inviare le informazioni",
+        "title": "Priorità",
+        "label": "Numero di telefono:",
+        "placeholder": "123456789",
+        "save": "Salva",
+        "selectCountry": "Seleziona paese",
+        "cancel": "Annulla"
+    },
+    "BottonMaster": {
+        "label": "Master"
+    },
+    "CustomMaps": {
+        "saveTitle": "Salva posizione",
+        "saveMessage": "Vuoi salvare la posizione attuale?",
+        "cancel": "Annulla",
+        "save": "Salva"
+    },
+    "Menu3Puntos": {
+        "save": "Salva posizione",
+        "delete": "Elimina posizione",
+        "explotacion": "Vai a Azienda",
+        "configuracion": "Configurazione TC5"
+    },
+    "PhoneNumberDialog": {
+        "title": "Inserisci il tuo numero di telefono",
+        "subtitle": "Affinché l'app TC5 conosca il tuo numero.",
+        "placeholder": "Es: 612345678",
+        "cancel": "Annulla",
+        "save": "Salva",
+        "invalid": "Numero non valido. Deve avere 9 cifre."
+    },
+    "HomeScreen": {
+        "cti": "CTI",
+        "control": "Control",
+        "Home": "Home"
+    },
+    "CustomHeader": {
+        "home": "Home"
+    },
+    "MantenimientoScreen": {
+        "apiTitle": "Server API",
+        "apiPlaceholder": "http://192.168.1.1:8032/api",
+        "saveButton": "Salva URL",
+        "saveSuccessTitle": "Salvato",
+        "saveSuccessMessage": "L'URL del server è stato aggiornato.",
+        "saveErrorTitle": "Errore",
+        "saveErrorMessage": "Impossibile salvare l'URL.",
+        "fcmTitle": "Token FCM del dispositivo",
+        "fcmButton": "Ottieni Token FCM",
+        "fcmCopiedTitle": "Token copiato",
+        "fcmCopiedMessage": "Token FCM copiato negli appunti:\n\n{{token}}",
+        "fcmErrorTitle": "Errore",
+        "fcmErrorMessage": "Impossibile ottenere il token."
+    },
+    "SettingsScreen": {
+        "notificaciones": {
+            "desactivar": {
+                "titulo": "Disattiva notifiche",
+                "mensaje": "Vuoi disattivare le notifiche dell'app?"
+            },
+            "activar": {
+                "titulo": "Attiva notifiche",
+                "mensaje": "Vuoi ricevere notifiche di allarmi e aggiornamenti?"
+            },
+            "cancelar": "Annulla",
+            "desactivars": "Disattiva",
+            "no": "No",
+            "si": "Sì"
+        },
+        "ubicacion": {
+            "desactivar": "Disattiva posizione",
+            "permisos": {
+                "desactivar": "Vuoi disattivare i permessi di posizione?"
+            },
+            "label": "Permessi di posizione"
+        },
+        "titulo": {
+            "permisos": "Permessi",
+            "notificaciones": "Notifiche",
+            "nivelPrioridad": "Livello di priorità"
+        },
+        "telefono": {
+            "presente": "Tel:",
+            "ausente": "Nessun numero assegnato"
+        },
+        "language": {
+            "title": "Lingua"
+        }
+    },
+    "login": {
+        "titulo": "Accedi",
+        "subtitulo": "Accedi per continuare",
+        "correo": "Email",
+        "contrasena": "Password",
+        "boton": "Accedi",
+        "error": {
+            "datos": "Email o password errati",
+            "general": "Errore",
+            "mensaje": "Qualcosa è andato storto"
+        }
+    },
+    "useNotificationPermission": {
+        "alerta": {
+            "titulo": "Notifiche",
+            "mensaje": "Abilita le notifiche per ricevere gli allarmi TC5",
+            "boton": "Accetta"
+        },
+        "error": {
+            "permisos": "Errore nella gestione dei permessi di notifica",
+            "verificacion": "Errore nella verifica dei permessi"
+        }
+    },
+    "locations": {
+        "alerta": {
+            "titulo": "Permesso di posizione necessario",
+            "mensaje": "Per continuare devi abilitare il permesso di posizione nelle impostazioni dell'app",
+            "abrirAjustes": "Apri impostazioni",
+            "cancelar": "Annulla"
+        }
+    },
+    "DeviceMaps": {
+        "errorTitle": "Errore",
+        "error": {
+            "mensaje": "Impossibile ottenere la tua posizione.",
+            "title": "Errore",
+            "obtener": "Impossibile ottenere la tua posizione."
+        },
+        "titulo": {
+            "guardar": "Salva posizione"
+        },
+        "mensaje": {
+            "guardar": "Vuoi salvare la posizione attuale?"
+        },
+        "cancelar": "Annulla",
+        "guardar": "Salva",
+        "ubicacion": {
+            "guardada": {
+                "titulo": "Posizione salvata",
+                "mensaje": "La posizione del dispositivo è stata salvata correttamente."
+            },
+            "no": {
+                "guardada": "Impossibile salvare la posizione del dispositivo."
+            }
+        },
+        "permiso": {
+            "necesario": {
+                "titulo": "Permessi necessari",
+                "mensaje": "Devi abilitare i permessi di posizione per usare questa funzione"
+            },
+            "boton": {
+                "ir": "Vai a Impostazioni",
+                "cancelar": "Annulla"
+            }
+        },
+        "loading": {
+            "verificando": "Verifica permessi...",
+            "cargando": "Caricamento posizione..."
+        }
+    },
+    "MapsScreen": {
+        "permission": {
+            "title": "Permessi necessari",
+            "message": "Abilita la geolocalizzazione per posizionare il tuo TC5 sulla mappa",
+            "deniedTitle": "Permessi negati",
+            "deniedMessage": "Devi consentire i permessi di posizione per mostrare la mappa.",
+            "accept": "Accetta"
+        },
+        "errorTitle": "Errore",
+        "errorMessage": "Si è verificato un errore durante la verifica dei permessi di posizione.",
+        "noDevices": {
+            "title": "Nessun dispositivo",
+            "message": "Non ci sono dispositivi da mostrare sulla mappa."
+        }
+    },
+    "HomeStack": {
+        "DeviceMaps": {
+            "title": "Fissa posizione del dispositivo"
+        }
+    }
+}

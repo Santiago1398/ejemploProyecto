@@ -10,6 +10,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { post } from "@/services/api";
+import { t } from "@/i18n/i18nConfig";
 
 export default function EditarPrioridadScreen() {
     const [telefono, setTelefono] = useState("");
@@ -33,7 +34,7 @@ export default function EditarPrioridadScreen() {
 
     const enviar = async () => {
         if (!telefono || telefono.length < 9) {
-            Alert.alert("Error", "Introduce un número de teléfono válido.");
+            Alert.alert(t("EditarPrioridadScreen.errorTitle"), t("EditarPrioridadScreen.invalidPhone"));
             return;
         }
         const userId = await AsyncStorage.getItem("userId");
@@ -47,26 +48,26 @@ export default function EditarPrioridadScreen() {
 
             await AsyncStorage.setItem("telefono", telefono);
 
-            Alert.alert("Éxito", "Información guardada correctamente");
+            Alert.alert(t("EditarPrioridadScreen.successTitle"), t("EditarPrioridadScreen.saved"));
 
             navigation.goBack();
         } catch (error) {
             console.error("Error al enviar:", error);
-            Alert.alert("Error", "No se pudo enviar la información");
+            Alert.alert(t("EditarPrioridadScreen.errorTitle"), t("EditarPrioridadScreen.sendError"));
         }
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Prioridad</Text>
+            <Text style={styles.title}>{t("EditarPrioridadScreen.title")}</Text>
 
-            <Text style={styles.label}>Número de teléfono:</Text>
+            <Text style={styles.label}>{t("EditarPrioridadScreen.label")}</Text>
             <View style={styles.phoneInputContainer}>
                 {/* <TouchableOpacity onPress={() => setMostrarModalPrefijos(true)}>
                     <Text style={styles.prefix}>{prefijo}</Text>
                 </TouchableOpacity> */}
                 <TextInput
-                    placeholder="123456789"
+                    placeholder={t("EditarPrioridadScreen.placeholder")}
                     style={styles.phoneInput}
                     keyboardType="phone-pad"
                     value={telefono}
@@ -81,7 +82,7 @@ export default function EditarPrioridadScreen() {
 
             {(telefono) && (
                 <TouchableOpacity style={styles.sendButton} onPress={enviar}>
-                    <Text style={styles.sendButtonText}>Guardar</Text>
+                    <Text style={styles.sendButtonText}>{t("EditarPrioridadScreen.save")}</Text>
                 </TouchableOpacity>
             )}
             {/* {mostrarModalPrefijos && (

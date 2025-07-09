@@ -21,6 +21,8 @@ import { notificationService } from "@/hooks/NotificationService";
 import { ResponseAlarmaSite } from "@/infrastructure/intercafe/listapi.interface";
 import * as Notifications from "expo-notifications";
 import PhoneNumberDialog from "./PhoneNumberDialog";
+import { t } from "@/i18n/i18nConfig";
+
 
 
 export default function DeviceList() {
@@ -82,13 +84,13 @@ export default function DeviceList() {
     // Actualización periódica cada 5 segundos
     useEffect(() => {
         const interval = setInterval(() => {
-            if (token && userId) fetchDevices(true); // 👈 true = es auto-refresh
+            if (token && userId) fetchDevices(true); //  true = es auto-refresh
         }, 5000);
 
         return () => clearInterval(interval);
     }, [token, userId]);
     useEffect(() => {
-        fetchDevices(false); // 👈 carga inicial
+        fetchDevices(false); // carga inicial
     }, []);
     // Preguntar por teléfono si no existe
     // Solo si no se ha preguntado antes
@@ -106,7 +108,7 @@ export default function DeviceList() {
     }, []);
     // Confirmar teléfono
     const handleConfirmTelefono = async (telefono: string) => {
-        console.log("✅ Guardando teléfono desde DeviceList:", telefono);
+        console.log(" Guardando teléfono desde DeviceList:", telefono);
         setDialogVisible(false);
         await AsyncStorage.setItem("telefono", telefono);
         await AsyncStorage.setItem("telefonoPreguntado", "true");
@@ -136,6 +138,7 @@ export default function DeviceList() {
                 ...device,
                 mac: Number(device.mac),
                 alarmType: device.alarmType ?? 1,
+                armed: device.armed ?? true
             }));
 
             // Ordena primero por farmName, luego por siteName (nave)
@@ -160,7 +163,7 @@ export default function DeviceList() {
         } catch (error) {
             console.error("Error al cargar dispositivos:", error);
             setIsError(true);
-            Alert.alert("Error", "No se pudieron cargar los dispositivos.");
+            Alert.alert(t("deviceList.deviceLoadError"));
         } finally {
             if (!isAutoRefresh) {
                 setLoading(false);
@@ -192,23 +195,29 @@ export default function DeviceList() {
         };
     }, []);
 
-    const getBackgroundColor = (alarmType: number) => {
+
+
+    const getBackgroundColor = (alarmType: number, armed: boolean) => {
+        // Si armed es false, siempre amarillo independientemente del alarmType
+        if (!armed) {
+            return "#facc15"; // amarillo
+        }
+
+        // Si armed es true, usar alarmType
         switch (alarmType) {
-            case 0: return "#facc15"; // amarillo fuerte
-            case 1: return "#bef264"; // verde más fuerte
-            case 2: return "red";     // rojo total
-            case 3: return "#9E75C6"; // violeta (opcional)
-            case 4: return "#F6BC31"; // naranja (opcional)
-            default: return "#000000"; // negro
+            case 0: return "#78dd35"; // verde
+            case 1: return "#FF0000"; // rojo
+            case 2: return "#9E9E9E"; // gris
+            case 3: return "#9E75C6"; // violeta
+            default: return "#000000"; // negro (fallback)
         }
     };
 
-
+    // 🔥 ACTUALIZAR EL RENDERIZADO DEL ITEM
     const renderDeviceItem = ({ item }: { item: ResponseAlarmaSite }) => {
-        const backgroundColor = getBackgroundColor(item.alarmType);
+        // Usar ambos parámetros
+        const backgroundColor = getBackgroundColor(item.alarmType, item.armed);
         const capitalize = (str: string) => str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";
-
-
 
         return (
             <TouchableOpacity
@@ -222,12 +231,12 @@ export default function DeviceList() {
                             latitude: item.latitude,
                             longitude: item.longitude,
                             idSite: item.idSite,
+                            buildPortalRef: item.buildPortalRef,
+                            armed: item.armed
                         }
                     });
                 }}
             >
-
-
                 <View style={styles.row}>
                     <Ionicons name="home-outline" size={24} color="#000" style={{ marginRight: 8 }} />
                     <Text style={styles.deviceTitle}>{capitalize(item.farmName)}</Text>
@@ -239,21 +248,20 @@ export default function DeviceList() {
             </TouchableOpacity>
         );
     };
-
     return (
         <View style={styles.container}>
             {initialLoad ? (
-                <Text style={styles.loadingText}>Cargando dispositivos...</Text>
+                <Text style={styles.loadingText}>{t("deviceList.loadingDevices")}</Text>
             ) : isError ? (
                 <View style={styles.centeredContainer}>
-                    <Text style={styles.loadingText}>Hay desconexión con el servidor. Inténtelo más tarde.</Text>
+                    <Text style={styles.loadingText}>{t("deviceList.serverDisconnected")}</Text>
                 </View>
             ) : devices.length === 0 ? (
-                <Text style={styles.loadingText}>No hay ubicaciones disponibles</Text>
+                <Text style={styles.loadingText}>{t("deviceList.noLocationsAvailable")}</Text>
             ) : (
                 <FlatList
                     data={devices}
-                    keyExtractor={(item) => item.idSite.toString()}
+                    keyExtractor={(item, index) => `${item.idSite}-${item.mac}-${index}`}
                     renderItem={renderDeviceItem}
                     contentContainerStyle={styles.listContainer}
                 />
@@ -271,7 +279,7 @@ export default function DeviceList() {
                 <Modal transparent animationType="fade" visible={true}>
                     <View style={styles.modalOverlay}>
                         <View style={styles.modalContent}>
-                            <Text style={styles.modalTitle}>🚨 Alarma activa</Text>
+                            <Text style={styles.modalTitle}>🚨{t("deviceList.alarmActive")}</Text>
                             <TouchableOpacity
                                 onPress={async () => {
                                     await stopAlarmSound();
@@ -280,7 +288,7 @@ export default function DeviceList() {
                                     setShowAlarmDialog(false);
                                 }}
                             >
-                                <Text style={styles.modalButtonText}>Aceptar y detener alarma</Text>
+                                <Text style={styles.modalButtonText}>{t("deviceList.acceptAndStopAlarm")}</Text>
                             </TouchableOpacity>
                         </View>
                     </View>

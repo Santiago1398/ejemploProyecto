@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { registerForPushNotificationsAsync } from '@/utils/notifications';
+import { t } from "@/i18n/i18nConfig";
+
 
 export const useNotificationPermission = () => {
     const [hasPermission, setHasPermission] = useState(false);
@@ -15,11 +17,11 @@ export const useNotificationPermission = () => {
 
             return new Promise((resolve) => {
                 Alert.alert(
-                    "Notificaciones",
-                    "Habilite las notificaciones para las alarmas TC5",
+                    t("useNotificationPermission.alerta.titulo"),
+                    t("useNotificationPermission.alerta.mensaje"),
                     [
                         {
-                            text: "Aceptar",
+                            text: t("useNotificationPermission.alerta.boton"),
                             onPress: async () => {
                                 const token = await registerForPushNotificationsAsync();
                                 setHasPermission(!!token);
@@ -28,7 +30,7 @@ export const useNotificationPermission = () => {
                             }
                         }
                     ],
-                    { cancelable: false } // 👈 Importante para que no pueda cerrarse tocando fuera
+                    { cancelable: false }
                 );
             });
         } catch (error) {

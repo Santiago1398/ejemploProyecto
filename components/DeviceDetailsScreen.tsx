@@ -8,6 +8,7 @@ import {
     FlatList,
     TouchableOpacity,
     Alert,
+    Platform,
 } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -20,6 +21,8 @@ import Menu3Puntos from "@/components/Menu3Puntos";
 
 import { notificationService } from '@/hooks/NotificationService';
 import EstadoAlarmaCircle from "./EstadoAlarmaCircle";
+import { t } from "@/i18n/i18nConfig";
+import { Feather } from "@expo/vector-icons";
 
 
 
@@ -72,14 +75,14 @@ export default function AlarmList() {
     const updateHeaderStatus = (alarms: ParamTC[], masterState: boolean) => {
         const alarmaDisparada = alarms.some(alarm => alarm.disparado);
         if (alarmaDisparada) {
-            setHeaderText("Alarma Activada");
-            setHeaderColor("#FF3B30"); // rojo
+            setHeaderText(t("DeviceDetailsScreen.alarmTriggered"));
+            setHeaderColor("#FF3B30");
         } else if (masterState) {
-            setHeaderText("Alarmas Activadas");
-            setHeaderColor("#76db36"); // verde
+            setHeaderText(t("DeviceDetailsScreen.alarmsEnabled"));
+            setHeaderColor("#76db36");
         } else {
-            setHeaderText("Alarmas Desarmadas");
-            setHeaderColor("#8a9bb9"); // gris
+            setHeaderText(t("DeviceDetailsScreen.alarmsDisabled"));
+            setHeaderColor("#8a9bb9");
         }
     };
 
@@ -88,19 +91,25 @@ export default function AlarmList() {
         try {
             const response = await post(`alarmtc/armMaster?mac=${mac}&status=${status}`, {});
             if (response.status === "Master Button Alarm Armed" || response.status === "Master Button Alarm Disarmed") {
-                Alert.alert("Éxito", `Las alarmas han sido ${status === 1 ? "activadas" : "desactivadas"}.`);
+                // Alert.alert(
+                //     t("DeviceDetailsScreen.successTitle"),
+                //     t(status === 1 ? "DeviceDetailsScreen.alarmsActivated" : "DeviceDetailsScreen.alarmsDeactivated")
+                // );
                 const nuevoEstado = !masterAlarmState;
                 setMasterAlarmState(nuevoEstado);
                 updateHeaderStatus(alarms, nuevoEstado);
                 if (status === 1) {
-                    fetchAlarms(); // solo si se activan
+                    fetchAlarms();
                 }
             }
         } catch (error) {
             console.error("Error:", error);
-            Alert.alert("Error", "No se pudo cambiar el estado de las alarmas.");
+            Alert.alert(
+                t("DeviceDetailsScreen.errorTitle"),
+                t("DeviceDetailsScreen.changeStatusError")
+            );
         }
-    };
+    }
 
     // 1. Obtener las alarmas (GET)
     // const fetchAlarms = async () => {
@@ -145,7 +154,7 @@ export default function AlarmList() {
     const fetchAlarms = async (isAutoRefresh = false) => {
         try {
             if (!isAutoRefresh) {
-                setLoading(true);         // solo muestra "Cargando alarmas..." en carga inicial
+                setLoading(true);
             }
 
             const scrollY = scrollOffset.current;
@@ -156,7 +165,7 @@ export default function AlarmList() {
             if (alarm2000 && alarm2000.disparado) {
                 setTc5Disconnected(true);
                 setAlarms([]);
-                setHeaderText("TC5 Desconectado");
+                setHeaderText(t("DeviceDetailsScreen.tc5Disconnected"));
                 setHeaderColor("#8a9bb9");
                 return;
             } else {
@@ -185,11 +194,11 @@ export default function AlarmList() {
             }, 50);
         } catch (error) {
             console.error("Error en la solicitud GET:", error);
-            Alert.alert("Error", "No se pudieron cargar las alarmas.");
+            Alert.alert(t("DeviceDetailsScreen.errorTitle"), t("AlarmsScreen.errorLoadingAlarms"));
         } finally {
             if (!isAutoRefresh) {
-                setLoading(false);         // solo quitamos loading si no es auto-refresh
-                setInitialLoad(false);     // ya se hizo la carga inicial
+                setLoading(false);
+                setInitialLoad(false);
             }
         }
     };
@@ -210,65 +219,83 @@ export default function AlarmList() {
 
 
     // 3. useLayoutEffect para configurar el header con Menu3Puntos
-    // useLayoutEffect para configurar la estructura fija del header (SIN headerText y headerColor)
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            headerTitleAlign: "center",
-            headerTintColor: "#fff",
-            headerRight: () => (
-                <TouchableOpacity
-                    onPress={() => {
-                        console.log('Botón presionado');
-                        setMenuVisible(true);
-                    }}
-                    hitSlop={{ top: 20, bottom: 20, left: 20, right: 20 }}
-                    style={{
-                        padding: 10,
-                        marginRight: 10,
-                        borderRadius: 20,
-                        backgroundColor: 'rgba(255,255,255,0.1)',
-                    }}
-                >
-                    <Entypo name="dots-three-horizontal" size={24} color="#fff" />
-                </TouchableOpacity>
-            ),
-        });
-    }, [navigation, mac, farmName, siteName]);
+    // En tu useLayoutEffect, reemplaza la parte del headerRight:
 
-    useEffect(() => {
-        navigation.setOptions({
-            headerTitle: () => (
-                <View style={{ paddingTop: 4 }}>
-                    <Text style={{
-                        fontSize: 16,
-                        color: "#fff",
-                        textAlign: "center",
-                        fontWeight: "500"
-                    }}>
-                        {farmName} - {siteName}
-                    </Text>
-                    <Text style={{
-                        fontSize: 20,
-                        fontWeight: "bold",
-                        color: "#fff",
-                        textAlign: "center"
-                    }}>
-                        {headerText}
-                    </Text>
-                </View>
-            ),
-            headerStyle: {
-                backgroundColor: headerColor,
-                height: 100,
-                elevation: 0,
-                shadowOpacity: 0,
-            },
-        });
-    }, [headerText, headerColor, farmName, siteName]);
+    // En tu AlarmList, reemplaza el useLayoutEffect con esto:
+
+    // Reemplaza tu useLayoutEffect completo con esto:
+    // Reemplaza tu useLayoutEffect con esta versión ULTRA-compatible:
+
+    // Reemplaza tu useLayoutEffect con esta versión que corrige el área de toque:
+
+    // useLayoutEffect(() => {
 
 
+    //     navigation.setOptions({
+    //         headerTitle: () => (
+    //             <View style={{ paddingTop: 4 }}>
+    //                 <Text style={{
+    //                     fontSize: 16,
+    //                     color: "#fff",
+    //                     textAlign: "center",
+    //                     fontWeight: "500"
+    //                 }}>
+    //                     {farmName} - {siteName}
+    //                 </Text>
+    //                 <Text style={{
+    //                     fontSize: 20,
+    //                     fontWeight: "bold",
+    //                     color: "#fff",
+    //                     textAlign: "center"
+    //                 }}>
+    //                     {headerText}
+    //                 </Text>
+    //             </View>
+    //         ),
+    //         headerRight: () => (
+    //             <View style={{
+    //                 marginRight: 15,
+    //                 width: 44,
+    //                 height: 44,
+    //                 justifyContent: 'center',
+    //                 alignItems: 'center',
+    //             }}>
+    //                 <TouchableOpacity
+    //                     onPress={() => {
+    //                         console.log("🔥 BOTÓN PRESIONADO CORRECTAMENTE");
+    //                         setMenuVisible(true);
+    //                     }}
+    //                     style={{
+    //                         width: 44,
+    //                         height: 44,
+    //                         justifyContent: 'center',
+    //                         alignItems: 'center',
+    //                         borderRadius: 22,
+    //                         backgroundColor: 'rgba(255,255,255,0.1)',
+    //                     }}
+    //                     activeOpacity={0.7}
+    //                 // SIN hitSlop para área exacta
+    //                 >
+    //                     <Feather name="more-horizontal" size={24} color="#fff" />
+    //                 </TouchableOpacity>
+    //             </View>
+    //         ),
+    //         headerStyle: {
+    //             backgroundColor: headerColor,
+    //             height: 100,
+    //             elevation: 0,
+    //             shadowOpacity: 0,
+    //         },
+    //         headerTitleAlign: "center",
+    //         headerTintColor: "#fff",
+    //     });
+    // }, [navigation, headerText, headerColor, farmName, siteName]);
+
+
+    {/* Y la función handleOptionSelect vuelve a ser: */ }
     const handleOptionSelect = async (option: string) => {
         if (selectedAlarm) {
+            // ✅ Compara con valores fijos
             const status = option === "Armada" ? 1 : 0;
             const idAlarm = selectedAlarm.idAlarm;
 
@@ -276,20 +303,21 @@ export default function AlarmList() {
                 const response = await post(`alarmtc/arm?mac=${mac}&alarm=${idAlarm}&status=${status}`, {});
                 console.log("Respuesta del servidor:", response);
 
-                // Actualizamos el estado antes de cerrar el modal
                 setSelectedAlarm((prev) => (prev ? { ...prev, armado: status === 1 } : prev));
 
                 setTimeout(() => {
                     setOptionModalVisible(false);
-                    fetchAlarms(); // Refrescamos la lista tras el cambio
+                    fetchAlarms();
                 }, 250);
             } catch (error) {
                 console.error("Error al cambiar el estado de la alarma:", error);
-                Alert.alert("Error", "No se pudo cambiar el estado de la alarma.");
+                Alert.alert(
+                    t("DeviceDetailsScreen.errorTitle"),
+                    t("DeviceDetailsScreen.errorChangeAlarmState")
+                );
             }
         }
     };
-
     // const handleAlarmDetected = (idAlarm: number) => {
     //     console.log(" Alarma detectada con id:", idAlarm);
     //     setAlarms(prev =>
@@ -363,7 +391,7 @@ export default function AlarmList() {
     // 6. Render de cada alarma (con mejoras visuales)
     const renderAlarmItem = ({ item }: { item: ParamTC }) => {
         let backgroundColor = "#8a9bb9"; // gris 
-        let textColor = "#000000"; // negro por defecto
+        let textColor = "#000000"; // negro 
 
         if (item.disparado) {
             backgroundColor = "#FF0000"; // rojo fuerte
@@ -381,12 +409,13 @@ export default function AlarmList() {
 
 
         return (
+
             <TouchableOpacity
                 style={[styles.alarmContainer, { backgroundColor }]}
                 onPress={() => openOptionModal(item)}
             >
                 <View style={styles.alarmRow}>
-                    <EstadoAlarmaCircle armado={item.armado} disparado={item.disparado} producido={item.producido} />
+                    <EstadoAlarmaCircle armado={item.armado} disparado={item.disparado} raised={item.raised} />
 
                     <View style={styles.iconAndText}>
                         {item.disparado && (
@@ -402,49 +431,56 @@ export default function AlarmList() {
                 </View>
                 <Entypo name="chevron-thin-right" size={20} color="#000" />
             </TouchableOpacity>
+
         );
     };
 
 
     return (
         <View style={styles.container}>
+            {/* 🔥 HEADER PERSONALIZADO - SIN MODAL AQUÍ */}
+            <View style={[styles.customHeader, { backgroundColor: headerColor }]}>
+                {/* Botón de retroceso */}
+                <TouchableOpacity
+                    style={styles.backButton}
+                    onPress={() => navigation.goBack()}
+                >
+                    <Feather name="arrow-left" size={24} color="#fff" />
+                </TouchableOpacity>
 
-            {/* Botón para obtener token
-            <TouchableOpacity
-                style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    backgroundColor: '#3478F6',
-                    padding: 12,
-                    borderRadius: 12
-                }}
-            onPress={getPushToken}
-            ></TouchableOpacity> */}
+                {/* Título del header */}
+                <View style={styles.headerTitleContainer}>
+                    <Text style={styles.headerSubtitle}>
+                        {farmName} - {siteName}
+                    </Text>
+                    <Text style={styles.headerMainTitle}>
+                        {headerText}
+                    </Text>
+                </View>
 
-            {/* <TouchableOpacity
-                style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    backgroundColor: '#3478F6',
-                    padding: 12,
-                    borderRadius: 12
-                }}
-                onPress={getDeviceToken}
-            >
-                <Ionicons name="key-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
-                <Text style={{ color: '#fff', fontWeight: 'bold' }}>Obtener Token FCM</Text>
-            </TouchableOpacity> */}
+                {/* Botón de 3 puntos */}
+                <TouchableOpacity
+                    style={styles.menuButton}
+                    onPress={() => {
+                        console.log("🔥 BOTÓN CUSTOM HEADER PRESIONADO");
+                        setMenuVisible(true);
+                    }}
+                >
+                    <Feather name="more-horizontal" size={24} color="#fff" />
+                </TouchableOpacity>
+            </View>
 
+            {/* Tu contenido normal */}
             {loading ? (
-                <Text style={styles.loadingText}>Cargando alarmas...</Text>
+                <Text style={styles.loadingText}>{t("DeviceDetailsScreen.loadingAlarms")}</Text>
             ) : tc5Disconnected ? (
                 <View style={styles.centeredContainer}>
                     <Ionicons name="alert-circle" size={64} color="#8a9bb9" />
-                    <Text style={styles.noAlarmsText}>TC5 Desconectado</Text>
+                    <Text style={styles.noAlarmsText}>{t("DeviceDetailsScreen.tc5Disconnected")}</Text>
                 </View>
             ) : alarms.length === 0 ? (
                 <View style={styles.centeredContainer}>
-                    <Text style={styles.noAlarmsText}>No hay alarmas habilitadas</Text>
+                    <Text style={styles.noAlarmsText}>{t("DeviceDetailsScreen.noEnabledAlarms")}</Text>
                 </View>
             ) : (
                 <FlatList
@@ -458,18 +494,16 @@ export default function AlarmList() {
                 />
             )}
 
-
-            {/* Botón Master en la esquina inferior derecha */}
+            {/* ButtonMaster */}
             <ButtonMaster
                 mac={mac}
                 fetchAlarms={fetchAlarms}
                 masterAlarmState={masterAlarmState}
                 onToggleMaster={handleToggleMaster}
                 disabled={tc5Disconnected}
-
             />
 
-            {/* Modal para armar/desarmar la alarma */}
+            {/* ✅ MODAL EN LA POSICIÓN CORRECTA - UNA SOLA VEZ */}
             <Modal
                 animationType="slide"
                 transparent={true}
@@ -486,18 +520,18 @@ export default function AlarmList() {
 
                         <TouchableOpacity style={styles.optionRow} onPress={() => handleOptionSelect("Armada")}>
                             <View style={[styles.circle, selectedAlarm?.armado ? { backgroundColor: "#76db36" } : {}]} />
-                            <Text style={styles.optionText}>Armada</Text>
+                            <Text style={styles.optionText}>{t("DeviceDetailsScreen.armed")}</Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.optionRow} onPress={() => handleOptionSelect("Desarmada")}>
                             <View style={[styles.circle, !selectedAlarm?.armado ? { backgroundColor: "#8a9bb9" } : {}]} />
-                            <Text style={styles.optionText}>Desarmada</Text>
+                            <Text style={styles.optionText}>{t("DeviceDetailsScreen.disarmed")}</Text>
                         </TouchableOpacity>
                     </Pressable>
-
                 </Pressable>
-
             </Modal>
+
+            {/* Menu3Puntos */}
             <Menu3Puntos
                 visible={menuVisible}
                 onClose={() => setMenuVisible(false)}
@@ -507,10 +541,10 @@ export default function AlarmList() {
                     farmName: device.farmName,
                     siteName: device.siteName,
                     mac: device.mac,
-                    idSite: device.idSite
+                    idSite: device.idSite,
+                    buildPortalRef: device.buildPortalRef
                 }}
             />
-
         </View>
     );
 }
@@ -652,7 +686,60 @@ const styles = StyleSheet.create({
         top: 12,
         right: 12,
         zIndex: 1,
-    }
+    },
 
+    customHeader: {
+        height: 100,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 15,
+        paddingTop: Platform.OS === 'ios' ? 50 : 25, // Safe area
+        elevation: 4,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+    },
 
-});
+    backButton: {
+        width: 44,
+        height: 44,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 22,
+    },
+
+    headerTitleContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 10,
+    },
+
+    headerSubtitle: {
+        fontSize: 16,
+        color: "#fff",
+        textAlign: "center",
+        fontWeight: "500",
+    },
+
+    headerMainTitle: {
+        fontSize: 20,
+        fontWeight: "bold",
+        color: "#fff",
+        textAlign: "center",
+        marginTop: 2,
+    },
+
+    menuButton: {
+        width: 44,
+        height: 44,
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 22,
+        backgroundColor: 'rgba(255,255,255,0.1)',
+    },
+
+    // ... resto de tus estilos
+})

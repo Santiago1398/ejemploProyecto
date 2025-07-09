@@ -7,7 +7,7 @@ import {
     View,
     Alert,
 } from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -15,6 +15,8 @@ import { RootStackParamList } from "@/types/navigation";
 import { get } from "@/services/api";
 import { ResponseAlarmaSite, ParamTC } from "@/infrastructure/intercafe/listapi.interface";
 import { PaperProvider } from "react-native-paper";
+import { t } from "@/i18n/i18nConfig";
+
 
 interface AlarmaDisparada {
     mac: number;
@@ -62,7 +64,7 @@ export default function Alarmas() {
                 }
             } catch (error) {
                 if (isMounted) {
-                    Alert.alert("Error", "No se pudieron cargar las alarmas disparadas.");
+                    Alert.alert(t("AlarmasScreen.errorLoadingAlarms"));
                 }
             }
         };
@@ -104,8 +106,8 @@ export default function Alarmas() {
         <PaperProvider>
             {alarmasDisparadas.length === 0 ? (
                 <View style={styles.centered}>
-                    <Ionicons name="checkmark-circle-outline" size={48} color="#4ade80" />
-                    <Text style={styles.noAlarmText}>No hay Alarmas disparadas</Text>
+                    <   FontAwesome name="bell-slash-o" size={48} color="#4ade80" />
+                    <Text style={styles.noAlarmText}>{t("AlarmasScreen.noAlarms")}</Text>
                 </View>
             ) : (
                 <FlatList
@@ -121,7 +123,7 @@ export default function Alarmas() {
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: "#f87171", // rojo claro para alarmas activas
+        backgroundColor: "red",
         borderRadius: 12,
         padding: 16,
         marginBottom: 12,

@@ -1,41 +1,46 @@
 import React, { useEffect, useState } from 'react';
 import { View, ActivityIndicator, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '@/app/HomeStack';
 import CustomMaps from '@/components/maps/CustomMaps';
 import { useLocationStore } from '@/store/useLocationStore';
 import * as Location from 'expo-location';
-import { get } from '@/services/api';
+import { t } from "@/i18n/i18nConfig";
+import { ResponseAlarmaSite } from '@/infrastructure/intercafe/listapi.interface';
 
-
-
-interface DeviceLocation {
-    mac: number;
-    farmName: string;
-    siteName: string;
-    latitude: number;
-    longitude: number;
-}
-
+type MapsScreenRouteProp = RouteProp<RootStackParamList, 'MapsScreen'>;
 type MapScreenNavigationProp = StackNavigationProp<RootStackParamList>;
 
 const MapsScreen = () => {
     const navigation = useNavigation<MapScreenNavigationProp>();
+    const route = useRoute<MapsScreenRouteProp>();
+
+    // 🔥 VALIDAR QUE EXISTAN LOS PARÁMETROS
+    const devices = route.params?.devices || []; // ✅ Fallback a array vacío
+
     const { lastKnownLocation, getLocation } = useLocationStore();
     const [loading, setLoading] = useState(true);
-    const [deviceLocations, setDeviceLocations] = useState<DeviceLocation[]>([]);
 
-    const fetchDeviceLocations = async () => {
-        try {
-            const response = await get('alarmtc/sites/saved/${mac}'); //Inventada 
-            const data = await response.json();
-            setDeviceLocations(data);
-        } catch (error) {
-            console.error('Error fetching device locations:', error);
+    // 🔥 DEBUG: Ver qué datos llegan
+    useEffect(() => {
+        console.log("🔥 DEBUG MapsScreen:");
+        console.log("- route.params:", route.params);
+        console.log("- devices length:", devices.length);
+        console.log("- devices:", devices);
+    }, [route.params, devices]);
+
+    // 🔥 VALIDAR SI HAY DISPOSITIVOS AL CARGAR
+    useEffect(() => {
+        if (devices.length === 0) {
+            console.warn("⚠️ No hay dispositivos para mostrar en el mapa");
+            Alert.alert(
+                t("MapsScreen.noDevices.title"),    // ✅ "Sin dispositivos" traducido
+                t("MapsScreen.noDevices.message")   // ✅ "No hay dispositivos..." traducido
+            );
+            return;
         }
-    };
-
+    }, [devices]);
 
     useEffect(() => {
         const checkPermissionsAndLocation = async () => {
@@ -43,23 +48,21 @@ const MapsScreen = () => {
                 const { status } = await Location.getForegroundPermissionsAsync();
 
                 if (status !== 'granted') {
-                    // Mostrar alerta personalizada
                     Alert.alert(
-                        "Permisos necesarios",
-                        "Habilite la geolocalización para posicionar su TC5 en el mapa",
+                        t("MapsScreen.permission.title"),
+                        t("MapsScreen.permission.message"),
                         [
                             {
-                                text: "Aceptar",
+                                text: t("MapsScreen.permission.accept"),
                                 onPress: async () => {
                                     const { status: newStatus } = await Location.requestForegroundPermissionsAsync();
                                     if (newStatus === 'granted') {
                                         await getLocation();
-                                        await fetchDeviceLocations();
                                         setLoading(false);
                                     } else {
                                         Alert.alert(
-                                            "Permisos denegados",
-                                            "Debe permitir los permisos de ubicación para mostrar el mapa."
+                                            t("MapsScreen.permission.deniedTitle"),
+                                            t("MapsScreen.permission.deniedMessage")
                                         );
                                         navigation.goBack();
                                     }
@@ -68,16 +71,14 @@ const MapsScreen = () => {
                         ]
                     );
                 } else {
-                    // Ya tenía permisos
                     await getLocation();
-                    await fetchDeviceLocations();
                     setLoading(false);
                 }
             } catch (error) {
                 console.error("Error al verificar permisos:", error);
                 Alert.alert(
-                    "Error",
-                    "Ocurrió un error al verificar los permisos de ubicación."
+                    t("MapsScreen.errorTitle"),
+                    t("MapsScreen.errorMessage")
                 );
                 navigation.goBack();
             }
@@ -85,7 +86,6 @@ const MapsScreen = () => {
 
         checkPermissionsAndLocation();
     }, []);
-
 
     if (loading || lastKnownLocation === null) {
         return (
@@ -100,6 +100,7 @@ const MapsScreen = () => {
             <CustomMaps
                 initialLocation={lastKnownLocation}
                 showUserLocation={true}
+                devices={devices}
             />
         </View>
     );

@@ -1,0 +1,222 @@
+{
+    "AlarmasScreen": {
+        "errorLoadingAlarms": "Nie udało się wczytać uruchomionych alarmów",
+        "noAlarms": "Brak uruchomionych alarmów"
+    },
+    "deviceList": {
+        "loadingDevices": "Ładowanie urządzeń...",
+        "serverDisconnected": "Serwer rozłączony. Spróbuj ponownie później.",
+        "noLocationsAvailable": "Brak dostępnych lokalizacji",
+        "alarmActive": "🚨 Alarm aktywny",
+        "acceptAndStopAlarm": "Akceptuj i zatrzymaj alarm",
+        "errorTitle": "Błąd",
+        "deviceLoadError": "Nie udało się wczytać urządzeń."
+    },
+    "DeviceDetailsScreen": {
+        "alarmTriggered": "Alarm Uruchomiony",
+        "alarmsEnabled": "Alarmy Uzbrojone",
+        "alarmsDisabled": "Alarmy Rozbrojone",
+        "successTitle": "Sukces",
+        "alarmsActivated": "Alarmy zostały uzbrojone.",
+        "alarmsDeactivated": "Alarmy zostały rozbrojone.",
+        "changeStatusError": "Nie można zmienić stanu alarmów.",
+        "errorTitle": "Błąd",
+        "errorLoadingAlarms": "Nie udało się wczytać alarmów.",
+        "errorChangeAlarmState": "Nie można zmienić stanu alarmu.",
+        "loadingAlarms": "Ładowanie alarmów...",
+        "tc5Disconnected": "TC5 odłączony",
+        "noEnabledAlarms": "Brak połączenia",
+        "armed": "Uzbrojony",
+        "disarmed": "Rozbrojony"
+    },
+    "DrawerContent": {
+        "logout": "Wyloguj",
+        "login": "Zaloguj",
+        "settings": "Ustawienia",
+        "maintenance": "Konserwacja"
+    },
+    "EditarPrioridadScreen": {
+        "errorTitle": "Błąd",
+        "invalidPhone": "Wprowadź poprawny numer telefonu.",
+        "successTitle": "Sukces",
+        "SaveInformacion": "Informacje zapisane pomyślnie",
+        "sendError": "Nie udało się wysłać informacji",
+        "title": "Priorytet",
+        "label": "Numer telefonu:",
+        "placeholder": "123456789",
+        "save": "Zapisz",
+        "selectCountry": "Wybierz kraj",
+        "cancel": "Anuluj"
+    },
+    "BottonMaster": {
+        "label": "Master"
+    },
+    "CustomMaps": {
+        "saveTitle": "Zapisz lokalizację",
+        "saveMessage": "Czy chcesz zapisać bieżącą lokalizację?",
+        "cancel": "Anuluj",
+        "save": "Zapisz"
+    },
+    "Menu3Puntos": {
+        "save": "Zapisz lokalizację",
+        "delete": "Usuń lokalizację",
+        "explotacion": "Przejdź do gospodarstwa",
+        "configuracion": "Konfiguracja TC5"
+    },
+    "PhoneNumberDialog": {
+        "title": "Wprowadź swój numer telefonu",
+        "subtitle": "Aby aplikacja TC5 znała Twój numer.",
+        "placeholder": "Np.: 612345678",
+        "cancel": "Anuluj",
+        "save": "Zapisz",
+        "invalid": "Nieprawidłowy numer. Powinien mieć 9 cyfr."
+    },
+    "HomeScreen": {
+        "cti": "CTI",
+        "control": "Control",
+        "Home": "Strona główna"
+    },
+    "CustomHeader": {
+        "home": "Strona główna"
+    },
+    "MantenimientoScreen": {
+        "apiTitle": "Serwer API",
+        "apiPlaceholder": "http://192.168.1.1:8032/api",
+        "saveButton": "Zapisz URL",
+        "saveSuccessTitle": "Zapisano",
+        "saveSuccessMessage": "Adres URL serwera został zaktualizowany.",
+        "saveErrorTitle": "Błąd",
+        "saveErrorMessage": "Nie udało się zapisać adresu URL.",
+        "fcmTitle": "FCM Token urządzenia",
+        "fcmButton": "Pobierz token FCM",
+        "fcmCopiedTitle": "Token skopiowany",
+        "fcmCopiedMessage": "Token FCM skopiowany do schowka:\n\n{{token}}",
+        "fcmErrorTitle": "Błąd",
+        "fcmErrorMessage": "Nie udało się pobrać tokenu."
+    },
+    "SettingsScreen": {
+        "notificaciones": {
+            "desactivar": {
+                "titulo": "Wyłącz powiadomienia",
+                "mensaje": "Czy chcesz wyłączyć powiadomienia aplikacji?"
+            },
+            "activar": {
+                "titulo": "Włącz powiadomienia",
+                "mensaje": "Czy chcesz otrzymywać powiadomienia o alarmach i aktualizacjach?"
+            },
+            "cancelar": "Anuluj",
+            "desactivars": "Wyłącz",
+            "no": "Nie",
+            "si": "Tak"
+        },
+        "ubicacion": {
+            "desactivar": "Wyłącz lokalizację",
+            "permisos": {
+                "desactivar": "Czy chcesz wyłączyć uprawnienia lokalizacji?"
+            },
+            "label": "Uprawnienia lokalizacji"
+        },
+        "titulo": {
+            "permisos": "Uprawnienia",
+            "notificaciones": "Powiadomienia",
+            "nivelPrioridad": "Poziom priorytetu"
+        },
+        "telefono": {
+            "presente": "Tel:",
+            "ausente": "Brak przypisanego numeru"
+        },
+        "language": {
+            "title": "Język"
+        }
+    },
+    "login": {
+        "titulo": "Zaloguj się",
+        "subtitulo": "Zaloguj się, aby kontynuować",
+        "correo": "Email",
+        "contrasena": "Hasło",
+        "boton": "Zaloguj",
+        "error": {
+            "datos": "Nieprawidłowy email lub hasło",
+            "general": "Błąd",
+            "mensaje": "Coś poszło nie tak"
+        }
+    },
+    "useNotificationPermission": {
+        "alerta": {
+            "titulo": "Powiadomienia",
+            "mensaje": "Włącz powiadomienia, aby odbierać alarmy TC5",
+            "boton": "Akceptuj"
+        },
+        "error": {
+            "permisos": "Błąd podczas obsługi uprawnień powiadomień",
+            "verificacion": "Błąd sprawdzania uprawnień"
+        }
+    },
+    "locations": {
+        "alerta": {
+            "titulo": "Wymagane uprawnienia lokalizacji",
+            "mensaje": "Aby kontynuować, włącz uprawnienia lokalizacji w ustawieniach aplikacji",
+            "abrirAjustes": "Otwórz ustawienia",
+            "cancelar": "Anuluj"
+        }
+    },
+    "DeviceMaps": {
+        "errorTitle": "Błąd",
+        "error": {
+            "mensaje": "Nie udało się pobrać Twojej lokalizacji.",
+            "title": "Błąd",
+            "obtener": "Nie udało się pobrać Twojej lokalizacji."
+        },
+        "titulo": {
+            "guardar": "Zapisz lokalizację"
+        },
+        "mensaje": {
+            "guardar": "Czy chcesz zapisać bieżącą lokalizację?"
+        },
+        "cancelar": "Anuluj",
+        "guardar": "Zapisz",
+        "ubicacion": {
+            "guardada": {
+                "titulo": "Lokalizację zapisano",
+                "mensaje": "Lokalizację urządzenia zapisano pomyślnie."
+            },
+            "no": {
+                "guardada": "Nie udało się zapisać lokalizacji urządzenia."
+            }
+        },
+        "permiso": {
+            "necesario": {
+                "titulo": "Wymagane uprawnienia",
+                "mensaje": "Musisz włączyć uprawnienia lokalizacji, aby skorzystać z tej funkcji"
+            },
+            "boton": {
+                "ir": "Przejdź do ustawień",
+                "cancelar": "Anuluj"
+            }
+        },
+        "loading": {
+            "verificando": "Sprawdzanie uprawnień...",
+            "cargando": "Ładowanie lokalizacji..."
+        }
+    },
+    "MapsScreen": {
+        "permission": {
+            "title": "Wymagane uprawnienia",
+            "message": "Włącz geolokalizację, aby umieścić TC5 na mapie",
+            "deniedTitle": "Uprawnienia odrzucone",
+            "deniedMessage": "Musisz zezwolić na lokalizację, aby wyświetlić mapę.",
+            "accept": "Akceptuj"
+        },
+        "errorTitle": "Błąd",
+        "errorMessage": "Wystąpił błąd podczas sprawdzania uprawnień lokalizacji.",
+        "noDevices": {
+            "title": "Brak urządzeń",
+            "message": "Nie ma urządzeń do wyświetlenia na mapie."
+        }
+    },
+    "HomeStack": {
+        "DeviceMaps": {
+            "title": "Ustaw lokalizację urządzenia"
+        }
+    }
+}

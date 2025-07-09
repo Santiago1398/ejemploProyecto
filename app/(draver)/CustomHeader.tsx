@@ -1,6 +1,8 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
+import { t } from "@/i18n/i18nConfig";
+
 
 export default function CustomHeader({ navigation }: { navigation: any }) {
     return (
@@ -8,7 +10,7 @@ export default function CustomHeader({ navigation }: { navigation: any }) {
             <TouchableOpacity onPress={() => navigation.toggleDrawer()} style={styles.menuButton}>
                 <FontAwesome name="bars" size={24} color="black" />
             </TouchableOpacity>
-            <Text style={styles.headerTitle}>Home</Text>
+            <Text style={styles.headerTitle}>{t("CustomHeader.home")}</Text>
         </View>
     );
 }
@@ -33,4 +35,3 @@ const styles = StyleSheet.create({
         textAlign: "center",
     },
 });
-

@@ -1,4 +1,3 @@
-
 //Esto para la lista de los dispositivos (granjas)
 export interface ResponseAlarmaSite {
     farmName: string;
@@ -12,9 +11,12 @@ export interface ResponseAlarmaSite {
     locLevel: number;
     alarmStatus: boolean;
     alarmType: number;
+
     // Añadir los tipos
     latitude: number;
     longitude: number;
+    buildPortalRef: number
+    armed: boolean
 
 
 }
@@ -31,6 +33,7 @@ export interface ParamTC {
     consignaMinima: number;
     consignaMaxima: number;
     texto: string;
-    //passwordCorrection: boolean;
-    producido: boolean;
+
+    passwordCorrection: boolean;
+    raised: boolean;
 }

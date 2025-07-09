@@ -8,6 +8,8 @@ import FAB from "@/components/maps/FAB";
 import * as Location from 'expo-location';
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "app/HomeStack"
+import { t } from "@/i18n/i18nConfig";
+
 
 
 
@@ -23,7 +25,7 @@ type DeviceMapNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 export default function DeviceMap() {
     const route = useRoute<DeviceMapRouteProp>();
     const navigation = useNavigation<DeviceMapNavigationProp>();
-    const { deviceLocation, farmName, siteName, mac } = route.params;
+    const { deviceLocation, farmName, siteName, mac, idSite } = route.params;
     const { lastKnownLocation, getLocation } = useLocationStore();
     const [marketLocation, setMarketLocation] = useState<{ latitude: number; longitude: number } | null>(null);
     const [loading, setLoading] = useState(true);
@@ -45,7 +47,8 @@ export default function DeviceMap() {
                 if (location) {
                     setMarketLocation(location);
                 } else {
-                    Alert.alert("Error", "No se pudo obtener tu ubicación.");
+                    t("DeviceMaps.errorTitle"),
+                        t("DeviceMaps.error.mensaje")
                 }
             }
             setLoading(false);
@@ -74,7 +77,7 @@ export default function DeviceMap() {
                     if (location) {
                         setMarketLocation(location);
                     } else {
-                        Alert.alert("Error", "No se pudo obtener tu ubicación.");
+                        Alert.alert(t("DeviceMaps.errorTitle"), t("DeviceMaps.error.obtener"));
                     }
                     setLoading(false);
                 });
@@ -83,16 +86,16 @@ export default function DeviceMap() {
     }, [deviceLocation, lastKnownLocation, getLocation]);
 
     const handleSaveLocation = () => {
-        Alert.alert("Guardar Ubicacion", "¿Desea guardar la ubicacion actual?", [
+        Alert.alert(t("DeviceMaps.titulo.guardar"), t("DeviceMaps.mensaje.guardar"), [
             {
-                text: "Cancelar",
+                text: t("DeviceMaps.cancelar"),
                 style: "cancel"
             },
             {
-                text: "Guardar",
+                text: t("DeviceMaps.guardar"),
                 onPress: async () => {
                     if (!marketLocation) {
-                        Alert.alert("Error", "No se pudo obtener tu ubicación.");
+                        Alert.alert(t("DeviceMaps.errorTitle"), t("DeviceMaps.error.obtener"));
                         return;
                     }
                     try {
@@ -101,9 +104,10 @@ export default function DeviceMap() {
                             mac,
                             latitude: marketLocation.latitude,
                             longitude: marketLocation.longitude,
+                            idSite
                         });
                         setLocationSaved(true);
-                        Alert.alert("Ubicación Guardada", "La ubicación del dispositivo ha sido guardada correctamente.");
+                        Alert.alert(t("DeviceMaps.ubicacion.guardada.titulo"), t("DeviceMaps.ubicacion.guardada.mensaje"));
                         navigation.goBack(); // Regresa a la pantalla anterior
                     } catch (error) {
                         Alert.alert("Error", "No se pudo guardar la ubicación del dispositivo.");
@@ -121,18 +125,18 @@ export default function DeviceMap() {
                 if (status !== 'granted') {
                     // Si no hay permisos, navegar a Settings
                     Alert.alert(
-                        "Permisos necesarios",
-                        "Necesitas habilitar los permisos de ubicación para usar esta función",
+                        t("DeviceMaps.permiso.necesario.titulo"),
+                        t("DeviceMaps.permiso.necesario.mensaje"),
                         [
                             {
-                                text: "Ir a Configuración",
+                                text: t("DeviceMaps.permiso.boton.ir"),
                                 onPress: () => {
                                     navigation.goBack();
                                     navigation.navigate('SettingsScreen')
                                 }
                             },
                             {
-                                text: "Cancelar",
+                                text: t("DeviceMaps.permiso.boton.cancelar"),
                                 style: "cancel",
                                 onPress: () => navigation.goBack()
                             }
@@ -157,8 +161,11 @@ export default function DeviceMap() {
             <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#007AFF" />
                 <Text style={styles.loadingText}>
-                    {!marketLocation ? "Verificando permisos..." : "Cargando ubicación..."}
+                    {!marketLocation
+                        ? t("DeviceMaps.loading.verificando")
+                        : t("DeviceMaps.loading.cargando")}
                 </Text>
+
             </View>
         );
     }
@@ -191,7 +198,7 @@ export default function DeviceMap() {
                 />
             </MapView>
             <FAB
-                iconName='pin-outline'
+                iconName='save-outline'
                 onPress={handleSaveLocation}
                 style={{
                     bottom: 80,
