@@ -9,6 +9,7 @@ import { EventSubscription } from "expo-modules-core";
 import axios from "axios";
 import { deviceType } from "expo-device";
 import { getApiUrl } from "@/utils/apiconfig";
+import { API_URL } from "@/config/apiConfig";
 
 Notifications.setNotificationHandler({
     handleNotification: async () => ({
@@ -179,25 +180,30 @@ class NotificationService {
             await AsyncStorage.setItem("deviceToken", token);
 
 
-            //const deviceType = Platform.OS; // "ios" o "android"
+            // const deviceType = Platform.OS; // "ios" o "android"
             const LOCAL_API = await getApiUrl();
 
-            await fetch(`${LOCAL_API}/push-token`, {
+            await fetch(`${LOCAL_API}/alarmtc/user/push-token`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ token, userId, deviceType: Platform.OS, telefono }),
             });
             console.log("✅ Token registrado en el backend");
 
-
-            // await post("alarmtc/users/push-token", {
+            console.log("🌐 Enviando a servidor:", `${API_URL}/push-token`);
+            console.log("📦 Datos enviados:", { token, userId, deviceType: Platform.OS, telefono });
+            // await post("alarmtc/user/push-token", {
             //     token,
             //     userId,
             //     deviceType: Platform.OS,
-            //     telefono, // Agrega el número de teléfono si es necesario
+            //     telefono,
             // });
+            //console.log("✅ Respuesta del servidor: Token registrado correctamente");
+            //Alert.alert("✅ Respuesta del servidor:", "Token registrado correctamente");
+
         } catch (error) {
             console.error("Error registrando dispositivo:", error);
+
         }
     }
 

@@ -1,0 +1,223 @@
+{
+    "AlarmasScreen": {
+        "errorLoadingAlarms": "Failed to load triggered alarms",
+        "noAlarms": "No triggered alarms"
+    },
+    "deviceList": {
+        "loadingDevices": "Loading devices...",
+        "serverDisconnected": "Server disconnected. Please try again later.",
+        "noLocationsAvailable": "No locations available",
+        "alarmActive": "🚨 Alarm active",
+        "acceptAndStopAlarm": "Accept and stop alarm",
+        "errorTitle": "Error",
+        "deviceLoadError": "Could not load devices."
+    },
+    "DeviceDetailsScreen": {
+        "alarmTriggered": "Alarm triggered",
+        "alarmsEnabled": "Alarms enabled",
+        "alarmsDisabled": "Alarms disabled",
+        "successTitle": "Success",
+        "alarmsActivated": "Alarms have been activated.",
+        "alarmsDeactivated": "Alarms have been deactivated.",
+        "changeStatusError": "Failed to change alarm status.",
+        "tc5Disconnected": "TC5 Disconnected",
+        "errorTitle": "Error",
+        "errorLoadingAlarms": "Failed to load alarms.",
+        "errorChangeAlarmState": "Failed to change alarm state.",
+        "loadingAlarms": "Loading alarms...",
+        "noEnabledAlarms": "No connection",
+        "armed": "Armed",
+        "disarmed": "Disarmed"
+    },
+    "DrawerContent": {
+        "logout": "Logout",
+        "login": "Login",
+        "settings": "Settings",
+        "maintenance": "Maintenance"
+    },
+    "EditarPrioridadScreen": {
+        "errorTitle": "Error",
+        "invalidPhone": "Enter a valid phone number.",
+        "successTitle": "Success",
+        "SaveInformacion": "Information saved successfully",
+        "sendError": "Could not send the information",
+        "title": "Priority",
+        "label": "Phone number:",
+        "placeholder": "123456789",
+        "save": "Save",
+        "selectCountry": "Select country",
+        "cancel": "Cancel"
+    },
+    "BottonMaster": {
+        "label": "Master"
+    },
+    "CustomMaps": {
+        "saveTitle": "Save Location",
+        "saveMessage": "Do you want to save the current location?",
+        "cancel": "Cancel",
+        "save": "Save"
+    },
+    "Menu3Puntos": {
+        "save": "Save Location",
+        "delete": "Delete Location",
+        "explotacion": "Go to Farm",
+        "configuracion": "TC5 Settings"
+    },
+    "PhoneNumberDialog": {
+        "title": "Enter your phone number",
+        "subtitle": "So the TC5 app knows your number.",
+        "placeholder": "e.g. 612345678",
+        "cancel": "Cancel",
+        "save": "Save",
+        "invalid": "Invalid number. It must be 9 digits."
+    },
+    "HomeScreen": {
+        "cti": "CTI",
+        "control": "Control",
+        "home": "Home"
+    },
+    "CustomHeader": {
+        "home": "Home"
+    },
+    "MantenimientoScreen": {
+        "apiTitle": "API Server",
+        "apiPlaceholder": "http://192.168.1.1:8032/api",
+        "saveButton": "Save URL",
+        "saveSuccessTitle": "Saved",
+        "saveSuccessMessage": "Server URL has been updated.",
+        "saveErrorTitle": "Error",
+        "saveErrorMessage": "Could not save the URL.",
+        "fcmTitle": "Device FCM Token",
+        "fcmButton": "Get FCM Token",
+        "fcmCopiedTitle": "Token copied",
+        "fcmCopiedMessage": "FCM token copied to clipboard:\n\n{{token}}",
+        "fcmErrorTitle": "Error",
+        "fcmErrorMessage": "Could not get the token."
+    },
+    "SettingsScreen": {
+        "notificaciones": {
+            "desactivar": {
+                "titulo": "Disable notifications",
+                "mensaje": "Do you want to disable app notifications?"
+            },
+            "activar": {
+                "titulo": "Enable notifications",
+                "mensaje": "Do you want to receive alarm and update notifications?"
+            },
+            "cancelar": "Cancel",
+            "desactivars": "Disable",
+            "no": "No",
+            "si": "Yes"
+        },
+        "ubicacion": {
+            "desactivar": "Disable location",
+            "permisos": {
+                "desactivar": "Do you want to disable location permissions?"
+            },
+            "label": "Location Permissions"
+        },
+        "titulo": {
+            "permisos": "Permissions",
+            "notificaciones": "Notifications",
+            "nivelPrioridad": "Priority Level"
+        },
+        "telefono": {
+            "presente": "Phone:",
+            "ausente": "No phone number assigned"
+        },
+        "language": {
+            "title": "Language"
+        }
+    },
+    "login": {
+        "titulo": "Sign In",
+        "subtitulo": "Please sign in to continue",
+        "correo": "Email",
+        "contrasena": "Password",
+        "boton": "Sign In",
+        "error": {
+            "datos": "Incorrect email or password",
+            "general": "Error",
+            "mensaje": "Something went wrong"
+        }
+    },
+    "useNotificationPermission": {
+        "alerta": {
+            "titulo": "Notifications",
+            "mensaje": "Enable notifications to receive TC5 alarms",
+            "boton": "Allow"
+        },
+        "error": {
+            "permisos": "Error handling notification permissions",
+            "verificacion": "Error checking permission status"
+        }
+    },
+    "locations": {
+        "alerta": {
+            "titulo": "Location permission required",
+            "mensaje": "To continue, enable the location permission in the app settings",
+            "abrirAjustes": "Open settings",
+            "cancelar": "Cancel"
+        }
+    },
+    "DeviceMaps": {
+        "errorTitle": "Error",
+        "error": {
+            "mensaje": "Could not retrieve your location.",
+            "title": "Error",
+            "obtener": "Could not retrieve your location."
+        },
+        "titulo": {
+            "guardar": "Save Location"
+        },
+        "mensaje": {
+            "guardar": "Do you want to save the current location?"
+        },
+        "cancelar": "Cancel",
+        "guardar": "Save",
+        "ubicacion": {
+            "guardada": {
+                "titulo": "Location Saved",
+                "mensaje": "The device location has been successfully saved."
+            },
+            "no": {
+                "guardada": "Failed to save the device location."
+            }
+        },
+        "permiso": {
+            "necesario": {
+                "titulo": "Permissions Required",
+                "mensaje": "You need to enable location permissions to use this feature."
+            },
+            "boton": {
+                "ir": "Go to Settings",
+                "cancelar": "Cancel"
+            }
+        },
+        "loading": {
+            "verificando": "Verifying permissions...",
+            "cargando": "Loading location..."
+        }
+    },
+    "MapsScreen": {
+        "permission": {
+            "title": "Permissions required",
+            "message": "Enable geolocation to place your TC5 on the map",
+            "deniedTitle": "Permissions denied",
+            "deniedMessage": "You must allow location permissions to display the map.",
+            "goToSettings": "Go to Settings",
+            "accept": "Accept"
+        },
+        "errorTitle": "Error",
+        "errorMessage": "An error occurred while checking location permissions.",
+        "noDevices": {
+            "title": "No devices",
+            "message": "There are no devices to show on the map."
+        }
+    },
+    "HomeStack": {
+        "DeviceMaps": {
+            "title": "Set Device Location"
+        }
+    }
+}

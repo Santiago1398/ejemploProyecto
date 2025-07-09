@@ -3,7 +3,6 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import DeviceDetailsScreen from "@/components/DeviceDetailsScreen";
 import { Provider as PaperProvider } from "react-native-paper";
 import HomeScreen from "./(tabs)/HomeScreen";
-import Menu3Puntos from "@/components/Menu3Puntos";
 import SettingsScreen from "./(tabs)/SettingsScreen";
 import DeviceMaps from "./extra/map/DeviceMaps";
 import MapsScreen from "./extra/map/MapsScreen";
@@ -11,12 +10,14 @@ import PermissionsScreen from "./extra/permissions/PermissionScreen";
 import AlarmasScreen from "./(tabs)/AlarmasScreen";
 import Explotacion from "@/components/Explotacion";
 import ConfiguracionTC5 from "@/components/ConfiguracionTC5";
-import { DrawerActions, useNavigation } from '@react-navigation/native';
-import { TouchableOpacity } from 'react-native';
+import { DrawerActions } from '@react-navigation/native';
+import { TouchableOpacity, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import EditarPrioridadScreen from "@/components/EditarPrioridadScreen";
-const Stack = createNativeStackNavigator<RootStackParamList>();
+import { t } from "../i18n/i18nConfig";
+import { ResponseAlarmaSite } from "@/infrastructure/intercafe/listapi.interface";
 
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export type RootStackParamList = {
     Home: undefined;
@@ -29,13 +30,16 @@ export type RootStackParamList = {
             latitude: number;
             longitude: number;
             idSite: number;
+            buildPortalRef: number;
         };
     };
-
     BottonMaster: {
         mac: number
     };
-    MapsScreen: undefined;
+    MapsScreen: {
+        devices: ResponseAlarmaSite[];
+
+    }
     DeviceMaps: {
         deviceLocation: {
             latitude: number;
@@ -44,6 +48,7 @@ export type RootStackParamList = {
         farmName: string;
         siteName: string;
         mac: number;
+        idSite: number
     };
     permissions: undefined;
     SettingsScreen: undefined;
@@ -56,6 +61,7 @@ export type RootStackParamList = {
         siteName: string;
         farmName: string;
         idSite: number;
+        buildPortalRef: number;
     };
     ConfiguracionTC5: {
         mac: number;
@@ -81,58 +87,63 @@ export type RootDrawerParamList = {
     Mantenimiento: undefined;
 };
 
-
 export default function HomeStack() {
     return (
         <PaperProvider>
-            <Stack.Navigator >
+            <Stack.Navigator
+                screenOptions={{
+                    headerShown: false,
+                }}
+            >
                 <Stack.Screen
                     name="Home"
                     component={HomeScreen}
                     options={({ navigation }) => ({
-                        headerShown: true,
+                        headerShown: false,
                         headerTitle: "Home",
                         headerTitleAlign: "center",
-                        headerLeft: () => (
-                            <TouchableOpacity onPress={() => navigation.dispatch(DrawerActions.openDrawer())}>
-                                <Ionicons name="menu" size={28} color="#000" style={{ marginLeft: 12 }} />
-                            </TouchableOpacity>
-                        ),
+                        // headerLeft: () => (
+                        //     <View style={{ marginLeft: 12 }}>
+                        //         <TouchableOpacity
+                        //             onPress={() => {
+                        //                 console.log("🔥 HOME DRAWER BUTTON PRESIONADO");
+                        //                 // Usar DrawerActions también aquí
+                        //                 navigation.dispatch(DrawerActions.openDrawer());
+                        //             }}
+                        //             style={{
+                        //                 width: 44,
+                        //                 height: 44,
+                        //                 justifyContent: 'center',
+                        //                 alignItems: 'center',
+                        //                 backgroundColor: 'rgba(0,255,0,0.2)', // DEBUG verde
+                        //             }}
+                        //         >
+                        //             <Ionicons name="menu" size={28} color="#000" />
+                        //         </TouchableOpacity>
+                        //     </View>
+                        // ),
                     })}
                 />
 
                 <Stack.Screen
                     name="DeviceDetails"
                     component={DeviceDetailsScreen}
-                    options={({ route }) => ({
-                        // headerShown: false,
-                        headerTitleAlign: "center",
-                        title: route.params.device.farmName,
-                        headerLeft: () => null,
-                        headerRight: () => (
-                            <Menu3Puntos
-                                device={route.params.device}
-                                visible={false}
-                                onClose={() => { }}
-                            />
-                        ),
-                    })}
+                    options={{
+                        headerShown: false, // ✅ OCULTAR el header de React Navigation
+                    }}
                 />
-
 
                 <Stack.Screen
                     name="DeviceMaps"
                     component={DeviceMaps}
-                    options={{ headerTitle: "Ubicación del Dispositivo" }}
-
+                    options={{ headerTitle: t("HomeStack.DeviceMaps.title") }}
                 />
+
                 <Stack.Screen
                     name="AlarmasScreen"
                     component={AlarmasScreen}
                     options={{ headerTitle: "Alarmas" }}
-
                 />
-
 
                 <Stack.Screen
                     name="permissions"
@@ -150,6 +161,7 @@ export default function HomeStack() {
                     component={MapsScreen}
                     options={{ headerTitle: "Mapas" }}
                 />
+
                 <Stack.Screen
                     name="Explotacion"
                     component={Explotacion}
@@ -167,12 +179,7 @@ export default function HomeStack() {
                         title: route.params.farmName,
                     })}
                 />
-                {/* <Stack.Screen name="EditarPrioridadScreen" component={EditarPrioridadScreen} /> */}
-
-
             </Stack.Navigator>
         </PaperProvider>
     );
-
-
 }

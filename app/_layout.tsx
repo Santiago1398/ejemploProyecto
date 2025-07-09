@@ -18,7 +18,7 @@ import SettingsScreen from "./(tabs)/SettingsScreen";
 import AlarmasScreen from "./(tabs)/AlarmasScreen";
 import EditarPrioridadScreen from "@/components/EditarPrioridadScreen";
 import { notificationService } from "@/hooks/NotificationService";
-import HeaderLeftButton from "@/components/HeaderLeftButton";
+//import HeaderLeftButton from "@/components/HeaderLeftButton";
 import MantenimientoScreen from "./(tabs)/MantenimientoScreen";
 import SolicitarMantenimientoScreen from "@/utils/SolicitarMantenimiento";
 
@@ -129,72 +129,85 @@ export default function Layout() {
             <Drawer.Navigator
                 drawerContent={(props) => <DrawerContent {...props} />}
                 screenOptions={{
-                    headerShown: true,
+                    headerShown: false,
                     headerTitleAlign: "center",
                     headerStyle: {
                         backgroundColor: "#fff",
                     },
                     headerTintColor: "#000",
                     headerLeft: undefined,
-
                 }}
                 initialRouteName={isAuthenticated ? "Home" : "Login"}
             >
                 {isAuthenticated ? (
-                    <Drawer.Screen name="Home"
+                    <Drawer.Screen
+                        name="Home"
                         component={TabsNavigator}
-                        options={{ headerShown: false }}
-
+                        options={{
+                            headerShown: false
+                        }}
                     />
                 ) : (
                     <Drawer.Screen
                         name="Login"
                         component={LoginScreen}
                         options={{
-                            headerTitle: "Iniciar Sesión",
+                            headerShown: false,
                             swipeEnabled: false,
                             drawerItemStyle: { display: "none" },
-
-
                         }}
                     />
                 )}
-                <Drawer.Screen name="Map" component={MapsScreen} />
-                <Drawer.Screen name="permissions" component={PermissionsScreen} />
-                <Drawer.Screen name="Settings" component={SettingsScreen} />
+
+                <Drawer.Screen
+                    name="Map"
+                    component={MapsScreen}
+                    options={{ headerShown: false }}
+                />
+
+                <Drawer.Screen
+                    name="permissions"
+                    component={PermissionsScreen}
+                    options={{ headerShown: false }}
+                />
+
+                <Drawer.Screen
+                    name="Settings"
+                    component={SettingsScreen}
+                    options={{ headerShown: false }}
+                />
+
                 <Drawer.Screen
                     name="Alarmas"
                     component={AlarmasScreen}
                     options={{
-
-                        headerTitle: "Alarmas",
                         drawerItemStyle: { display: "none" },
                         headerShown: false
                     }}
                 />
+
                 <Drawer.Screen
                     name="EditarPrioridadScreen"
                     component={EditarPrioridadScreen}
-                    options={{ headerTitle: "Nivel Prioridad" }}
-
+                    options={{ headerShown: false }}
                 />
+
                 <Drawer.Screen
                     name="Mantenimiento"
                     component={MantenimientoScreen}
                     options={{
-                        headerTitle: "Mantenimiento",
+                        headerShown: false
                     }}
                 />
+
                 <Drawer.Screen
                     name="SolicitarMantenimiento"
                     component={SolicitarMantenimientoScreen}
                     options={{
-                        headerTitle: "Verificación",
+                        headerShown: false,
                         drawerItemStyle: { display: "none" }
                     }}
                 />
-
-
             </Drawer.Navigator>
         </PermissionsCkeckProvider>
     );

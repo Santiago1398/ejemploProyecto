@@ -2,6 +2,7 @@ import React, { useEffect, useState, } from "react";
 import { TouchableOpacity, Alert, StyleSheet, Text, View } from "react-native";
 import { post } from "@/services/api";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { t } from "@/i18n/i18nConfig";
 
 interface ButtonMasterProps {
     mac: number;
@@ -63,7 +64,7 @@ const ButtonMaster: React.FC<ButtonMasterProps> = ({ mac, fetchAlarms, masterAla
             ]}
             onPress={onToggleMaster}
         >
-            <Text style={styles.masterLabel}>Master</Text>
+            <Text style={styles.masterLabel}>{t("BottonMaster.label")}</Text>
             <MaterialCommunityIcons name="power" size={32} color="white" />
         </TouchableOpacity>
 

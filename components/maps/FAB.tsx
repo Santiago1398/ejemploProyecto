@@ -2,6 +2,7 @@ import { View, Text, StyleSheet, ViewStyle, StyleProp, TouchableOpacity } from '
 import React from 'react'
 import { Ionicons } from '@expo/vector-icons'
 
+
 interface Props {
     iconName: keyof typeof Ionicons.glyphMap;
     onPress: () => void;

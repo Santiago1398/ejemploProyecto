@@ -1,0 +1,222 @@
+{
+    "AlarmasScreen": {
+        "errorLoadingAlarms": "Не удалось загрузить сработавшие тревоги",
+        "noAlarms": "Нет сработавших тревог"
+    },
+    "deviceList": {
+        "loadingDevices": "Загрузка устройств…",
+        "serverDisconnected": "Сервер отключён. Попробуйте позже.",
+        "noLocationsAvailable": "Нет доступных локаций",
+        "alarmActive": "🚨 Тревога активна",
+        "acceptAndStopAlarm": "Принять и остановить тревогу",
+        "errorTitle": "Ошибка",
+        "deviceLoadError": "Не удалось загрузить устройства."
+    },
+    "DeviceDetailsScreen": {
+        "alarmTriggered": "Тревога Сработала",
+        "alarmsEnabled": "Тревоги Включены",
+        "alarmsDisabled": "Тревоги Отключены",
+        "successTitle": "Успех",
+        "alarmsActivated": "Тревоги были включены.",
+        "alarmsDeactivated": "Тревоги были отключены.",
+        "changeStatusError": "Не удалось изменить состояние тревог.",
+        "errorTitle": "Ошибка",
+        "errorLoadingAlarms": "Не удалось загрузить тревоги.",
+        "errorChangeAlarmState": "Не удалось изменить состояние тревоги.",
+        "loadingAlarms": "Загрузка тревог…",
+        "tc5Disconnected": "TC5 отключён",
+        "noEnabledAlarms": "Нет соединения",
+        "armed": "Включена",
+        "disarmed": "Отключена"
+    },
+    "DrawerContent": {
+        "logout": "Выйти",
+        "login": "Войти",
+        "settings": "Настройки",
+        "maintenance": "Обслуживание"
+    },
+    "EditarPrioridadScreen": {
+        "errorTitle": "Ошибка",
+        "invalidPhone": "Введите корректный номер телефона.",
+        "successTitle": "Успешно",
+        "SaveInformacion": "Информация успешно сохранена",
+        "sendError": "Не удалось отправить информацию",
+        "title": "Приоритет",
+        "label": "Номер телефона:",
+        "placeholder": "123456789",
+        "save": "Сохранить",
+        "selectCountry": "Выбрать страну",
+        "cancel": "Отмена"
+    },
+    "BottonMaster": {
+        "label": "Мастер"
+    },
+    "CustomMaps": {
+        "saveTitle": "Сохранить расположение",
+        "saveMessage": "Сохранить текущее расположение?",
+        "cancel": "Отмена",
+        "save": "Сохранить"
+    },
+    "Menu3Puntos": {
+        "save": "Сохранить расположение",
+        "delete": "Удалить расположение",
+        "explotacion": "Перейти к Хозяйству",
+        "configuracion": "Настройка TC5"
+    },
+    "PhoneNumberDialog": {
+        "title": "Введите свой номер телефона",
+        "subtitle": "Чтобы приложение TC5 знало ваш номер.",
+        "placeholder": "Напр.: 612345678",
+        "cancel": "Отмена",
+        "save": "Сохранить",
+        "invalid": "Неверный номер. Должно быть 9 цифр."
+    },
+    "HomeScreen": {
+        "cti": "CTI",
+        "control": "Control",
+        "Home": "Главная"
+    },
+    "CustomHeader": {
+        "home": "Главная"
+    },
+    "MantenimientoScreen": {
+        "apiTitle": "API-сервер",
+        "apiPlaceholder": "http://192.168.1.1:8032/api",
+        "saveButton": "Сохранить URL",
+        "saveSuccessTitle": "Сохранено",
+        "saveSuccessMessage": "URL сервера обновлён.",
+        "saveErrorTitle": "Ошибка",
+        "saveErrorMessage": "Не удалось сохранить URL.",
+        "fcmTitle": "FCM-токен устройства",
+        "fcmButton": "Получить FCM-токен",
+        "fcmCopiedTitle": "Токен скопирован",
+        "fcmCopiedMessage": "FCM-токен скопирован в буфер:\n\n{{token}}",
+        "fcmErrorTitle": "Ошибка",
+        "fcmErrorMessage": "Не удалось получить токен."
+    },
+    "SettingsScreen": {
+        "notificaciones": {
+            "desactivar": {
+                "titulo": "Отключить уведомления",
+                "mensaje": "Отключить уведомления приложения?"
+            },
+            "activar": {
+                "titulo": "Включить уведомления",
+                "mensaje": "Получать уведомления о тревогах и обновлениях?"
+            },
+            "cancelar": "Отмена",
+            "desactivars": "Отключить",
+            "no": "Нет",
+            "si": "Да"
+        },
+        "ubicacion": {
+            "desactivar": "Отключить геолокацию",
+            "permisos": {
+                "desactivar": "Отключить разрешения на геолокацию?"
+            },
+            "label": "Разрешения геолокации"
+        },
+        "titulo": {
+            "permisos": "Разрешения",
+            "notificaciones": "Уведомления",
+            "nivelPrioridad": "Уровень приоритета"
+        },
+        "telefono": {
+            "presente": "Тел:",
+            "ausente": "Номер не назначен"
+        },
+        "language": {
+            "title": "Язык"
+        }
+    },
+    "login": {
+        "titulo": "Вход",
+        "subtitulo": "Войдите, чтобы продолжить",
+        "correo": "Электронная почта",
+        "contrasena": "Пароль",
+        "boton": "Войти",
+        "error": {
+            "datos": "Неверная почта или пароль",
+            "general": "Ошибка",
+            "mensaje": "Произошла ошибка"
+        }
+    },
+    "useNotificationPermission": {
+        "alerta": {
+            "titulo": "Уведомления",
+            "mensaje": "Включите уведомления, чтобы получать тревоги TC5",
+            "boton": "Принять"
+        },
+        "error": {
+            "permisos": "Ошибка при настройке разрешений уведомлений",
+            "verificacion": "Ошибка проверки разрешений"
+        }
+    },
+    "locations": {
+        "alerta": {
+            "titulo": "Требуется доступ к геолокации",
+            "mensaje": "Для продолжения включите доступ к геолокации в настройках приложения",
+            "abrirAjustes": "Открыть настройки",
+            "cancelar": "Отмена"
+        }
+    },
+    "DeviceMaps": {
+        "errorTitle": "Ошибка",
+        "error": {
+            "mensaje": "Не удалось получить вашу позицию.",
+            "title": "Ошибка",
+            "obtener": "Не удалось получить вашу позицию."
+        },
+        "titulo": {
+            "guardar": "Сохранить расположение"
+        },
+        "mensaje": {
+            "guardar": "Сохранить текущее расположение?"
+        },
+        "cancelar": "Отмена",
+        "guardar": "Сохранить",
+        "ubicacion": {
+            "guardada": {
+                "titulo": "Расположение сохранено",
+                "mensaje": "Расположение устройства успешно сохранено."
+            },
+            "no": {
+                "guardada": "Не удалось сохранить расположение устройства."
+            }
+        },
+        "permiso": {
+            "necesario": {
+                "titulo": "Необходимы разрешения",
+                "mensaje": "Включите разрешения геолокации для использования этой функции"
+            },
+            "boton": {
+                "ir": "К Настройкам",
+                "cancelar": "Отмена"
+            }
+        },
+        "loading": {
+            "verificando": "Проверка разрешений…",
+            "cargando": "Загрузка позиции…"
+        }
+    },
+    "MapsScreen": {
+        "permission": {
+            "title": "Необходимы разрешения",
+            "message": "Включите геолокацию, чтобы разместить ваш TC5 на карте",
+            "deniedTitle": "Разрешения отклонены",
+            "deniedMessage": "Необходимо разрешить геолокацию для отображения карты.",
+            "accept": "Принять"
+        },
+        "errorTitle": "Ошибка",
+        "errorMessage": "Произошла ошибка при проверке разрешений геолокации.",
+        "noDevices": {
+            "title": "Нет устройств",
+            "message": "Нет устройств для отображения на карте."
+        }
+    },
+    "HomeStack": {
+        "DeviceMaps": {
+            "title": "Установить расположение устройства"
+        }
+    }
+}

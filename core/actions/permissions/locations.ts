@@ -1,6 +1,8 @@
 import { Alert, Linking } from 'react-native';
 import * as Location from 'expo-location';
 import { PermissionStatus } from '@/infrastructure/intercafe/location';
+import { t } from "@/i18n/i18nConfig";
+
 
 export const requestLocationPermission =
     async (): Promise<PermissionStatus> => {
@@ -32,17 +34,17 @@ export const checkLocationPermission = async () => {
 
 const manualPermissionRequest = async () => {
     Alert.alert(
-        'Permiso de ubicación necesario',
-        'Para continuar debe de habilitar el permiso de location en los ajustes de la app',
+        t("locations.alerta.titulo"),
+        t("locations.alerta.mensaje"),
         [
             {
-                text: 'Abrir ajustes',
+                text: t("locations.alerta.abrirAjustes"),
                 onPress: () => {
                     Linking.openSettings();
                 },
             },
             {
-                text: 'Cancel',
+                text: t("locations.alerta.cancelar"),
                 style: 'destructive',
             },
         ]

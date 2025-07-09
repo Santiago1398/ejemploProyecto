@@ -1,0 +1,222 @@
+{
+    "AlarmasScreen": {
+        "errorLoadingAlarms": "Impossible de charger les alarmes déclenchées",
+        "noAlarms": "Aucune alarme déclenchée"
+    },
+    "deviceList": {
+        "loadingDevices": "Chargement des appareils…",
+        "serverDisconnected": "Serveur déconnecté. Veuillez réessayer plus tard.",
+        "noLocationsAvailable": "Aucun emplacement disponible",
+        "alarmActive": "🚨 Alarme active",
+        "acceptAndStopAlarm": "Accepter et arrêter l’alarme",
+        "errorTitle": "Erreur",
+        "deviceLoadError": "Impossible de charger les appareils."
+    },
+    "DeviceDetailsScreen": {
+        "alarmTriggered": "Alarme Déclenchée",
+        "alarmsEnabled": "Alarmes Armées",
+        "alarmsDisabled": "Alarmes Désarmées",
+        "successTitle": "Succès",
+        "alarmsActivated": "Les alarmes ont été activées.",
+        "alarmsDeactivated": "Les alarmes ont été désactivées.",
+        "changeStatusError": "Impossible de changer l’état des alarmes.",
+        "errorTitle": "Erreur",
+        "errorLoadingAlarms": "Impossible de charger les alarmes.",
+        "errorChangeAlarmState": "Impossible de changer l’état de l’alarme.",
+        "loadingAlarms": "Chargement des alarmes…",
+        "tc5Disconnected": "TC5 Déconnecté",
+        "noEnabledAlarms": "Pas de connexion",
+        "armed": "Armée",
+        "disarmed": "Désarmée"
+    },
+    "DrawerContent": {
+        "logout": "Se déconnecter",
+        "login": "Se connecter",
+        "settings": "Paramètres",
+        "maintenance": "Maintenance"
+    },
+    "EditarPrioridadScreen": {
+        "errorTitle": "Erreur",
+        "invalidPhone": "Veuillez saisir un numéro de téléphone valide.",
+        "successTitle": "Succès",
+        "SaveInformacion": "Informations enregistrées avec succès",
+        "sendError": "Impossible d’envoyer les informations",
+        "title": "Priorité",
+        "label": "Numéro de téléphone :",
+        "placeholder": "123456789",
+        "save": "Enregistrer",
+        "selectCountry": "Sélectionner un pays",
+        "cancel": "Annuler"
+    },
+    "BottonMaster": {
+        "label": "Master"
+    },
+    "CustomMaps": {
+        "saveTitle": "Enregistrer l’emplacement",
+        "saveMessage": "Souhaitez-vous enregistrer l’emplacement actuel ?",
+        "cancel": "Annuler",
+        "save": "Enregistrer"
+    },
+    "Menu3Puntos": {
+        "save": "Enregistrer l’emplacement",
+        "delete": "Supprimer l’emplacement",
+        "explotacion": "Aller à l’Exploitation",
+        "configuracion": "Configuration TC5"
+    },
+    "PhoneNumberDialog": {
+        "title": "Entrez votre numéro de téléphone",
+        "subtitle": "Pour que l’application TC5 connaisse votre numéro.",
+        "placeholder": "Ex : 612345678",
+        "cancel": "Annuler",
+        "save": "Enregistrer",
+        "invalid": "Numéro non valide. Il doit comporter 9 chiffres."
+    },
+    "HomeScreen": {
+        "cti": "CTI",
+        "control": "Control",
+        "Home": "Accueil"
+    },
+    "CustomHeader": {
+        "home": "Accueil"
+    },
+    "MantenimientoScreen": {
+        "apiTitle": "Serveur API",
+        "apiPlaceholder": "http://192.168.1.1:8032/api",
+        "saveButton": "Enregistrer l’URL",
+        "saveSuccessTitle": "Enregistré",
+        "saveSuccessMessage": "L’URL du serveur a été mise à jour.",
+        "saveErrorTitle": "Erreur",
+        "saveErrorMessage": "Impossible d’enregistrer l’URL.",
+        "fcmTitle": "Token FCM de l’appareil",
+        "fcmButton": "Obtenir le token FCM",
+        "fcmCopiedTitle": "Token copié",
+        "fcmCopiedMessage": "Token FCM copié dans le presse-papiers :\n\n{{token}}",
+        "fcmErrorTitle": "Erreur",
+        "fcmErrorMessage": "Impossible d’obtenir le token."
+    },
+    "SettingsScreen": {
+        "notificaciones": {
+            "desactivar": {
+                "titulo": "Désactiver les notifications",
+                "mensaje": "Voulez-vous désactiver les notifications de l’application ?"
+            },
+            "activar": {
+                "titulo": "Activer les notifications",
+                "mensaje": "Voulez-vous recevoir des notifications d’alarmes et de mises à jour ?"
+            },
+            "cancelar": "Annuler",
+            "desactivars": "Désactiver",
+            "no": "Non",
+            "si": "Oui"
+        },
+        "ubicacion": {
+            "desactivar": "Désactiver la localisation",
+            "permisos": {
+                "desactivar": "Voulez-vous désactiver les autorisations de localisation ?"
+            },
+            "label": "Autorisations de localisation"
+        },
+        "titulo": {
+            "permisos": "Autorisations",
+            "notificaciones": "Notifications",
+            "nivelPrioridad": "Niveau de priorité"
+        },
+        "telefono": {
+            "presente": "Tél :",
+            "ausente": "Aucun numéro attribué"
+        },
+        "language": {
+            "title": "Langue"
+        }
+    },
+    "login": {
+        "titulo": "Connexion",
+        "subtitulo": "Connectez-vous pour continuer",
+        "correo": "E-mail",
+        "contrasena": "Mot de passe",
+        "boton": "Se connecter",
+        "error": {
+            "datos": "E-mail ou mot de passe incorrect",
+            "general": "Erreur",
+            "mensaje": "Une erreur est survenue"
+        }
+    },
+    "useNotificationPermission": {
+        "alerta": {
+            "titulo": "Notifications",
+            "mensaje": "Activez les notifications pour recevoir les alarmes TC5",
+            "boton": "Accepter"
+        },
+        "error": {
+            "permisos": "Erreur lors de la gestion des autorisations de notification",
+            "verificacion": "Erreur lors de la vérification des autorisations"
+        }
+    },
+    "locations": {
+        "alerta": {
+            "titulo": "Autorisation de localisation requise",
+            "mensaje": "Vous devez activer l’autorisation de localisation dans les réglages de l’application pour continuer",
+            "abrirAjustes": "Ouvrir les réglages",
+            "cancelar": "Annuler"
+        }
+    },
+    "DeviceMaps": {
+        "errorTitle": "Erreur",
+        "error": {
+            "mensaje": "Impossible d’obtenir votre position.",
+            "title": "Erreur",
+            "obtener": "Impossible d’obtenir votre position."
+        },
+        "titulo": {
+            "guardar": "Enregistrer l’emplacement"
+        },
+        "mensaje": {
+            "guardar": "Souhaitez-vous enregistrer l’emplacement actuel ?"
+        },
+        "cancelar": "Annuler",
+        "guardar": "Enregistrer",
+        "ubicacion": {
+            "guardada": {
+                "titulo": "Emplacement enregistré",
+                "mensaje": "L’emplacement de l’appareil a été enregistré avec succès."
+            },
+            "no": {
+                "guardada": "Impossible d’enregistrer l’emplacement de l’appareil."
+            }
+        },
+        "permiso": {
+            "necesario": {
+                "titulo": "Autorisations nécessaires",
+                "mensaje": "Vous devez activer les autorisations de localisation pour utiliser cette fonctionnalité"
+            },
+            "boton": {
+                "ir": "Aller aux réglages",
+                "cancelar": "Annuler"
+            }
+        },
+        "loading": {
+            "verificando": "Vérification des autorisations…",
+            "cargando": "Chargement de la position…"
+        }
+    },
+    "MapsScreen": {
+        "permission": {
+            "title": "Autorisations nécessaires",
+            "message": "Activez la géolocalisation pour positionner votre TC5 sur la carte",
+            "deniedTitle": "Autorisations refusées",
+            "deniedMessage": "Vous devez autoriser la localisation pour afficher la carte.",
+            "accept": "Accepter"
+        },
+        "errorTitle": "Erreur",
+        "errorMessage": "Une erreur est survenue lors de la vérification des autorisations de localisation.",
+        "noDevices": {
+            "title": "Aucun appareil",
+            "message": "Il n'y a aucun appareil à afficher sur la carte."
+        }
+    },
+    "HomeStack": {
+        "DeviceMaps": {
+            "title": "Définir l’emplacement de l’appareil"
+        }
+    }
+}

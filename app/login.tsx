@@ -12,6 +12,8 @@ import { useAuthStore } from "../store/authStore";
 import { Feather } from "@expo/vector-icons";
 import { useNotificationPermission } from "@/hooks/useNotificationPermission";
 import { ActivityIndicator } from "react-native";
+import { t } from "@/i18n/i18nConfig";
+
 
 
 export default function LoginScreen({ navigation }: any) {
@@ -42,10 +44,10 @@ export default function LoginScreen({ navigation }: any) {
             if (success) {
                 navigation.navigate("Home");
             } else {
-                Alert.alert("Correo electrónico o contraseña incorrectos");
+                Alert.alert(t("login.error.datos"));
             }
         } catch (error) {
-            Alert.alert("Error", "Algo salió mal");
+            Alert.alert(t("login.error.general"), t("login.error.mensaje"));
         } finally {
             setLoading(false);
         }
@@ -62,14 +64,14 @@ export default function LoginScreen({ navigation }: any) {
             >
 
                 <View style={styles.overlay}>
-                    <Text style={styles.title}>Ingresar</Text>
-                    <Text style={styles.subtitle}>Por favor ingrese para continuar</Text>
+                    <Text style={styles.title}>{t("login.titulo")}</Text>
+                    <Text style={styles.subtitle}>{t("login.subtitulo")}</Text>
 
                     <View style={styles.inputContainer}>
                         <Feather name="mail" size={20} color="#666" style={styles.icon} />
                         <TextInput
                             style={styles.input}
-                            placeholder="Correo electrónico"
+                            placeholder={t("login.correo")}
                             value={email}
                             onChangeText={setEmail}
                             keyboardType="email-address"
@@ -81,7 +83,7 @@ export default function LoginScreen({ navigation }: any) {
                         <Feather name="lock" size={20} color="#666" style={styles.icon} />
                         <TextInput
                             style={[styles.input, { paddingRight: 35 }]} // deja espacio para el ícono
-                            placeholder="Contraseña"
+                            placeholder={t("login.contrasena")}
                             value={password}
                             onChangeText={setPassword}
                             secureTextEntry={!showPassword}
@@ -96,7 +98,7 @@ export default function LoginScreen({ navigation }: any) {
                             <ActivityIndicator size="small" color="#fff" />
                         ) : (
                             <>
-                                <Text style={styles.buttonText}>Ingresar</Text>
+                                <Text style={styles.buttonText}>{t("login.boton")}</Text>
                                 <Feather name="arrow-right" size={20} color="#fff" style={styles.buttonIcon} />
                             </>
                         )}

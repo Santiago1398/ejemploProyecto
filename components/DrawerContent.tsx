@@ -1,11 +1,54 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
 import { DrawerContentComponentProps } from "@react-navigation/drawer";
 import { useAuthStore } from "../store/authStore";
+import { t } from "../i18n/i18nConfig";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function DrawerContent(props: DrawerContentComponentProps) {
     const { username: email, logout, isAuthenticated } = useAuthStore();
     const { navigation } = props;
+
+    const handleLogout = async () => {
+        try {
+            // Cerrar el drawer primero
+            props.navigation.closeDrawer();
+
+            // Pequeña pausa para asegurar que el drawer se cierre
+            await new Promise(resolve => setTimeout(resolve, 200));
+
+            // Limpiar AsyncStorage
+            await AsyncStorage.removeItem("userToken");
+
+            // Ejecutar logout del store
+            logout();
+
+            console.log("Logout exitoso");
+        } catch (error) {
+            console.error("Error al cerrar sesión:", error);
+        }
+    };
+
+    const handleNavigateToSettings = async () => {
+        try {
+            props.navigation.closeDrawer();
+            // Pausa más larga para Samsung
+            await new Promise(resolve => setTimeout(resolve, 300));
+            navigation.navigate("Settings" as never);
+        } catch (error) {
+            console.error("Error navegando a Settings:", error);
+        }
+    };
+
+    const handleNavigateToMaintenance = async () => {
+        try {
+            props.navigation.closeDrawer();
+            await new Promise(resolve => setTimeout(resolve, 300));
+            navigation.navigate("SolicitarMantenimiento" as never);
+        } catch (error) {
+            console.error("Error navegando a Mantenimiento:", error);
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -25,25 +68,24 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
             {/* Botón de sesión */}
             {isAuthenticated ? (
                 <TouchableOpacity
-                    onPress={() => {
-                        props.navigation.closeDrawer();
-                        props.navigation.navigate("Login");
-                        setTimeout(() => {
-                            logout();
-                        }, 100); // da tiempo a navegar antes de borrar el estado
-                    }}
+                    onPress={handleLogout}
                     style={styles.logoutButton}
+                    activeOpacity={0.8}
+                    delayPressIn={0}
                 >
-                    <Text style={styles.logoutText}>Cerrar sesión</Text>
+                    <Text style={styles.logoutText}>{t("DrawerContent.logout")}</Text>
                 </TouchableOpacity>
-
-
             ) : (
                 <TouchableOpacity
-                    onPress={() => navigation.navigate("Login")}
+                    onPress={() => {
+                        props.navigation.closeDrawer();
+                        // El login se maneja automáticamente por el estado de App.js
+                    }}
                     style={styles.loginButton}
+                    activeOpacity={0.8}
+                    delayPressIn={0}
                 >
-                    <Text style={styles.loginText}>Iniciar Sesión</Text>
+                    <Text style={styles.loginText}>{t("DrawerContent.login")}</Text>
                 </TouchableOpacity>
             )}
 
@@ -51,17 +93,23 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
             <View style={styles.footer}>
                 <View style={styles.separator} />
 
-                <TouchableOpacity onPress={() => navigation.navigate("Settings")} style={styles.footerButton}>
-                    <Text style={styles.footerText}>Ajustes</Text>
+                <TouchableOpacity
+                    onPress={handleNavigateToSettings}
+                    style={styles.footerButton}
+                    activeOpacity={0.8}
+                    delayPressIn={0}
+                >
+                    <Text style={styles.footerText}>{t("DrawerContent.settings")}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    onPress={() => props.navigation.navigate("SolicitarMantenimiento")}
+                    onPress={handleNavigateToMaintenance}
                     style={styles.footerButton}
+                    activeOpacity={0.8}
+                    delayPressIn={0}
                 >
-                    <Text style={styles.footerText}>Mantenimiento</Text>
+                    <Text style={styles.footerText}>{t("DrawerContent.maintenance")}</Text>
                 </TouchableOpacity>
-
             </View>
         </View>
     );
@@ -94,24 +142,28 @@ const styles = StyleSheet.create({
         marginBottom: 30,
     },
     loginButton: {
-        padding: 10,
+        padding: 12,
         backgroundColor: "blue",
         borderRadius: 8,
+        minHeight: 44, // Altura mínima para mejor toque
     },
     loginText: {
         color: "#fff",
         fontWeight: "bold",
         textAlign: "center",
+        fontSize: 16,
     },
     logoutButton: {
-        padding: 10,
+        padding: 12,
         backgroundColor: "red",
         borderRadius: 8,
+        minHeight: 44,
     },
     logoutText: {
         color: "#fff",
         fontWeight: "bold",
         textAlign: "center",
+        fontSize: 16,
     },
     footer: {
         position: "absolute",
@@ -127,7 +179,10 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     footerButton: {
-        paddingVertical: 6,
+        paddingVertical: 8,
+        paddingHorizontal: 4,
+        minHeight: 36,
+        justifyContent: "center",
     },
     footerText: {
         fontSize: 16,
@@ -135,4 +190,3 @@ const styles = StyleSheet.create({
         fontWeight: "500",
     },
 });
-

@@ -14,6 +14,8 @@ import { getApiUrl, setApiUrl } from "@/utils/apiconfig";
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from 'expo-clipboard';
 import { notificationService } from '@/hooks/NotificationService';
+import { t } from "@/i18n/i18nConfig";
+
 
 
 export default function MantenimientoScreen() {
@@ -30,27 +32,28 @@ export default function MantenimientoScreen() {
     const handleSave = async () => {
         try {
             await setApiUrl(apiUrl);
-            Alert.alert("Guardado", "La URL del servidor ha sido actualizada.");
+            Alert.alert(t("MantenimientoScreen.saveSuccessTitle"), t("MantenimientoScreen.saveSuccessMessage"));
         } catch {
-            Alert.alert("Error", "No se pudo guardar la URL.");
+            Alert.alert(t("MantenimientoScreen.saveErrorTitle"), t("MantenimientoScreen.saveErrorMessage"));
         }
     };
 
     return (
         <ScrollView style={styles.screen}>
             <View style={styles.section}>
-                <Text style={styles.sectionTitle}>Servidor API</Text>
+                <Text style={styles.sectionTitle}>{t("MantenimientoScreen.apiTitle")}</Text>
                 <TextInput
                     style={styles.input}
                     value={apiUrl}
                     onChangeText={setApiUrlState}
-                    placeholder="http://192.168.1.1:8032/api"
+                    placeholder={t("MantenimientoScreen.apiPlaceholder")}
                     autoCapitalize="none"
                 />
-                <Button title="Guardar URL" onPress={handleSave} />
+                <Button title={t("MantenimientoScreen.saveButton")}
+                    onPress={handleSave} />
             </View>
             <View style={{ marginTop: 24 }}>
-                <Text style={styles.sectionTitle}>Token FCM del dispositivo</Text>
+                <Text style={styles.sectionTitle}>{t("MantenimientoScreen.fcmTitle")}</Text>
                 <TouchableOpacity
                     style={styles.tokenButton}
                     onPress={async () => {

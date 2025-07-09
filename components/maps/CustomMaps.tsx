@@ -1,23 +1,22 @@
-import { View, ViewProps, StyleSheet, Alert } from 'react-native'
+import { View, ViewProps, StyleSheet } from 'react-native'
 import React, { useEffect, useRef, useState } from 'react'
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { useLocationStore } from '@/store/useLocationStore'; import { LatLng } from '@/infrastructure/intercafe/lat-Ing';
+import { useLocationStore } from '@/store/useLocationStore';
+import { LatLng } from '@/infrastructure/intercafe/lat-Ing';
 import FAB from './FAB';
-
-
+import { ResponseAlarmaSite } from '@/infrastructure/intercafe/listapi.interface';
 
 interface Props extends ViewProps {
     initialLocation: LatLng;
-    showUserLocation?: boolean
-
+    showUserLocation?: boolean;
+    devices?: ResponseAlarmaSite[]; // ✅ Solo datos del backend
 }
 
-const CustomMaps = ({ initialLocation, showUserLocation = true, ...rest }: Props) => {
+const CustomMaps = ({ initialLocation, showUserLocation = true, devices = [], ...rest }: Props) => {
     const mapRef = useRef<MapView>(null);
     const [isFollowingUser, setIsFollowingUser] = useState(true);
 
-
-    const { watchLocation, clearWatchLocation, lastKnownLocation, getLocation, saveLocations, saveLocation } = useLocationStore();
+    const { watchLocation, clearWatchLocation, lastKnownLocation, getLocation } = useLocationStore();
 
     useEffect(() => {
         watchLocation();
@@ -38,42 +37,22 @@ const CustomMaps = ({ initialLocation, showUserLocation = true, ...rest }: Props
         mapRef.current.animateCamera({
             center: latlng,
         })
-
-
     }
 
     useEffect(() => {
-        console.log("Ubicaciones guardadas:", saveLocations);
-    }, [saveLocations]);
+        console.log("Dispositivos del backend:", devices.length);
+    }, [devices]);
 
     const moveToCurrentLocation = async () => {
         if (!lastKnownLocation) {
             moveCameraToLocation(initialLocation);
-
         } else {
             moveCameraToLocation(lastKnownLocation);
-
         }
         const location = await getLocation();
         if (!location) return;
         moveCameraToLocation(location);
     }
-
-    const onSaveLocationPress = async () => {
-        Alert.alert("Guardar Ubicacion", "¿Desea guardar la ubicacion actual?", [
-
-            {
-                text: "Cancelar",
-                style: "cancel"
-            },
-            {
-                text: "Guardar",
-                onPress: async () => {
-                    await saveLocation();
-                }
-            }
-        ])
-    };
 
     return (
         <View {...rest}>
@@ -81,37 +60,34 @@ const CustomMaps = ({ initialLocation, showUserLocation = true, ...rest }: Props
                 ref={mapRef}
                 style={styles.map}
                 provider={PROVIDER_GOOGLE}
-
                 showsUserLocation={showUserLocation}
                 initialRegion={{
                     latitude: initialLocation.latitude,
                     longitude: initialLocation.longitude,
-                    latitudeDelta: 10,
-                    longitudeDelta: 10,
+                    latitudeDelta: devices.length > 0 ? 0.5 : 10, // ✅ Zoom automático
+                    longitudeDelta: devices.length > 0 ? 0.5 : 10,
                 }}
                 onTouchStart={() => setIsFollowingUser(false)}
             >
-                {/* MARCADORES DE UBICACIONES GUARDADAS */}
-
-                {saveLocations.map((location, index) => (
-                    <Marker
-                        key={index}
-                        coordinate={location}
-                        title={`Ubicacion ${index + 1}`}
-                    />
-                ))}
+                {/* 🔥 SOLO MARKERS DE DISPOSITIVOS DEL BACKEND */}
+                {devices
+                    .filter(device => device.latitude !== 0 && device.longitude !== 0)
+                    .map((device, index) => (
+                        <Marker
+                            key={`device-${device.mac}-${device.idSite}-${index}`}
+                            coordinate={{
+                                latitude: device.latitude,
+                                longitude: device.longitude,
+                            }}
+                            title={device.farmName}
+                            description={device.siteName}
+                            pinColor="red"
+                        />
+                    ))
+                }
             </MapView>
 
-            <FAB
-                iconName='pin-outline'
-                onPress={onSaveLocationPress}
-                style={{
-                    bottom: 200,
-                    right: 20
-                }}
-            />
-
-
+            {/* ✅ SOLO FABs DE NAVEGACIÓN */}
             <FAB
                 iconName={isFollowingUser ? 'walk-outline' : 'accessibility-outline'}
                 onPress={() => setIsFollowingUser(!isFollowingUser)}
@@ -120,6 +96,7 @@ const CustomMaps = ({ initialLocation, showUserLocation = true, ...rest }: Props
                     right: 20
                 }}
             />
+
             <FAB
                 iconName='compass-outline'
                 onPress={moveToCurrentLocation}
@@ -128,8 +105,6 @@ const CustomMaps = ({ initialLocation, showUserLocation = true, ...rest }: Props
                     right: 20
                 }}
             />
-
-
         </View>
     )
 }
@@ -137,8 +112,6 @@ const CustomMaps = ({ initialLocation, showUserLocation = true, ...rest }: Props
 export default CustomMaps
 
 const styles = StyleSheet.create({
-
-
     map: {
         width: "100%",
         height: "100%"
