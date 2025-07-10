@@ -33,7 +33,7 @@ export default function AlarmList() {
     const route = useRoute<DeviceDetailsRouteProp>();
 
     const { device } = route.params;
-    const { mac, farmName, siteName } = device;
+    const { mac, farmName, siteName, alarmType } = device;
 
     const [selectedAlarm, setSelectedAlarm] = useState<ParamTC | null>(null);
     const [isOptionModalVisible, setOptionModalVisible] = useState(false);
@@ -61,6 +61,20 @@ export default function AlarmList() {
     //     greyBackground: "#CFD8DC",
     //     greyText: "#37474F",
     // };
+    const isDeviceDisconnected = alarmType == 2;
+    const isMasterDisabled = tc5Disconnected || isDeviceDisconnected;
+
+    // 🔥 NUEVA LÓGICA: forzar Master a OFF cuando está desconectado
+    const effectiveMasterState = isMasterDisabled ? false : masterAlarmState;
+
+    useEffect(() => {
+        if (isDeviceDisconnected) {
+            setAlarms([]);
+            setMasterAlarmState(false);
+            // 🔥 Usar updateHeaderStatus para controlar el header
+            updateHeaderStatus([], false);
+        }
+    }, [isDeviceDisconnected])
 
 
     const scrollOffset = useRef(0); // valor persistente
@@ -155,6 +169,13 @@ export default function AlarmList() {
         try {
             if (!isAutoRefresh) {
                 setLoading(true);
+            }
+            if (isDeviceDisconnected) {
+                setAlarms([]);
+                updateHeaderStatus([], false); // alarmas vacías, master false
+
+                setMasterAlarmState(false);
+                return;
             }
 
             const scrollY = scrollOffset.current;
@@ -495,12 +516,21 @@ export default function AlarmList() {
             )}
 
             {/* ButtonMaster */}
+            {/* <ButtonMaster
+                mac={mac}
+                fetchAlarms={fetchAlarms}
+                 masterAlarmState={masterAlarmState}
+                //masterAlarmState={effectiveMasterState} // 🔥 Usar el estado efectivo
+
+                onToggleMaster={handleToggleMaster}
+                disabled={isMasterDisabled}
+            /> */}
             <ButtonMaster
                 mac={mac}
                 fetchAlarms={fetchAlarms}
                 masterAlarmState={masterAlarmState}
                 onToggleMaster={handleToggleMaster}
-                disabled={tc5Disconnected}
+                disabled={isMasterDisabled}
             />
 
             {/* ✅ MODAL EN LA POSICIÓN CORRECTA - UNA SOLA VEZ */}

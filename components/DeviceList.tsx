@@ -232,7 +232,8 @@ export default function DeviceList() {
                             longitude: item.longitude,
                             idSite: item.idSite,
                             buildPortalRef: item.buildPortalRef,
-                            armed: item.armed
+                            armed: item.armed,
+                            alarmType: item.alarmType
                         }
                     });
                 }}

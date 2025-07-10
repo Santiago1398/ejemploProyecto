@@ -31,6 +31,8 @@ export type RootStackParamList = {
             longitude: number;
             idSite: number;
             buildPortalRef: number;
+            armed: boolean;
+            alarmType: number;
         };
     };
     BottonMaster: {
