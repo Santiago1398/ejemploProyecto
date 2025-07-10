@@ -35,7 +35,7 @@ export interface Menu3PuntosProps {
         siteName: string;
         mac: number;
         idSite: number;
-        buildPortalRef: number;
+        buildingPortalRef: number;
 
     };
     options?: MenuOption[];
@@ -96,7 +96,7 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
                     siteName: device.siteName,
                     farmName: device.farmName,
                     idSite: device.idSite,
-                    buildPortalRef: device.buildPortalRef,
+                    buildingPortalRef: device.buildingPortalRef,
                 });
             },
         },

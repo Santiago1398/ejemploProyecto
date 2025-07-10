@@ -30,7 +30,7 @@ export type RootStackParamList = {
             latitude: number;
             longitude: number;
             idSite: number;
-            buildPortalRef: number;
+            buildingPortalRef: number;
             armed: boolean;
             alarmType: number;
         };
@@ -63,7 +63,7 @@ export type RootStackParamList = {
         siteName: string;
         farmName: string;
         idSite: number;
-        buildPortalRef: number;
+        buildingPortalRef: number;
     };
     ConfiguracionTC5: {
         mac: number;

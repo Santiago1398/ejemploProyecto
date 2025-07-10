@@ -572,7 +572,7 @@ export default function AlarmList() {
                     siteName: device.siteName,
                     mac: device.mac,
                     idSite: device.idSite,
-                    buildPortalRef: device.buildPortalRef
+                    buildingPortalRef: device.buildingPortalRef
                 }}
             />
         </View>

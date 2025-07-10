@@ -60,7 +60,7 @@
     "Menu3Puntos": {
         "save": "위치 저장",
         "delete": "위치 삭제",
-        "explotacion": "농장으로 이동",
+        "explotacion": "포털로 이동",
         "configuracion": "TC5 설정"
     },
     "PhoneNumberDialog": {

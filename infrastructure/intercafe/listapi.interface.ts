@@ -16,7 +16,7 @@ export interface ResponseAlarmaSite {
     // Añadir los tipos
     latitude: number;
     longitude: number;
-    buildPortalRef: number
+    buildingPortalRef: number
     armed: boolean
 
 

@@ -231,7 +231,7 @@ export default function DeviceList() {
                             latitude: item.latitude,
                             longitude: item.longitude,
                             idSite: item.idSite,
-                            buildPortalRef: item.buildPortalRef,
+                            buildingPortalRef: item.buildingPortalRef,
                             armed: item.armed,
                             alarmType: item.alarmType
                         }
