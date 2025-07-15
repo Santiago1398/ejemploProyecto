@@ -10,7 +10,12 @@
         "alarmActive": "🚨 Alarma activa",
         "acceptAndStopAlarm": "Aceptar y detener alarma",
         "errorTitle": "Error",
-        "deviceLoadError": "No se pudieron cargar los dispositivos."
+        "deviceLoadError": "No se pudieron cargar los dispositivos.",
+        "error": {
+            "noConnection": "Sin conexión",
+            "cannotLoadLocations": "No se pueden cargar las ubicaciones",
+            "checkingAutomatically": "Verificando automáticamente..."
+        }
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "Alarma Activada",
@@ -27,7 +32,11 @@
         "tc5Disconnected": "TC5 Desconectado",
         "noEnabledAlarms": "No hay conexion",
         "armed": "Armada",
-        "disarmed": "Desarmada"
+        "disarmed": "Desarmada",
+        "connection": {
+            "noConnection": "No hay conexión",
+            "deviceDisconnected": "Equipo desconectado o sin comunicación"
+        }
     },
     "DrawerContent": {
         "logout": "Cerrar sesión",
@@ -58,10 +67,12 @@
         "save": "Guardar"
     },
     "Menu3Puntos": {
-        "save": "Guardar Ubicación",
-        "delete": "Eliminar Ubicación",
         "explotacion": "Ir a Portal",
-        "configuracion": "Configuración TC5"
+        "configuracion": "Configuración TC5",
+        "geolocalizacion": "Geolocalización",
+        "ajustes": "Ajustes",
+        "volver": "Volver",
+        "guardarUbicacion": "Guardar Ubicación"
     },
     "PhoneNumberDialog": {
         "title": "Introduzca su número de teléfono",
@@ -212,6 +223,15 @@
         "noDevices": {
             "title": "Sin dispositivos",
             "message": "No hay dispositivos para mostrar en el mapa."
+        },
+        "errors": {
+            "title": "Error",
+            "loadDevicesError": "No se pudieron cargar los dispositivos.",
+            "noDevicesTitle": "Sin dispositivos",
+            "noDevicesMessage": "No hay dispositivos disponibles"
+        },
+        "loading": {
+            "devices": "Cargando dispositivos..."
         }
     },
     "HomeStack": {

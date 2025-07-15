@@ -44,7 +44,7 @@ export default function EditarPrioridadScreen() {
 
         try {
             // Enviar al backend
-            await post("/api/alarmtc/prioridad", { telefono, userId, token });
+            await post("alarmtc/prioridad", { telefono, userId, token });
 
             await AsyncStorage.setItem("telefono", telefono);
 

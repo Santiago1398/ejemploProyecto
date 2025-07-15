@@ -16,6 +16,7 @@ import { Ionicons } from '@expo/vector-icons';
 import EditarPrioridadScreen from "@/components/EditarPrioridadScreen";
 import { t } from "../i18n/i18nConfig";
 import { ResponseAlarmaSite } from "@/infrastructure/intercafe/listapi.interface";
+import DeviceLocationMap from "./extra/map/DebiceLocationMap";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -33,6 +34,7 @@ export type RootStackParamList = {
             buildingPortalRef: number;
             armed: boolean;
             alarmType: number;
+            simulado?: boolean; // 🔥 NUEVO
         };
     };
     BottonMaster: {
@@ -64,6 +66,8 @@ export type RootStackParamList = {
         farmName: string;
         idSite: number;
         buildingPortalRef: number;
+        simulado?: boolean;
+
     };
     ConfiguracionTC5: {
         mac: number;
@@ -72,10 +76,22 @@ export type RootStackParamList = {
         siteName: string;
         farmName: string;
         idSite: number;
+        simulado?: boolean; // 🔥 NUEVO
+
     };
     EditarPrioridadScreen: undefined;
     Mantenimiento: undefined;
     SolicitarMantenimiento: undefined;
+    DeviceLocationMap: {
+        deviceLocation: {
+            latitude: number;
+            longitude: number;
+        };
+        farmName: string;
+        siteName: string;
+        mac: number;
+        idSite: number;
+    };
 }
 
 export type RootDrawerParamList = {
@@ -179,6 +195,18 @@ export default function HomeStack() {
                     options={({ route }) => ({
                         headerShown: true,
                         title: route.params.farmName,
+                    })}
+
+                />
+
+                <Stack.Screen
+                    name="DeviceLocationMap"
+                    component={DeviceLocationMap}
+                    options={({ route }) => ({
+                        headerShown: false,
+                        // title: route.params.farmName,
+                        // sub: route.params.siteName,
+
                     })}
                 />
             </Stack.Navigator>

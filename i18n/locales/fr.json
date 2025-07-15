@@ -10,7 +10,12 @@
         "alarmActive": "🚨 Alarme active",
         "acceptAndStopAlarm": "Accepter et arrêter l’alarme",
         "errorTitle": "Erreur",
-        "deviceLoadError": "Impossible de charger les appareils."
+        "deviceLoadError": "Impossible de charger les appareils.",
+        "error": {
+            "noConnection": "Pas de connexion",
+            "cannotLoadLocations": "Impossible de charger les emplacements",
+            "checkingAutomatically": "Vérification automatique..."
+        }
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "Alarme Déclenchée",
@@ -27,7 +32,11 @@
         "tc5Disconnected": "TC5 Déconnecté",
         "noEnabledAlarms": "Pas de connexion",
         "armed": "Armée",
-        "disarmed": "Désarmée"
+        "disarmed": "Désarmée",
+        "connection": {
+            "noConnection": "Pas de connexion",
+            "deviceDisconnected": "Appareil déconnecté ou sans communication"
+        }
     },
     "DrawerContent": {
         "logout": "Se déconnecter",
@@ -58,10 +67,12 @@
         "save": "Enregistrer"
     },
     "Menu3Puntos": {
-        "save": "Enregistrer l’emplacement",
-        "delete": "Supprimer l’emplacement",
         "explotacion": "Aller au Portail",
-        "configuracion": "Configuration TC5"
+        "configuracion": "Configuration TC5",
+        "geolocalizacion": "Géolocalisation",
+        "ajustes": "Paramètres",
+        "volver": "Retour",
+        "guardarUbicacion": "Enregistrer l'Emplacement"
     },
     "PhoneNumberDialog": {
         "title": "Entrez votre numéro de téléphone",
@@ -212,6 +223,15 @@
         "noDevices": {
             "title": "Aucun appareil",
             "message": "Il n'y a aucun appareil à afficher sur la carte."
+        },
+        "errors": {
+            "title": "Erreur",
+            "loadDevicesError": "Impossible de charger les appareils.",
+            "noDevicesTitle": "Aucun appareil",
+            "noDevicesMessage": "Aucun appareil disponible"
+        },
+        "loading": {
+            "devices": "Chargement des appareils..."
         }
     },
     "HomeStack": {

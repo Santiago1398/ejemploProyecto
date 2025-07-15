@@ -10,7 +10,12 @@
         "alarmActive": "🚨 警報啟動",
         "acceptAndStopAlarm": "接受並停止警報",
         "errorTitle": "錯誤",
-        "deviceLoadError": "無法載入裝置。"
+        "deviceLoadError": "無法載入裝置。",
+        "error": {
+            "noConnection": "無連接",
+            "cannotLoadLocations": "無法載入位置",
+            "checkingAutomatically": "自動檢查中..."
+        }
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "警報已觸發",
@@ -27,7 +32,11 @@
         "tc5Disconnected": "TC5 已斷線",
         "noEnabledAlarms": "沒有連線",
         "armed": "已啟用",
-        "disarmed": "已停用"
+        "disarmed": "已停用",
+        "connection": {
+            "noConnection": "無連接",
+            "deviceDisconnected": "設備斷開連接或無通信"
+        }
     },
     "DrawerContent": {
         "logout": "登出",
@@ -58,10 +67,12 @@
         "save": "儲存"
     },
     "Menu3Puntos": {
-        "save": "儲存位置",
-        "delete": "刪除位置",
         "explotacion": "前往入口網站",
-        "configuracion": "TC5 設定"
+        "configuracion": "TC5 配置",
+        "geolocalizacion": "地理位置",
+        "ajustes": "設定",
+        "volver": "返回",
+        "guardarUbicacion": "儲存位置"
     },
     "PhoneNumberDialog": {
         "title": "輸入您的電話號碼",
@@ -212,6 +223,15 @@
         "noDevices": {
             "title": "無設備",
             "message": "沒有設備可在地圖上顯示。"
+        },
+        "errors": {
+            "title": "錯誤",
+            "loadDevicesError": "無法載入裝置。",
+            "noDevicesTitle": "沒有裝置",
+            "noDevicesMessage": "沒有可用的裝置"
+        },
+        "loading": {
+            "devices": "載入裝置中..."
         }
     },
     "HomeStack": {

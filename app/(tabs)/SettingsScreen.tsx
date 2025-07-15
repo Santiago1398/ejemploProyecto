@@ -23,7 +23,7 @@ const AVAILABLE_LANGUAGES = [
     { code: 'en', name: 'English', flag: '🇺🇸' },
     { code: 'it', name: 'Italiano', flag: '🇮🇹' },
     { code: 'fr', name: 'Français', flag: '🇫🇷' },
-    { code: 'catala', name: 'Català', flag: '🟨🔴' },
+    { code: 'catala', name: 'Català', flag: '🇪🇸' },
     { code: 'ruso', name: 'Русский', flag: '🇷🇺' },
     { code: 'uk', name: 'Українська', flag: '🇺🇦' },
     { code: 'polaco', name: 'Polski', flag: '🇵🇱' },
@@ -276,7 +276,7 @@ export default function SettingsScreen() {
                             </Text>
                         </TouchableOpacity>
                         <Text style={styles.modalTitle}>
-                            {t('SettingsScreen.language.selectTitle')}
+                            {t('SettingsScreen.language.title')}
                         </Text>
                         <View style={styles.headerSpacer} />
                     </View>

@@ -34,49 +34,49 @@ export default function Alarmas() {
     const capitalize = (str: string) =>
         str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";
 
-    useEffect(() => {
-        let isMounted = true;
+    // useEffect(() => {
+    //     let isMounted = true;
 
-        const fetchDisparadas = async () => {
-            try {
-                const storedUserId = await AsyncStorage.getItem("userId");
-                const data: ResponseAlarmaSite[] = await get(`alarmtc/sites/user/${storedUserId}`);
-                const resultados: AlarmaDisparada[] = [];
+    //     const fetchDisparadas = async () => {
+    //         try {
+    //             const storedUserId = await AsyncStorage.getItem("userId");
+    //             const data: ResponseAlarmaSite[] = await get(`alarmtc/sites/user/${storedUserId}`);
+    //             const resultados: AlarmaDisparada[] = [];
 
-                for (const device of data) {
-                    const alarmas: ParamTC[] = await get(`alarmtc/status?mac=${device.mac}`);
-                    const activas = alarmas.filter(a => a.habilitado && a.disparado);
+    //             for (const device of data) {
+    //                 const alarmas: ParamTC[] = await get(`alarmtc/status?mac=${device.mac}`);
+    //                 const activas = alarmas.filter(a => a.habilitado && a.disparado);
 
-                    for (const alarma of activas) {
-                        resultados.push({
-                            mac: Number(device.mac),
-                            farmName: device.farmName,
-                            siteName: device.siteName,
-                            latitude: device.latitude,
-                            longitude: device.longitude,
-                            texto: capitalize(alarma.texto),
-                        });
-                    }
-                }
+    //                 for (const alarma of activas) {
+    //                     resultados.push({
+    //                         mac: Number(device.mac),
+    //                         farmName: device.farmName,
+    //                         siteName: device.siteName,
+    //                         latitude: device.latitude,
+    //                         longitude: device.longitude,
+    //                         texto: capitalize(alarma.texto),
+    //                     });
+    //                 }
+    //             }
 
-                if (isMounted) {
-                    setAlarmasDisparadas(resultados);
-                }
-            } catch (error) {
-                if (isMounted) {
-                    Alert.alert(t("AlarmasScreen.errorLoadingAlarms"));
-                }
-            }
-        };
+    //             if (isMounted) {
+    //                 setAlarmasDisparadas(resultados);
+    //             }
+    //         } catch (error) {
+    //             if (isMounted) {
+    //                 Alert.alert(t("AlarmasScreen.errorLoadingAlarms"));
+    //             }
+    //         }
+    //     };
 
-        fetchDisparadas();
-        const interval = setInterval(fetchDisparadas, 5000);
+    //     fetchDisparadas();
+    //     const interval = setInterval(fetchDisparadas, 5000);
 
-        return () => {
-            isMounted = false;
-            clearInterval(interval);
-        };
-    }, []);
+    //     return () => {
+    //         isMounted = false;
+    //         clearInterval(interval);
+    //     };
+    // }, []);
 
     const renderItem = ({ item }: { item: AlarmaDisparada }) => (
         <TouchableOpacity

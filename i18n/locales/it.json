@@ -10,7 +10,12 @@
         "alarmActive": "🚨 Allarme attivo",
         "acceptAndStopAlarm": "Accetta e ferma l'allarme",
         "errorTitle": "Errore",
-        "deviceLoadError": "Impossibile caricare i dispositivi."
+        "deviceLoadError": "Impossibile caricare i dispositivi.",
+        "error": {
+            "noConnection": "Nessuna connessione",
+            "cannotLoadLocations": "Impossibile caricare le posizioni",
+            "checkingAutomatically": "Controllo automatico..."
+        }
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "Allarme Attivato",
@@ -27,7 +32,11 @@
         "tc5Disconnected": "TC5 disconnesso",
         "noEnabledAlarms": "Nessuna connessione",
         "armed": "Armata",
-        "disarmed": "Disarmata"
+        "disarmed": "Disarmata",
+        "connection": {
+            "noConnection": "Nessuna connessione",
+            "deviceDisconnected": "Dispositivo disconnesso o senza comunicazione"
+        }
     },
     "DrawerContent": {
         "logout": "Disconnetti",
@@ -58,10 +67,12 @@
         "save": "Salva"
     },
     "Menu3Puntos": {
-        "save": "Salva posizione",
-        "delete": "Elimina posizione",
         "explotacion": "Vai al Portale",
-        "configuracion": "Configurazione TC5"
+        "configuracion": "Configurazione TC5",
+        "geolocalizacion": "Geolocalizzazione",
+        "ajustes": "Impostazioni",
+        "volver": "Indietro",
+        "guardarUbicacion": "Salva Posizione"
     },
     "PhoneNumberDialog": {
         "title": "Inserisci il tuo numero di telefono",
@@ -212,6 +223,15 @@
         "noDevices": {
             "title": "Nessun dispositivo",
             "message": "Non ci sono dispositivi da mostrare sulla mappa."
+        },
+        "errors": {
+            "title": "Errore",
+            "loadDevicesError": "Impossibile caricare i dispositivi.",
+            "noDevicesTitle": "Nessun dispositivo",
+            "noDevicesMessage": "Nessun dispositivo disponibile"
+        },
+        "loading": {
+            "devices": "Caricamento dispositivi..."
         }
     },
     "HomeStack": {

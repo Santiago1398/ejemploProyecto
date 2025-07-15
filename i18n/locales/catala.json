@@ -10,7 +10,12 @@
         "alarmActive": "🚨 Alarma activa",
         "acceptAndStopAlarm": "Acceptar i aturar l'alarma",
         "errorTitle": "Error",
-        "deviceLoadError": "No s'han pogut carregar els dispositius."
+        "deviceLoadError": "No s'han pogut carregar els dispositius.",
+        "error": {
+            "noConnection": "Sense connexió",
+            "cannotLoadLocations": "No es poden carregar les ubicacions",
+            "checkingAutomatically": "Verificant automàticament..."
+        }
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "Alarma Activada",
@@ -27,7 +32,11 @@
         "tc5Disconnected": "TC5 Desconnectat",
         "noEnabledAlarms": "Sense connexió",
         "armed": "Armada",
-        "disarmed": "Desarmada"
+        "disarmed": "Desarmada",
+        "connection": {
+            "noConnection": "Sense connexió",
+            "deviceDisconnected": "Equip desconnectat o sense comunicació"
+        }
     },
     "DrawerContent": {
         "logout": "Tancar sessió",
@@ -58,10 +67,12 @@
         "save": "Desar"
     },
     "Menu3Puntos": {
-        "save": "Desar ubicació",
-        "delete": "Eliminar ubicació",
         "explotacion": "Anar al Portal",
-        "configuracion": "Configuració TC5"
+        "configuracion": "Configuració TC5",
+        "geolocalizacion": "Geolocalització",
+        "ajustes": "Configuració",
+        "volver": "Tornar",
+        "guardarUbicacion": "Guardar Ubicació"
     },
     "PhoneNumberDialog": {
         "title": "Introdueix el teu número de telèfon",
@@ -212,6 +223,15 @@
         "noDevices": {
             "title": "Sense dispositius",
             "message": "No hi ha dispositius per mostrar al mapa."
+        },
+        "errors": {
+            "title": "Error",
+            "loadDevicesError": "No s'han pogut carregar els dispositius.",
+            "noDevicesTitle": "Sense dispositius",
+            "noDevicesMessage": "No hi ha dispositius disponibles"
+        },
+        "loading": {
+            "devices": "Carregant dispositius..."
         }
     },
     "HomeStack": {

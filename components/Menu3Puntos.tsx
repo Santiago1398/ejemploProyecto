@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     View,
     TouchableOpacity,
@@ -36,6 +36,7 @@ export interface Menu3PuntosProps {
         mac: number;
         idSite: number;
         buildingPortalRef: number;
+        simulado?: boolean; // 🔥 NUEVO
 
     };
     options?: MenuOption[];
@@ -51,36 +52,13 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
     const token = useAuthStore((state) => state.token);
     const insets = useSafeAreaInsets();
 
+    // 🔥 ESTADO PARA CONTROLAR QUÉ MENÚ MOSTRAR
+    const [currentMenu, setCurrentMenu] = useState<'main' | 'ajustes'>('main');
+
+    // 🔥 NUEVO ORDEN DE OPCIONES
     const defaultOptions: MenuOption[] = [
         {
-            id: "save",
-            label: t("Menu3Puntos.save"),
-            icon: "save",
-            onPress: () => {
-                console.log("🔥 Navegando a DeviceMaps");
-                navigation.navigate("DeviceMaps", {
-                    deviceLocation: {
-                        latitude: device.latitude,
-                        longitude: device.longitude,
-                    },
-                    farmName: device.farmName,
-                    siteName: device.siteName,
-                    mac: device.mac,
-                    idSite: device.idSite,
-                });
-            },
-        },
-        {
-            id: "delete",
-            label: t("Menu3Puntos.delete"),
-            icon: "trash",
-            onPress: () => {
-                console.log("🔥 Eliminar Ubicación");
-                Alert.alert("Debug", "Eliminar Ubicación presionado");
-            },
-        },
-        {
-            id: "explotacion",
+            id: "explotacion", // 🔥 1️⃣ PRIMERO: Ir al Portal
             label: t("Menu3Puntos.explotacion"),
             icon: "external-link",
             onPress: () => {
@@ -97,11 +75,12 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
                     farmName: device.farmName,
                     idSite: device.idSite,
                     buildingPortalRef: device.buildingPortalRef,
+                    simulado: device.simulado
                 });
             },
         },
         {
-            id: "configuracion",
+            id: "configuracion", // 🔥 2️⃣ SEGUNDO: Configuración TC5
             label: t("Menu3Puntos.configuracion"),
             icon: "settings",
             onPress: () => {
@@ -117,20 +96,85 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
                     siteName: device.siteName,
                     farmName: device.farmName,
                     idSite: device.idSite,
+                    simulado: device.simulado
+                });
+            },
+        },
+        {
+            id: "geolocalizacion", // 🔥 3️⃣ TERCERO: Geolocalización (solo visualización)
+            label: t("Menu3Puntos.geolocalizacion"),
+            icon: "map-pin",
+            onPress: () => {
+                console.log("🔥 Navegando a DeviceLocationMap (solo visualización)");
+                navigation.navigate("DeviceLocationMap", {
+                    deviceLocation: {
+                        latitude: device.latitude,
+                        longitude: device.longitude,
+                    },
+                    farmName: device.farmName,
+                    siteName: device.siteName,
+                    mac: device.mac,
+                    idSite: device.idSite,
+                });
+            },
+        },
+        {
+            id: "ajustes", // 🔥 4️⃣ CUARTO: Ajustes (abre submenu)
+            label: t("Menu3Puntos.ajustes"),
+            icon: "more-horizontal",
+            onPress: () => {
+                console.log("🔥 Abriendo submenu de Ajustes");
+                setCurrentMenu('ajustes'); // Cambiar al submenu
+            },
+        },
+    ];
+
+    // 🔥 OPCIONES DEL SUBMENU DE AJUSTES
+    const ajustesOptions: MenuOption[] = [
+        {
+            id: "volver",
+            label: t("Menu3Puntos.volver"),
+            icon: "arrow-left",
+            onPress: () => {
+                console.log("🔥 Volver al menú principal");
+                setCurrentMenu('main'); // Volver al menú principal
+            },
+        },
+        {
+            id: "guardarUbicacion",
+            label: t("Menu3Puntos.guardarUbicacion"),
+            icon: "save",
+            onPress: () => {
+                console.log("🔥 Navegando a DeviceMaps para guardar ubicación");
+                onClose(); // Cerrar el menú
+                navigation.navigate("DeviceMaps", {
+                    deviceLocation: {
+                        latitude: device.latitude,
+                        longitude: device.longitude,
+                    },
+                    farmName: device.farmName,
+                    siteName: device.siteName,
+                    mac: device.mac,
+                    idSite: device.idSite,
                 });
             },
         },
     ];
 
-    const finalOptions = options ?? defaultOptions;
+    // 🔥 DETERMINAR QUÉ OPCIONES MOSTRAR
+    const finalOptions = options ?? (currentMenu === 'main' ? defaultOptions : ajustesOptions);
 
     const handleOptionPress = (option: MenuOption) => {
         console.log(`🔥 Opción ${option.id} presionada`);
 
-        // Cerrar primero
-        onClose();
+        // 🔥 Si es una acción de navegación entre menus, ejecutar inmediatamente
+        if (option.id === 'ajustes' || option.id === 'volver') {
+            option.onPress();
+            return;
+        }
 
-        // Ejecutar después de un delay
+        // 🔥 Para otras acciones, cerrar menú y ejecutar
+        onClose();
         setTimeout(() => {
             option.onPress();
         }, 100);
@@ -138,6 +182,7 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
 
     const handleBackdropPress = () => {
         console.log("🔥 Backdrop presionado - cerrando menú");
+        setCurrentMenu('main'); // Resetear al menú principal
         onClose();
     };
 
@@ -161,6 +206,13 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
                 onPress={handleBackdropPress}
             >
                 <View style={[styles.menuContainer, { top: insets.top + 60 }]}>
+                    {/* 🔥 TÍTULO DEL MENÚ SEGÚN EL ESTADO */}
+                    {currentMenu === 'ajustes' && (
+                        <View style={styles.menuHeader}>
+                            <Text style={styles.menuHeaderText}>{t("Menu3Puntos.ajustes")}</Text>
+                        </View>
+                    )}
+
                     {finalOptions.map((option, index) => (
                         <View key={option.id}>
                             <TouchableOpacity
@@ -230,6 +282,21 @@ const styles = StyleSheet.create({
         backgroundColor: "#E5E7EB",
         marginVertical: 4,
         marginHorizontal: 12,
+    },
+
+    // 🔥 NUEVOS ESTILOS PARA EL HEADER DEL SUBMENU
+    menuHeader: {
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderBottomWidth: 1,
+        borderBottomColor: "#E5E7EB",
+        marginBottom: 4,
+    },
+    menuHeaderText: {
+        fontSize: 16,
+        fontWeight: "bold",
+        color: "#374151",
+        textAlign: "center",
     },
 });
 
