@@ -118,6 +118,56 @@ export default function AlarmList() {
             );
         }
     }
+    //? CUANDO LO IMCORPORE EL ID DEL USUARIO
+    // const handleToggleMaster = async () => {
+    //     const status = masterAlarmState ? 0 : 1;
+    //     try {
+    //         // 🔥 OBTENER userId de AsyncStorage
+    //         const storedUserId = await AsyncStorage.getItem("userId");
+
+    //         // 🔥 NUEVA ESTRUCTURA: Enviar userId en el body
+    //         const dataToSend = {
+    //             mac,
+    //             status,
+    //             userId: storedUserId ? Number(storedUserId) : null // 🔥 AGREGAR userId del login
+    //         };
+
+    //         // 🔥 CONSOLE.LOG PARA VER QUÉ SE ENVÍA
+    //         console.log("=== DATOS A ENVIAR PARA MASTER ===");
+    //         console.log("URL:", `alarmtc/armMaster`);
+    //         console.log("MAC:", mac);
+    //         console.log("Status:", status);
+    //         console.log("User ID:", storedUserId);
+    //         console.log("Datos completos:", JSON.stringify(dataToSend, null, 2));
+    //         console.log("=================================");
+
+    //         // Enviar en el body en lugar de query params
+    //         const response = await post(`alarmtc/armMaster`, dataToSend);
+
+    //         // 🔥 CONSOLE.LOG PARA VER LA RESPUESTA
+    //         console.log("=== RESPUESTA DEL BACKEND ===");
+    //         console.log("Response:", JSON.stringify(response, null, 2));
+    //         console.log("============================");
+
+    //         if (response.status === "Master Button Alarm Armed" || response.status === "Master Button Alarm Disarmed") {
+    //             const nuevoEstado = !masterAlarmState;
+    //             setMasterAlarmState(nuevoEstado);
+    //             updateHeaderStatus(alarms, nuevoEstado);
+    //             if (status === 1) {
+    //                 fetchAlarms();
+    //             }
+    //         }
+    //     } catch (error) {
+    //         console.error("=== ERROR AL CAMBIAR MASTER ===");
+    //         console.error("Error completo:", error);
+    //         console.error("==============================");
+    //         Alert.alert(
+    //             t("DeviceDetailsScreen.errorTitle"),
+    //             t("DeviceDetailsScreen.changeStatusError")
+    //         );
+    //     }
+    // };
+
 
     const fetchAlarms = async (isAutoRefresh = false) => {
         try {
@@ -395,6 +445,61 @@ export default function AlarmList() {
             }
         }
     };
+
+    //? CUANDO LO IMCORPORE EL ID DEL USUARIO
+    //         const handleOptionSelect = async (option: string) => {
+    //     if (selectedAlarm) {
+    //         // ✅ Compara con valores fijos
+    //         const status = option === "Armada" ? 1 : 0;
+    //         const idAlarm = selectedAlarm.idAlarm;
+
+    //         try {
+    //             // 🔥 OBTENER userId de AsyncStorage
+    //             const storedUserId = await AsyncStorage.getItem("userId");
+
+    //             // 🔥 NUEVA ESTRUCTURA: Enviar userId en el body
+    //             const dataToSend = {
+    //                 mac,
+    //                 alarm: idAlarm,
+    //                 status,
+    //                 userId: storedUserId ? Number(storedUserId) : null // 🔥 AGREGAR userId del login
+    //             };
+
+    //             // 🔥 CONSOLE.LOG PARA VER QUÉ SE ENVÍA
+    //             console.log("=== DATOS A ENVIAR PARA ARMAR/DESARMAR ===");
+    //             console.log("URL:", `alarmtc/arm`);
+    //             console.log("MAC:", mac);
+    //             console.log("Alarm ID:", idAlarm);
+    //             console.log("Status:", status);
+    //             console.log("User ID:", storedUserId);
+    //             console.log("Datos completos:", JSON.stringify(dataToSend, null, 2));
+    //             console.log("=========================================");
+
+    //             // Enviar en el body en lugar de query params
+    //             const response = await post(`alarmtc/arm`, dataToSend);
+
+    //             // 🔥 CONSOLE.LOG PARA VER LA RESPUESTA
+    //             console.log("=== RESPUESTA DEL BACKEND ===");
+    //             console.log("Response:", JSON.stringify(response, null, 2));
+    //             console.log("============================");
+
+    //             setSelectedAlarm((prev) => (prev ? { ...prev, armado: status === 1 } : prev));
+
+    //             setTimeout(() => {
+    //                 setOptionModalVisible(false);
+    //                 fetchAlarms();
+    //             }, 250);
+    //         } catch (error) {
+    //             console.error("=== ERROR AL ARMAR/DESARMAR ===");
+    //             console.error("Error completo:", error);
+    //             console.error("===============================");
+    //             Alert.alert(
+    //                 t("DeviceDetailsScreen.errorTitle"),
+    //                 t("DeviceDetailsScreen.errorChangeAlarmState")
+    //             );
+    //         }
+    //     }
+    // };
     // const handleAlarmDetected = (idAlarm: number) => {
     //     console.log(" Alarma detectada con id:", idAlarm);
     //     setAlarms(prev =>

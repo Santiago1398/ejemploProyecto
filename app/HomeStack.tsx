@@ -17,6 +17,7 @@ import EditarPrioridadScreen from "@/components/EditarPrioridadScreen";
 import { t } from "../i18n/i18nConfig";
 import { ResponseAlarmaSite } from "@/infrastructure/intercafe/listapi.interface";
 import DeviceLocationMap from "../components/maps/DebiceLocationMap"
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export type RootStackParamList = {
@@ -33,7 +34,7 @@ export type RootStackParamList = {
             buildingPortalRef: number;
             armed: boolean;
             alarmType: number;
-            simulado?: boolean; // 🔥 NUEVO
+            simulado?: boolean; //  NUEVO
         };
     };
     BottonMaster: {
@@ -75,7 +76,7 @@ export type RootStackParamList = {
         siteName: string;
         farmName: string;
         idSite: number;
-        simulado?: boolean; // 🔥 NUEVO
+        simulado?: boolean; //  NUEVO
 
     };
     EditarPrioridadScreen: undefined;
@@ -153,7 +154,10 @@ export default function HomeStack() {
                 <Stack.Screen
                     name="DeviceMaps"
                     component={DeviceMaps}
-                    options={{ headerTitle: t("HomeStack.DeviceMaps.title") }}
+                    options={{
+                        headerShown: true,
+                        headerTitle: t("HomeStack.DeviceMaps.title")
+                    }}
                 />
 
                 <Stack.Screen
@@ -185,6 +189,8 @@ export default function HomeStack() {
                     options={({ route }) => ({
                         headerShown: true,
                         title: route.params.farmName,
+                        sub: route.params.siteName,
+
                     })}
                 />
 
@@ -194,6 +200,8 @@ export default function HomeStack() {
                     options={({ route }) => ({
                         headerShown: true,
                         title: route.params.farmName,
+                        subTitle: route.params.siteName,
+
                     })}
 
                 />

@@ -1,7 +1,13 @@
 {
     "AlarmasScreen": {
         "errorLoadingAlarms": "無法載入已觸發的警報",
-        "noAlarms": "沒有已觸發的警報"
+        "noAlarms": "沒有活躍警報",
+        "loadingAlarms": "正在載入警報...",
+        "errorTitle": "錯誤",
+        "errorMessage": "無法載入警報。",
+        "connectionError": "連接錯誤",
+        "connectionErrorMessage": "無法載入警報。請檢查您的網路連接。",
+        "noAlarmsMessage": "您的所有設備都運行正常"
     },
     "deviceList": {
         "loadingDevices": "正在載入裝置...",
@@ -231,12 +237,28 @@
             "noDevicesMessage": "沒有可用的裝置"
         },
         "loading": {
-            "devices": "載入裝置中..."
+            "devices": "載入裝置中...",
+            "location": "載入位置中"
         }
     },
     "HomeStack": {
         "DeviceMaps": {
             "title": "設定裝置位置"
         }
+    },
+    "Explotacion": {
+        "loadingFarm": "正在載入農場...",
+        "errorLoadingFarm": "無法載入入口網站，因為沒有連接或不存在",
+        "errorTitle": "配置錯誤",
+        "ButtonText": "返回",
+        "Reintentar": "重試"
+    },
+    "ConfiguracionTC5": {
+        "loadingConfiguration": "正在載入配置...",
+        "errorLoadingConfiguration": "無法載入 TC5 配置",
+        "errorLoadingFarm": "無法載入入口網站，因為沒有連接或不存在",
+        "errorTitle": "配置錯誤",
+        "ButtonText": "返回",
+        "Reintentar": "重試"
     }
 }

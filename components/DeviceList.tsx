@@ -8,13 +8,14 @@ import {
     Alert,
     Modal,
     AppState,
+    SectionList,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuthStore } from "@/store/authStore";
-import { useDeviceStore } from "@/store/useDeviceStore"; // 🏪 NUEVO STORE
+import { useDeviceStore } from "@/store/useDeviceStore";
 import { RootStackParamList } from "@/types/navigation";
 import { get } from "@/services/api";
 import { stopAlarmSound } from "@/utils/sound";
@@ -28,7 +29,6 @@ export default function DeviceList() {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const { token, userId } = useAuthStore();
 
-    // 🏪 USAR EL STORE GLOBAL en lugar del estado local
     const {
         devices,
         loading,
@@ -43,6 +43,30 @@ export default function DeviceList() {
     const [initialLoad, setInitialLoad] = useState(true);
     const [dialogVisible, setDialogVisible] = useState(false);
     const [errorAlertShown, setErrorAlertShown] = useState(false);
+
+    // 🔥 NUEVO: Preparar datos para SectionList
+    const prepareSectionData = () => {
+        const sections = [];
+
+        // 🚨 SECCIÓN 1: ALARMAS (solo dispositivos con alarmType = 1 - rojo)
+        const devicesWithAlarms = devices.filter(device => device.alarmType === 1);
+        if (devicesWithAlarms.length > 0) {
+            sections.push({
+                title: "ALARMAS",
+                data: devicesWithAlarms,
+                type: "alarms"
+            });
+        }
+
+        // 📍 SECCIÓN 2: TODAS LAS UBICACIONES (todos los dispositivos)
+        sections.push({
+            title: "TODAS LAS UBICACIONES",
+            data: devices,
+            type: "all"
+        });
+
+        return sections;
+    };
 
     useEffect(() => {
         const subscription = AppState.addEventListener("change", async (state) => {
@@ -77,7 +101,6 @@ export default function DeviceList() {
         checkAlarm();
     }, []);
 
-    // Actualización periódica cada 5 segundos
     useEffect(() => {
         const interval = setInterval(() => {
             if (token && userId) fetchDevices(true);
@@ -87,7 +110,7 @@ export default function DeviceList() {
     }, [token, userId]);
 
     useEffect(() => {
-        fetchDevices(false); // carga inicial
+        fetchDevices(false);
     }, []);
 
     useEffect(() => {
@@ -130,7 +153,8 @@ export default function DeviceList() {
 
             setError(false);
             const storedUserId = await AsyncStorage.getItem("userId");
-            const data: ResponseAlarmaSite[] = await get(`alarmtc/sites/user/${storedUserId}`);
+            //const data: ResponseAlarmaSite[] = await get(`alarmtc/sites/user/${storedUserId}`);
+            const data: ResponseAlarmaSite[] = await get(`alarmtc/sites/usershared2/${storedUserId}`);
 
             console.log("📍 Dispositivos del backend:", data.length);
 
@@ -141,23 +165,6 @@ export default function DeviceList() {
                 armed: device.armed ?? true
             }));
 
-            // Ordena primero por farmName, luego por siteName (nave)
-            formattedData.sort((a, b) => {
-                const nameA = a.farmName.toLowerCase();
-                const nameB = b.farmName.toLowerCase();
-                const siteA = a.siteName?.toLowerCase() ?? "";
-                const siteB = b.siteName?.toLowerCase() ?? "";
-
-                if (nameA < nameB) return -1;
-                if (nameA > nameB) return 1;
-
-                if (siteA < siteB) return -1;
-                if (siteA > siteB) return 1;
-
-                return 0;
-            });
-
-            // 🏪 GUARDAR EN EL STORE GLOBAL
             setDevices(formattedData);
             setErrorAlertShown(false);
 
@@ -188,7 +195,6 @@ export default function DeviceList() {
         }
     };
 
-    // Alarmas en tiempo real - 🏪 ACTUALIZAR EL STORE
     useEffect(() => {
         notificationService.setOnSiteAlarmDetected((macStr) => {
             const mac = Number(macStr);
@@ -220,6 +226,15 @@ export default function DeviceList() {
         }
     };
 
+    // 🔥 NUEVO: Renderizar header de sección
+    const renderSectionHeader = ({ section }: { section: any }) => (
+        <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>{section.title}</Text>
+            <View style={styles.sectionLine} />
+        </View>
+    );
+
+    // 🔥 MODIFICADO: Renderizar cada dispositivo
     const renderDeviceItem = ({ item }: { item: ResponseAlarmaSite }) => {
         const backgroundColor = getBackgroundColor(item.alarmType, item.armed);
         const capitalize = (str: string) => str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";
@@ -270,11 +285,14 @@ export default function DeviceList() {
             ) : devices.length === 0 ? (
                 <Text style={styles.loadingText}>{t("deviceList.noLocationsAvailable")}</Text>
             ) : (
-                <FlatList
-                    data={devices}
+                // 🔥 NUEVO: Usar SectionList en lugar de FlatList
+                <SectionList
+                    sections={prepareSectionData()}
                     keyExtractor={(item, index) => `${item.idSite}-${item.mac}-${index}`}
                     renderItem={renderDeviceItem}
+                    renderSectionHeader={renderSectionHeader}
                     contentContainerStyle={styles.listContainer}
+                    stickySectionHeadersEnabled={false}
                 />
             )}
 
@@ -311,9 +329,31 @@ export default function DeviceList() {
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: "#f2f2f2" },
     listContainer: { padding: 16 },
+
+    // 🔥 NUEVOS ESTILOS PARA HEADERS DE SECCIÓN
+    sectionHeader: {
+        backgroundColor: '#f2f2f2',
+        paddingVertical: 12,
+        paddingHorizontal: 0,
+        marginTop: 16,
+        marginBottom: 8,
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#333',
+        marginBottom: 8,
+        letterSpacing: 1,
+    },
+    sectionLine: {
+        height: 2,
+        backgroundColor: '#333',
+        width: '100%',
+    },
+
     deviceContainer: {
         padding: 16,
-        marginVertical: 8,
+        marginVertical: 4, // 🔥 Reducido para mejor espaciado con headers
         borderRadius: 12,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },

@@ -1,7 +1,13 @@
 {
     "AlarmasScreen": {
-        "errorLoadingAlarms": "No s'han pogut carregar les alarmes activades",
-        "noAlarms": "No hi ha alarmes activades"
+        "errorLoadingAlarms": "No s'han pogut carregar les alarmes disparades",
+        "noAlarms": "No hi ha Alarmes Activades",
+        "loadingAlarms": "Carregant alarmes...",
+        "errorTitle": "Error",
+        "errorMessage": "No s'han pogut carregar les alarmes.",
+        "connectionError": "Error de Connexió",
+        "connectionErrorMessage": "No s'han pogut carregar les alarmes. Verifica la teva connexió a internet.",
+        "noAlarmsMessage": "Tots els teus dispositius funcionen correctament"
     },
     "deviceList": {
         "loadingDevices": "Carregant dispositius...",
@@ -231,12 +237,27 @@
             "noDevicesMessage": "No hi ha dispositius disponibles"
         },
         "loading": {
-            "devices": "Carregant dispositius..."
+            "devices": "Carregant dispositius...",
+            "location": "Obtenint ubicacions"
         }
     },
     "HomeStack": {
         "DeviceMaps": {
             "title": "Fixar ubicació del dispositiu"
         }
+    },
+    "Explotacion": {
+        "loadingFarm": "Carregant explotació...",
+        "errorLoadingFarm": "No es pot carregar el portal perquè no hi ha connexió o no existeix",
+        "errorTitle": "Error de Configuració",
+        "ButtonText": "Tornar",
+        "Reintentar": "Tornar a intentar"
+    },
+    "ConfiguracionTC5": {
+        "loadingConfiguration": "Carregant configuració...",
+        "errorLoadingConfiguration": "No s'ha pogut carregar la configuració del TC5",
+        "errorTitle": "Error de Configuració",
+        "ButtonText": "Tornar",
+        "Reintentar": "Tornar a intentar"
     }
 }

@@ -1,7 +1,13 @@
 {
     "AlarmasScreen": {
-        "errorLoadingAlarms": "Impossibile caricare le allarmi scattate",
-        "noAlarms": "Nessun allarme scattato"
+        "errorLoadingAlarms": "Impossibile caricare gli allarmi attivati",
+        "noAlarms": "Nessun Allarme Attivo",
+        "loadingAlarms": "Caricamento allarmi...",
+        "errorTitle": "Errore",
+        "errorMessage": "Impossibile caricare gli allarmi.",
+        "connectionError": "Errore di Connessione",
+        "connectionErrorMessage": "Impossibile caricare gli allarmi. Verifica la tua connessione internet.",
+        "noAlarmsMessage": "Tutti i tuoi dispositivi funzionano correttamente"
     },
     "deviceList": {
         "loadingDevices": "Caricamento dispositivi...",
@@ -231,12 +237,27 @@
             "noDevicesMessage": "Nessun dispositivo disponibile"
         },
         "loading": {
-            "devices": "Caricamento dispositivi..."
+            "devices": "Caricamento dispositivi...",
+            "location": "Caricamento posizioni"
         }
     },
     "HomeStack": {
         "DeviceMaps": {
             "title": "Fissa posizione del dispositivo"
         }
+    },
+    "Explotacion": {
+        "loadingFarm": "Caricamento allevamento...",
+        "errorLoadingFarm": "Impossibile caricare il portale perché non c'è connessione o non esiste",
+        "errorTitle": "Errore di Configurazione",
+        "ButtonText": "Indietro",
+        "Reintentar": "Riprova"
+    },
+    "configuracion": {
+        "loadingConfiguration": "Caricamento configurazione...",
+        "errorMessage": "Impossibile caricare la configurazione del dispositivo.",
+        "errorTitle": "Errore di Configurazione",
+        "ButtonText": "Indietro",
+        "Reintentar": "Riprova"
     }
 }

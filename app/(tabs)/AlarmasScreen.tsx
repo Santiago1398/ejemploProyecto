@@ -1,300 +1,333 @@
-// src/screens/WebViewConfiguracionTC5.tsx
-import React, { useState, useEffect } from "react";
-import { ActivityIndicator, SafeAreaView, StyleSheet, View, Text, TouchableOpacity, Alert } from "react-native";
-import { WebView } from "react-native-webview";
-import { RouteProp, useRoute, useNavigation } from "@react-navigation/native";
-import { RootStackParamList } from "@/app/HomeStack";
-import { Feather } from "@expo/vector-icons";
+import React, { useEffect, useState } from "react";
+import {
+    FlatList,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+    Alert,
+    ActivityIndicator,
+    RefreshControl,
+} from "react-native";
+import { Ionicons, FontAwesome } from "@expo/vector-icons";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { RootStackParamList } from "@/types/navigation";
+import { get } from "@/services/api";
+import { PaperProvider } from "react-native-paper";
+import { t } from "@/i18n/i18nConfig";
 
-type WebViewRouteProp = RouteProp<RootStackParamList, "ConfiguracionTC5">;
+//  NUEVA INTERFAZ BASADA EN LA RESPUESTA DEL ENDPOINT
+interface AlarmaDisparada {
+    mac: number;
+    farmName: string;
+    siteName: string;
+    town: string;
+    province: string;
+    country: string;
+    idSite: number;
+    longitude: number;
+    latitude: number;
+    buildingPortalRef: number;
+    idAlarm: number;
+    textAlarm: string;
+}
 
-export default function WebViewConfiguracionTC5() {
-    const route = useRoute<WebViewRouteProp>();
-    const navigation = useNavigation();
-    const {
-        mac,
-        token,
-        idioma = "es",
-        idSite,
-        simulado = false // NUEVO: Obtener parámetro simulado
-    } = route.params;
-
-    const [loading, setLoading] = useState(true);
+export default function Alarmas() {
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+    const [alarmasDisparadas, setAlarmasDisparadas] = useState<AlarmaDisparada[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [hasError, setHasError] = useState(false);
-    const [errorMessage, setErrorMessage] = useState("");
+    const [errorShown, setErrorShown] = useState(false);
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
-    // 🔥 NUEVO: Si es simulado, mostrar mensaje simple
-    if (simulado) {
-        return (
-            <SafeAreaView style={styles.container}>
-                <View style={styles.simulationContainer}>
-                    <Feather name="settings" size={64} color="#8a9bb9" />
-                    <Text style={styles.simulationTitle}> Esto es una simulación</Text>
-                    <Text style={styles.simulationMessage}>No existe en el portal</Text>
+    const capitalize = (str: string) =>
+        str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";
 
-                    <TouchableOpacity
-                        style={styles.backButton}
-                        onPress={() => navigation.goBack()}
-                    >
-                        <Feather name="arrow-left" size={20} color="#fff" />
-                        <Text style={styles.backButtonText}>Volver</Text>
-                    </TouchableOpacity>
-                </View>
-            </SafeAreaView>
-        );
-    }
+    //  FUNCIÓN SIMPLIFICADA PARA OBTENER ALARMAS
+    const fetchAlarmas = async (isManualRefresh = false) => {
+        try {
+            if (isManualRefresh) {
+                setIsRefreshing(true);
+            }
 
-    //  VALIDACIÓN DE PARÁMETROS OBLIGATORIOS
-    const validateParams = () => {
-        const errors = [];
+            const storedUserId = await AsyncStorage.getItem("userId");
 
-        console.log("=== VALIDANDO PARÁMETROS CONFIGURACIÓN ===");
-        console.log("mac:", mac, typeof mac);
-        console.log("token:", token, typeof token);
-        console.log("idioma:", idioma, typeof idioma);
-        console.log("idSite:", idSite, typeof idSite);
-        console.log("simulado:", simulado, typeof simulado);
+            //  UNA SOLA LLAMADA AL ENDPOINT QUE YA DEVUELVE ALARMAS DISPARADAS
+            const alarmasData: AlarmaDisparada[] = await get(`alarmtc/sites/user/list/${storedUserId}`);
 
-        // Validar MAC
-        if (!mac || mac === 0 || mac === null || mac === undefined) {
-            errors.push("MAC del dispositivo");
-        }
+            console.log("📡 Alarmas recibidas:", alarmasData);
 
-        // Validar Token
-        if (!token || token === "" || token === null || token === undefined) {
-            errors.push("Token de autenticación");
-        }
+            //? TODO BIEN - Solo mapear si necesitas transformar algo
+            const alarmasFormateadas = alarmasData.map(alarma => ({
+                ...alarma,
+                textAlarm: capitalize(alarma.textAlarm), // Capitalizar el texto de la alarma
+                town: capitalize(alarma.town || ""),
+                province: capitalize(alarma.province || ""),
+            }));
 
-        // Validar idSite
-        if (!idSite || idSite === 0 || idSite === null || idSite === undefined) {
-            errors.push("ID del sitio");
-        }
+            setAlarmasDisparadas(alarmasFormateadas);
+            setHasError(false);
+            setIsLoading(false);
+            setIsRefreshing(false);
 
-        // Validar idioma (opcional, tiene valor por defecto)
-        if (!idioma || idioma === "") {
-            console.warn("⚠️ Idioma no especificado, usando 'es' por defecto");
-        }
+        } catch (error) {
+            console.error(" Error al cargar alarmas:", error);
 
-        if (errors.length > 0) {
-            const errorMsg = `Faltan datos obligatorios:\n• ${errors.join('\n• ')}`;
-            console.error("❌ VALIDACIÓN CONFIGURACIÓN FALLIDA:", errorMsg);
-            setErrorMessage(errorMsg);
+            //  MOSTRAR ALERT SOLO UNA VEZ EN CARGA INICIAL
+            if (!errorShown && !isManualRefresh) {
+                setErrorShown(true);
+                Alert.alert(
+                    t("AlarmasScreen.errorTitle"),
+                    t("AlarmasScreen.errorMessage"),
+                    [{ text: "OK" }]
+                );
+            }
+
             setHasError(true);
-            setLoading(false);
-            return false;
+            setIsLoading(false);
+            setIsRefreshing(false);
         }
-
-        console.log("✅ Todos los parámetros de configuración son válidos");
-        return true;
     };
 
-    // 🔥 EJECUTAR VALIDACIÓN AL CARGAR
+    // CARGAR SOLO UNA VEZ AL INICIO
     useEffect(() => {
-        const isValid = validateParams();
-        if (!isValid) {
-            return; // No continuar si hay errores
-        }
+        fetchAlarmas(false); // Carga inicial
     }, []);
 
-    // 🔥 SI HAY ERRORES, MOSTRAR PANTALLA DE ERROR
-    if (hasError) {
-        return (
-            <SafeAreaView style={styles.container}>
-                <View style={styles.errorContainer}>
-                    <Feather name="alert-circle" size={64} color="#FF3B30" />
-                    <Text style={styles.errorTitle}>Error de Configuración</Text>
-                    <Text style={styles.errorMessage}>{errorMessage}</Text>
-                    <Text style={styles.errorDescription}>
-                        No se puede cargar el portal porque no hay conexion o no existe
-                    </Text>
-                    <TouchableOpacity
-                        style={styles.backButton}
-                        onPress={() => navigation.goBack()}
-                    >
-                        <Feather name="arrow-left" size={20} color="#fff" />
-                        <Text style={styles.backButtonText}>Volver</Text>
-                    </TouchableOpacity>
+    //  NUEVO: INTERVAL CADA 5 SEGUNDOS PARA AUTO-REFRESH SIN LOADING
+    useEffect(() => {
+        const interval = setInterval(() => {
+            fetchAlarmas(true); // Auto-refresh silencioso
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    //  FUNCIÓN PARA REFRESH MANUAL
+    const onRefresh = () => {
+        setErrorShown(false); // Permitir mostrar errores nuevos
+        setIsRefreshing(true);
+        fetchAlarmas(false); // Refresh manual (puede mostrar loading)
+    };
+
+    const renderItem = ({ item }: { item: AlarmaDisparada }) => (
+        <TouchableOpacity
+            style={styles.card}
+            onPress={() => {
+                navigation.navigate("DeviceDetails", {
+                    device: {
+                        mac: item.mac,
+                        farmName: item.farmName,
+                        siteName: item.siteName,
+                        latitude: item.latitude,
+                        longitude: item.longitude,
+                        idSite: item.idSite,
+                        buildingPortalRef: item.buildingPortalRef,
+                        armed: true,
+                        alarmType: 1,
+                    }
+                });
+            }}
+        >
+            <View style={styles.row}>
+                <Ionicons
+                    name="alert-circle"
+                    size={24}
+                    color="#000"
+                    style={{ marginRight: 8 }}
+                />
+                <View style={styles.titleRow}>
+                    <Text style={styles.leftText}>{item.farmName}</Text>
+                    <Text style={styles.rightText}>{item.siteName}</Text>
                 </View>
-            </SafeAreaView>
+            </View>
+
+            {/*  USAR EL NUEVO CAMPO textAlarm */}
+            <Text style={styles.alarmas}>{item.textAlarm}</Text>
+
+            {/*  MOSTRAR UBICACIÓN SOLO SI EXISTE */}
+            {(item.town || item.province) && (
+                <Text style={styles.location}>
+                    {[item.town, item.province].filter(Boolean).join(", ")}
+                </Text>
+            )}
+        </TouchableOpacity>
+    );
+
+    // PANTALLA DE CARGA INICIAL
+    if (isLoading) {
+        return (
+            <PaperProvider>
+                <View style={styles.centered}>
+                    <ActivityIndicator size="large" color="#4ade80" />
+                    <Text style={styles.loadingText}>
+                        {t("AlarmasScreen.loadingAlarms")}
+                    </Text>
+                </View>
+            </PaperProvider>
         );
     }
 
-    //    const baseUrl = "https://ctiportal.cticontrol.com/login.xhtml";
-    const baseUrl = "https://ctiportaltest.cticontrol.com/login.xhtml";
-    const queryParams = `mac=${mac}&token=${token}&idioma=${idioma}&idNave=${idSite}&app=appmovilv3&type=control-remoto`;
-    const url = `${baseUrl}?${queryParams}`;
-
-    // 🔥 DEBUG: Imprimir URL construida
-    console.log("=== URL CONFIGURACIÓN CONSTRUIDA ===");
-    console.log("Base URL:", baseUrl);
-    console.log("Query Params:", queryParams);
-    console.log("URL Completa:", url);
-    console.log("Longitud URL:", url.length);
-
-    // 🔥 MANEJO DE ERRORES DE CARGA DE WEBVIEW
-    const handleWebViewError = (syntheticEvent: any) => {
-        const { nativeEvent } = syntheticEvent;
-        console.error("❌ WebView Configuración Error:", nativeEvent);
-
-        setHasError(true);
-        setErrorMessage("Error al cargar el portal de configuración");
-        setLoading(false);
-
-        Alert.alert(
-            "Error de Conexión",
-            "No se pudo cargar el portal de configuración. Verifica tu conexión a internet.",
-            [
-                { text: "Reintentar", onPress: () => setLoading(true) },
-                { text: "Volver", onPress: () => navigation.goBack() }
-            ]
-        );
-    };
-
-    const handleHttpError = (syntheticEvent: any) => {
-        const { nativeEvent } = syntheticEvent;
-        console.error("🌐 HTTP Error Configuración:", nativeEvent.statusCode);
-
-        if (nativeEvent.statusCode >= 400) {
-            setHasError(true);
-            setErrorMessage(`Error del servidor (${nativeEvent.statusCode})`);
-            setLoading(false);
-        }
-    };
-
-    return (
-        <SafeAreaView style={styles.container}>
-            {loading && (
-                <View style={styles.loadingOverlay}>
-                    <ActivityIndicator size="large" color="#007AFF" />
-                    <Text style={styles.loadingText}>Cargando configuración...</Text>
+    //  PANTALLA DE ERROR
+    if (hasError && alarmasDisparadas.length === 0) {
+        return (
+            <PaperProvider>
+                <View style={styles.centered}>
+                    <FontAwesome name="wifi" size={48} color="#ef4444" />
+                    <Text style={styles.errorTitle}>
+                        {t("AlarmasScreen.errorTitle")}
+                    </Text>
+                    <Text style={styles.errorMessage}>
+                        {t("AlarmasScreen.connectionErrorMessage")}
+                    </Text>
+                    {/* <TouchableOpacity style={styles.retryButton} onPress={onRefresh}>
+                        <Ionicons name="refresh" size={20} color="#fff" />
+                        <Text style={styles.retryButtonText}>
+                            {t("AlarmasScreen.retry") }
+                        </Text>
+                    </TouchableOpacity> */}
                 </View>
-            )}
+            </PaperProvider>
+        );
+    }
 
-            <WebView
-                source={{ uri: url }}
-                onLoadStart={() => {
-                    console.log("🔄 WebView Configuración: Iniciando carga...");
-                    setLoading(true);
-                }}
-                onLoadEnd={() => {
-                    console.log("✅ WebView Configuración: Carga completada");
-                    setLoading(false);
-                }}
-                onLoadProgress={({ nativeEvent }) => {
-                    console.log(`📈 WebView Configuración: Progreso ${(nativeEvent.progress * 100).toFixed(0)}%`);
-                }}
-                onError={handleWebViewError}
-                onHttpError={handleHttpError}
-                onMessage={(event) => {
-                    console.log("📨 Mensaje desde WebView Configuración:", event.nativeEvent.data);
-                }}
-                injectedJavaScript={`
-                    console.log("=== WEBVIEW CONFIGURACIÓN DEBUG ===");
-                    console.log("URL actual:", window.location.href);
-                    console.log("Título:", document.title);
-                    
-                    // Verificar si la página se cargó correctamente
-                    if (document.readyState === 'complete') {
-                        window.ReactNativeWebView.postMessage(JSON.stringify({
-                            type: 'configuracion_loaded',
-                            url: window.location.href,
-                            title: document.title,
-                            timestamp: new Date().toISOString()
-                        }));
+    //  CONTENIDO NORMAL
+    return (
+        <PaperProvider>
+            {alarmasDisparadas.length === 0 ? (
+                <View style={styles.centered}>
+                    <FontAwesome name="bell-slash-o" size={48} color="#4ade80" />
+                    <Text style={styles.noAlarmText}>
+                        {t("AlarmasScreen.noAlarms")}
+                    </Text>
+                    <Text style={styles.noAlarmSubtext}>
+                        {t("AlarmasScreen.noAlarmsMessage")}
+                    </Text>
+                </View>
+            ) : (
+                <FlatList
+                    data={alarmasDisparadas}
+                    keyExtractor={(item, index) => `${item.mac}-${item.idAlarm}-${index}`}
+                    renderItem={renderItem}
+                    contentContainerStyle={{ padding: 16 }}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={isRefreshing}
+                            onRefresh={onRefresh}
+                            colors={["#4ade80"]}
+                            tintColor="#4ade80"
+                        />
                     }
-                    
-                    true;
-                `}
-                originWhitelist={['*']}
-                javaScriptEnabled={true}
-                domStorageEnabled={true}
-                startInLoadingState={true}
-                mixedContentMode={'compatibility'}
-            />
-        </SafeAreaView>
+                />
+            )}
+        </PaperProvider>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1
+    card: {
+        backgroundColor: "#dc2626", //  Rojo más moderno (#dc2626 en lugar de "red")
+        borderRadius: 16, //  Bordes más redondeados (16 en lugar de 12)
+        padding: 20, // Más padding para respirar
+        marginBottom: 16, //  Más espacio entre tarjetas
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 }, //  Sombra más pronunciada
+        shadowOpacity: 0.3, //  Sombra más visible
+        shadowRadius: 8, //  Sombra más suave
+        elevation: 6, //  Elevación mayor en Android
+        // NUEVO: Gradiente sutil con border
+        borderWidth: 1,
+        borderColor: "rgba(255, 255, 255, 0.1)", // Borde sutil blanco
     },
-    loadingOverlay: {
-        ...StyleSheet.absoluteFillObject,
-        justifyContent: "center",
+    row: {
+        flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "#fff",
-        zIndex: 10,
+        marginBottom: 8, //  Más espacio
     },
-    loadingText: {
-        marginTop: 16,
-        fontSize: 16,
-        color: "#666",
+    titleRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        flex: 1,
     },
-    errorContainer: {
+    leftText: {
+        fontWeight: "bold",
+        fontSize: 17, // 🔥 Ligeramente más grande
+        color: "#ffffff", //  BLANCO
+        letterSpacing: 0.3, //  Espaciado de letras moderno
+    },
+    rightText: {
+        fontWeight: "bold",
+        fontSize: 17, // 🔥 Ligeramente más grande
+        color: "#ffffff", //  BLANCO
+        letterSpacing: 0.3, //  Espaciado de letras moderno
+    },
+    alarmas: {
+        fontSize: 15, // 🔥 Ligeramente más grande
+        color: "#f3f4f6", //  BLANCO ligeramente gris para contraste
+        marginBottom: 6, //  Más espacio
+        fontWeight: "500", //  Peso medio
+        lineHeight: 20, //  Altura de línea mejorada
+    },
+    location: {
+        fontSize: 13, // 🔥 Un poco más grande
+        color: "rgba(255, 255, 255, 0.8)", //  BLANCO con transparencia
+        fontStyle: "italic",
+        marginTop: 4, //  Espacio superior
+    },
+    centered: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        padding: 20,
-        backgroundColor: "#f8f9fa",
+        paddingHorizontal: 30,
+    },
+    loadingText: {
+        fontSize: 16,
+        color: "#666",
+        marginTop: 16,
+        textAlign: "center",
     },
     errorTitle: {
-        fontSize: 24,
+        fontSize: 20,
+        color: "#ef4444",
         fontWeight: "bold",
-        color: "#FF3B30",
         marginTop: 16,
-        marginBottom: 12,
         textAlign: "center",
     },
     errorMessage: {
         fontSize: 16,
-        color: "#333",
-        marginBottom: 16,
-        textAlign: "center",
-        fontWeight: "600",
-    },
-    errorDescription: {
-        fontSize: 14,
         color: "#666",
+        marginTop: 12,
         textAlign: "center",
-        lineHeight: 20,
-        marginBottom: 32,
-        paddingHorizontal: 20,
+        lineHeight: 22,
     },
-    // 🔥 NUEVOS ESTILOS PARA SIMULACIÓN
-    simulationContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 20,
-        backgroundColor: "#f8f9fa",
-    },
-    simulationTitle: {
-        fontSize: 24,
-        fontWeight: "bold",
-        color: "#8a9bb9",
-        marginTop: 20,
-        marginBottom: 10,
-        textAlign: "center",
-    },
-    simulationMessage: {
-        fontSize: 18,
-        color: "#666",
-        textAlign: "center",
-        marginBottom: 40,
-    },
-    backButton: {
+    retryButton: {
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "#007AFF",
-        paddingVertical: 12,
+        backgroundColor: "#4ade80",
         paddingHorizontal: 24,
+        paddingVertical: 12,
         borderRadius: 8,
+        marginTop: 24,
     },
-    backButtonText: {
+    retryButtonText: {
         color: "#fff",
         fontSize: 16,
         fontWeight: "600",
         marginLeft: 8,
+    },
+    noAlarmText: {
+        fontSize: 20,
+        color: "#4ade80",
+        fontWeight: "600",
+        marginTop: 16,
+        textAlign: "center",
+    },
+    noAlarmSubtext: {
+        fontSize: 14,
+        color: "#666",
+        marginTop: 8,
+        textAlign: "center",
     },
 });

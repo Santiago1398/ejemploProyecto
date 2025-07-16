@@ -12,6 +12,7 @@ import { WebView } from "react-native-webview";
 import { RouteProp, useRoute, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "@/app/HomeStack";
 import { Feather } from "@expo/vector-icons";
+import { t } from "i18n-js";
 
 type WebViewRouteProp = RouteProp<RootStackParamList, "Explotacion">;
 
@@ -25,7 +26,7 @@ export default function WebViewExplotacion() {
         siteName,
         idSite,
         buildingPortalRef,
-        simulado = false // 🔥 NUEVO: Obtener parámetro simulado
+        simulado = false
     } = route.params;
 
     const [loading, setLoading] = useState(true);
@@ -109,17 +110,19 @@ export default function WebViewExplotacion() {
             <SafeAreaView style={styles.container}>
                 <View style={styles.errorContainer}>
                     <Feather name="alert-circle" size={64} color="#FF3B30" />
-                    <Text style={styles.errorTitle}>Error de Configuración</Text>
+                    <Text style={styles.errorTitle}>{t("Eplotacion.errorTitle")}</Text>
                     <Text style={styles.errorMessage}>{errorMessage}</Text>
                     <Text style={styles.errorDescription}>
-                        No se puede cargar el portal porque no hay conexion o no existe
+                        {t("Eplotacion.errorLoadingFarm")}
                     </Text>
                     <TouchableOpacity
                         style={styles.backButton}
                         onPress={() => navigation.goBack()}
                     >
                         <Feather name="arrow-left" size={20} color="#fff" />
-                        <Text style={styles.backButtonText}>Volver</Text>
+                        <Text style={styles.backButtonText}>
+                            {t("Eplotacion.ButtonText")}
+                        </Text>
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>
@@ -144,25 +147,25 @@ export default function WebViewExplotacion() {
     // 🔥 MANEJO DE ERRORES DE CARGA DE WEBVIEW
     const handleWebViewError = (syntheticEvent: any) => {
         const { nativeEvent } = syntheticEvent;
-        console.error("❌ WebView Explotación Error:", nativeEvent);
+        console.error(" WebView Explotación Error:", nativeEvent);
 
         setHasError(true);
         setErrorMessage("Error al cargar la vista de explotación");
         setLoading(false);
 
         Alert.alert(
-            "Error de Conexión",
-            "No se pudo cargar la vista de explotación. Verifica tu conexión a internet.",
+            t("Eplotacion.errorTitle"),
+            t("Eplotacion.errorLoadingFarm"),
             [
-                { text: "Reintentar", onPress: () => setLoading(true) },
-                { text: "Volver", onPress: () => navigation.goBack() }
+                { text: t("Eplotacion.Reintentar"), onPress: () => setLoading(true) },
+                { text: t("Eplotacion.ButtonText"), onPress: () => navigation.goBack() }
             ]
         );
     };
 
     const handleHttpError = (syntheticEvent: any) => {
         const { nativeEvent } = syntheticEvent;
-        console.error("🌐 HTTP Error Explotación:", nativeEvent.statusCode);
+        console.error(" HTTP Error Explotación:", nativeEvent.statusCode);
 
         if (nativeEvent.statusCode >= 400) {
             setHasError(true);
@@ -176,28 +179,28 @@ export default function WebViewExplotacion() {
             {loading && (
                 <View style={styles.loadingOverlay}>
                     <ActivityIndicator size="large" color="#007AFF" />
-                    <Text style={styles.loadingText}>Cargando explotación...</Text>
+                    <Text style={styles.loadingText}> {t("Eplotacion.loadingFarm")}</Text>
                 </View>
             )}
 
             <WebView
                 source={{ uri: url }}
                 onLoadStart={() => {
-                    console.log("🔄 WebView Explotación: Iniciando carga...");
-                    console.log("🔄 Cargando URL Explotación:", url);
+                    console.log(" WebView Explotación: Iniciando carga...");
+                    console.log(" Cargando URL Explotación:", url);
                     setLoading(true);
                 }}
                 onLoadEnd={() => {
-                    console.log("✅ WebView Explotación: Carga completada");
+                    console.log(" WebView Explotación: Carga completada");
                     setLoading(false);
                 }}
                 onLoadProgress={({ nativeEvent }) => {
-                    console.log(`📈 WebView Explotación: Progreso ${(nativeEvent.progress * 100).toFixed(0)}%`);
+                    console.log(` WebView Explotación: Progreso ${(nativeEvent.progress * 100).toFixed(0)}%`);
                 }}
                 onError={handleWebViewError}
                 onHttpError={handleHttpError}
                 onMessage={(event) => {
-                    console.log("📨 Mensaje desde WebView Explotación:", event.nativeEvent.data);
+                    console.log(" Mensaje desde WebView Explotación:", event.nativeEvent.data);
                 }}
                 injectedJavaScript={`
                     console.log("=== WEBVIEW EXPLOTACIÓN DEBUG ===");
