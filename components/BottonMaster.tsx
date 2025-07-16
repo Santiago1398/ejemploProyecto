@@ -10,66 +10,44 @@ interface ButtonMasterProps {
     masterAlarmState: boolean; // Estado de la alarma 1000
     onToggleMaster: () => void | Promise<void>;
     disabled?: boolean; // <-- nuevo
-
 }
 
-
-const ButtonMaster: React.FC<ButtonMasterProps> = ({ mac, fetchAlarms, masterAlarmState, onToggleMaster, disabled }) => {
+const ButtonMaster: React.FC<ButtonMasterProps> = ({
+    mac,
+    fetchAlarms,
+    masterAlarmState,
+    onToggleMaster,
+    disabled
+}) => {
     const [isEnabled, setIsEnabled] = useState(masterAlarmState);
+
     useEffect(() => {
         setIsEnabled(masterAlarmState);
     }, [masterAlarmState]);
 
-    // const handleToggleMaster = async () => {
-    //     const status = isEnabled ? 0 : 1;
-    //     try {
-    //         console.log(`Enviando estado ${status} para mac: ${mac}`);
-    //         const response = await post(`alarmtc/armMaster?mac=${mac}&status=${status}`, {});
-
-    //         console.log("Respuesta del servidor:", response);
-
-    //         console.log(` Estado actual: ${isEnabled ? "OFF" : "ON"}`);
-    //         console.log(` Enviando POST a: alarmtc/armMaster?mac=${mac}&status=${status}`);
-
-
-    //         Validamos si el API devuelve un JSON ya procesado
-    //         const data = response;
-
-    //         Verificamos si el estado del botón maestro cambió correctamente
-    //         if (data.status === "Master Button Alarm Armed" || data.status === "Master Button Alarm Disarmed") {
-    //             Alert.alert("Éxito", `Las alarmas han sido ${status === 1 ? "activadas" : "desactivadas"}.`);
-    //             setIsEnabled(!isEnabled); // Cambia el estado del botón
-    //             if (status === 1) {
-    //                 fetchAlarms(); // Realiza un GET para actualizar el estado de las alarmas
-    //             }
-
-    //         } else {
-    //             Alert.alert("Error", "No se pudo cambiar el estado de las alarmas.");
-    //         }
-    //     } catch (error) {
-    //         console.error("Error al cambiar el estado de la alarma:", error);
-    //         Alert.alert("Error", "No se pudo cambiar el estado de las alarmas.");
-    //     }
-    // };
-
-
+    // 🔥 LÓGICA SIMPLE: 
+    // - Si disabled=true, siempre gris y no clickeable
+    // - Si disabled=false, usar el estado normal (rojo/gris según masterAlarmState)
+    const getBackgroundColor = () => {
+        if (disabled) {
+            return "#8a9bb9"; // Gris cuando está deshabilitado
+        }
+        return isEnabled ? "#FF3B30" : "#8a9bb9"; // Rojo si activo, gris si inactivo
+    };
 
     return (
         <TouchableOpacity
             disabled={disabled}
             style={[
                 styles.masterButtonFull,
-                { backgroundColor: isEnabled ? "#FF3B30" : "#8a9bb9" },
-                disabled && { opacity: 0.5 } // <- opacidad visual
+                { backgroundColor: getBackgroundColor() }
             ]}
-            onPress={onToggleMaster}
+            onPress={disabled ? undefined : onToggleMaster}
+            activeOpacity={disabled ? 1 : 0.7}
         >
             <Text style={styles.masterLabel}>{t("BottonMaster.label")}</Text>
             <MaterialCommunityIcons name="power" size={32} color="white" />
         </TouchableOpacity>
-
-
-
     );
 };
 
@@ -131,9 +109,6 @@ const styles = StyleSheet.create({
         shadowRadius: 4,
         elevation: 5,
     },
-
-
-
 });
 
 export default ButtonMaster;

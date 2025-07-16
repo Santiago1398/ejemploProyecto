@@ -10,7 +10,12 @@
         "alarmActive": "🚨 Alarm active",
         "acceptAndStopAlarm": "Accept and stop alarm",
         "errorTitle": "Error",
-        "deviceLoadError": "Could not load devices."
+        "deviceLoadError": "Could not load devices.",
+        "error": {
+            "noConnection": "No connection",
+            "cannotLoadLocations": "Cannot load locations",
+            "checkingAutomatically": "Checking automatically..."
+        }
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "Alarm triggered",
@@ -27,7 +32,11 @@
         "loadingAlarms": "Loading alarms...",
         "noEnabledAlarms": "No connection",
         "armed": "Armed",
-        "disarmed": "Disarmed"
+        "disarmed": "Disarmed",
+        "connection": {
+            "noConnection": "No connection",
+            "deviceDisconnected": "Device disconnected or no communication"
+        }
     },
     "DrawerContent": {
         "logout": "Logout",
@@ -58,10 +67,12 @@
         "save": "Save"
     },
     "Menu3Puntos": {
-        "save": "Save Location",
-        "delete": "Delete Location",
-        "explotacion": "Go to Farm",
-        "configuracion": "TC5 Settings"
+        "explotacion": "Go to Portal",
+        "configuracion": "TC5 Configuration",
+        "geolocalizacion": "Geolocation",
+        "ajustes": "Settings",
+        "volver": "Back",
+        "guardarUbicacion": "Save Location"
     },
     "PhoneNumberDialog": {
         "title": "Enter your phone number",
@@ -213,6 +224,15 @@
         "noDevices": {
             "title": "No devices",
             "message": "There are no devices to show on the map."
+        },
+        "errors": {
+            "title": "Error",
+            "loadDevicesError": "Could not load devices.",
+            "noDevicesTitle": "No devices",
+            "noDevicesMessage": "No devices available"
+        },
+        "loading": {
+            "devices": "Loading devices..."
         }
     },
     "HomeStack": {

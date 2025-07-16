@@ -10,7 +10,12 @@
         "alarmActive": "🚨 Alarm aktywny",
         "acceptAndStopAlarm": "Akceptuj i zatrzymaj alarm",
         "errorTitle": "Błąd",
-        "deviceLoadError": "Nie udało się wczytać urządzeń."
+        "deviceLoadError": "Nie udało się wczytać urządzeń.",
+        "error": {
+            "noConnection": "Nessuna connessione",
+            "cannotLoadLocations": "Impossibile caricare le posizioni",
+            "checkingAutomatically": "Controllo automatico..."
+        }
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "Alarm Uruchomiony",
@@ -27,7 +32,11 @@
         "tc5Disconnected": "TC5 odłączony",
         "noEnabledAlarms": "Brak połączenia",
         "armed": "Uzbrojony",
-        "disarmed": "Rozbrojony"
+        "disarmed": "Rozbrojony",
+        "connection": {
+            "noConnection": "Brak połączenia",
+            "deviceDisconnected": "Urządzenie rozłączone lub brak komunikacji"
+        }
     },
     "DrawerContent": {
         "logout": "Wyloguj",
@@ -58,10 +67,12 @@
         "save": "Zapisz"
     },
     "Menu3Puntos": {
-        "save": "Zapisz lokalizację",
-        "delete": "Usuń lokalizację",
-        "explotacion": "Przejdź do gospodarstwa",
-        "configuracion": "Konfiguracja TC5"
+        "explotacion": "Przejdź do Portalu",
+        "configuracion": "Konfiguracja TC5",
+        "geolocalizacion": "Geolokalizacja",
+        "ajustes": "Ustawienia",
+        "volver": "Wróć",
+        "guardarUbicacion": "Zapisz Lokalizację"
     },
     "PhoneNumberDialog": {
         "title": "Wprowadź swój numer telefonu",
@@ -212,6 +223,15 @@
         "noDevices": {
             "title": "Brak urządzeń",
             "message": "Nie ma urządzeń do wyświetlenia na mapie."
+        },
+        "errors": {
+            "title": "Błąd",
+            "loadDevicesError": "Nie można załadować urządzeń.",
+            "noDevicesTitle": "Brak urządzeń",
+            "noDevicesMessage": "Brak dostępnych urządzeń"
+        },
+        "loading": {
+            "devices": "Ładowanie urządzeń..."
         }
     },
     "HomeStack": {

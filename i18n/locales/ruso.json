@@ -10,7 +10,12 @@
         "alarmActive": "🚨 Тревога активна",
         "acceptAndStopAlarm": "Принять и остановить тревогу",
         "errorTitle": "Ошибка",
-        "deviceLoadError": "Не удалось загрузить устройства."
+        "deviceLoadError": "Не удалось загрузить устройства.",
+        "error": {
+            "noConnection": "Нет соединения",
+            "cannotLoadLocations": "Невозможно загрузить местоположения",
+            "checkingAutomatically": "Автоматическая проверка..."
+        }
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "Тревога Сработала",
@@ -27,7 +32,11 @@
         "tc5Disconnected": "TC5 отключён",
         "noEnabledAlarms": "Нет соединения",
         "armed": "Включена",
-        "disarmed": "Отключена"
+        "disarmed": "Отключена",
+        "connection": {
+            "noConnection": "Нет соединения",
+            "deviceDisconnected": "Устройство отключено или нет связи"
+        }
     },
     "DrawerContent": {
         "logout": "Выйти",
@@ -58,10 +67,12 @@
         "save": "Сохранить"
     },
     "Menu3Puntos": {
-        "save": "Сохранить расположение",
-        "delete": "Удалить расположение",
-        "explotacion": "Перейти к Хозяйству",
-        "configuracion": "Настройка TC5"
+        "explotacion": "Перейти на портал",
+        "configuracion": "Конфигурация TC5",
+        "geolocalizacion": "Геолокация",
+        "ajustes": "Настройки",
+        "volver": "Назад",
+        "guardarUbicacion": "Сохранить местоположение"
     },
     "PhoneNumberDialog": {
         "title": "Введите свой номер телефона",
@@ -212,6 +223,15 @@
         "noDevices": {
             "title": "Нет устройств",
             "message": "Нет устройств для отображения на карте."
+        },
+        "errors": {
+            "title": "Ошибка",
+            "loadDevicesError": "Не удалось загрузить устройства.",
+            "noDevicesTitle": "Нет устройств",
+            "noDevicesMessage": "Нет доступных устройств"
+        },
+        "loading": {
+            "devices": "Загрузка устройств..."
         }
     },
     "HomeStack": {

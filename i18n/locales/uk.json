@@ -10,7 +10,12 @@
         "alarmActive": "🚨 Тривога активна",
         "acceptAndStopAlarm": "Прийняти та зупинити тривогу",
         "errorTitle": "Помилка",
-        "deviceLoadError": "Не вдалося завантажити пристрої."
+        "deviceLoadError": "Не вдалося завантажити пристрої.",
+        "error": {
+            "noConnection": "Немає з'єднання",
+            "cannotLoadLocations": "Неможливо завантажити розташування",
+            "checkingAutomatically": "Автоматична перевірка..."
+        }
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "Тривога спрацювала",
@@ -27,7 +32,11 @@
         "tc5Disconnected": "TC5 відключено",
         "noEnabledAlarms": "Немає з'єднання",
         "armed": "Увімкнена",
-        "disarmed": "Вимкнена"
+        "disarmed": "Вимкнена",
+        "connection": {
+            "noConnection": "Немає з'єднання",
+            "deviceDisconnected": "Пристрій відключений або немає зв'язку"
+        }
     },
     "DrawerContent": {
         "logout": "Вийти",
@@ -58,10 +67,12 @@
         "save": "Зберегти"
     },
     "Menu3Puntos": {
-        "save": "Зберегти розташування",
-        "delete": "Видалити розташування",
-        "explotacion": "Перейти до господарства",
-        "configuracion": "Налаштування TC5"
+        "explotacion": "Перейти на портал",
+        "configuracion": "Конфігурація TC5",
+        "geolocalizacion": "Геолокація",
+        "ajustes": "Налаштування",
+        "volver": "Назад",
+        "guardarUbicacion": "Зберегти місцезнаходження"
     },
     "PhoneNumberDialog": {
         "title": "Введіть свій номер телефону",
@@ -212,6 +223,15 @@
         "noDevices": {
             "title": "Немає пристроїв",
             "message": "Немає пристроїв для відображення на карті."
+        },
+        "errors": {
+            "title": "Помилка",
+            "loadDevicesError": "Не вдалося завантажити пристрої.",
+            "noDevicesTitle": "Немає пристроїв",
+            "noDevicesMessage": "Немає доступних пристроїв"
+        },
+        "loading": {
+            "devices": "Завантаження пристроїв..."
         }
     },
     "HomeStack": {

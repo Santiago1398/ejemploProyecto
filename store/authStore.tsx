@@ -13,20 +13,23 @@ interface AuthState {
     userId: number | null;
     isAuthenticated: boolean;
     isActive: boolean;
+    isDeveloperMode: boolean;
     login: (email: string, password: string) => Promise<boolean>;
     logout: () => void;
+    toggleDeveloperMode: () => void;
     reslogin: string;
 }
 
 export const useAuthStore = create<AuthState>()(
     persist(
-        (set) => ({
+        (set, get) => ({
             username: null,
             password: null,
             token: null,
             userId: null,
             isAuthenticated: false,
             isActive: false,
+            isDeveloperMode: false,
             reslogin: "",
             login: async (username, password) => {
                 try {
@@ -48,6 +51,7 @@ export const useAuthStore = create<AuthState>()(
                         userId: data.userId,
                         isAuthenticated: true,
                         isActive: true,
+
                     });
 
                     return true;
@@ -75,7 +79,12 @@ export const useAuthStore = create<AuthState>()(
                     console.error("Error durante el logout:", error);
                 }
             },
-
+            toggleDeveloperMode: () => {
+                set((state) => ({
+                    isDeveloperMode: !state.isDeveloperMode
+                }));
+                console.log("🔧 Modo desarrollo cambiado a:", !get().isDeveloperMode);
+            },
         }),
         {
             name: "auth-storage",

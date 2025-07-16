@@ -87,7 +87,8 @@
       "typedRoutes": true
     },
     "extra": {
-      "apiUrl": "http://37.187.180.179:8032/api",
+     "apiUrl": "http://37.187.180.179:8032/api",
+      "apiUrlDev": "http://37.187.180.179:8032/api",
       "router": {
         "origin": false
       },

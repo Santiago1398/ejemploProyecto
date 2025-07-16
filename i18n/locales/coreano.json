@@ -10,7 +10,13 @@
         "alarmActive": "🚨 알람 활성화됨",
         "acceptAndStopAlarm": "알람 수락 및 중지",
         "errorTitle": "오류",
-        "deviceLoadError": "장치를 불러올 수 없습니다."
+        "deviceLoadError": "장치를 불러올 수 없습니다.",
+        "disarmed": "비활성화됨",
+        "error": {
+            "noConnection": "연결 없음",
+            "cannotLoadLocations": "위치를 로드할 수 없습니다",
+            "checkingAutomatically": "자동으로 확인 중..."
+        }
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "알람 발생",
@@ -27,7 +33,10 @@
         "tc5Disconnected": "TC5 연결 끊김",
         "noEnabledAlarms": "연결 없음",
         "armed": "활성화됨",
-        "disarmed": "비활성화됨"
+        "connection": {
+            "noConnection": "연결 없음",
+            "deviceDisconnected": "장치 연결 해제 또는 통신 불가"
+        }
     },
     "DrawerContent": {
         "logout": "로그아웃",
@@ -58,10 +67,12 @@
         "save": "저장"
     },
     "Menu3Puntos": {
-        "save": "위치 저장",
-        "delete": "위치 삭제",
-        "explotacion": "농장으로 이동",
-        "configuracion": "TC5 설정"
+        "explotacion": "포털로 이동",
+        "configuracion": "TC5 구성",
+        "geolocalizacion": "지리적 위치",
+        "ajustes": "설정",
+        "volver": "뒤로",
+        "guardarUbicacion": "위치 저장"
     },
     "PhoneNumberDialog": {
         "title": "전화번호를 입력하세요",
@@ -212,6 +223,12 @@
         "noDevices": {
             "title": "장치 없음",
             "message": "지도에 표시할 장치가 없습니다."
+        },
+        "errors": {
+            "title": "오류",
+            "loadDevicesError": "장치를 로드할 수 없습니다.",
+            "noDevicesTitle": "장치 없음",
+            "noDevicesMessage": "사용 가능한 장치가 없습니다"
         }
     },
     "HomeStack": {

@@ -99,24 +99,45 @@ export default function DeviceMap() {
                         return;
                     }
                     try {
-                        // Enviamos todos los datos en el body al backend
-                        await post("alarmtc/saveLocation?", {
+                        // 🔥 DATOS QUE SE VAN A ENVIAR
+                        const dataToSend = {
                             mac,
                             latitude: marketLocation.latitude,
                             longitude: marketLocation.longitude,
                             idSite
-                        });
+                        };
+
+                        // 🔥 CONSOLE.LOG PARA VER QUÉ SE ENVÍA
+                        console.log("=== DATOS A ENVIAR AL BACKEND ===");
+                        console.log("URL:", "alarmtc/saveLocation");
+                        console.log("MAC:", mac);
+                        console.log("Latitude:", marketLocation.latitude);
+                        console.log("Longitude:", marketLocation.longitude);
+                        console.log("ID Site:", idSite);
+                        console.log("Datos completos:", JSON.stringify(dataToSend, null, 2));
+                        console.log("================================");
+
+                        // Enviamos todos los datos en el body al backend
+                        const response = await post("alarmtc/saveLocation", dataToSend);
+
+                        // 🔥 CONSOLE.LOG PARA VER LA RESPUESTA
+                        console.log("=== RESPUESTA DEL BACKEND ===");
+                        console.log("Response:", JSON.stringify(response, null, 2));
+                        console.log("============================");
+
                         setLocationSaved(true);
                         Alert.alert(t("DeviceMaps.ubicacion.guardada.titulo"), t("DeviceMaps.ubicacion.guardada.mensaje"));
-                        navigation.goBack(); // Regresa a la pantalla anterior
+                        navigation.goBack();
                     } catch (error) {
+                        console.error("=== ERROR AL GUARDAR ===");
+                        console.error("Error completo:", error);
+                        console.error("========================");
                         Alert.alert("Error", "No se pudo guardar la ubicación del dispositivo.");
                     }
                 }
             }
         ]);
     };
-
 
     useEffect(() => {
         const checkPermissionsAndLocation = async () => {
@@ -184,7 +205,7 @@ export default function DeviceMap() {
                 style={styles.map}
                 provider={PROVIDER_GOOGLE}
                 initialRegion={initialRegion}
-                showsUserLocation={!locationSaved}
+                showsUserLocation={true}
                 onPress={(e) => setMarketLocation(e.nativeEvent.coordinate)}
             >
                 <Marker

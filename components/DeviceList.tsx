@@ -14,6 +14,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuthStore } from "@/store/authStore";
+import { useDeviceStore } from "@/store/useDeviceStore"; // 🏪 NUEVO STORE
 import { RootStackParamList } from "@/types/navigation";
 import { get } from "@/services/api";
 import { stopAlarmSound } from "@/utils/sound";
@@ -23,22 +24,25 @@ import * as Notifications from "expo-notifications";
 import PhoneNumberDialog from "./PhoneNumberDialog";
 import { t } from "@/i18n/i18nConfig";
 
-
-
 export default function DeviceList() {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const { token, userId } = useAuthStore();
-    const [devices, setDevices] = useState<ResponseAlarmaSite[]>([]);
-    const [loading, setLoading] = useState(true);
+
+    // 🏪 USAR EL STORE GLOBAL en lugar del estado local
+    const {
+        devices,
+        loading,
+        error: isError,
+        setDevices,
+        setLoading,
+        setError,
+        updateDevice
+    } = useDeviceStore();
+
     const [showAlarmDialog, setShowAlarmDialog] = useState(false);
-    const [isError, setIsError] = useState(false);
     const [initialLoad, setInitialLoad] = useState(true);
     const [dialogVisible, setDialogVisible] = useState(false);
-    //const [resolver, setResolver] = useState<((telefono: string | null) => void) | null>(null);
-
-
-
-
+    const [errorAlertShown, setErrorAlertShown] = useState(false);
 
     useEffect(() => {
         const subscription = AppState.addEventListener("change", async (state) => {
@@ -51,20 +55,16 @@ export default function DeviceList() {
         return () => subscription.remove();
     }, []);
 
-
     useEffect(() => {
         notificationService.setOnAlarmDetected((idAlarm) => {
             console.log(" WebSocket callback ejecutado con idAlarm:", idAlarm);
-            //Notifications.dismissAllNotificationsAsync();
-
-            setShowAlarmDialog(true); // Muestra el diálogo en el momento
+            setShowAlarmDialog(true);
         });
 
         return () => {
             notificationService.setOnAlarmDetected(() => { });
         };
     }, []);
-
 
     useEffect(() => {
         const checkAlarm = async () => {
@@ -77,23 +77,19 @@ export default function DeviceList() {
         checkAlarm();
     }, []);
 
-
-
-
-    // Cargar dispositivos
     // Actualización periódica cada 5 segundos
     useEffect(() => {
         const interval = setInterval(() => {
-            if (token && userId) fetchDevices(true); //  true = es auto-refresh
+            if (token && userId) fetchDevices(true);
         }, 5000);
 
         return () => clearInterval(interval);
     }, [token, userId]);
+
     useEffect(() => {
         fetchDevices(false); // carga inicial
     }, []);
-    // Preguntar por teléfono si no existe
-    // Solo si no se ha preguntado antes
+
     useEffect(() => {
         const checkTelefono = async () => {
             const telefono = await AsyncStorage.getItem("telefono");
@@ -106,7 +102,7 @@ export default function DeviceList() {
 
         checkTelefono();
     }, []);
-    // Confirmar teléfono
+
     const handleConfirmTelefono = async (telefono: string) => {
         console.log(" Guardando teléfono desde DeviceList:", telefono);
         setDialogVisible(false);
@@ -119,21 +115,25 @@ export default function DeviceList() {
         }
     };
 
-
     const handleCancelTelefono = async () => {
         setDialogVisible(false);
         await AsyncStorage.setItem("telefonoPreguntado", "true");
     };
 
-
-
     const fetchDevices = async (isAutoRefresh = false) => {
         try {
             if (!isAutoRefresh) setLoading(true);
 
-            setIsError(false);
+            if (isError && !errorAlertShown) {
+                setErrorAlertShown(false);
+            }
+
+            setError(false);
             const storedUserId = await AsyncStorage.getItem("userId");
             const data: ResponseAlarmaSite[] = await get(`alarmtc/sites/user/${storedUserId}`);
+
+            console.log("📍 Dispositivos del backend:", data.length);
+
             const formattedData = data.map((device) => ({
                 ...device,
                 mac: Number(device.mac),
@@ -151,19 +151,35 @@ export default function DeviceList() {
                 if (nameA < nameB) return -1;
                 if (nameA > nameB) return 1;
 
-                // Si el nombre del emplazamiento es el mismo, ordena por nave
                 if (siteA < siteB) return -1;
                 if (siteA > siteB) return 1;
 
                 return 0;
             });
 
+            // 🏪 GUARDAR EN EL STORE GLOBAL
             setDevices(formattedData);
+            setErrorAlertShown(false);
 
         } catch (error) {
             console.error("Error al cargar dispositivos:", error);
-            setIsError(true);
-            Alert.alert(t("deviceList.deviceLoadError"));
+            setError(true);
+
+            if (!isAutoRefresh && !errorAlertShown) {
+                setErrorAlertShown(true);
+                Alert.alert(
+                    "Error de conexión",
+                    t("deviceList.deviceLoadError"),
+                    [
+                        {
+                            text: "OK",
+                            onPress: () => {
+                                console.log("Usuario cerró el alert de error");
+                            }
+                        }
+                    ]
+                );
+            }
         } finally {
             if (!isAutoRefresh) {
                 setLoading(false);
@@ -172,50 +188,39 @@ export default function DeviceList() {
         }
     };
 
-
-    // Alarmas en tiempo real
+    // Alarmas en tiempo real - 🏪 ACTUALIZAR EL STORE
     useEffect(() => {
         notificationService.setOnSiteAlarmDetected((macStr) => {
             const mac = Number(macStr);
-            setDevices((prev) =>
-                prev.map((device) =>
-                    device.mac === mac ? { ...device, alarmType: 2 } : device
-                )
-            );
+            updateDevice(mac, { alarmType: 2 });
         });
         return () => {
             notificationService.setOnSiteAlarmDetected(() => { });
         };
-    }, []);
+    }, [updateDevice]);
 
     useEffect(() => {
         notificationService.connectWebSocket();
         return () => {
-            notificationService.disconnect(); // asegúrate de cerrar el socket aquí también si lo implementas
+            notificationService.disconnect();
         };
     }, []);
 
-
-
     const getBackgroundColor = (alarmType: number, armed: boolean) => {
-        // Si armed es false, siempre amarillo independientemente del alarmType
         if (!armed) {
-            return "#facc15"; // amarillo
+            return "#facc15";
         }
 
-        // Si armed es true, usar alarmType
         switch (alarmType) {
-            case 0: return "#78dd35"; // verde
-            case 1: return "#FF0000"; // rojo
-            case 2: return "#9E9E9E"; // gris
-            case 3: return "#9E75C6"; // violeta
-            default: return "#000000"; // negro (fallback)
+            case 0: return "#78dd35";
+            case 1: return "#FF0000";
+            case 2: return "#9E9E9E";
+            case 3: return "#9E75C6";
+            default: return "#000000";
         }
     };
 
-    // 🔥 ACTUALIZAR EL RENDERIZADO DEL ITEM
     const renderDeviceItem = ({ item }: { item: ResponseAlarmaSite }) => {
-        // Usar ambos parámetros
         const backgroundColor = getBackgroundColor(item.alarmType, item.armed);
         const capitalize = (str: string) => str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";
 
@@ -231,8 +236,9 @@ export default function DeviceList() {
                             latitude: item.latitude,
                             longitude: item.longitude,
                             idSite: item.idSite,
-                            buildPortalRef: item.buildPortalRef,
-                            armed: item.armed
+                            buildingPortalRef: item.buildingPortalRef,
+                            armed: item.armed,
+                            alarmType: item.alarmType
                         }
                     });
                 }}
@@ -248,13 +254,18 @@ export default function DeviceList() {
             </TouchableOpacity>
         );
     };
+
     return (
         <View style={styles.container}>
             {initialLoad ? (
                 <Text style={styles.loadingText}>{t("deviceList.loadingDevices")}</Text>
             ) : isError ? (
                 <View style={styles.centeredContainer}>
-                    <Text style={styles.loadingText}>{t("deviceList.serverDisconnected")}</Text>
+                    <Ionicons name="cloud-offline-outline" size={64} color="#FF6B6B" />
+                    <Text style={styles.errorTitle}>{t("deviceList.error.noConnection")}</Text>
+                    <Text style={styles.errorMessage}>
+                        {t("deviceList.error.cannotLoadLocations")}
+                    </Text>
                 </View>
             ) : devices.length === 0 ? (
                 <Text style={styles.loadingText}>{t("deviceList.noLocationsAvailable")}</Text>
@@ -266,6 +277,7 @@ export default function DeviceList() {
                     contentContainerStyle={styles.listContainer}
                 />
             )}
+
             {dialogVisible && (
                 <PhoneNumberDialog
                     visible={dialogVisible}
@@ -273,7 +285,6 @@ export default function DeviceList() {
                     onConfirm={handleConfirmTelefono}
                 />
             )}
-
 
             {showAlarmDialog && (
                 <Modal transparent animationType="fade" visible={true}>
@@ -283,7 +294,6 @@ export default function DeviceList() {
                             <TouchableOpacity
                                 onPress={async () => {
                                     await stopAlarmSound();
-                                    //await playSilentSound(); //  reproducir el silencioso
                                     await AsyncStorage.multiRemove(["alarmPlaying", "alarma_activa_pendiente"]);
                                     setShowAlarmDialog(false);
                                 }}
@@ -336,6 +346,26 @@ const styles = StyleSheet.create({
         textAlign: "center",
         marginTop: 20,
     },
+    centeredContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 20,
+    },
+    errorTitle: {
+        fontSize: 24,
+        fontWeight: "bold",
+        color: "#FF6B6B",
+        marginTop: 16,
+        marginBottom: 8,
+        textAlign: "center",
+    },
+    errorMessage: {
+        fontSize: 18,
+        color: "#666",
+        textAlign: "center",
+        marginBottom: 8,
+    },
     modalOverlay: {
         flex: 1,
         justifyContent: "center",
@@ -371,12 +401,6 @@ const styles = StyleSheet.create({
         textAlign: "center",
         overflow: "hidden",
         marginTop: 10,
+        borderRadius: 8,
     },
-    centeredContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 16,
-    },
-
 });

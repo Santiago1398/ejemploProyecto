@@ -39,8 +39,14 @@ export default function HomeScreen() {
                     <Ionicons name="menu" size={24} color="black" />
                 </TouchableOpacity>
 
-                {/* Título */}
-                <Text style={styles.headerTitle}>{t("CustomHeader.home")}</Text>
+                {/* 🔥 TÍTULO CON POSICIÓN ABSOLUTA - Perfectamente centrado */}
+                <View style={styles.titleContainer}>
+                    <Text style={styles.headerTitle}>
+                        <Text style={styles.cti}>{t("HomeScreen.cti")}</Text>
+                        <Text style={styles.control}>{t("HomeScreen.control")}</Text>
+                    </Text>
+                </View>
+
                 {/* Espacio para balance visual */}
                 <View style={styles.headerSpacer} />
             </View>
@@ -52,37 +58,9 @@ export default function HomeScreen() {
                 resizeMode="contain"
             >
                 <View style={styles.overlay}>
-                    <View style={styles.ctiContainer}>
-                        <Text style={styles.headerText}>
-                            <Text style={styles.cti}>{t("HomeScreen.cti")}</Text>
-                            <Text style={styles.control}>{t("HomeScreen.control")}</Text>
-                        </Text>
-                    </View>
                     <DeviceList />
                 </View>
             </ImageBackground>
-
-            {/* 🔥 MANTENER EL BOTÓN DE PRUEBA TEMPORALMENTE
-            <TouchableOpacity
-                style={{
-                    position: 'absolute',
-                    bottom: 100,
-                    left: 20,
-                    width: 80,
-                    height: 50,
-                    backgroundColor: 'green', // Verde para diferenciarlo
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    zIndex: 9999,
-                }}
-                onPress={() => {
-                    console.log("🔥 BOTÓN PRUEBA VERDE");
-                    Alert.alert("PRUEBA", "Botón verde funciona");
-                    navigation.dispatch(DrawerActions.openDrawer());
-                }}
-            > 
-                <Text style={{ color: 'white' }}>TEST</Text>
-            </TouchableOpacity>*/}
         </View>
     );
 }
@@ -90,21 +68,24 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: "#f2f2f2",
     },
+
     customHeader: {
-        backgroundColor: '#fff',
+        backgroundColor: '#f8f9fa',
         flexDirection: 'row',
-        alignItems: 'center', // Cambiar de 'flex-end' a 'center'
+        alignItems: 'center',
         justifyContent: 'space-between',
         paddingHorizontal: 16,
-        height: 52 + (Platform.OS === 'ios' ? 44 : 24), // iOS: 88px, Android: 68px
-        paddingTop: Platform.OS === 'ios' ? 44 : 24, // Safe area
-        paddingBottom: 0, // Quitar padding bottom
-        elevation: 4,
+        height: 52 + (Platform.OS === 'ios' ? 44 : 24),
+        paddingTop: Platform.OS === 'ios' ? 44 : 24,
+        paddingBottom: 4,
+        elevation: 2,
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        position: 'relative', // 🔥 NUEVO: Para posición absoluta del título
     },
 
     drawerButton: {
@@ -113,14 +94,26 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 22,
+        zIndex: 10, // 🔥 NUEVO: Para que esté por encima
+    },
+
+    // 🔥 COMPLETAMENTE NUEVO: Título con posición absoluta perfectamente centrado
+    titleContainer: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: Platform.OS === 'ios' ? 44 : 24, // Mismo que paddingTop
+        height: 52, // Mismo que la altura del header sin safe area
+        alignItems: 'center',
+        justifyContent: 'center',
+        paddingHorizontal: 80, // 🔥 Mucho espacio para alejarlo de los bordes
     },
 
     headerTitle: {
-        fontSize: 27,
-        fontWeight: '500',
-        color: '#444444',
+        fontSize: 30,
+        fontWeight: 'bold',
         textAlign: 'center',
-        flex: 1,
+        letterSpacing: 0.5,
     },
 
     headerSpacer: {
@@ -130,23 +123,23 @@ const styles = StyleSheet.create({
     background: {
         flex: 1,
     },
+
     overlay: {
         flex: 1,
-        backgroundColor: "rgba(255, 255, 255, 0.7)",
-        padding: 12,
+        backgroundColor: "rgba(242, 242, 242, 0.8)",
+        paddingHorizontal: 12,
+        paddingTop: 4,
+        paddingBottom: 12,
     },
-    ctiContainer: {
-        alignItems: "center",
-        marginBottom: 16,
-    },
-    headerText: {
-        fontSize: 36,
-        fontWeight: "bold",
-    },
+
     cti: {
-        color: "blue",
+        color: "#2563eb",
+        fontSize: 30,
+        fontWeight: 'bold',
     },
     control: {
-        color: "green",
+        color: "#16a34a",
+        fontSize: 30,
+        fontWeight: 'bold',
     },
 });
