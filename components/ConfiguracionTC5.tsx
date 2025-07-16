@@ -5,6 +5,7 @@ import { WebView } from "react-native-webview";
 import { RouteProp, useRoute, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "@/app/HomeStack";
 import { Feather } from "@expo/vector-icons";
+import { t } from "i18n-js";
 
 type WebViewRouteProp = RouteProp<RootStackParamList, "ConfiguracionTC5">;
 
@@ -102,17 +103,16 @@ export default function WebViewConfiguracionTC5() {
             <SafeAreaView style={styles.container}>
                 <View style={styles.errorContainer}>
                     <Feather name="alert-circle" size={64} color="#FF3B30" />
-                    <Text style={styles.errorTitle}>Error de Configuración</Text>
+                    <Text style={styles.errorTitle}> {t("configuracionTC5.errorTitle")}</Text>
                     <Text style={styles.errorMessage}>{errorMessage}</Text>
                     <Text style={styles.errorDescription}>
-                        No se puede cargar el portal porque no hay conexion o no existe
-                    </Text>
+                        {t("Explotacion.errorLoadingFarm")}                    </Text>
                     <TouchableOpacity
                         style={styles.backButton}
                         onPress={() => navigation.goBack()}
                     >
                         <Feather name="arrow-left" size={20} color="#fff" />
-                        <Text style={styles.backButtonText}>Volver</Text>
+                        <Text style={styles.backButtonText}>{t("configuracionTC5.ButtonText")},</Text>
                     </TouchableOpacity>
                 </View>
             </SafeAreaView>
@@ -124,35 +124,35 @@ export default function WebViewConfiguracionTC5() {
     const queryParams = `mac=${mac}&token=${token}&idioma=${idioma}&idNave=${idSite}&app=appmovilv3&type=control-remoto`;
     const url = `${baseUrl}?${queryParams}`;
 
-    // 🔥 DEBUG: Imprimir URL construida
+    //  DEBUG: Imprimir URL construida
     console.log("=== URL CONFIGURACIÓN CONSTRUIDA ===");
     console.log("Base URL:", baseUrl);
     console.log("Query Params:", queryParams);
     console.log("URL Completa:", url);
     console.log("Longitud URL:", url.length);
 
-    // 🔥 MANEJO DE ERRORES DE CARGA DE WEBVIEW
+    //  MANEJO DE ERRORES DE CARGA DE WEBVIEW
     const handleWebViewError = (syntheticEvent: any) => {
         const { nativeEvent } = syntheticEvent;
-        console.error("❌ WebView Configuración Error:", nativeEvent);
+        console.error(" WebView Configuración Error:", nativeEvent);
 
         setHasError(true);
         setErrorMessage("Error al cargar el portal de configuración");
         setLoading(false);
 
         Alert.alert(
-            "Error de Conexión",
-            "No se pudo cargar el portal de configuración. Verifica tu conexión a internet.",
+            t("configuracionTC5.errorTitle"),
+            t("configuracionTC5.errorLoadingConfiguration"),
             [
-                { text: "Reintentar", onPress: () => setLoading(true) },
-                { text: "Volver", onPress: () => navigation.goBack() }
+                { text: t("configuracionTC5.Reintentar"), onPress: () => setLoading(true) },
+                { text: t("configuracionTC5.ButtonText"), onPress: () => navigation.goBack() }
             ]
         );
     };
 
     const handleHttpError = (syntheticEvent: any) => {
         const { nativeEvent } = syntheticEvent;
-        console.error("🌐 HTTP Error Configuración:", nativeEvent.statusCode);
+        console.error(" HTTP Error Configuración:", nativeEvent.statusCode);
 
         if (nativeEvent.statusCode >= 400) {
             setHasError(true);
@@ -166,27 +166,29 @@ export default function WebViewConfiguracionTC5() {
             {loading && (
                 <View style={styles.loadingOverlay}>
                     <ActivityIndicator size="large" color="#007AFF" />
-                    <Text style={styles.loadingText}>Cargando configuración...</Text>
+                    <Text style={styles.loadingText}>
+                        {t("configuracionTC5.loadingConfiguration")}
+                    </Text>
                 </View>
             )}
 
             <WebView
                 source={{ uri: url }}
                 onLoadStart={() => {
-                    console.log("🔄 WebView Configuración: Iniciando carga...");
+                    console.log(" WebView Configuración: Iniciando carga...");
                     setLoading(true);
                 }}
                 onLoadEnd={() => {
-                    console.log("✅ WebView Configuración: Carga completada");
+                    console.log(" WebView Configuración: Carga completada");
                     setLoading(false);
                 }}
                 onLoadProgress={({ nativeEvent }) => {
-                    console.log(`📈 WebView Configuración: Progreso ${(nativeEvent.progress * 100).toFixed(0)}%`);
+                    console.log(` WebView Configuración: Progreso ${(nativeEvent.progress * 100).toFixed(0)}%`);
                 }}
                 onError={handleWebViewError}
                 onHttpError={handleHttpError}
                 onMessage={(event) => {
-                    console.log("📨 Mensaje desde WebView Configuración:", event.nativeEvent.data);
+                    console.log(" Mensaje desde WebView Configuración:", event.nativeEvent.data);
                 }}
                 injectedJavaScript={`
                     console.log("=== WEBVIEW CONFIGURACIÓN DEBUG ===");

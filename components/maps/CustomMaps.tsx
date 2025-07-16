@@ -6,10 +6,18 @@ import { LatLng } from '@/infrastructure/intercafe/lat-Ing';
 import FAB from './FAB';
 import { ResponseAlarmaSite } from '@/infrastructure/intercafe/listapi.interface';
 
+// 🔥 NUEVA INTERFAZ QUE INCLUYE ZOOM
+interface MapCenter {
+    latitude: number;
+    longitude: number;
+    latitudeDelta?: number;
+    longitudeDelta?: number;
+}
+
 interface Props extends ViewProps {
-    initialLocation: LatLng;
+    initialLocation: MapCenter; // 🔥 CAMBIAR TIPO PARA INCLUIR ZOOM
     showUserLocation?: boolean;
-    devices?: ResponseAlarmaSite[]; // ✅ Solo datos del backend
+    devices?: ResponseAlarmaSite[];
 }
 
 const CustomMaps = ({ initialLocation, showUserLocation = true, devices = [], ...rest }: Props) => {
@@ -54,6 +62,30 @@ const CustomMaps = ({ initialLocation, showUserLocation = true, devices = [], ..
         moveCameraToLocation(location);
     }
 
+    // 🔥 CALCULAR ZOOM INTELIGENTE
+    const getInitialRegion = () => {
+        // Si se proporciona zoom explícito, usarlo
+        if (initialLocation.latitudeDelta && initialLocation.longitudeDelta) {
+            console.log("🗺️ CustomMaps: Usando zoom proporcionado:", initialLocation.latitudeDelta);
+            return {
+                latitude: initialLocation.latitude,
+                longitude: initialLocation.longitude,
+                latitudeDelta: initialLocation.latitudeDelta,
+                longitudeDelta: initialLocation.longitudeDelta,
+            };
+        }
+
+        // Fallback: zoom automático basado en dispositivos (comportamiento anterior)
+        const autoZoom = devices.length > 0 ? 0.5 : 10;
+        console.log("🗺️ CustomMaps: Usando zoom automático:", autoZoom);
+        return {
+            latitude: initialLocation.latitude,
+            longitude: initialLocation.longitude,
+            latitudeDelta: autoZoom,
+            longitudeDelta: autoZoom,
+        };
+    };
+
     return (
         <View {...rest}>
             <MapView
@@ -61,12 +93,7 @@ const CustomMaps = ({ initialLocation, showUserLocation = true, devices = [], ..
                 style={styles.map}
                 provider={PROVIDER_GOOGLE}
                 showsUserLocation={showUserLocation}
-                initialRegion={{
-                    latitude: initialLocation.latitude,
-                    longitude: initialLocation.longitude,
-                    latitudeDelta: devices.length > 0 ? 0.5 : 10, // ✅ Zoom automático
-                    longitudeDelta: devices.length > 0 ? 0.5 : 10,
-                }}
+                initialRegion={getInitialRegion()} // 🔥 USAR FUNCIÓN INTELIGENTE
                 onTouchStart={() => setIsFollowingUser(false)}
             >
                 {/* 🔥 SOLO MARKERS DE DISPOSITIVOS DEL BACKEND */}

@@ -1,26 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { View, StyleSheet, Alert, ActivityIndicator, Text } from "react-native";
+import { View, StyleSheet, Alert, ActivityIndicator, Text, TouchableOpacity } from "react-native";
 import MapView, { Marker, PROVIDER_GOOGLE } from "react-native-maps";
 import { useRoute, RouteProp, useNavigation } from "@react-navigation/native";
 import { get, post } from "@/services/api";
 import { useLocationStore } from "@/store/useLocationStore";
-import FAB from "@/components/maps/FAB";
+import { Ionicons } from "@expo/vector-icons";
 import * as Location from 'expo-location';
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "app/HomeStack"
 import { t } from "@/i18n/i18nConfig";
 
-
-
-
-
-
-
-
-
 type DeviceMapRouteProp = RouteProp<RootStackParamList, 'DeviceMaps'>;
 type DeviceMapNavigationProp = NativeStackNavigationProp<RootStackParamList>;
-
 
 export default function DeviceMap() {
     const route = useRoute<DeviceMapRouteProp>();
@@ -31,39 +22,36 @@ export default function DeviceMap() {
     const [loading, setLoading] = useState(true);
     const [locationSaved, setLocationSaved] = useState(false);
 
-    //Entonces 
-    const fetchSavedLocation = async () => {
-        try {
-            const response = await get(`alarmtc/getLocation?mac=${mac}`);
-            if (response && response.latitude && response.longitude) {
-                setMarketLocation({
-                    latitude: response.latitude,
-                    longitude: response.longitude
-                });
-                setLocationSaved(true);
-            } else {
-                // Si no hay ubicación guardada, usar la ubicación actual
-                const location = await getLocation();
-                if (location) {
-                    setMarketLocation(location);
-                } else {
-                    t("DeviceMaps.errorTitle"),
-                        t("DeviceMaps.error.mensaje")
-                }
-            }
-            setLoading(false);
-        } catch (error) {
-            console.error("Error al obtener ubicación guardada:", error);
-            setLoading(false);
-        }
-    };
-    useEffect(() => {
-        // Primero intentamos obtener la ubicación guardada del backend
-        fetchSavedLocation();
-    }, [mac]);
+    // const fetchSavedLocation = async () => {
+    //     try {
+    //         const response = await get(`alarmtc/getLocation?mac=${mac}`);
+    //         if (response && response.latitude && response.longitude) {
+    //             setMarketLocation({
+    //                 latitude: response.latitude,
+    //                 longitude: response.longitude
+    //             });
+    //             setLocationSaved(true);
+    //         } else {
+    //             const location = await getLocation();
+    //             if (location) {
+    //                 setMarketLocation(location);
+    //             } else {
+    //                 t("DeviceMaps.errorTitle"),
+    //                     t("DeviceMaps.error.mensaje")
+    //             }
+    //         }
+    //         setLoading(false);
+    //     } catch (error) {
+    //         console.error("Error al obtener ubicación guardada:", error);
+    //         setLoading(false);
+    //     }
+    // };
+
+    // useEffect(() => {
+    //     fetchSavedLocation();
+    // }, [mac]);
 
     useEffect(() => {
-        // Si deviceLocation es distinto de 0,0 (ya se ha guardado una ubicación)
         if (deviceLocation.latitude !== 0 && deviceLocation.longitude !== 0) {
             setLocationSaved(true);
             setMarketLocation(lastKnownLocation);
@@ -99,7 +87,6 @@ export default function DeviceMap() {
                         return;
                     }
                     try {
-                        // 🔥 DATOS QUE SE VAN A ENVIAR
                         const dataToSend = {
                             mac,
                             latitude: marketLocation.latitude,
@@ -107,7 +94,6 @@ export default function DeviceMap() {
                             idSite
                         };
 
-                        // 🔥 CONSOLE.LOG PARA VER QUÉ SE ENVÍA
                         console.log("=== DATOS A ENVIAR AL BACKEND ===");
                         console.log("URL:", "alarmtc/saveLocation");
                         console.log("MAC:", mac);
@@ -117,16 +103,14 @@ export default function DeviceMap() {
                         console.log("Datos completos:", JSON.stringify(dataToSend, null, 2));
                         console.log("================================");
 
-                        // Enviamos todos los datos en el body al backend
                         const response = await post("alarmtc/saveLocation", dataToSend);
 
-                        // 🔥 CONSOLE.LOG PARA VER LA RESPUESTA
                         console.log("=== RESPUESTA DEL BACKEND ===");
                         console.log("Response:", JSON.stringify(response, null, 2));
                         console.log("============================");
 
                         setLocationSaved(true);
-                        Alert.alert(t("DeviceMaps.ubicacion.guardada.titulo"), t("DeviceMaps.ubicacion.guardada.mensaje"));
+                        //Alert.alert(t("DeviceMaps.ubicacion.guardada.titulo"), t("DeviceMaps.ubicacion.guardada.mensaje"));
                         navigation.goBack();
                     } catch (error) {
                         console.error("=== ERROR AL GUARDAR ===");
@@ -144,7 +128,6 @@ export default function DeviceMap() {
             try {
                 const { status } = await Location.getForegroundPermissionsAsync();
                 if (status !== 'granted') {
-                    // Si no hay permisos, navegar a Settings
                     Alert.alert(
                         t("DeviceMaps.permiso.necesario.titulo"),
                         t("DeviceMaps.permiso.necesario.mensaje"),
@@ -165,8 +148,7 @@ export default function DeviceMap() {
                     );
                     return;
                 }
-                // Si hay permisos, obtener ubicación
-                fetchSavedLocation();
+                //  fetchSavedLocation();
             } catch (error) {
                 console.error("Error checking permissions:", error);
                 setLoading(false);
@@ -176,7 +158,6 @@ export default function DeviceMap() {
         checkPermissionsAndLocation();
     }, []);
 
-    // Modificar el loading screen para mostrar un mensaje más informativo
     if (loading || !marketLocation) {
         return (
             <View style={styles.loadingContainer}>
@@ -186,18 +167,16 @@ export default function DeviceMap() {
                         ? t("DeviceMaps.loading.verificando")
                         : t("DeviceMaps.loading.cargando")}
                 </Text>
-
             </View>
         );
     }
-    // Supongamos que tienes:
+
     const initialRegion = {
         latitude: marketLocation?.latitude || 0,
         longitude: marketLocation?.longitude || 0,
         latitudeDelta: 0.01,
         longitudeDelta: 0.01,
     };
-
 
     return (
         <View style={{ flex: 1 }}>
@@ -218,14 +197,21 @@ export default function DeviceMap() {
                     }}
                 />
             </MapView>
-            <FAB
-                iconName='save-outline'
+
+            {/* 🎨 BOTÓN CIRCULAR A LA DERECHA CON ÍCONO Y TEXTO */}
+            <TouchableOpacity
+                style={styles.circularRightButton}
                 onPress={handleSaveLocation}
-                style={{
-                    bottom: 80,
-                    right: 20
-                }}
-            />
+                activeOpacity={0.8}
+            >
+                <Ionicons
+                    name="save-outline"
+                    size={28}
+                    color="#ffffff"
+                    style={styles.saveIcon}
+                />
+                <Text style={styles.saveButtonText}>SAVE</Text>
+            </TouchableOpacity>
         </View>
     );
 }
@@ -245,6 +231,44 @@ const styles = StyleSheet.create({
         marginTop: 10,
         fontSize: 16,
         color: '#666'
-    }
+    },
 
+    // 🎨 BOTÓN CIRCULAR MEJORADO CON ÍCONO MÁS GRANDE
+    circularRightButton: {
+        position: 'absolute',
+        bottom: 100,
+        right: 20,
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        backgroundColor: '#3498db', // Verde-turquesa
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: '#2980b9',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.4,
+        shadowRadius: 8,
+        elevation: 8,
+        borderWidth: 1,
+        borderColor: 'rgba(255, 255, 255, 0.2)',
+        // Más espacio para el contenido
+        paddingVertical: 8,
+    },
+
+    // 🎨 ÍCONO MÁS GRANDE Y MODERNO
+    saveIcon: {
+        marginBottom: 4, // Más espacio entre ícono y texto
+    },
+
+    // 🎨 TEXTO DEL BOTÓN MÁS COMPACTO
+    saveButtonText: {
+        color: '#ffffff',
+        fontSize: 10, // Más pequeño para dar más espacio al ícono
+        fontWeight: 'bold',
+        letterSpacing: 0.5,
+        textShadowColor: 'rgba(0, 0, 0, 0.2)',
+        textShadowOffset: { width: 0, height: 1 },
+        textShadowRadius: 1,
+    },
 });

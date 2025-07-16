@@ -1,7 +1,13 @@
 {
     "AlarmasScreen": {
-        "errorLoadingAlarms": "발생한 알람을 불러올 수 없습니다",
-        "noAlarms": "발생한 알람이 없습니다"
+        "errorLoadingAlarms": "트리거된 알람을 로드할 수 없습니다",
+        "noAlarms": "활성 알람 없음",
+        "loadingAlarms": "알람 로딩 중...",
+        "errorTitle": "오류",
+        "errorMessage": "알람을 로드할 수 없습니다.",
+        "connectionError": "연결 오류",
+        "connectionErrorMessage": "알람을 로드할 수 없습니다. 인터넷 연결을 확인하세요.",
+        "noAlarmsMessage": "모든 기기가 정상적으로 작동하고 있습니다"
     },
     "deviceList": {
         "loadingDevices": "장치 불러오는 중...",
@@ -229,11 +235,29 @@
             "loadDevicesError": "장치를 로드할 수 없습니다.",
             "noDevicesTitle": "장치 없음",
             "noDevicesMessage": "사용 가능한 장치가 없습니다"
+        },
+        "loading": {
+            "devices": "장치 불러오는 중...",
+            "location": "위치 불러오는 중..."
         }
     },
     "HomeStack": {
         "DeviceMaps": {
             "title": "디바이스 위치 설정"
         }
+    },
+    "Explotacion": {
+        "loadingFarm": "농장 불러오는 중...",
+        "errorLoadingFarm": "포털을 불러올 수 없습니다. 연결이 없거나 존재하지 않습니다.",
+        "errorTitle": "구성 오류",
+        "ButtonText": "뒤로",
+        "Reintentar": "다시 시도"
+    },
+    "ConfiguracionTC5": {
+        "loadingConfiguration": "구성 불러오는 중...",
+        "errorLoadingConfiguration": "TC5 구성을 불러올 수 없습니다.",
+        "errorTitle": "구성 오류",
+        "ButtonText": "뒤로",
+        "Reintentar": "다시 시도"
     }
 }

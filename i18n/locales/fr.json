@@ -1,7 +1,13 @@
 {
     "AlarmasScreen": {
         "errorLoadingAlarms": "Impossible de charger les alarmes déclenchées",
-        "noAlarms": "Aucune alarme déclenchée"
+        "noAlarms": "Aucune Alarme Active",
+        "loadingAlarms": "Chargement des alarmes...",
+        "errorTitle": "Erreur",
+        "errorMessage": "Impossible de charger les alarmes.",
+        "connectionError": "Erreur de Connexion",
+        "connectionErrorMessage": "Impossible de charger les alarmes. Vérifiez votre connexion internet.",
+        "noAlarmsMessage": "Tous vos appareils fonctionnent correctement"
     },
     "deviceList": {
         "loadingDevices": "Chargement des appareils…",
@@ -231,12 +237,27 @@
             "noDevicesMessage": "Aucun appareil disponible"
         },
         "loading": {
-            "devices": "Chargement des appareils..."
+            "devices": "Chargement des appareils...",
+            "location": "Obtention des emplacements"
         }
     },
     "HomeStack": {
         "DeviceMaps": {
             "title": "Définir l’emplacement de l’appareil"
         }
+    },
+    "Explotacion": {
+        "loadingFarm": "Chargement de l'exploitation...",
+        "errorLoadingFarm": "Impossible de charger le portail car il n'y a pas de connexion ou il n'existe pas",
+        "errorTitle": "Erreur de Configuration",
+        "ButtonText": "Retour",
+        "Reintentar": "Réessayer"
+    },
+    "ConfiguracionTC5": {
+        "loadingConfiguration": "Chargement de la configuration...",
+        "errorLoadingConfiguration": "Impossible de charger la configuration du TC5",
+        "errorTitle": "Erreur de Configuration",
+        "ButtonText": "Retour",
+        "Reintentar": "Réessayer"
     }
 }

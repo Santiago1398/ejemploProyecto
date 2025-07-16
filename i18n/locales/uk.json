@@ -1,7 +1,13 @@
 {
     "AlarmasScreen": {
-        "errorLoadingAlarms": "Не вдалося завантажити спрацьовані тривоги",
-        "noAlarms": "Немає спрацьованих тривог"
+        "errorLoadingAlarms": "Не вдалося завантажити спрацьовані сигнали",
+        "noAlarms": "Немає Активних Сигналів",
+        "loadingAlarms": "Завантаження сигналів...",
+        "errorTitle": "Помилка",
+        "errorMessage": "Не вдалося завантажити сигнали.",
+        "connectionError": "Помилка З'єднання",
+        "connectionErrorMessage": "Не вдалося завантажити сигнали. Перевірте підключення до інтернету.",
+        "noAlarmsMessage": "Всі ваші пристрої працюють правильно"
     },
     "deviceList": {
         "loadingDevices": "Завантаження пристроїв...",
@@ -231,12 +237,28 @@
             "noDevicesMessage": "Немає доступних пристроїв"
         },
         "loading": {
-            "devices": "Завантаження пристроїв..."
+            "devices": "Завантаження пристроїв...",
+            "location": "Завантаження розташування"
         }
     },
     "HomeStack": {
         "DeviceMaps": {
             "title": "Встановити розташування пристрою"
         }
+    },
+    "Explotacion": {
+        "loadingFarm": "Завантаження ферми...",
+        "errorLoadingFarm": "Неможливо завантажити портал через відсутність з'єднання або він не існує",
+        "errorTitle": "Помилка Конфігурації",
+        "ButtonText": "Назад",
+        "Reintentar": "Спробувати знову"
+    },
+    "ConfiguracionTC5": {
+        "loadingConfiguration": "Завантаження конфігурації...",
+        "errorLoadingConfiguration": "Не вдалося завантажити конфігурацію TC5",
+        "errorLoadingFarm": "Неможливо завантажити портал через відсутність з'єднання або він не існує",
+        "errorTitle": "Помилка Конфігурації",
+        "ButtonText": "Назад",
+        "Reintentar": "Спробувати знову"
     }
 }

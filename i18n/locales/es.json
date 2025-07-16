@@ -1,7 +1,13 @@
 {
     "AlarmasScreen": {
         "errorLoadingAlarms": "No se pudieron cargar las alarmas disparadas",
-        "noAlarms": "No hay Alarmas disparadas"
+        "noAlarms": "No hay Alarmas activadas",
+        "loadingAlarms": "Cargando alarmas...",
+        "errorTitle": "Error",
+        "errorMessage": "No se pudieron cargar las alarmas.",
+        "connectionError": "Error de conexión",
+        "connectionErrorMessage": "No se pudieron cargar las alarmas. Verifica tu conexión a internet.",
+        "noAlarmsMessage": "Todos tus dispositivos están funcionando correctamente"
     },
     "deviceList": {
         "loadingDevices": "Cargando dispositivos...",
@@ -231,12 +237,27 @@
             "noDevicesMessage": "No hay dispositivos disponibles"
         },
         "loading": {
-            "devices": "Cargando dispositivos..."
+            "devices": "Cargando dispositivos...",
+            "location": "Obteniendo ubicaciónes"
         }
     },
     "HomeStack": {
         "DeviceMaps": {
             "title": "Fijar Ubicación del Dispositivo"
         }
+    },
+    "Explotacion": {
+        "loadingFarm": "Cargando explotación...",
+        "errorLoadingFarm": "No se puede cargar el portal porque no hay conexion o no existe",
+        "errorTitle": "Error de Configuración",
+        "ButtonText": "Volver",
+        "Reintentar": "Reintentar"
+    },
+    "configuracionTC5": {
+        "loadingConfiguration": "Cargando configuración...",
+        "errorLoadingConfiguration": "Error al cargar la configuración del TC5",
+        "errorTitle": "Error de conex1ión",
+        "ButtonText": "Volver",
+        "Reintentar": "Reintentar"
     }
 }

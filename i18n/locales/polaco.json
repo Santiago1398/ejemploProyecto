@@ -1,7 +1,13 @@
 {
     "AlarmasScreen": {
-        "errorLoadingAlarms": "Nie udało się wczytać uruchomionych alarmów",
-        "noAlarms": "Brak uruchomionych alarmów"
+        "errorLoadingAlarms": "Nie udało się załadować wyzwolonych alarmów",
+        "noAlarms": "Brak Aktywnych Alarmów",
+        "loadingAlarms": "Ładowanie alarmów...",
+        "errorTitle": "Błąd",
+        "errorMessage": "Nie udało się załadować alarmów.",
+        "connectionError": "Błąd Połączenia",
+        "connectionErrorMessage": "Nie udało się załadować alarmów. Sprawdź połączenie z internetem.",
+        "noAlarmsMessage": "Wszystkie twoje urządzenia działają poprawnie"
     },
     "deviceList": {
         "loadingDevices": "Ładowanie urządzeń...",
@@ -231,12 +237,28 @@
             "noDevicesMessage": "Brak dostępnych urządzeń"
         },
         "loading": {
-            "devices": "Ładowanie urządzeń..."
+            "devices": "Ładowanie urządzeń...",
+            "location": "Pobieranie lokalizacji"
         }
     },
     "HomeStack": {
         "DeviceMaps": {
             "title": "Ustaw lokalizację urządzenia"
         }
+    },
+    "Explotacion": {
+        "loadingFarm": "Ładowanie gospodarstwa...",
+        "errorLoadingFarm": "Nie można załadować portalu, ponieważ nie ma połączenia lub nie istnieje",
+        "errorTitle": "Błąd Konfiguracji",
+        "ButtonText": "Wróć",
+        "Reintentar": "Ponów próbę"
+    },
+    "ConfiguracionTC5": {
+        "loadingConfiguration": "Ładowanie konfiguracji...",
+        "errorLoadingConfiguration": "Nie udało się załadować konfiguracji TC5",
+        "errorLoadingFarm": "Nie można załadować portalu, ponieważ nie ma połączenia lub nie istnieje",
+        "errorTitle": "Błąd Konfiguracji",
+        "ButtonText": "Wróć",
+        "Reintentar": "Ponów próbę"
     }
 }

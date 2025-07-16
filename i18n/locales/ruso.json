@@ -1,7 +1,13 @@
 {
     "AlarmasScreen": {
-        "errorLoadingAlarms": "Не удалось загрузить сработавшие тревоги",
-        "noAlarms": "Нет сработавших тревог"
+        "errorLoadingAlarms": "Не удалось загрузить сработавшие сигналы",
+        "noAlarms": "Нет Активных Сигналов",
+        "loadingAlarms": "Загрузка сигналов...",
+        "errorTitle": "Ошибка",
+        "errorMessage": "Не удалось загрузить сигналы.",
+        "connectionError": "Ошибка Соединения",
+        "connectionErrorMessage": "Не удалось загрузить сигналы. Проверьте подключение к интернету.",
+        "noAlarmsMessage": "Все ваши устройства работают правильно"
     },
     "deviceList": {
         "loadingDevices": "Загрузка устройств…",
@@ -231,12 +237,28 @@
             "noDevicesMessage": "Нет доступных устройств"
         },
         "loading": {
-            "devices": "Загрузка устройств..."
+            "devices": "Загрузка устройств...",
+            "location": "Получение расположений"
         }
     },
     "HomeStack": {
         "DeviceMaps": {
             "title": "Установить расположение устройства"
         }
+    },
+    "Explotacion": {
+        "loadingFarm": "Загрузка фермы...",
+        "errorLoadingFarm": "Не удается загрузить портал из-за отсутствия соединения или его не существует",
+        "errorTitle": "Ошибка Конфигурации",
+        "ButtonText": "Назад",
+        "Reintentar": "Повторить попытку"
+    },
+    "ConfiguracionTC5": {
+        "loadingConfiguration": "Загрузка конфигурации...",
+        "errorLoadingConfiguration": "Не удалось загрузить конфигурацию TC5",
+        "errorLoadingFarm": "Не удается загрузить портал из-за отсутствия соединения или его не существует",
+        "errorTitle": "Ошибка Конфигурации",
+        "ButtonText": "Назад",
+        "Reintentar": "Повторить попытку"
     }
 }

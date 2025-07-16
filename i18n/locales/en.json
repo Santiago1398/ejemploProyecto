@@ -1,7 +1,13 @@
 {
     "AlarmasScreen": {
-        "errorLoadingAlarms": "Failed to load triggered alarms",
-        "noAlarms": "No triggered alarms"
+        "errorLoadingAlarms": "Could not load triggered alarms",
+        "noAlarms": "No Active Alarms",
+        "loadingAlarms": "Loading alarms...",
+        "errorTitle": "Error",
+        "errorMessage": "Could not load alarms.",
+        "connectionError": "Connection Error",
+        "connectionErrorMessage": "Could not load alarms. Check your internet connection.",
+        "noAlarmsMessage": "All your devices are working correctly"
     },
     "deviceList": {
         "loadingDevices": "Loading devices...",
@@ -232,12 +238,27 @@
             "noDevicesMessage": "No devices available"
         },
         "loading": {
-            "devices": "Loading devices..."
+            "devices": "Loading devices...",
+            "location": "Getting locations"
         }
     },
     "HomeStack": {
         "DeviceMaps": {
             "title": "Set Device Location"
         }
+    },
+    "Explotacion": {
+        "loadingFarm": "Loading farm...",
+        "errorLoadingFarm": "Cannot load portal because there is no connection or it does not exist",
+        "errorTitle": "Configuration Error",
+        "ButtonText": "Back",
+        "Reintentar": "Retry"
+    },
+    "ConfiguracionTC5": {
+        "loadingConfiguration": "Loading configuration...",
+        "errorLoadingConfiguration": "Could not load the TC5 configuration",
+        "errorTitle": "Configuration Error",
+        "ButtonText": "Back",
+        "Reintentar": "Retry"
     }
 }
