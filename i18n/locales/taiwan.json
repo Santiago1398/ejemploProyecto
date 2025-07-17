@@ -179,6 +179,7 @@
     },
     "DeviceMaps": {
         "errorTitle": "錯誤",
+        "save": "儲存",
         "error": {
             "mensaje": "無法取得您的位置。",
             "title": "錯誤",

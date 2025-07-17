@@ -12,7 +12,7 @@ import { WebView } from "react-native-webview";
 import { RouteProp, useRoute, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "@/app/HomeStack";
 import { Feather } from "@expo/vector-icons";
-import { t } from "i18n-js";
+import { t } from "@/i18n/i18nConfig";
 
 type WebViewRouteProp = RouteProp<RootStackParamList, "Explotacion">;
 
@@ -179,7 +179,7 @@ export default function WebViewExplotacion() {
             {loading && (
                 <View style={styles.loadingOverlay}>
                     <ActivityIndicator size="large" color="#007AFF" />
-                    <Text style={styles.loadingText}> {t("Eplotacion.loadingFarm")}</Text>
+                    <Text style={styles.loadingText}> {t("Explotacion.loadingFarm")}</Text>
                 </View>
             )}
 

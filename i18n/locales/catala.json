@@ -179,6 +179,7 @@
     },
     "DeviceMaps": {
         "errorTitle": "Error",
+        "save": "Desar",
         "error": {
             "mensaje": "No s'ha pogut obtenir la teva ubicació.",
             "title": "Error",

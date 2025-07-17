@@ -8,16 +8,29 @@ interface Props {
 }
 
 export default function EstadoAlarmaCircle({ armado, disparado, raised }: Props) {
+    let backgroundColor = "transparent";
 
-    let backgroundColor = "transparent"; // por defecto, para evitar el salto visual
+    // 🔥 NUEVA LÓGICA CORREGIDA:
 
-    if (armado && !disparado) {
-        backgroundColor = "#4CAF50"; // verde  claro cuando está todo OK
-    } else if (!armado && disparado && raised) {
-        backgroundColor = "#FF3B30"; // rojo
-    } else if (!armado && !disparado) {
-        backgroundColor = "#8a9bb9"; // gris
+    // 1️⃣ PRIORIDAD MÁXIMA: Si está 'raised' (activada realmente), mostrar ROJO
+    if (raised) {
+        backgroundColor = "#FF3B30"; // 🔴 ROJO - Alarma activada
     }
+    // 2️⃣ Si está armada pero no activada, mostrar VERDE
+    else if (armado && !raised) {
+        backgroundColor = "#4CAF50"; // 🟢 VERDE - Armada y OK
+    }
+    // 3️⃣ Si no está armada ni activada, mostrar GRIS
+    else if (!armado && !raised) {
+        backgroundColor = "#8a9bb9"; // ⚫ GRIS - Desarmada
+    }
+    // 4️⃣ Fallback por si acaso
+    else {
+        backgroundColor = "#8a9bb9"; // ⚫ GRIS por defecto
+    }
+
+    // 🔍 DEBUG: Console log para verificar estados
+    console.log(`🔴 Alarma Circle - armado: ${armado}, disparado: ${disparado}, raised: ${raised} → ${backgroundColor}`);
 
     return <View style={[styles.circle, { backgroundColor }]} />;
 }
@@ -37,4 +50,3 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
 });
-

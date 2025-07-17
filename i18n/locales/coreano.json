@@ -179,6 +179,7 @@
     },
     "DeviceMaps": {
         "errorTitle": "오류",
+        "save": "저장",
         "error": {
             "mensaje": "위치를 가져올 수 없습니다.",
             "title": "오류",

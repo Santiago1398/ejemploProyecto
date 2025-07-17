@@ -179,6 +179,7 @@
     },
     "DeviceMaps": {
         "errorTitle": "Błąd",
+        "save": "Zapisz",
         "error": {
             "mensaje": "Nie udało się pobrać Twojej lokalizacji.",
             "title": "Błąd",

@@ -34,7 +34,7 @@ export interface ParamTC {
     consignaMinima: number;
     consignaMaxima: number;
     texto: string;
-
+    conectado: boolean;
     passwordCorrection: boolean;
     raised: boolean;
 }
