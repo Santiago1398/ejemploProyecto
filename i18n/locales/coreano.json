@@ -1,263 +1,264 @@
 {
     "AlarmasScreen": {
-        "errorLoadingAlarms": "No s'han pogut carregar les alarmes disparades",
-        "noAlarms": "No hi ha Alarmes Activades",
-        "loadingAlarms": "Carregant alarmes...",
-        "errorTitle": "Error",
-        "errorMessage": "No s'han pogut carregar les alarmes.",
-        "connectionError": "Error de Connexió",
-        "connectionErrorMessage": "No s'han pogut carregar les alarmes. Verifica la teva connexió a internet.",
-        "noAlarmsMessage": "Tots els teus dispositius funcionen correctament"
+        "errorLoadingAlarms": "트리거된 알람을 로드할 수 없습니다",
+        "noAlarms": "활성 알람 없음",
+        "loadingAlarms": "알람 로딩 중...",
+        "errorTitle": "오류",
+        "errorMessage": "알람을 로드할 수 없습니다.",
+        "connectionError": "연결 오류",
+        "connectionErrorMessage": "알람을 로드할 수 없습니다. 인터넷 연결을 확인하세요.",
+        "noAlarmsMessage": "모든 기기가 정상적으로 작동하고 있습니다"
     },
     "deviceList": {
-        "loadingDevices": "Carregant dispositius...",
-        "serverDisconnected": "Servidor desconnectat. Torna-ho a intentar més tard.",
-        "noLocationsAvailable": "No hi ha ubicacions disponibles",
-        "alarmActive": "🚨 Alarma activa",
-        "acceptAndStopAlarm": "Acceptar i aturar l'alarma",
-        "errorTitle": "Error",
-        "deviceLoadError": "No s'han pogut carregar els dispositius.",
+        "loadingDevices": "장치 불러오는 중...",
+        "serverDisconnected": "서버 연결이 끊어졌습니다. 나중에 다시 시도하세요.",
+        "noLocationsAvailable": "사용 가능한 위치가 없습니다",
+        "alarmActive": "🚨 알람 활성화됨",
+        "acceptAndStopAlarm": "알람 수락 및 중지",
+        "errorTitle": "오류",
+        "deviceLoadError": "장치를 불러올 수 없습니다.",
+        "disarmed": "비활성화됨",
         "error": {
-            "noConnection": "Sense connexió",
-            "cannotLoadLocations": "No es poden carregar les ubicacions",
-            "checkingAutomatically": "Verificant automàticament..."
+            "noConnection": "연결 없음",
+            "cannotLoadLocations": "위치를 로드할 수 없습니다",
+            "checkingAutomatically": "자동으로 확인 중..."
         }
     },
     "DeviceDetailsScreen": {
-        "alarmTriggered": "Alarma Activada",
-        "alarmsEnabled": "Alarmes Armades",
-        "alarmsDisabled": "Alarmes Desarmades",
-        "successTitle": "Èxit",
-        "alarmsActivated": "Les alarmes s'han activat.",
-        "alarmsDeactivated": "Les alarmes s'han desactivat.",
-        "changeStatusError": "No s'ha pogut canviar l'estat de les alarmes.",
-        "errorTitle": "Error",
-        "errorLoadingAlarms": "No s'han pogut carregar les alarmes.",
-        "errorChangeAlarmState": "No s'ha pogut canviar l'estat de l'alarma.",
-        "loadingAlarms": "Carregant alarmes...",
-        "tc5Disconnected": "TC5 Desconnectat",
-        "noEnabledAlarms": "Sense connexió",
-        "armed": "Armada",
-        "disarmed": "Desarmada",
+        "alarmTriggered": "알람 발생",
+        "alarmsEnabled": "알람 활성화됨",
+        "alarmsDisabled": "알람 비활성화됨",
+        "successTitle": "성공",
+        "alarmsActivated": "알람이 활성화되었습니다.",
+        "alarmsDeactivated": "알람이 비활성화되었습니다.",
+        "changeStatusError": "알람 상태를 변경할 수 없습니다.",
+        "errorTitle": "오류",
+        "errorLoadingAlarms": "알람을 불러올 수 없습니다.",
+        "errorChangeAlarmState": "알람 상태를 변경할 수 없습니다.",
+        "loadingAlarms": "알람 불러오는 중...",
+        "tc5Disconnected": "TC5 연결 끊김",
+        "noEnabledAlarms": "연결 없음",
+        "armed": "활성화됨",
         "connection": {
-            "noConnection": "Sense connexió",
-            "deviceDisconnected": "Equip desconnectat o sense comunicació"
+            "noConnection": "연결 없음",
+            "deviceDisconnected": "장치 연결 해제 또는 통신 불가"
         }
     },
     "DrawerContent": {
-        "logout": "Tancar sessió",
-        "login": "Iniciar sessió",
-        "settings": "Configuració",
-        "maintenance": "Manteniment"
+        "logout": "로그아웃",
+        "login": "로그인",
+        "settings": "설정",
+        "maintenance": "점검"
     },
     "EditarPrioridadScreen": {
-        "errorTitle": "Error",
-        "invalidPhone": "Introdueix un número de telèfon vàlid.",
-        "successTitle": "Èxit",
-        "SaveInformacion": "Informació desada correctament",
-        "sendError": "No s'ha pogut enviar la informació",
-        "title": "Prioritat",
-        "label": "Número de telèfon:",
+        "errorTitle": "오류",
+        "invalidPhone": "유효한 전화번호를 입력하세요.",
+        "successTitle": "성공",
+        "SaveInformacion": "정보가 성공적으로 저장되었습니다",
+        "sendError": "정보를 전송할 수 없습니다",
+        "title": "우선순위",
+        "label": "전화번호:",
         "placeholder": "123456789",
-        "save": "Desar",
-        "selectCountry": "Selecciona país",
-        "cancel": "Cancel·lar"
+        "save": "저장",
+        "selectCountry": "국가 선택",
+        "cancel": "취소"
     },
     "BottonMaster": {
-        "label": "Master"
+        "label": "마스터"
     },
     "CustomMaps": {
-        "saveTitle": "Desar ubicació",
-        "saveMessage": "Vols desar la ubicació actual?",
-        "cancel": "Cancel·lar",
-        "save": "Desar"
+        "saveTitle": "위치 저장",
+        "saveMessage": "현재 위치를 저장하시겠습니까?",
+        "cancel": "취소",
+        "save": "저장"
     },
     "Menu3Puntos": {
-        "explotacion": "Anar al Portal",
-        "configuracion": "Configuració TC5",
-        "geolocalizacion": "Geolocalització",
-        "ajustes": "Configuració",
-        "volver": "Tornar",
-        "guardarUbicacion": "Guardar Ubicació"
+        "explotacion": "포털로 이동",
+        "configuracion": "TC5 구성",
+        "geolocalizacion": "지리적 위치",
+        "ajustes": "설정",
+        "volver": "뒤로",
+        "guardarUbicacion": "위치 저장"
     },
     "PhoneNumberDialog": {
-        "title": "Introdueix el teu número de telèfon",
-        "subtitle": "Perquè l'app TC5 sàpiga quin és el teu número.",
-        "placeholder": "Ex: 612345678",
-        "cancel": "Cancel·lar",
-        "save": "Desar",
-        "invalid": "Número no vàlid. Ha de tenir 9 dígits."
+        "title": "전화번호를 입력하세요",
+        "subtitle": "TC5 앱이 전화번호를 알 수 있도록 하세요.",
+        "placeholder": "예: 612345678",
+        "cancel": "취소",
+        "save": "저장",
+        "invalid": "잘못된 번호입니다. 9자리여야 합니다."
     },
     "HomeScreen": {
         "cti": "CTI",
         "control": "Control",
-        "Home": "Inici"
+        "Home": "홈"
     },
     "CustomHeader": {
-        "home": "Inici"
+        "home": "홈"
     },
     "MantenimientoScreen": {
-        "apiTitle": "Servidor API",
+        "apiTitle": "API 서버",
         "apiPlaceholder": "http://192.168.1.1:8032/api",
-        "saveButton": "Desar URL",
-        "saveSuccessTitle": "Desat",
-        "saveSuccessMessage": "La URL del servidor s'ha actualitzat.",
-        "saveErrorTitle": "Error",
-        "saveErrorMessage": "No s'ha pogut desar la URL.",
-        "fcmTitle": "Token FCM del dispositiu",
-        "fcmButton": "Obtenir token FCM",
-        "fcmCopiedTitle": "Token copiat",
-        "fcmCopiedMessage": "Token FCM copiat al porta-retalls:\n\n{{token}}",
-        "fcmErrorTitle": "Error",
-        "fcmErrorMessage": "No s'ha pogut obtenir el token."
+        "saveButton": "URL 저장",
+        "saveSuccessTitle": "저장됨",
+        "saveSuccessMessage": "서버 URL이 업데이트되었습니다.",
+        "saveErrorTitle": "오류",
+        "saveErrorMessage": "URL을 저장할 수 없습니다.",
+        "fcmTitle": "디바이스 FCM 토큰",
+        "fcmButton": "FCM 토큰 가져오기",
+        "fcmCopiedTitle": "토큰 복사됨",
+        "fcmCopiedMessage": "FCM 토큰이 클립보드에 복사되었습니다:\n\n{{token}}",
+        "fcmErrorTitle": "오류",
+        "fcmErrorMessage": "토큰을 가져올 수 없습니다."
     },
     "SettingsScreen": {
         "notificaciones": {
             "desactivar": {
-                "titulo": "Desactivar notificacions",
-                "mensaje": "Vols desactivar les notificacions de l'aplicació?"
+                "titulo": "알림 끄기",
+                "mensaje": "앱 알림을 끄시겠습니까?"
             },
             "activar": {
-                "titulo": "Activar notificacions",
-                "mensaje": "Vols rebre notificacions d'alarmes i actualitzacions?"
+                "titulo": "알림 켜기",
+                "mensaje": "알람 및 업데이트 알림을 받으시겠습니까?"
             },
-            "cancelar": "Cancel·lar",
-            "desactivars": "Desactivar",
-            "no": "No",
-            "si": "Sí"
+            "cancelar": "취소",
+            "desactivars": "끄기",
+            "no": "아니오",
+            "si": "예"
         },
         "ubicacion": {
-            "desactivar": "Desactivar ubicació",
+            "desactivar": "위치 끄기",
             "permisos": {
-                "desactivar": "Vols desactivar els permisos de ubicació?"
+                "desactivar": "위치 권한을 끄시겠습니까?"
             },
-            "label": "Permisos de ubicació"
+            "label": "위치 권한"
         },
         "titulo": {
-            "permisos": "Permisos",
-            "notificaciones": "Notificacions",
-            "nivelPrioridad": "Nivell de Prioritat"
+            "permisos": "권한",
+            "notificaciones": "알림",
+            "nivelPrioridad": "우선순위 레벨"
         },
         "telefono": {
-            "presente": "Tel:",
-            "ausente": "Sense número assignat"
+            "presente": "전화:",
+            "ausente": "지정된 번호 없음"
         },
         "language": {
-            "title": "Idioma"
+            "title": "언어"
         }
     },
     "login": {
-        "titulo": "Iniciar sessió",
-        "subtitulo": "Si us plau, inicia sessió per continuar",
-        "correo": "Correu electrònic",
-        "contrasena": "Contrasenya",
-        "boton": "Entrar",
+        "titulo": "로그인",
+        "subtitulo": "계속하려면 로그인하세요",
+        "correo": "이메일",
+        "contrasena": "비밀번호",
+        "boton": "로그인",
         "error": {
-            "datos": "Correu electrònic o contrasenya incorrectes",
-            "general": "Error",
-            "mensaje": "Alguna cosa ha anat malament"
+            "datos": "이메일 또는 비밀번호가 올바르지 않습니다",
+            "general": "오류",
+            "mensaje": "문제가 발생했습니다"
         }
     },
     "useNotificationPermission": {
         "alerta": {
-            "titulo": "Notificacions",
-            "mensaje": "Habilita les notificacions per rebre les alarmes TC5",
-            "boton": "Acceptar"
+            "titulo": "알림",
+            "mensaje": "TC5 알람을 받으려면 알림을 켜세요",
+            "boton": "확인"
         },
         "error": {
-            "permisos": "Error en gestionar els permisos de notificació",
-            "verificacion": "Error en verificar l'estat dels permisos"
+            "permisos": "알림 권한 처리 중 오류",
+            "verificacion": "권한 상태 확인 중 오류"
         }
     },
     "locations": {
         "alerta": {
-            "titulo": "Permís de ubicació necessari",
-            "mensaje": "Per continuar has d'habilitar el permís de ubicació als ajustaments de l'app",
-            "abrirAjustes": "Obrir ajustaments",
-            "cancelar": "Cancel·lar"
+            "titulo": "위치 권한 필요",
+            "mensaje": "계속하려면 앱 설정에서 위치 권한을 허용해야 합니다",
+            "abrirAjustes": "설정 열기",
+            "cancelar": "취소"
         }
     },
     "DeviceMaps": {
-        "errorTitle": "Error",
+        "errorTitle": "오류",
+        "save": "저장",
         "error": {
-            "mensaje": "No s'ha pogut obtenir la teva ubicació.",
-            "title": "Error",
-            "obtener": "No s'ha pogut obtenir la teva ubicació."
+            "mensaje": "위치를 가져올 수 없습니다.",
+            "title": "오류",
+            "obtener": "위치를 가져올 수 없습니다."
         },
         "titulo": {
-            "guardar": "Desar ubicació"
+            "guardar": "위치 저장"
         },
         "mensaje": {
-            "guardar": "Vols desar la ubicació actual?"
+            "guardar": "현재 위치를 저장하시겠습니까?"
         },
-        "cancelar": "Cancel·lar",
-        "guardar": "Desar",
+        "cancelar": "취소",
+        "guardar": "저장",
         "ubicacion": {
             "guardada": {
-                "titulo": "Ubicació desada",
-                "mensaje": "La ubicació del dispositiu s'ha desat correctament."
+                "titulo": "위치 저장됨",
+                "mensaje": "디바이스 위치가 성공적으로 저장되었습니다."
             },
             "no": {
-                "guardada": "No s'ha pogut desar la ubicació del dispositiu."
+                "guardada": "디바이스 위치를 저장할 수 없습니다."
             }
         },
         "permiso": {
             "necesario": {
-                "titulo": "Permisos necessaris",
-                "mensaje": "Has d'habilitar els permisos de ubicació per utilitzar aquesta funció"
+                "titulo": "필요한 권한",
+                "mensaje": "이 기능을 사용하려면 위치 권한을 허용해야 합니다"
             },
             "boton": {
-                "ir": "Anar a Configuració",
-                "cancelar": "Cancel·lar"
+                "ir": "설정으로 이동",
+                "cancelar": "취소"
             }
         },
         "loading": {
-            "verificando": "Verificant permisos...",
-            "cargando": "Carregant ubicació..."
+            "verificando": "권한 확인 중...",
+            "cargando": "위치 불러오는 중..."
         }
     },
     "MapsScreen": {
         "permission": {
-            "title": "Permisos necessaris",
-            "message": "Habilita la geolocalització per posicionar el teu TC5 al mapa",
-            "deniedTitle": "Permisos denegats",
-            "deniedMessage": "Cal permetre la ubicació per mostrar el mapa.",
-            "accept": "Acceptar"
+            "title": "필요한 권한",
+            "message": "지도에 TC5를 표시하려면 위치 서비스를 켜세요",
+            "deniedTitle": "권한 거부됨",
+            "deniedMessage": "지도를 표시하려면 위치 권한을 허용해야 합니다.",
+            "accept": "확인"
         },
-        "errorTitle": "Error",
-        "errorMessage": "S'ha produït un error en verificar els permisos de ubicació.",
+        "errorTitle": "오류",
+        "errorMessage": "위치 권한 확인 중 오류가 발생했습니다.",
         "noDevices": {
-            "title": "Sense dispositius",
-            "message": "No hi ha dispositius per mostrar al mapa."
+            "title": "장치 없음",
+            "message": "지도에 표시할 장치가 없습니다."
         },
         "errors": {
-            "title": "Error",
-            "loadDevicesError": "No s'han pogut carregar els dispositius.",
-            "noDevicesTitle": "Sense dispositius",
-            "noDevicesMessage": "No hi ha dispositius disponibles"
+            "title": "오류",
+            "loadDevicesError": "장치를 로드할 수 없습니다.",
+            "noDevicesTitle": "장치 없음",
+            "noDevicesMessage": "사용 가능한 장치가 없습니다"
         },
         "loading": {
-            "devices": "Carregant dispositius...",
-            "location": "Obtenint ubicacions"
+            "devices": "장치 불러오는 중...",
+            "location": "위치 불러오는 중..."
         }
     },
     "HomeStack": {
         "DeviceMaps": {
-            "title": "Fixar ubicació del dispositiu"
+            "title": "디바이스 위치 설정"
         }
     },
     "Explotacion": {
-        "loadingFarm": "Carregant explotació...",
-        "errorLoadingFarm": "No es pot carregar el portal perquè no hi ha connexió o no existeix",
-        "errorTitle": "Error de Configuració",
-        "ButtonText": "Tornar",
-        "Reintentar": "Tornar a intentar"
+        "loadingFarm": "농장 불러오는 중...",
+        "errorLoadingFarm": "포털을 불러올 수 없습니다. 연결이 없거나 존재하지 않습니다.",
+        "errorTitle": "구성 오류",
+        "ButtonText": "뒤로",
+        "Reintentar": "다시 시도"
     },
     "ConfiguracionTC5": {
-        "loadingConfiguration": "Carregant configuració...",
-        "errorLoadingConfiguration": "No s'ha pogut carregar la configuració del TC5",
-        "errorTitle": "Error de Configuració",
-        "ButtonText": "Tornar",
-        "Reintentar": "Tornar a intentar"
+        "loadingConfiguration": "구성 불러오는 중...",
+        "errorLoadingConfiguration": "TC5 구성을 불러올 수 없습니다.",
+        "errorTitle": "구성 오류",
+        "ButtonText": "뒤로",
+        "Reintentar": "다시 시도"
     }
 }

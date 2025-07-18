@@ -571,27 +571,32 @@ export default function AlarmList() {
 
 
     // 6. Render de cada alarma (con mejoras visuales)
+    // En tu función renderAlarmItem, reemplaza la lógica de colores por esta:
+
     const renderAlarmItem = ({ item }: { item: ParamTC }) => {
-        let backgroundColor = "#8a9bb9"; // gris 
+        let backgroundColor = "#8a9bb9"; // gris por defecto
         let textColor = "#000000"; // negro 
 
         if (item.disparado) {
+            // Si la alarma está disparada, siempre rojo
             backgroundColor = "#FF0000"; // rojo fuerte
             textColor = "#000000";
-        } else if (!masterAlarmState && item.armado) {
+        } else if (!masterAlarmState) {
+            // 🔥 NUEVO: Si el master está desarmado, TODAS las alarmas se ponen amarillas
+            // independientemente de si están armadas o desarmadas individualmente
             backgroundColor = "#fde047"; // amarillo fuerte
             textColor = "#000000";
         } else if (item.armado) {
+            // Si el master está armado Y la alarma individual está armada = verde
             backgroundColor = "#77dc36"; // mismo verde que el header
+            textColor = "#000000";
+        } else {
+            // Si el master está armado PERO la alarma individual está desarmada = gris
+            backgroundColor = "#8a9bb9"; // gris
             textColor = "#000000";
         }
 
-
-
-
-
         return (
-
             <TouchableOpacity
                 style={[styles.alarmContainer, { backgroundColor }]}
                 onPress={() => openOptionModal(item)}
@@ -613,7 +618,6 @@ export default function AlarmList() {
                 </View>
                 <Entypo name="chevron-thin-right" size={20} color="#000" />
             </TouchableOpacity>
-
         );
     };
 

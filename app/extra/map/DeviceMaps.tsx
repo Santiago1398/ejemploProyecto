@@ -198,7 +198,7 @@ export default function DeviceMap() {
                 />
             </MapView>
 
-            {/* 🎨 BOTÓN CIRCULAR A LA DERECHA CON ÍCONO Y TEXTO */}
+            {/* BOTÓN CIRCULAR A LA DERECHA CON ÍCONO Y TEXTO */}
             <TouchableOpacity
                 style={styles.circularRightButton}
                 onPress={handleSaveLocation}
@@ -210,7 +210,7 @@ export default function DeviceMap() {
                     color="#ffffff"
                     style={styles.saveIcon}
                 />
-                <Text style={styles.saveButtonText}>SAVE</Text>
+                <Text style={styles.saveButtonText}>{t("DeviceMaps.save")}</Text>
             </TouchableOpacity>
         </View>
     );
@@ -233,7 +233,7 @@ const styles = StyleSheet.create({
         color: '#666'
     },
 
-    // 🎨 BOTÓN CIRCULAR MEJORADO CON ÍCONO MÁS GRANDE
+    //  BOTÓN CIRCULAR MEJORADO CON ÍCONO MÁS GRANDE
     circularRightButton: {
         position: 'absolute',
         bottom: 100,
@@ -256,12 +256,12 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
     },
 
-    // 🎨 ÍCONO MÁS GRANDE Y MODERNO
+    // ÍCONO MÁS GRANDE Y MODERNO
     saveIcon: {
         marginBottom: 4, // Más espacio entre ícono y texto
     },
 
-    // 🎨 TEXTO DEL BOTÓN MÁS COMPACTO
+    // TEXTO DEL BOTÓN MÁS COMPACTO
     saveButtonText: {
         color: '#ffffff',
         fontSize: 10, // Más pequeño para dar más espacio al ícono

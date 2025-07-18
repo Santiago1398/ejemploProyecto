@@ -179,6 +179,7 @@
     },
     "DeviceMaps": {
         "errorTitle": "Errore",
+        "save": "Salva",
         "error": {
             "mensaje": "Impossibile ottenere la tua posizione.",
             "title": "Errore",

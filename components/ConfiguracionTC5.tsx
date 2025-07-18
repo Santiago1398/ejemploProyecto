@@ -5,7 +5,7 @@ import { WebView } from "react-native-webview";
 import { RouteProp, useRoute, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "@/app/HomeStack";
 import { Feather } from "@expo/vector-icons";
-import { t } from "i18n-js";
+import { t } from "@/i18n/i18nConfig";
 
 type WebViewRouteProp = RouteProp<RootStackParamList, "ConfiguracionTC5">;
 
@@ -119,7 +119,7 @@ export default function WebViewConfiguracionTC5() {
         );
     }
 
-    //    const baseUrl = "https://ctiportal.cticontrol.com/login.xhtml";
+    //const baseUrl = "https://ctiportal.cticontrol.com/login.xhtml";
     const baseUrl = "https://ctiportaltest.cticontrol.com/login.xhtml";
     const queryParams = `mac=${mac}&token=${token}&idioma=${idioma}&idNave=${idSite}&app=appmovilv3&type=control-remoto`;
     const url = `${baseUrl}?${queryParams}`;
