@@ -24,7 +24,7 @@ export default function WebViewConfiguracionTC5() {
     const [hasError, setHasError] = useState(false);
     const [errorMessage, setErrorMessage] = useState("");
 
-    // 🔥 NUEVO: Si es simulado, mostrar mensaje simple
+    // NUEVO: Si es simulado, mostrar mensaje simple
     if (simulado) {
         return (
             <SafeAreaView style={styles.container}>
@@ -73,23 +73,23 @@ export default function WebViewConfiguracionTC5() {
 
         // Validar idioma (opcional, tiene valor por defecto)
         if (!idioma || idioma === "") {
-            console.warn("⚠️ Idioma no especificado, usando 'es' por defecto");
+            console.warn(" Idioma no especificado, usando 'es' por defecto");
         }
 
         if (errors.length > 0) {
             const errorMsg = `Faltan datos obligatorios:\n• ${errors.join('\n• ')}`;
-            console.error("❌ VALIDACIÓN CONFIGURACIÓN FALLIDA:", errorMsg);
+            console.error("VALIDACIÓN CONFIGURACIÓN FALLIDA:", errorMsg);
             setErrorMessage(errorMsg);
             setHasError(true);
             setLoading(false);
             return false;
         }
 
-        console.log("✅ Todos los parámetros de configuración son válidos");
+        console.log(" Todos los parámetros de configuración son válidos");
         return true;
     };
 
-    // 🔥 EJECUTAR VALIDACIÓN AL CARGAR
+    // EJECUTAR VALIDACIÓN AL CARGAR
     useEffect(() => {
         const isValid = validateParams();
         if (!isValid) {
@@ -97,7 +97,7 @@ export default function WebViewConfiguracionTC5() {
         }
     }, []);
 
-    // 🔥 SI HAY ERRORES, MOSTRAR PANTALLA DE ERROR
+    //  SI HAY ERRORES, MOSTRAR PANTALLA DE ERROR
     if (hasError) {
         return (
             <SafeAreaView style={styles.container}>
@@ -167,7 +167,7 @@ export default function WebViewConfiguracionTC5() {
                 <View style={styles.loadingOverlay}>
                     <ActivityIndicator size="large" color="#007AFF" />
                     <Text style={styles.loadingText}>
-                        {t("configuracionTC5.loadingConfiguration")}
+                        {t("ConfiguracionTC5.loadingConfiguration")}
                     </Text>
                 </View>
             )}
@@ -263,7 +263,7 @@ const styles = StyleSheet.create({
         marginBottom: 32,
         paddingHorizontal: 20,
     },
-    // 🔥 NUEVOS ESTILOS PARA SIMULACIÓN
+    //  NUEVOS ESTILOS PARA SIMULACIÓN
     simulationContainer: {
         flex: 1,
         justifyContent: "center",

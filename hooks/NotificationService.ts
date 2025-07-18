@@ -92,46 +92,46 @@ class NotificationService {
         return this._shouldTriggerAlarm(mac, idAlarm);
     }
 
-    public connectWebSocket() {
-        if (this.ws) return;
+    // public connectWebSocket() {
+    //     if (this.ws) return;
 
-        this.ws = new WebSocket("wss://portaltest.cticontrol.com/ws-test");
-        //{"mac":20600001,"idAlarm":12,"isAlarm":true}
+    //     this.ws = new WebSocket("wss://portaltest.cticontrol.com/ws-test");
+    //     //{"mac":20600001,"idAlarm":12,"isAlarm":true}
 
 
-        this.ws.onmessage = async (event) => {
-            try {
-                const data = JSON.parse(event.data);
-                const mac = data.mac;
-                const idAlarm = data.idAlarm;
+    //     this.ws.onmessage = async (event) => {
+    //         try {
+    //             const data = JSON.parse(event.data);
+    //             const mac = data.mac;
+    //             const idAlarm = data.idAlarm;
 
-                if (data.isAlarm && this._shouldTriggerAlarm(mac, idAlarm)) {
-                    console.log(" WebSocket: alarma recibida", mac, idAlarm);
-                    this.onAlarmDetectedCallback?.(idAlarm);
-                    this.onSiteAlarmDetectedCallback?.(mac);
-                    //await this.startAlarmPlayback();
-                    //await AsyncStorage.setItem("alarma_activa_pendiente", "true");
+    //             if (data.isAlarm && this._shouldTriggerAlarm(mac, idAlarm)) {
+    //                 console.log(" WebSocket: alarma recibida", mac, idAlarm);
+    //                 this.onAlarmDetectedCallback?.(idAlarm);
+    //                 this.onSiteAlarmDetectedCallback?.(mac);
+    //                 //await this.startAlarmPlayback();
+    //                 //await AsyncStorage.setItem("alarma_activa_pendiente", "true");
 
-                }
-            } catch (e) {
-                console.error(" Error procesando mensaje WebSocket:", e);
-            }
-        };
+    //             }
+    //         } catch (e) {
+    //             console.error(" Error procesando mensaje WebSocket:", e);
+    //         }
+    //     };
 
-        this.ws.onclose = () => {
-            console.log("🔌 WebSocket cerrado");
-            this.ws = null;
-        };
+    //     this.ws.onclose = () => {
+    //         console.log("🔌 WebSocket cerrado");
+    //         this.ws = null;
+    //     };
 
-        this.ws.onerror = (err) => {
-            console.error(" WebSocket error:", err);
-        };
-    }
+    //     this.ws.onerror = (err) => {
+    //         console.error(" WebSocket error:", err);
+    //     };
+    // }
 
-    public disconnectWebSocket() {
-        this.ws?.close();
-        this.ws = null;
-    }
+    // public disconnectWebSocket() {
+    //     this.ws?.close();
+    //     this.ws = null;
+    // }
 
     public async getFCMToken(): Promise<string | null> {
         try {
@@ -297,7 +297,7 @@ class NotificationService {
         stopAlarmSound();
         this.foregroundSubscription?.remove();
         this.responseSubscription?.remove();
-        this.disconnectWebSocket();
+        // this.disconnectWebSocket();
         this.foregroundSubscription = null;
         this.responseSubscription = null;
     }

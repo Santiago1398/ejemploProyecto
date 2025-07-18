@@ -94,8 +94,8 @@ export default function DeviceLocationMap() {
                 // 🔥 MOSTRAR ALERT SOLO EN CARGA INICIAL (NO EN AUTO-REFRESH)
                 if (!isAutoRefresh) {
                     Alert.alert(
-                        t("DeviceLocationMap.noLocation.title") || "Sin ubicación",
-                        t("DeviceLocationMap.noLocation.message") || "Este dispositivo no tiene una ubicación guardada.",
+                        t("DeviceLocationMap.noLocation.title"),
+                        t("DeviceLocationMap.noLocation.message"),
                         [{ text: "OK" }]
                     );
                 }
@@ -108,11 +108,11 @@ export default function DeviceLocationMap() {
 
             // 🔥 MOSTRAR ALERT SOLO EN CARGA INICIAL (NO EN AUTO-REFRESH)
             if (!isAutoRefresh) {
-                Alert.alert(
-                    t("DeviceLocationMap.error.title") || "Error",
-                    t("DeviceLocationMap.error.message") || "No se pudo obtener la información del dispositivo.",
-                    [{ text: "OK" }]
-                );
+                //Alert.alert(
+                // t("DeviceLocationMap.error.title") || "Error",
+                // t("DeviceLocationMap.error.message") || "No se pudo obtener la información del dispositivo.",
+                // [{ text: "OK" }]
+                //);
             }
         } finally {
             // 🔥 SOLO CAMBIAR LOADING STATE EN CARGA MANUAL
@@ -141,7 +141,7 @@ export default function DeviceLocationMap() {
             <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#007AFF" />
                 <Text style={styles.loadingText}>
-                    {t("DeviceLocationMap.loading") || "Cargando ubicación..."}
+                    {t("DeviceLocationMap.loading")}
                 </Text>
             </View>
         );
@@ -168,17 +168,17 @@ export default function DeviceLocationMap() {
                 <View style={styles.errorContainer}>
                     <Feather name="alert-circle" size={48} color="#ef4444" />
                     <Text style={styles.errorTitle}>
-                        {t("DeviceLocationMap.error.title") || "Error"}
+                        {t("DeviceLocationMap.error.title")}
                     </Text>
                     <Text style={styles.errorMessage}>
-                        {t("DeviceLocationMap.error.message") || "No se pudo obtener la información del dispositivo."}
+                        {t("DeviceLocationMap.error.message")}
                     </Text>
-                    <TouchableOpacity style={styles.retryButton} onPress={() => fetchDeviceData(false)}>
+                    {/* <TouchableOpacity style={styles.retryButton} onPress={() => fetchDeviceData(false)}>
                         <Feather name="refresh-cw" size={20} color="#fff" />
                         <Text style={styles.retryButtonText}>
-                            {t("DeviceLocationMap.retry") || "Reintentar"}
+                            {t("DeviceLocationMap.retry")}
                         </Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
             </View>
         );
@@ -224,15 +224,7 @@ export default function DeviceLocationMap() {
                 </MapView>
 
                 {/* Mensaje superpuesto */}
-                <View style={styles.noLocationOverlay}>
-                    <Feather name="map-pin" size={48} color="#ccc" />
-                    <Text style={styles.noLocationTitle}>
-                        {t("DeviceLocationMap.noLocation.title") || "Sin ubicación"}
-                    </Text>
-                    <Text style={styles.noLocationMessage}>
-                        {t("DeviceLocationMap.noLocation.message") || "Este dispositivo no tiene una ubicación guardada."}
-                    </Text>
-                </View>
+
             </View>
         );
     }

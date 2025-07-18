@@ -6,7 +6,7 @@ import { LatLng } from '@/infrastructure/intercafe/lat-Ing';
 import FAB from './FAB';
 import { ResponseAlarmaSite } from '@/infrastructure/intercafe/listapi.interface';
 
-// 🔥 NUEVA INTERFAZ QUE INCLUYE ZOOM
+//  NUEVA INTERFAZ QUE INCLUYE ZOOM
 interface MapCenter {
     latitude: number;
     longitude: number;
@@ -15,7 +15,7 @@ interface MapCenter {
 }
 
 interface Props extends ViewProps {
-    initialLocation: MapCenter; // 🔥 CAMBIAR TIPO PARA INCLUIR ZOOM
+    initialLocation: MapCenter; //  CAMBIAR TIPO PARA INCLUIR ZOOM
     showUserLocation?: boolean;
     devices?: ResponseAlarmaSite[];
 }
@@ -62,11 +62,11 @@ const CustomMaps = ({ initialLocation, showUserLocation = true, devices = [], ..
         moveCameraToLocation(location);
     }
 
-    // 🔥 CALCULAR ZOOM INTELIGENTE
+    //  CALCULAR ZOOM INTELIGENTE
     const getInitialRegion = () => {
         // Si se proporciona zoom explícito, usarlo
         if (initialLocation.latitudeDelta && initialLocation.longitudeDelta) {
-            console.log("🗺️ CustomMaps: Usando zoom proporcionado:", initialLocation.latitudeDelta);
+            console.log(" CustomMaps: Usando zoom proporcionado:", initialLocation.latitudeDelta);
             return {
                 latitude: initialLocation.latitude,
                 longitude: initialLocation.longitude,
@@ -77,7 +77,7 @@ const CustomMaps = ({ initialLocation, showUserLocation = true, devices = [], ..
 
         // Fallback: zoom automático basado en dispositivos (comportamiento anterior)
         const autoZoom = devices.length > 0 ? 0.5 : 10;
-        console.log("🗺️ CustomMaps: Usando zoom automático:", autoZoom);
+        console.log(" CustomMaps: Usando zoom automático:", autoZoom);
         return {
             latitude: initialLocation.latitude,
             longitude: initialLocation.longitude,
@@ -93,10 +93,10 @@ const CustomMaps = ({ initialLocation, showUserLocation = true, devices = [], ..
                 style={styles.map}
                 provider={PROVIDER_GOOGLE}
                 showsUserLocation={showUserLocation}
-                initialRegion={getInitialRegion()} // 🔥 USAR FUNCIÓN INTELIGENTE
+                initialRegion={getInitialRegion()} //  USAR FUNCIÓN INTELIGENTE
                 onTouchStart={() => setIsFollowingUser(false)}
             >
-                {/* 🔥 SOLO MARKERS DE DISPOSITIVOS DEL BACKEND */}
+                {/*  SOLO MARKERS DE DISPOSITIVOS DEL BACKEND */}
                 {devices
                     .filter(device => device.latitude !== 0 && device.longitude !== 0)
                     .map((device, index) => (
@@ -114,7 +114,7 @@ const CustomMaps = ({ initialLocation, showUserLocation = true, devices = [], ..
                 }
             </MapView>
 
-            {/* ✅ SOLO FABs DE NAVEGACIÓN */}
+            {/*  SOLO FABs DE NAVEGACIÓN */}
             <FAB
                 iconName={isFollowingUser ? 'walk-outline' : 'accessibility-outline'}
                 onPress={() => setIsFollowingUser(!isFollowingUser)}
@@ -124,14 +124,14 @@ const CustomMaps = ({ initialLocation, showUserLocation = true, devices = [], ..
                 }}
             />
 
-            <FAB
+            {/* <FAB
                 iconName='compass-outline'
                 onPress={moveToCurrentLocation}
                 style={{
                     bottom: 80,
                     right: 20
                 }}
-            />
+            /> */}
         </View>
     )
 }

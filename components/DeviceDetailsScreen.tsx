@@ -26,9 +26,6 @@ import EstadoAlarmaCircle from "./EstadoAlarmaCircle";
 import { t } from "@/i18n/i18nConfig";
 import { Feather } from "@expo/vector-icons";
 
-
-
-
 type DeviceDetailsRouteProp = RouteProp<RootStackParamList, "DeviceDetails">;
 
 export default function AlarmList() {
@@ -41,56 +38,54 @@ export default function AlarmList() {
     const [isOptionModalVisible, setOptionModalVisible] = useState(false);
     const [alarms, setAlarms] = useState<ParamTC[]>([]);
     const [loading, setLoading] = useState(true);
-    const [masterAlarmState, setMasterAlarmState] = useState<boolean>(true); // Estado de la alarma 1000
-    //const [showAlarmDialog, setShowAlarmDialog] = useState(false);
+    const [masterAlarmState, setMasterAlarmState] = useState<boolean>(true);
     const [initialLoad, setInitialLoad] = useState(true);
 
     const navigation = useNavigation<any>();
-    const [headerText, setHeaderText] = useState<string>("Alarmas Activas"); // Texto del header para controlarlo
-    const [headerColor, setHeaderColor] = useState<string>("#76db36"); // Color del header para controlarloconst flatListRef = useRef<FlatList>(null);
+    const [headerText, setHeaderText] = useState<string>("Alarmas Activas");
+    const [headerColor, setHeaderColor] = useState<string>("#76db36");
     const scrollRef = useRef<ScrollView>(null);
     const [tc5Disconnected, setTc5Disconnected] = useState<boolean>(false);
     const [menuVisible, setMenuVisible] = useState(false);
     const [isSimulated, setIsSimulated] = useState<boolean>(false);
-    ;
+
     const isDeviceDisconnected = alarmType == 2;
     const [isConnected, setIsConnected] = useState<boolean>(true);
     const isMasterDisabled = tc5Disconnected || isDeviceDisconnected || !isConnected;
-
-    // 🔥 NUEVA LÓGICA: forzar Master a OFF cuando está desconectado
-    //const effectiveMasterState = isMasterDisabled ? false : masterAlarmState;
+    const [isProcessing, setIsProcessing] = useState(false); // 🔥 NUEVO: Estado de procesamiento
+    const [lastSelectedAlarmId, setLastSelectedAlarmId] = useState<number | null>(null);
 
     useEffect(() => {
         if (isDeviceDisconnected) {
             setAlarms([]);
             setMasterAlarmState(false);
-            setIsConnected(false); // 🔥 AGREGADO: También marcar como desconectado
-            // 🔥 Usar updateHeaderStatus para controlar el header
+            setIsConnected(false);
             updateHeaderStatus([], false);
         }
     }, [isDeviceDisconnected])
 
-
-    const scrollOffset = useRef(0); // valor persistente
+    const scrollOffset = useRef(0);
 
     const handleScroll = (event: any) => {
         scrollOffset.current = event.nativeEvent.contentOffset.y;
     };
 
-    //const [pushToken, setPushToken] = useState<string | null>(null);
-    //const [fcmToken, setFcmToken] = useState<string | null>(null);
-
     const updateHeaderStatus = (alarms: ParamTC[], masterState: boolean) => {
+        // 🔥 CAMBIO: Si el master está desarmado, siempre gris sin importar las alarmas
+        if (!masterState) {
+            setHeaderText(t("DeviceDetailsScreen.alarmsDisabled"));
+            setHeaderColor("#4B5563");
+            return;
+        }
+
+        // Solo verificar alarmas disparadas si el master está armado
         const alarmaDisparada = alarms.some(alarm => alarm.disparado);
         if (alarmaDisparada) {
             setHeaderText(t("DeviceDetailsScreen.alarmTriggered"));
             setHeaderColor("#FF3B30");
-        } else if (masterState) {
+        } else {
             setHeaderText(t("DeviceDetailsScreen.alarmsEnabled"));
             setHeaderColor("#76db36");
-        } else {
-            setHeaderText(t("DeviceDetailsScreen.alarmsDisabled"));
-            setHeaderColor("#8a9bb9");
         }
     };
 
@@ -99,10 +94,6 @@ export default function AlarmList() {
         try {
             const response = await post(`alarmtc/armMaster?mac=${mac}&status=${status}`, {});
             if (response.status === "Master Button Alarm Armed" || response.status === "Master Button Alarm Disarmed") {
-                // Alert.alert(
-                //     t("DeviceDetailsScreen.successTitle"),
-                //     t(status === 1 ? "DeviceDetailsScreen.alarmsActivated" : "DeviceDetailsScreen.alarmsDeactivated")
-                // );
                 const nuevoEstado = !masterAlarmState;
                 setMasterAlarmState(nuevoEstado);
                 updateHeaderStatus(alarms, nuevoEstado);
@@ -118,56 +109,13 @@ export default function AlarmList() {
             );
         }
     }
-    //? CUANDO LO IMCORPORE EL ID DEL USUARIO
-    // const handleToggleMaster = async () => {
-    //     const status = masterAlarmState ? 0 : 1;
-    //     try {
-    //         // 🔥 OBTENER userId de AsyncStorage
-    //         const storedUserId = await AsyncStorage.getItem("userId");
 
-    //         // 🔥 NUEVA ESTRUCTURA: Enviar userId en el body
-    //         const dataToSend = {
-    //             mac,
-    //             status,
-    //             userId: storedUserId ? Number(storedUserId) : null // 🔥 AGREGAR userId del login
-    //         };
-
-    //         // 🔥 CONSOLE.LOG PARA VER QUÉ SE ENVÍA
-    //         console.log("=== DATOS A ENVIAR PARA MASTER ===");
-    //         console.log("URL:", `alarmtc/armMaster`);
-    //         console.log("MAC:", mac);
-    //         console.log("Status:", status);
-    //         console.log("User ID:", storedUserId);
-    //         console.log("Datos completos:", JSON.stringify(dataToSend, null, 2));
-    //         console.log("=================================");
-
-    //         // Enviar en el body en lugar de query params
-    //         const response = await post(`alarmtc/armMaster`, dataToSend);
-
-    //         // 🔥 CONSOLE.LOG PARA VER LA RESPUESTA
-    //         console.log("=== RESPUESTA DEL BACKEND ===");
-    //         console.log("Response:", JSON.stringify(response, null, 2));
-    //         console.log("============================");
-
-    //         if (response.status === "Master Button Alarm Armed" || response.status === "Master Button Alarm Disarmed") {
-    //             const nuevoEstado = !masterAlarmState;
-    //             setMasterAlarmState(nuevoEstado);
-    //             updateHeaderStatus(alarms, nuevoEstado);
-    //             if (status === 1) {
-    //                 fetchAlarms();
-    //             }
-    //         }
-    //     } catch (error) {
-    //         console.error("=== ERROR AL CAMBIAR MASTER ===");
-    //         console.error("Error completo:", error);
-    //         console.error("==============================");
-    //         Alert.alert(
-    //             t("DeviceDetailsScreen.errorTitle"),
-    //             t("DeviceDetailsScreen.changeStatusError")
-    //         );
-    //     }
-    // };
-
+    const hasDisconnectedAlarmsInExpansion = (expansionAlarms: ParamTC[]): boolean => {
+        // Verificar si alguna alarma de la expansión tiene conectado: false
+        return expansionAlarms.some(alarm =>
+            alarm.hasOwnProperty('conectado') && alarm.conectado === false
+        );
+    };
 
     const fetchAlarms = async (isAutoRefresh = false) => {
         try {
@@ -178,14 +126,13 @@ export default function AlarmList() {
                 setAlarms([]);
                 updateHeaderStatus([], false);
                 setMasterAlarmState(false);
-                setIsConnected(false); // 🔥 AGREGADO
+                setIsConnected(false);
                 return;
             }
 
             const scrollY = scrollOffset.current;
             const data = await get(`alarmtc/status?mac=${mac}`);
 
-            // 🔥 NUEVO: Verificar si hay datos y si están vacíos
             if (!data || data.length === 0) {
                 console.log("❌ Datos vacíos del servidor - Sin conexión");
                 setIsConnected(false);
@@ -195,30 +142,16 @@ export default function AlarmList() {
                 return;
             }
 
-            // const alarm2000 = data.find((alarm: { idAlarm: number }) => alarm.idAlarm === 2000);
-            // if (alarm2000 && alarm2000.disparado) {
-            //     setTc5Disconnected(true);
-            //     setAlarms([]);
-            //     setHeaderText(t("DeviceDetailsScreen.tc5Disconnected"));
-            //     setHeaderColor("#8a9bb9");
-            //     return;
-            // } else {
-            //     setTc5Disconnected(false);
-            // }
-
             const masterAlarm = data.find((alarm: { idAlarm: number }) => alarm.idAlarm === 1000);
             if (masterAlarm) {
                 setMasterAlarmState(masterAlarm.armado);
-                // 🔥 NUEVO: Capturar estado de simulación
                 setIsSimulated(masterAlarm.simulado || false);
 
-                // 🔥 NUEVO: Capturar estado de conexión
                 const connected = masterAlarm.conectado !== undefined ? masterAlarm.conectado : true;
                 setIsConnected(connected);
                 console.log("🔌 Estado de conexión:", connected);
                 console.log("🎭 Estado simulado:", masterAlarm.simulado);
 
-                // 🔥 NUEVO: Si no está conectado, mostrar mensaje y salir
                 if (!connected) {
                     console.log("❌ Equipo desconectado según alarma 1000");
                     setAlarms([]);
@@ -227,7 +160,6 @@ export default function AlarmList() {
                     return;
                 }
             } else {
-                // 🔥 NUEVO: Si no existe la alarma 1000, considerar desconectado
                 console.log("❌ Alarma 1000 no encontrada - Sin conexión");
                 setIsConnected(false);
                 setAlarms([]);
@@ -236,6 +168,7 @@ export default function AlarmList() {
                 return;
             }
 
+            // 🔥 CAMBIO: No añadir valor por defecto, mantener el valor original del backend
             const enabledAlarms = data
                 .filter((alarm: { habilitado: boolean; idAlarm: number }) =>
                     alarm.habilitado && ![1000, 2000].includes(alarm.idAlarm)
@@ -253,7 +186,6 @@ export default function AlarmList() {
             }, 50);
         } catch (error) {
             console.error("Error en la solicitud GET:", error);
-            // 🔥 NUEVO: En caso de error, considerar desconectado
             setIsConnected(false);
             setAlarms([]);
             setHeaderText("Sin conexión");
@@ -266,15 +198,13 @@ export default function AlarmList() {
             }
         }
     };
-    // Agregar estas funciones después de fetchAlarms y antes de useEffect
 
-    // 🔥 NUEVA FUNCIÓN: Obtener rango de ID (1-99, 100-199, 200-299, etc.)
+    // Funciones para organizar alarmas por rangos
     const getIdRange = (idAlarm: number): number => {
-        if (idAlarm < 100) return 0; // Rango 1-99 (sin título)
-        return Math.floor(idAlarm / 100) * 100; // 100, 200, 300, etc.
+        if (idAlarm < 100) return 0;
+        return Math.floor(idAlarm / 100) * 100;
     };
 
-    // 🔥 NUEVA FUNCIÓN: Detectar título del grupo basado en las alarmas del rango
     const detectGroupTitle = (alarms: ParamTC[]): string => {
         // Buscar el patrón común más frecuente en el grupo
         const patterns: { [key: string]: number } = {};
@@ -292,22 +222,26 @@ export default function AlarmList() {
             patterns[a] > patterns[b] ? a : b, Object.keys(patterns)[0]
         );
 
-        return mostFrequent || `Rango ${alarms[0]?.idAlarm ? Math.floor(alarms[0].idAlarm / 100) * 100 : ''}`;
+        const baseTitle = mostFrequent || `Rango ${alarms[0]?.idAlarm ? Math.floor(alarms[0].idAlarm / 100) * 100 : ''}`;
+
+        // 🔥 NUEVO: Verificar si la expansión tiene alarmas desconectadas
+        const hasDisconnected = hasDisconnectedAlarmsInExpansion(alarms);
+
+        // 🔥 NUEVO: Añadir "No conectado" si hay alarmas desconectadas
+        return hasDisconnected ? `${baseTitle} - No conectado` : baseTitle;
     };
 
-    // 🔥 NUEVA FUNCIÓN: Separar alarmas por rangos de ID
     const separateAlarmsByIdRange = (alarms: ParamTC[]) => {
-        // Primero ordenar por ID
         const sortedAlarms = [...alarms].sort((a, b) => a.idAlarm - b.idAlarm);
 
-        const otherAlarms: ParamTC[] = []; // IDs 1-99
-        const rangeGroups: { [key: number]: ParamTC[] } = {}; // IDs 100+
+        const otherAlarms: ParamTC[] = [];
+        const rangeGroups: { [key: number]: ParamTC[] } = {};
 
         sortedAlarms.forEach(alarm => {
             const range = getIdRange(alarm.idAlarm);
 
             if (range === 0) {
-                otherAlarms.push(alarm); // IDs 1-99 sin título
+                otherAlarms.push(alarm);
             } else {
                 if (!rangeGroups[range]) {
                     rangeGroups[range] = [];
@@ -319,11 +253,10 @@ export default function AlarmList() {
         return { otherAlarms, rangeGroups };
     };
 
-    // 🔥 NUEVA FUNCIÓN: Convertir grupos de rango a secciones con títulos
     const createRangeSections = (rangeGroups: { [key: number]: ParamTC[] }) => {
         return Object.keys(rangeGroups)
             .map(range => parseInt(range))
-            .sort((a, b) => a - b) // Ordenar por rango: 100, 200, 300, etc.
+            .sort((a, b) => a - b)
             .map(range => ({
                 title: detectGroupTitle(rangeGroups[range]),
                 data: rangeGroups[range],
@@ -331,20 +264,34 @@ export default function AlarmList() {
             }));
     };
 
-    // 🔥 NUEVA FUNCIÓN: Renderizar header de sección
-    const renderSectionHeader = ({ section }: { section: { title: string } }) => (
-        <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>{section.title}</Text>
-            <View style={styles.sectionLine} />
-        </View>
-    );
+    const renderSectionHeader = ({ section }: { section: { title: string } }) => {
+        // 🔥 NUEVO: Detectar si el título contiene "No conectado"
+        const isDisconnected = section.title.includes('No conectado');
+
+        return (
+            <View style={[
+                styles.sectionHeader,
+                isDisconnected && styles.sectionHeaderDisconnected // 🔥 NUEVO: Estilo para desconectadas
+            ]}>
+                <Text style={[
+                    styles.sectionTitle,
+                    isDisconnected && styles.sectionTitleDisconnected // 🔥 NUEVO: Estilo de texto para desconectadas
+                ]}>
+                    {section.title}
+                </Text>
+                <View style={[
+                    styles.sectionLine,
+                    isDisconnected && styles.sectionLineDisconnected // 🔥 NUEVO: Línea para desconectadas
+                ]} />
+            </View>
+        );
+    };
 
     const renderContent = () => {
         if (loading) {
             return <Text style={styles.loadingText}>{t("DeviceDetailsScreen.loadingAlarms")}</Text>;
         }
 
-        // 🔥 NUEVO: Verificar conexión primero
         if (!isConnected) {
             return (
                 <View style={styles.centeredContainer}>
@@ -374,7 +321,6 @@ export default function AlarmList() {
             );
         }
 
-        // 🔥 NUEVO: Separar alarmas por rangos de ID
         const { otherAlarms, rangeGroups } = separateAlarmsByIdRange(alarms);
         const rangeSections = createRangeSections(rangeGroups);
 
@@ -385,14 +331,12 @@ export default function AlarmList() {
                 scrollEventThrottle={16}
                 contentContainerStyle={{ paddingBottom: 100 }}
             >
-                {/* 🔥 PRIMERO: Renderizar alarmas ID 1-99 sin título */}
                 {otherAlarms.map((alarm) => (
                     <View key={`other-${alarm.idAlarm}`}>
                         {renderAlarmItem({ item: alarm })}
                     </View>
                 ))}
 
-                {/* 🔥 SEGUNDO: Renderizar rangos 100+, 200+, etc. con títulos automáticos */}
                 {rangeSections.map((section) => (
                     <View key={`range-${section.range}`}>
                         {renderSectionHeader({ section })}
@@ -406,7 +350,7 @@ export default function AlarmList() {
             </ScrollView>
         );
     };
-    // 2. useEffect para cargar las alarmas al montar
+
     useEffect(() => {
         const interval = setInterval(() => {
             fetchAlarms(true);
@@ -414,103 +358,112 @@ export default function AlarmList() {
 
         return () => clearInterval(interval);
     }, [mac]);
+
     useEffect(() => {
         fetchAlarms(false);
     }, []);
 
-
-    {/* Y la función handleOptionSelect vuelve a ser: */ }
     const handleOptionSelect = async (option: string) => {
-        if (selectedAlarm) {
-            // ✅ Compara con valores fijos
-            const status = option === "Armada" ? 1 : 0;
-            const idAlarm = selectedAlarm.idAlarm;
+        if (!selectedAlarm || isProcessing) {
+            console.log("🔒 Operación bloqueada: no hay alarma o ya procesando");
+            return;
+        }
 
-            try {
-                const response = await post(`alarmtc/arm?mac=${mac}&alarm=${idAlarm}&status=${status}`, {});
-                console.log("Respuesta del servidor:", response);
+        const status = option === "Armada" ? 1 : 0;
+        const idAlarm = selectedAlarm.idAlarm;
 
-                setSelectedAlarm((prev) => (prev ? { ...prev, armado: status === 1 } : prev));
+        console.log("🔄 Iniciando cambio de estado:", { idAlarm, status, option });
 
-                setTimeout(() => {
-                    setOptionModalVisible(false);
-                    fetchAlarms();
-                }, 250);
-            } catch (error) {
-                console.error("Error al cambiar el estado de la alarma:", error);
-                Alert.alert(
-                    t("DeviceDetailsScreen.errorTitle"),
-                    t("DeviceDetailsScreen.errorChangeAlarmState")
-                );
-            }
+        try {
+            // 🔥 BLOQUEAR inmediatamente para evitar dobles clicks
+            setIsProcessing(true);
+
+            const response = await post(`alarmtc/arm?mac=${mac}&alarm=${idAlarm}&status=${status}`, {});
+            console.log("✅ Respuesta del servidor:", response);
+
+            // 🔥 Actualizar estado local inmediatamente
+            setSelectedAlarm((prev) => (prev ? { ...prev, armado: status === 1 } : prev));
+
+            // 🔥 Cerrar modal inmediatamente
+            closeModal();
+
+            // 🔥 Fetch para sincronizar con servidor (sin bloquear UI)
+            setTimeout(() => {
+                fetchAlarms();
+            }, 100);
+
+        } catch (error) {
+            console.error("❌ Error al cambiar el estado de la alarma:", error);
+            setIsProcessing(false); // Desbloquear en caso de error
+            Alert.alert(
+                t("DeviceDetailsScreen.errorTitle"),
+                t("DeviceDetailsScreen.errorChangeAlarmState")
+            );
         }
     };
 
-    //? CUANDO LO IMCORPORE EL ID DEL USUARIO
-    //         const handleOptionSelect = async (option: string) => {
-    //     if (selectedAlarm) {
-    //         // ✅ Compara con valores fijos
-    //         const status = option === "Armada" ? 1 : 0;
-    //         const idAlarm = selectedAlarm.idAlarm;
+    useEffect(() => {
+        // 🔥 SAFETY: Resetear estados si el modal está cerrado pero hay inconsistencias
+        if (!isOptionModalVisible && isProcessing) {
+            console.log("🔧 SAFETY: Reseteando estado inconsistente");
+            setIsProcessing(false);
+            setSelectedAlarm(null);
+            setLastSelectedAlarmId(null);
+        }
+    }, [isOptionModalVisible, isProcessing]);
 
-    //         try {
-    //             // 🔥 OBTENER userId de AsyncStorage
-    //             const storedUserId = await AsyncStorage.getItem("userId");
+    // 6. Timeout de seguridad para evitar bloqueos permanentes
+    useEffect(() => {
+        if (isProcessing) {
+            const timeout = setTimeout(() => {
+                console.log("⏰ TIMEOUT: Desbloqueando modal automáticamente");
+                setIsProcessing(false);
+            }, 5000); // 5 segundos máximo
 
-    //             // 🔥 NUEVA ESTRUCTURA: Enviar userId en el body
-    //             const dataToSend = {
-    //                 mac,
-    //                 alarm: idAlarm,
-    //                 status,
-    //                 userId: storedUserId ? Number(storedUserId) : null // 🔥 AGREGAR userId del login
-    //             };
+            return () => clearTimeout(timeout);
+        }
+    }, [isProcessing]);
 
-    //             // 🔥 CONSOLE.LOG PARA VER QUÉ SE ENVÍA
-    //             console.log("=== DATOS A ENVIAR PARA ARMAR/DESARMAR ===");
-    //             console.log("URL:", `alarmtc/arm`);
-    //             console.log("MAC:", mac);
-    //             console.log("Alarm ID:", idAlarm);
-    //             console.log("Status:", status);
-    //             console.log("User ID:", storedUserId);
-    //             console.log("Datos completos:", JSON.stringify(dataToSend, null, 2));
-    //             console.log("=========================================");
+    let lastModalOpenTime = 0;
 
-    //             // Enviar en el body en lugar de query params
-    //             const response = await post(`alarmtc/arm`, dataToSend);
+    const openOptionModal = (alarm: ParamTC) => {
+        // 🔥 PREVENIR: No abrir si ya se está procesando algo
+        if (isProcessing) {
+            console.log("🔒 Modal bloqueado: procesando operación");
+            return;
+        }
 
-    //             // 🔥 CONSOLE.LOG PARA VER LA RESPUESTA
-    //             console.log("=== RESPUESTA DEL BACKEND ===");
-    //             console.log("Response:", JSON.stringify(response, null, 2));
-    //             console.log("============================");
+        // 🔥 PREVENIR: No abrir el mismo modal dos veces seguidas muy rápido
+        const now = Date.now();
+        if (lastModalOpenTime && now - lastModalOpenTime < 500) { // Aumentado a 500ms
+            console.log("🔒 Modal bloqueado: demasiado rápido");
+            return;
+        }
 
-    //             setSelectedAlarm((prev) => (prev ? { ...prev, armado: status === 1 } : prev));
+        // 🔥 PREVENIR: No abrir el mismo modal de la misma alarma
+        if (lastSelectedAlarmId === alarm.idAlarm && isOptionModalVisible) {
+            console.log("🔒 Modal bloqueado: ya está abierto para esta alarma");
+            return;
+        }
 
-    //             setTimeout(() => {
-    //                 setOptionModalVisible(false);
-    //                 fetchAlarms();
-    //             }, 250);
-    //         } catch (error) {
-    //             console.error("=== ERROR AL ARMAR/DESARMAR ===");
-    //             console.error("Error completo:", error);
-    //             console.error("===============================");
-    //             Alert.alert(
-    //                 t("DeviceDetailsScreen.errorTitle"),
-    //                 t("DeviceDetailsScreen.errorChangeAlarmState")
-    //             );
-    //         }
-    //     }
-    // };
-    // const handleAlarmDetected = (idAlarm: number) => {
-    //     console.log(" Alarma detectada con id:", idAlarm);
-    //     setAlarms(prev =>
-    //         prev.map(alarm =>
-    //             alarm.idAlarm === idAlarm? { ...alarm, disparado: true } : alarm
-    //         )
-    //     );
-    // };
+        console.log("✅ Abriendo modal para alarma:", alarm.idAlarm);
+        lastModalOpenTime = now;
+        setLastSelectedAlarmId(alarm.idAlarm);
+        setSelectedAlarm(alarm);
+        setIsProcessing(false); // Asegurar que no está procesando
+        setOptionModalVisible(true);
+    };
+
+    const closeModal = () => {
+        console.log("🔄 Cerrando modal");
+        setOptionModalVisible(false);
+        setSelectedAlarm(null);
+        setLastSelectedAlarmId(null);
+        setIsProcessing(false);
+    };
 
     const handleAlarmDetected = (idAlarm: number) => {
-        console.log(" Alarma detectada con id:", idAlarm);
+        console.log("🚨 Alarma detectada con id:", idAlarm);
         setAlarms(prev => {
             const nuevas = prev.map(alarm =>
                 alarm.idAlarm === idAlarm
@@ -522,7 +475,6 @@ export default function AlarmList() {
         });
     };
 
-
     useEffect(() => {
         notificationService.setOnAlarmDetected(handleAlarmDetected);
         return () => {
@@ -530,79 +482,63 @@ export default function AlarmList() {
         };
     }, []);
 
-
-    // 5. Abre el modal para la alarma seleccionada
-    const openOptionModal = (alarm: ParamTC) => {
-        setSelectedAlarm(alarm);
-        setOptionModalVisible(true);
-    };
-
     const getIconNameForAlarm = (texto: string): keyof typeof Ionicons.glyphMap => {
         const lowerText = texto.toLowerCase();
         if (lowerText.includes("electrico")) return "flash-outline";
         if (lowerText.includes("temperatura")) return "thermometer-outline";
         if (lowerText.includes("humedad")) return "water-outline";
-        return "alert-circle-outline"; // genérico
+        return "alert-circle-outline";
+    };
+
+    // 🔥 NUEVA FUNCIÓN: Verificar si UNA alarma específica está desconectada
+    const isAlarmDisconnected = (alarm: ParamTC): boolean => {
+        return alarm.hasOwnProperty('conectado') && alarm.conectado === false;
     };
 
 
-    // const getDeviceToken = async () => {
-    //     try {
-    //         const token = await notificationService.getFCMToken();
-    //         console.log(" Token obtenido:", token);
 
-    //         if (token) {
-    //             setFcmToken(token);
-    //             await Clipboard.setStringAsync(token);
-    //             Alert.alert("FCM Token obtenido", "Copiado al portapapeles:\n\n" + token);
-    //         } else {
-    //             console.warn(" Token devuelto vacío o nulo");
-    //             Alert.alert("Error", "No se pudo obtener el token (vacío o nulo)");
-    //         }
-    //     } catch (error) {
-    //         console.error(" Error al obtener FCM token:", error);
-    //         if (error instanceof Error) {
-    //             Alert.alert("FCM Token Error", error.message);
-    //         } else {
-    //             Alert.alert("FCM Token Error", JSON.stringify(error));
-    //         }
-    //     }
-    // };
-
-
-    // 6. Render de cada alarma (con mejoras visuales)
-    // En tu función renderAlarmItem, reemplaza la lógica de colores por esta:
-
+    // 🔥 NUEVA FUNCIÓN renderAlarmItem con lógica individual
     const renderAlarmItem = ({ item }: { item: ParamTC }) => {
         let backgroundColor = "#8a9bb9"; // gris por defecto
         let textColor = "#000000"; // negro 
 
+        // 🔥 NUEVO: Verificar si ESTA alarma específica está desconectada
+        const isDisconnected = isAlarmDisconnected(item);
+
+        // 🔥 NUEVA LÓGICA: Los colores NO cambian por desconexión
         if (item.disparado) {
-            // Si la alarma está disparada, siempre rojo
-            backgroundColor = "#FF0000"; // rojo fuerte
-            textColor = "#000000";
-        } else if (!masterAlarmState) {
-            // 🔥 NUEVO: Si el master está desarmado, TODAS las alarmas se ponen amarillas
-            // independientemente de si están armadas o desarmadas individualmente
-            backgroundColor = "#fde047"; // amarillo fuerte
+            // 🔥 ALARMA DISPARADA = siempre rojo (incluso si desconectada)
+            backgroundColor = "#FF0000";
             textColor = "#000000";
         } else if (item.armado) {
-            // Si el master está armado Y la alarma individual está armada = verde
-            backgroundColor = "#77dc36"; // mismo verde que el header
+            // 🔥 ALARMA ARMADA = siempre verde (incluso si desconectada)
+            backgroundColor = "#77dc36";
             textColor = "#000000";
         } else {
-            // Si el master está armado PERO la alarma individual está desarmada = gris
-            backgroundColor = "#8a9bb9"; // gris
+            // 🔥 ALARMA DESARMADA = siempre gris (incluso si desconectada)
+            backgroundColor = "#8a9bb9";
             textColor = "#000000";
         }
 
         return (
             <TouchableOpacity
-                style={[styles.alarmContainer, { backgroundColor }]}
-                onPress={() => openOptionModal(item)}
+                style={[
+                    styles.alarmContainer,
+                    { backgroundColor }
+                    // 🔥 ELIMINADO: No más estilos especiales para desconectadas
+                ]}
+                onPress={() => {
+                    // 🔥 CAMBIO: Permitir abrir modal incluso si está desconectada
+                    openOptionModal(item);
+                }}
+            // 🔥 ELIMINADO: disabled={isDisconnected}
             >
                 <View style={styles.alarmRow}>
-                    <EstadoAlarmaCircle armado={item.armado} disparado={item.disparado} raised={item.raised} />
+                    <EstadoAlarmaCircle
+                        armado={item.armado}
+                        disparado={item.disparado}
+                        raised={item.raised}
+                    />
 
                     <View style={styles.iconAndText}>
                         {item.disparado && (
@@ -613,18 +549,32 @@ export default function AlarmList() {
                                 style={styles.alarmIcon}
                             />
                         )}
-                        <Text style={[styles.alarmText, { color: textColor }]}>{item.texto}</Text>
+                        <Text style={[styles.alarmText, { color: textColor }]}>
+                            {item.texto}
+                        </Text>
                     </View>
                 </View>
-                <Entypo name="chevron-thin-right" size={20} color="#000" />
+
+                <View style={styles.rightContainer}>
+                    {/* 🔥 NUEVO: Mostrar icono de nube SOLO si esta alarma específica está desconectada */}
+                    {isDisconnected && (
+                        <Ionicons
+                            name="cloud-offline-outline"
+                            size={24}
+                            color="#666666"
+                            style={styles.disconnectedIcon}
+                        />
+                    )}
+
+                    {/* 🔥 SIEMPRE mostrar chevron (incluso si desconectada) */}
+                    <Entypo name="chevron-thin-right" size={20} color="#000" />
+                </View>
             </TouchableOpacity>
         );
     };
 
-
     return (
         <View style={styles.container}>
-            {/* Header personalizado - sin cambios */}
             <View style={[styles.customHeader, { backgroundColor: headerColor }]}>
                 <TouchableOpacity
                     style={styles.backButton}
@@ -653,10 +603,8 @@ export default function AlarmList() {
                 </TouchableOpacity>
             </View>
 
-            {/* 🔥 NUEVO: Usar la función renderContent */}
             {renderContent()}
 
-            {/* ButtonMaster - sin cambios */}
             <ButtonMaster
                 mac={mac}
                 fetchAlarms={fetchAlarms}
@@ -665,35 +613,78 @@ export default function AlarmList() {
                 disabled={isMasterDisabled}
             />
 
-            {/* Modal - sin cambios */}
             <Modal
                 animationType="slide"
                 transparent={true}
                 visible={isOptionModalVisible}
-                onRequestClose={() => setOptionModalVisible(false)}
+                onRequestClose={() => {
+                    if (!isProcessing) closeModal();
+                }}
             >
-                <Pressable style={styles.modalOverlay} onPress={() => setOptionModalVisible(false)}>
+                <Pressable
+                    style={styles.modalOverlay}
+                    onPress={() => {
+                        if (!isProcessing) closeModal();
+                    }}
+                >
                     <Pressable style={styles.modalContent}>
-                        <TouchableOpacity style={styles.closeButton} onPress={() => setOptionModalVisible(false)}>
-                            <Ionicons name="close" size={24} color="#333" />
+                        <TouchableOpacity
+                            style={styles.closeButton}
+                            onPress={() => {
+                                if (!isProcessing) closeModal();
+                            }}
+                            disabled={isProcessing} // 🔥 NUEVO: Deshabilitar si está procesando
+                        >
+                            <Ionicons name="close" size={24} color={isProcessing ? "#ccc" : "#333"} />
                         </TouchableOpacity>
 
                         <Text style={styles.modalTitle}>{selectedAlarm?.texto}</Text>
 
-                        <TouchableOpacity style={styles.optionRow} onPress={() => handleOptionSelect("Armada")}>
-                            <View style={[styles.circle, selectedAlarm?.armado ? { backgroundColor: "#76db36" } : {}]} />
-                            <Text style={styles.optionText}>{t("DeviceDetailsScreen.armed")}</Text>
+                        <TouchableOpacity
+                            style={[
+                                styles.optionRow,
+                                isProcessing && styles.optionRowDisabled // 🔥 NUEVO: Estilo deshabilitado
+                            ]}
+                            onPress={() => handleOptionSelect("Armada")}
+                            disabled={isProcessing} // 🔥 NUEVO: Deshabilitar si está procesando
+                        >
+                            <View style={[
+                                styles.circle,
+                                selectedAlarm?.armado ? { backgroundColor: "#76db36" } : {}
+                            ]} />
+                            <Text style={[
+                                styles.optionText,
+                                isProcessing && styles.optionTextDisabled // 🔥 NUEVO: Texto deshabilitado
+                            ]}>
+                                {t("DeviceDetailsScreen.armed")}
+                            </Text>
+                            {isProcessing && <Text style={styles.processingText}>...</Text>}
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.optionRow} onPress={() => handleOptionSelect("Desarmada")}>
-                            <View style={[styles.circle, !selectedAlarm?.armado ? { backgroundColor: "#8a9bb9" } : {}]} />
-                            <Text style={styles.optionText}>{t("DeviceDetailsScreen.disarmed")}</Text>
+                        <TouchableOpacity
+                            style={[
+                                styles.optionRow,
+                                isProcessing && styles.optionRowDisabled
+                            ]}
+                            onPress={() => handleOptionSelect("Desarmada")}
+                            disabled={isProcessing}
+                        >
+                            <View style={[
+                                styles.circle,
+                                !selectedAlarm?.armado ? { backgroundColor: "#8a9bb9" } : {}
+                            ]} />
+                            <Text style={[
+                                styles.optionText,
+                                isProcessing && styles.optionTextDisabled
+                            ]}>
+                                {t("DeviceDetailsScreen.disarmed")}
+                            </Text>
+                            {isProcessing && <Text style={styles.processingText}>...</Text>}
                         </TouchableOpacity>
                     </Pressable>
                 </Pressable>
             </Modal>
 
-            {/* Menu3Puntos - sin cambios */}
             <Menu3Puntos
                 visible={menuVisible}
                 onClose={() => setMenuVisible(false)}
@@ -712,18 +703,13 @@ export default function AlarmList() {
     );
 }
 
-/** Estilos mejorados */
 const styles = StyleSheet.create({
-    // ... estilos existentes ...
-
-    // 🔥 NUEVOS ESTILOS para headers de sección
     sectionHeader: {
         backgroundColor: '#f4f4f4',
         paddingHorizontal: 16,
         paddingVertical: 12,
         marginTop: 8,
     },
-
     sectionTitle: {
         fontSize: 18,
         fontWeight: 'bold',
@@ -732,21 +718,18 @@ const styles = StyleSheet.create({
         textTransform: 'uppercase',
         letterSpacing: 0.5,
     },
-
     sectionLine: {
         height: 1,
         backgroundColor: '#ddd',
         marginTop: 4,
     },
-
-    // 🔥 MODIFICAR: Reducir marginTop de alarmContainer para mejor espaciado con headers
     alarmContainer: {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
         marginHorizontal: 16,
-        marginVertical: 4, // 🔥 Reducido de 6 a 4
-        marginTop: 2, // 🔥 NUEVO: Menos espacio arriba
+        marginVertical: 4,
+        marginTop: 2,
         padding: 16,
         borderRadius: 12,
         shadowColor: "#000",
@@ -755,8 +738,6 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
         elevation: 4,
     },
-
-    // ... resto de estilos existentes sin cambios ...
     container: {
         flex: 1,
         backgroundColor: "#f4f4f4",
@@ -901,5 +882,37 @@ const styles = StyleSheet.create({
         marginTop: 8,
         fontStyle: "italic",
     },
-});
+    rightContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+    disconnectedIcon: {
+        marginLeft: 8,
+    },
+    sectionHeaderDisconnected: {
+        backgroundColor: '#fff5f5', // Fondo ligeramente rojizo
+        borderLeftWidth: 4,
+        borderLeftColor: '#ff6b6b', // Línea roja a la izquierda
+    },
 
+    sectionTitleDisconnected: {
+        color: '#d63031', // Texto rojizo
+        fontWeight: '700', // Más negrita
+    },
+
+    sectionLineDisconnected: {
+        backgroundColor: '#ff6b6b', // Línea rojiza
+        height: 2, // Más gruesa
+    },
+    optionRowDisabled: {
+        opacity: 0.6,
+    },
+    optionTextDisabled: {
+        color: "#999",
+    },
+    processingText: {
+        marginLeft: 'auto',
+        color: "#007AFF",
+        fontSize: 14,
+    },
+});

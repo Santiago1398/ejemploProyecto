@@ -25,8 +25,8 @@
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "Alarma Activada",
-        "alarmsEnabled": "Alarmas Activadas",
-        "alarmsDisabled": "Alarmas Desarmadas",
+        "alarmsEnabled": "TC5 Armado",
+        "alarmsDisabled": "TC5 Desarmado",
         "successTitle": "Éxito",
         "alarmsActivated": "Las alarmas han sido activadas.",
         "alarmsDeactivated": "Las alarmas han sido desactivadas.",
@@ -254,11 +254,23 @@
         "ButtonText": "Volver",
         "Reintentar": "Reintentar"
     },
-    "configuracionTC5": {
+    "ConfiguracionTC5": {
         "loadingConfiguration": "Cargando configuración...",
         "errorLoadingConfiguration": "Error al cargar la configuración del TC5",
         "errorTitle": "Error de conex1ión",
         "ButtonText": "Volver",
         "Reintentar": "Reintentar"
+    },
+    "DeviceLocationMap": {
+        "noLocation": {
+            "title": "Sin ubicación",
+            "message": "Este dispositivo no tiene una ubicación guardada."
+        },
+        "error": {
+            "title": "Error",
+            "message": "No se pudo obtener la información del dispositivo."
+        },
+        "loading": "Cargando ubicación...",
+        "retry": "Reintentar"
     }
 }

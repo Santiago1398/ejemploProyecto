@@ -39,6 +39,7 @@ export default function SettingsScreen() {
     const [showLanguageModal, setShowLanguageModal] = useState(false); // 🔥 NUEVO STATE
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
+
     const [apiUrl, setApiUrlState] = useState("");
 
     useEffect(() => {
@@ -74,7 +75,7 @@ export default function SettingsScreen() {
         setNotificationStatus(status === 'granted');
     };
 
-    // 🔥 FUNCIONES DEL SELECTOR DE IDIOMAS
+    // FUNCIONES DEL SELECTOR DE IDIOMAS
     const getCurrentLanguageInfo = () => {
         return AVAILABLE_LANGUAGES.find(lang => lang.code === currentLanguage) || AVAILABLE_LANGUAGES[0];
     };
@@ -192,8 +193,20 @@ export default function SettingsScreen() {
             behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
             <ScrollView contentContainerStyle={styles.screen} keyboardShouldPersistTaps="handled">
+                {/* NUEVO: Botón atrás en la primera sección */}
+
                 <View style={styles.section}>
-                    <Text style={styles.sectionTitle}>{t("SettingsScreen.titulo.permisos")}</Text>
+                    <View style={styles.headerWithBack}>
+                        <TouchableOpacity
+                            style={styles.inlineBackButton}
+                            onPress={() => navigation.navigate('Home')}
+                        >
+                            <Ionicons name="arrow-back" size={24} color="#007AFF" />
+                        </TouchableOpacity>
+                        <Text style={styles.sectionTitle}>{t("SettingsScreen.titulo.permisos")}</Text>
+                    </View>
+
+
 
                     {/* Control de Ubicación */}
                     <View style={styles.button}>
@@ -226,7 +239,7 @@ export default function SettingsScreen() {
                     </View>
                 </View>
 
-                {/* 🔥 SECCIÓN DE IDIOMA ACTUALIZADA */}
+                {/*  SECCIÓN DE IDIOMA ACTUALIZADA */}
                 <View style={[styles.section, { marginTop: 24 }]}>
                     <Text style={styles.sectionTitle}>
                         {t('SettingsScreen.language.title')}
@@ -261,7 +274,7 @@ export default function SettingsScreen() {
                 </TouchableOpacity>
             </ScrollView>
 
-            {/* 🔥 MODAL DE SELECCIÓN DE IDIOMA */}
+            {/*  MODAL DE SELECCIÓN DE IDIOMA */}
             <Modal
                 visible={showLanguageModal}
                 animationType="slide"
@@ -440,5 +453,17 @@ const styles = StyleSheet.create({
     selectedLanguageName: {
         color: '#007AFF',
         fontWeight: '600',
+    },
+    headerWithBack: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 16,
+    },
+
+    inlineBackButton: {
+        marginRight: 12,
+        padding: 8,
+        borderRadius: 20,
+        backgroundColor: '#f0f8ff',
     },
 });

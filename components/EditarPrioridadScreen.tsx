@@ -11,20 +11,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import { post } from "@/services/api";
 import { t } from "@/i18n/i18nConfig";
+import { Ionicons } from "@expo/vector-icons"; //  AÑADIR IMPORT
 
 export default function EditarPrioridadScreen() {
     const [telefono, setTelefono] = useState("");
-    // const [prefijo, setPrefijo] = useState("+34"); // predeterminado
-    // const [mostrarModalPrefijos, setMostrarModalPrefijos] = useState(false);
     const navigation = useNavigation();
-    // const paises = [
-    //     { nombre: "España", codigo: "+34" },
-    // ];
-
 
     useEffect(() => {
         const cargarDatos = async () => {
-            // Cargar datos de AsyncStorage
             console.log("Cargando datos de AsyncStorage");
             const telefono = await AsyncStorage.getItem("telefono");
             if (telefono) setTelefono(telefono);
@@ -40,16 +34,10 @@ export default function EditarPrioridadScreen() {
         const userId = await AsyncStorage.getItem("userId");
         const token = await AsyncStorage.getItem("deviceToken");
 
-
-
         try {
-            // Enviar al backend
             await post("alarmtc/prioridad", { telefono, userId, token });
-
             await AsyncStorage.setItem("telefono", telefono);
-
             Alert.alert(t("EditarPrioridadScreen.successTitle"), t("EditarPrioridadScreen.saved"));
-
             navigation.goBack();
         } catch (error) {
             console.error("Error al enviar:", error);
@@ -59,13 +47,19 @@ export default function EditarPrioridadScreen() {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>{t("EditarPrioridadScreen.title")}</Text>
+            {/*  NUEVO: Header con botón atrás */}
+            <View style={styles.headerWithBack}>
+                <TouchableOpacity
+                    style={styles.backButton}
+                    onPress={() => navigation.goBack()} // Esto va a Settings automáticamente
+                >
+                    <Ionicons name="arrow-back" size={24} color="#007AFF" />
+                </TouchableOpacity>
+                <Text style={styles.title}>{t("EditarPrioridadScreen.title")}</Text>
+            </View>
 
             <Text style={styles.label}>{t("EditarPrioridadScreen.label")}</Text>
             <View style={styles.phoneInputContainer}>
-                {/* <TouchableOpacity onPress={() => setMostrarModalPrefijos(true)}>
-                    <Text style={styles.prefix}>{prefijo}</Text>
-                </TouchableOpacity> */}
                 <TextInput
                     placeholder={t("EditarPrioridadScreen.placeholder")}
                     style={styles.phoneInput}
@@ -75,41 +69,15 @@ export default function EditarPrioridadScreen() {
                         const cleaned = text.replace(/[^0-9+]/g, '');
                         setTelefono(cleaned);
                     }}
-
                 />
             </View>
-
 
             {(telefono) && (
                 <TouchableOpacity style={styles.sendButton} onPress={enviar}>
                     <Text style={styles.sendButtonText}>{t("EditarPrioridadScreen.save")}</Text>
                 </TouchableOpacity>
             )}
-            {/* {mostrarModalPrefijos && (
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Selecciona país</Text>
-                        {paises.map((pais) => (
-                            <TouchableOpacity
-                                key={pais.codigo}
-                                style={styles.modalItem}
-                                onPress={() => {
-                                    setPrefijo(pais.codigo);
-                                    setMostrarModalPrefijos(false);
-                                }}
-                            >
-                                <Text>{pais.nombre} ({pais.codigo})</Text>
-                            </TouchableOpacity>
-                        ))}
-                        <TouchableOpacity onPress={() => setMostrarModalPrefijos(false)}>
-                            <Text style={{ marginTop: 12, color: 'red' }}>Cancelar</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            )} */}
-
         </View>
-
     );
 }
 
@@ -119,12 +87,30 @@ const styles = StyleSheet.create({
         padding: 20,
         backgroundColor: "#f5f5f5",
     },
+
+    //  NUEVOS ESTILOS para header con botón atrás
+    headerWithBack: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 20,
+        marginTop: 10,
+    },
+
+    backButton: {
+        marginRight: 12,
+        padding: 8,
+        borderRadius: 20,
+        backgroundColor: '#f0f8ff',
+    },
+
     title: {
         fontSize: 20,
         fontWeight: "bold",
-        marginBottom: 20,
         color: "#333",
+        flex: 1, //  AÑADIDO para que ocupe el espacio restante
     },
+
+    // ... resto de estilos sin cambios
     label: {
         fontSize: 16,
         marginBottom: 6,
@@ -184,14 +170,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         marginBottom: 16,
     },
-
     prefix: {
         fontSize: 16,
         fontWeight: "bold",
         marginRight: 8,
         color: "#333",
     },
-
     phoneInput: {
         flex: 1,
         fontSize: 16,
@@ -227,6 +211,4 @@ const styles = StyleSheet.create({
         borderBottomWidth: 0.5,
         borderBottomColor: "#ccc",
     },
-
-
 });

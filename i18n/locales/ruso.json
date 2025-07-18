@@ -25,8 +25,8 @@
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "Тревога Сработала",
-        "alarmsEnabled": "Тревоги Включены",
-        "alarmsDisabled": "Тревоги Отключены",
+        "alarmsEnabled": "TC5 Включён",
+        "alarmsDisabled": "TC5 Отключён",
         "successTitle": "Успех",
         "alarmsActivated": "Тревоги были включены.",
         "alarmsDeactivated": "Тревоги были отключены.",
@@ -261,5 +261,17 @@
         "errorTitle": "Ошибка Конфигурации",
         "ButtonText": "Назад",
         "Reintentar": "Повторить попытку"
+    },
+    "DeviceLocationMap": {
+        "noLocation": {
+            "title": "Без расположения",
+            "message": "Это устройство не имеет сохранённого расположения."
+        },
+        "error": {
+            "title": "Ошибка",
+            "message": "Не удалось получить информацию об устройстве."
+        },
+        "loading": "Загрузка местоположения...",
+        "retry": "Повторить"
     }
 }

@@ -25,8 +25,8 @@
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "Alarma Activada",
-        "alarmsEnabled": "Alarmes Armades",
-        "alarmsDisabled": "Alarmes Desarmades",
+        "alarmsEnabled": "TC5 Armat",
+        "alarmsDisabled": "TC5 Desarmat",
         "successTitle": "Èxit",
         "alarmsActivated": "Les alarmes s'han activat.",
         "alarmsDeactivated": "Les alarmes s'han desactivat.",
@@ -260,5 +260,17 @@
         "errorTitle": "Error de Configuració",
         "ButtonText": "Tornar",
         "Reintentar": "Tornar a intentar"
+    },
+    "DeviceLocationMap": {
+        "noLocation": {
+            "title": "Sin ubicación",
+            "message": "Este dispositivo no tiene una ubicación guardada."
+        },
+        "error": {
+            "title": "Error",
+            "message": "No se pudo obtener la información del dispositivo."
+        },
+        "loading": "Cargando ubicación...",
+        "retry": "Reintentar"
     }
 }

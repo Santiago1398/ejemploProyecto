@@ -25,8 +25,8 @@
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "Alarme Déclenchée",
-        "alarmsEnabled": "Alarmes Armées",
-        "alarmsDisabled": "Alarmes Désarmées",
+        "alarmsEnabled": "TC5 Armé",
+        "alarmsDisabled": "TC5 Désarmé",
         "successTitle": "Succès",
         "alarmsActivated": "Les alarmes ont été activées.",
         "alarmsDeactivated": "Les alarmes ont été désactivées.",
@@ -260,5 +260,17 @@
         "errorTitle": "Erreur de Configuration",
         "ButtonText": "Retour",
         "Reintentar": "Réessayer"
+    },
+    "DeviceLocationMap": {
+        "noLocation": {
+            "title": "Aucune localisation",
+            "message": "Cet appareil n'a pas de localisation enregistrée."
+        },
+        "error": {
+            "title": "Erreur",
+            "message": "Impossible d'obtenir les informations de l'appareil."
+        },
+        "loading": "Chargement de l'emplacement...",
+        "retry": "Réessayer"
     }
 }

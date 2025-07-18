@@ -26,8 +26,8 @@
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "알람 발생",
-        "alarmsEnabled": "알람 활성화됨",
-        "alarmsDisabled": "알람 비활성화됨",
+        "alarmsEnabled": "TC5 활성화",
+        "alarmsDisabled": "TC5 비활성화",
         "successTitle": "성공",
         "alarmsActivated": "알람이 활성화되었습니다.",
         "alarmsDeactivated": "알람이 비활성화되었습니다.",
@@ -260,5 +260,17 @@
         "errorTitle": "구성 오류",
         "ButtonText": "뒤로",
         "Reintentar": "다시 시도"
+    },
+    "DeviceLocationMap": {
+        "noLocation": {
+            "title": "위치 없음",
+            "message": "이 디바이스는 저장된 위치가 없습니다."
+        },
+        "error": {
+            "title": "오류",
+            "message": "디바이스 정보를 가져올 수 없습니다."
+        },
+        "loading": "위치 불러오는 중...",
+        "retry": "다시 시도"
     }
 }
