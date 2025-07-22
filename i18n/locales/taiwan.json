@@ -24,7 +24,7 @@
         }
     },
     "DeviceDetailsScreen": {
-        "alarmTriggered": "警報已觸發",
+        "alarmTriggered": "有警報",
         "alarmsEnabled": "TC5 已啟動",
         "alarmsDisabled": "TC5 已停用",
         "successTitle": "成功",

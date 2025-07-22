@@ -24,7 +24,7 @@
         }
     },
     "DeviceDetailsScreen": {
-        "alarmTriggered": "Тревога Сработала",
+        "alarmTriggered": "Есть тревога",
         "alarmsEnabled": "TC5 Включён",
         "alarmsDisabled": "TC5 Отключён",
         "successTitle": "Успех",

@@ -24,7 +24,7 @@
         }
     },
     "DeviceDetailsScreen": {
-        "alarmTriggered": "Alarma Activada",
+        "alarmTriggered": "Hay Alarma",
         "alarmsEnabled": "TC5 Armado",
         "alarmsDisabled": "TC5 Desarmado",
         "successTitle": "Éxito",

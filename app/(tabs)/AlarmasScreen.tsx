@@ -17,6 +17,9 @@ import { RootStackParamList } from "@/types/navigation";
 import { get } from "@/services/api";
 import { PaperProvider } from "react-native-paper";
 import { t } from "@/i18n/i18nConfig";
+import { useIsFocused } from "@react-navigation/native";
+import { socketService } from "@/services/socketService";
+
 
 // 🔥 NUEVA INTERFAZ BASADA EN LA RESPUESTA DEL ENDPOINT
 interface AlarmaDisparada {
@@ -41,6 +44,8 @@ export default function Alarmas() {
     const [hasError, setHasError] = useState(false);
     const [errorShown, setErrorShown] = useState(false);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const isFocused = useIsFocused();
+
 
     const capitalize = (str: string) =>
         str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";
@@ -91,6 +96,37 @@ export default function Alarmas() {
         }
     };
 
+    /* ⬇️ 1. Listener global, sin depender de isFocused */
+    useEffect(() => {
+        const handleAlarmEvent = (payload: any) => {
+            // El backend puede enviar string, número u objeto
+            const eventMac =
+                typeof payload === "string" || typeof payload === "number"
+                    ? String(payload)
+                    : String(
+                        payload?.mac ||
+                        payload?.device?.mac ||
+                        payload?.macAddress ||
+                        ""
+                    );
+
+            if (eventMac) {
+                console.log("📡 Evento alarma →", eventMac, "→ fetchAlarmas");
+                fetchAlarmas(true);            // true = refresh silencioso
+            }
+        };
+
+        /* Escucha tanto cambios de MAC como alarma disparada */
+        socketService.on("register_macs", handleAlarmEvent);
+        socketService.on("alarm_triggered", handleAlarmEvent);
+
+        return () => {
+            socketService.off("register_macs", handleAlarmEvent);
+            socketService.off("alarm_triggered", handleAlarmEvent);
+        };
+    }, []);           // ⬅️ sin isFocused en la dependencia
+
+
     // CARGAR SOLO UNA VEZ AL INICIO
     useEffect(() => {
         fetchAlarmas(false); // Carga inicial
@@ -100,7 +136,7 @@ export default function Alarmas() {
     useEffect(() => {
         const interval = setInterval(() => {
             fetchAlarmas(true); // Auto-refresh silencioso
-        }, 5000);
+        }, 15000);
 
         return () => clearInterval(interval);
     }, []);

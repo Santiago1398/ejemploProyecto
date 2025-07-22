@@ -157,8 +157,8 @@ const getHeaders = async () => {
 export const post = async (path: string, data: unknown) => {
     const API_URL = getApiUrl(); // 🔥 OBTENER URL según modo
 
-    console.log("🔧 PostData", data);
-    console.log("🌐 POST URL:", `${API_URL}/${path}`);
+    // console.log("🔧 PostData", data);
+    //  console.log("🌐 POST URL:", `${API_URL}/${path}`);
 
     const headers = await getHeaders();
     const respuesta = await axios
@@ -189,12 +189,12 @@ export const get = async (path: string, id?: number) => {
     const headers = await getHeaders();
     const urlRequest = id ? `${API_URL}/${path}/${id}` : `${API_URL}/${path}`;
 
-    console.log("🌐 GET URL:", urlRequest);
+    //console.log("🌐 GET URL:", urlRequest);
 
     const xdata = await axios.get(urlRequest, {
         headers: { ...headers },
     }).then(({ data }) => {
-        console.log('✅ Axios Success Response GET:', data);
+        //console.log('✅ Axios Success Response GET:', data);
         return data
     }).catch((error) => {
         if (error.code !== 'ERR_NETWORK') {

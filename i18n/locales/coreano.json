@@ -25,7 +25,7 @@
         }
     },
     "DeviceDetailsScreen": {
-        "alarmTriggered": "알람 발생",
+        "alarmTriggered": "경보 발생",
         "alarmsEnabled": "TC5 활성화",
         "alarmsDisabled": "TC5 비활성화",
         "successTitle": "성공",

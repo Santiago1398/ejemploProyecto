@@ -10,7 +10,7 @@ import {
     AppState,
     SectionList,
 } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useIsFocused } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -24,10 +24,14 @@ import { ResponseAlarmaSite } from "@/infrastructure/intercafe/listapi.interface
 import * as Notifications from "expo-notifications";
 import PhoneNumberDialog from "./PhoneNumberDialog";
 import { t } from "@/i18n/i18nConfig";
+import { socketService } from "@/services/socketService";
+import { useRef } from 'react';
+
 
 export default function DeviceList() {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const { token, userId } = useAuthStore();
+    const isFocused = useIsFocused(); // 🔥 NUEVO: Detecta si la pantalla está activa
 
     const {
         devices,
@@ -43,6 +47,7 @@ export default function DeviceList() {
     const [initialLoad, setInitialLoad] = useState(true);
     const [dialogVisible, setDialogVisible] = useState(false);
     const [errorAlertShown, setErrorAlertShown] = useState(false);
+    const previousMacsRef = useRef<string[]>([]);
 
     // 🔥 NUEVO: Preparar datos para SectionList
     const prepareSectionData = () => {
@@ -71,7 +76,7 @@ export default function DeviceList() {
     useEffect(() => {
         const subscription = AppState.addEventListener("change", async (state) => {
             if (state === "active") {
-                console.log(" App volvió del background, matando notificaciones...");
+                // console.log(" App volvió del background, matando notificaciones...");
                 await Notifications.dismissAllNotificationsAsync();
             }
         });
@@ -81,7 +86,7 @@ export default function DeviceList() {
 
     useEffect(() => {
         notificationService.setOnAlarmDetected((idAlarm) => {
-            console.log(" WebSocket callback ejecutado con idAlarm:", idAlarm);
+            //console.log(" WebSocket callback ejecutado con idAlarm:", idAlarm);
             setShowAlarmDialog(true);
         });
 
@@ -102,9 +107,37 @@ export default function DeviceList() {
     }, []);
 
     useEffect(() => {
+        const handleRegisterMacsEvent = (payload: any) => {
+            // Ignora si la pantalla no está en foco
+            if (!isFocused) return;
+
+            // ✅ Acepta string, número u objeto
+            const eventMac = typeof payload === 'string' || typeof payload === 'number'
+                ? String(payload)
+                : String(
+                    payload?.mac ||
+                    payload?.device?.mac ||
+                    payload?.macAddress ||
+                    ''
+                );
+
+            if (eventMac) {
+                console.log(`🔄 MAC ${eventMac} ha cambiado, refrescando lista`);
+                fetchDevices(true);            // true = sin loading
+            } else {
+                console.log('⚠️ register_macs sin MAC, ignorado');
+            }
+        };
+
+        socketService.on('register_macs', handleRegisterMacsEvent);
+        return () => socketService.off('register_macs', handleRegisterMacsEvent);
+    }, [isFocused]);
+
+
+    useEffect(() => {
         const interval = setInterval(() => {
             if (token && userId) fetchDevices(true);
-        }, 5000);
+        }, 15000);
 
         return () => clearInterval(interval);
     }, [token, userId]);
@@ -145,6 +178,10 @@ export default function DeviceList() {
 
     const fetchDevices = async (isAutoRefresh = false) => {
         try {
+            console.log('🔄 fetchDevices ejecutado:');
+            console.log('   - isAutoRefresh:', isAutoRefresh);
+            console.log('   - Origen:', new Error().stack?.split('\n')[2]); // Ver desde dónde se llamó
+            console.log('   - Hora:', new Date().toLocaleTimeString());
             if (!isAutoRefresh) setLoading(true);
 
             if (isError && !errorAlertShown) {
@@ -152,11 +189,22 @@ export default function DeviceList() {
             }
 
             setError(false);
+            const startTime = Date.now();
+
             const storedUserId = await AsyncStorage.getItem("userId");
+            //console.log('🌐 PETICIÓN HTTP:');
+            //console.log(`   - URL: alarmtc/sites/usershared2/${storedUserId}`);
+            //console.log('   - Método: GET');
             //const data: ResponseAlarmaSite[] = await get(`alarmtc/sites/user/${storedUserId}`);
             const data: ResponseAlarmaSite[] = await get(`alarmtc/sites/usershared2/${storedUserId}`);
+            // const endTime = Date.now();
 
-            console.log("📍 Dispositivos del backend:", data.length);
+            // console.log('✅ RESPUESTA HTTP:');
+            //console.log(`   - Tiempo: ${endTime - startTime}ms`);
+            // console.log(`   - Dispositivos recibidos: ${data.length}`);
+            //  console.log('   - Datos:', JSON.stringify(data.slice(0, 2), null, 2));
+
+            //console.log("📍 Dispositivos del backend:", data.length);
 
             const formattedData = data.map((device) => ({
                 ...device,
@@ -216,7 +264,7 @@ export default function DeviceList() {
     const getBackgroundColor = (alarmType: number, armed: boolean) => {
         // 🔥 PRIMERA PRIORIDAD: Si alarmType = 2, siempre gris (sin importar armed)
         if (alarmType === 2) {
-            return "#9E9E9E"; // Gris para alarmType 2
+            return "#6C7B8F"; // Gris para alarmType 2
         }
 
         // 🔥 SEGUNDA PRIORIDAD: Si alarmType ≠ 2 Y armed = false, amarillo

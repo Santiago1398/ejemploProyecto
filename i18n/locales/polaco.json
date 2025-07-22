@@ -24,7 +24,7 @@
         }
     },
     "DeviceDetailsScreen": {
-        "alarmTriggered": "Alarm Uruchomiony",
+        "alarmTriggered": "Jest alarm",
         "alarmsEnabled": "TC5 Uzbrojony",
         "alarmsDisabled": "TC5 Rozbrojony",
         "successTitle": "Sukces",

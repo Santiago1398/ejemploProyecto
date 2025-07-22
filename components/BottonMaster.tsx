@@ -25,6 +25,15 @@ const ButtonMaster: React.FC<ButtonMasterProps> = ({
         setIsEnabled(masterAlarmState);
     }, [masterAlarmState]);
 
+    useEffect(() => {
+        console.log('🔄 ButtonMaster - masterAlarmState cambió:');
+        console.log('   - Valor anterior:', isEnabled);
+        console.log('   - Valor nuevo:', masterAlarmState);
+        console.log('   - disabled:', disabled);
+
+        setIsEnabled(masterAlarmState);
+    }, [masterAlarmState]);
+
     // 🔥 LÓGICA SIMPLE: 
     // - Si disabled=true, siempre gris y no clickeable
     // - Si disabled=false, usar el estado normal (rojo/gris según masterAlarmState)

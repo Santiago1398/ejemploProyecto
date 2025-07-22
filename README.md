@@ -58,3 +58,6 @@ gradlew.bat bundleRelease      (para AAB)
 
 # Probar idioma
 npx expo install i18n-js expo-localization
+
+# Instalar Socket
+npx expo install socket.io-client  

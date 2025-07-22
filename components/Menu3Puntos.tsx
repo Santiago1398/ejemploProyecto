@@ -186,7 +186,7 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
         onClose();
     };
 
-    console.log("🔥 Menu3Puntos renderizado - visible:", visible);
+    //console.log("🔥 Menu3Puntos renderizado - visible:", visible);
 
     if (!visible) return null;
 

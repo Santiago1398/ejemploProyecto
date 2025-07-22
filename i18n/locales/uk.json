@@ -24,7 +24,7 @@
         }
     },
     "DeviceDetailsScreen": {
-        "alarmTriggered": "Тривога спрацювала",
+        "alarmTriggered": "Є тривога",
         "alarmsEnabled": "TC5 Увімкнено",
         "alarmsDisabled": "TC5 Вимкнено",
         "successTitle": "Успіх",
