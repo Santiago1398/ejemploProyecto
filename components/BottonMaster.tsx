@@ -32,8 +32,8 @@ const ButtonMaster: React.FC<ButtonMasterProps> = ({
         if (disabled) {
             return "#8a9bb9"; // Gris cuando está deshabilitado
         }
-        return isEnabled ? "#FF3B30" : "#8a9bb9"; // Rojo si activo, gris si inactivo
-    };
+        return isEnabled ? "#007AFF" : "#4B5563"; // Rojo si activo, gris si inactivo
+    }; //#1a4697 //007AFF
 
     return (
         <TouchableOpacity

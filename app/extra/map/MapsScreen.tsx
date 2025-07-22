@@ -5,9 +5,9 @@ import { useDeviceStore } from '@/store/useDeviceStore';
 import { useLocationStore } from '@/store/useLocationStore';
 import * as Location from 'expo-location';
 import { t } from "@/i18n/i18nConfig";
-import { FontAwesome } from "@expo/vector-icons"; // 🔥 IMPORT NECESARIO
+import { FontAwesome } from "@expo/vector-icons"; // IMPORT NECESARIO
 
-// 🔥 INTERFAZ PARA EL CENTRO DEL MAPA (CON ZOOM)
+// INTERFAZ PARA EL CENTRO DEL MAPA (CON ZOOM)
 interface MapCenter {
     latitude: number;
     longitude: number;
@@ -15,7 +15,7 @@ interface MapCenter {
     longitudeDelta: number;
 }
 
-// 🔥 CENTRO POR DEFECTO (EUROPA) CON ZOOM AMPLIO
+// CENTRO POR DEFECTO (EUROPA) CON ZOOM AMPLIO
 const DEFAULT_CENTER: MapCenter = {
     latitude: 40.0,
     longitude: 0.0,
@@ -24,7 +24,7 @@ const DEFAULT_CENTER: MapCenter = {
 };
 
 const MapsScreen = () => {
-    // 🏪 OBTENER DATOS DEL STORE GLOBAL
+    //  OBTENER DATOS DEL STORE GLOBAL
     const {
         devices,
         loading: devicesLoading,
@@ -38,14 +38,14 @@ const MapsScreen = () => {
     const [mapCenter, setMapCenter] = useState<MapCenter>(DEFAULT_CENTER);
     const [locationLoading, setLocationLoading] = useState(true);
 
-    // 🏪 OBTENER DISPOSITIVOS CON COORDENADAS VÁLIDAS
+    // OBTENER DISPOSITIVOS CON COORDENADAS VÁLIDAS
     const devicesWithValidCoords = getDevicesWithValidCoordinates();
 
-    // 🌍 OBTENER UBICACIÓN DEL USUARIO Y CENTRAR MAPA CON ZOOM AMPLIO
+    // OBTENER UBICACIÓN DEL USUARIO Y CENTRAR MAPA CON ZOOM AMPLIO
     useEffect(() => {
         const determineMapCenter = async () => {
             try {
-                console.log('🗺️ Determinando centro del mapa...');
+                console.log('Determinando centro del mapa...');
                 setLocationLoading(true);
 
                 // Verificar permisos
@@ -55,7 +55,7 @@ const MapsScreen = () => {
                     // Pedir permisos
                     const { status: newStatus } = await Location.requestForegroundPermissionsAsync();
                     if (newStatus !== 'granted') {
-                        console.log('🌍 Permisos denegados, usando centro por defecto');
+                        console.log(' Permisos denegados, usando centro por defecto');
                         setMapCenter(DEFAULT_CENTER);
                         setLocationLoading(false);
                         return;
@@ -63,31 +63,31 @@ const MapsScreen = () => {
                 }
 
                 // Obtener ubicación del usuario
-                console.log('📍 Obteniendo ubicación del usuario...');
+                console.log(' Obteniendo ubicación del usuario...');
                 const location = await getLocation();
 
                 if (location) {
-                    // 🔥 USAR DIRECTAMENTE LA UBICACIÓN DEL USUARIO CON ZOOM MÁS AMPLIO
+                    //  USAR DIRECTAMENTE LA UBICACIÓN DEL USUARIO CON ZOOM MÁS AMPLIO
                     const userCenter: MapCenter = {
                         latitude: location.latitude,
                         longitude: location.longitude,
-                        latitudeDelta: 4.0,    // 🔥 Zoom MÁS amplio (~400km de radio)
+                        latitudeDelta: 4.0,    // Zoom MÁS amplio (~400km de radio)
                         longitudeDelta: 4.0,
                     };
 
-                    console.log('✅ Centrando mapa en ubicación del usuario:');
+                    console.log(' Centrando mapa en ubicación del usuario:');
                     console.log(`- Latitud: ${userCenter.latitude}`);
                     console.log(`- Longitud: ${userCenter.longitude}`);
                     console.log(`- Zoom: ${userCenter.latitudeDelta}° (aprox. 400km de radio)`);
-                    console.log('🔍 DATOS COMPLETOS PARA CUSTOMMAPS:', JSON.stringify(userCenter, null, 2));
+                    console.log(' DATOS COMPLETOS PARA CUSTOMMAPS:', JSON.stringify(userCenter, null, 2));
 
                     setMapCenter(userCenter);
                 } else {
-                    console.log('⚠️ No se pudo obtener ubicación, usando centro por defecto');
+                    console.log(' No se pudo obtener ubicación, usando centro por defecto');
                     setMapCenter(DEFAULT_CENTER);
                 }
             } catch (error) {
-                console.error('❌ Error al obtener ubicación:', error);
+                console.error(' Error al obtener ubicación:', error);
                 setMapCenter(DEFAULT_CENTER);
             } finally {
                 setLocationLoading(false);
@@ -99,7 +99,7 @@ const MapsScreen = () => {
 
     //  DEBUG: Ver qué datos llegan del store
     useEffect(() => {
-        console.log("🗺️ DEBUG MapsScreen (desde store):");
+        console.log(" DEBUG MapsScreen (desde store):");
         console.log("- Total devices from store:", getDeviceCount());
         console.log("- Devices with valid coords:", getValidCoordinatesCount());
         console.log("- Devices loading:", devicesLoading);
@@ -114,9 +114,9 @@ const MapsScreen = () => {
         }
     }, [devices, devicesWithValidCoords, devicesLoading, devicesError, mapCenter]);
 
-    // 🔥 VALIDAR ESTADO SIN ALERTS QUE BLOQUEEN
+    //  VALIDAR ESTADO SIN ALERTS QUE BLOQUEEN
     useEffect(() => {
-        console.log("🗺️ Estado de dispositivos:", {
+        console.log(" Estado de dispositivos:", {
             loading: devicesLoading,
             error: devicesError,
             totalDevices: devices.length,
@@ -124,22 +124,22 @@ const MapsScreen = () => {
         });
     }, [devices, devicesWithValidCoords, devicesLoading, devicesError]);
 
-    // 🔄 MOSTRAR LOADING MIENTRAS SE CARGAN LOS DISPOSITIVOS O LA UBICACIÓN
+    //  MOSTRAR LOADING MIENTRAS SE CARGAN LOS DISPOSITIVOS O LA UBICACIÓN
     if (devicesLoading || locationLoading) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
                 <ActivityIndicator size="large" color="#007AFF" />
                 <Text style={{ marginTop: 16, fontSize: 16, color: '#666' }}>
                     {devicesLoading
-                        ? (t("MapsScreen.loading.devices") || "Cargando dispositivos...")
-                        : (t("MapsScreen.loading.location") || "Obteniendo ubicación...")
+                        ? t("MapsScreen.loading.devices")
+                        : t("MapsScreen.loading.location")
                     }
                 </Text>
             </View>
         );
     }
 
-    // 🔥 SI HAY ERROR EN LA CARGA DE DISPOSITIVOS, MOSTRAR PANTALLA DE ERROR
+    // SI HAY ERROR EN LA CARGA DE DISPOSITIVOS, MOSTRAR PANTALLA DE ERROR
     if (devicesError) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 30 }}>
@@ -166,7 +166,7 @@ const MapsScreen = () => {
         );
     }
 
-    // 🔥 SI NO HAY DISPOSITIVOS (PERO SIN ERROR), MOSTRAR MENSAJE INFORMATIVO
+    // SI NO HAY DISPOSITIVOS (PERO SIN ERROR), MOSTRAR MENSAJE INFORMATIVO
     if (!devicesLoading && devices.length === 0) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 30 }}>
@@ -178,7 +178,7 @@ const MapsScreen = () => {
                     marginTop: 16,
                     textAlign: "center"
                 }}>
-                    {t("MapsScreen.errors.noDevicesTitle") || "Sin dispositivos"}
+                    {t("MapsScreen.errors.noDevicesTitle")}
                 </Text>
                 <Text style={{
                     fontSize: 16,
@@ -187,13 +187,13 @@ const MapsScreen = () => {
                     textAlign: "center",
                     lineHeight: 22
                 }}>
-                    {t("MapsScreen.errors.noDevicesMessage") || "No hay dispositivos disponibles. Ve a la pestaña Home para cargar los datos."}
+                    {t("MapsScreen.errors.noDevicesMessage")}
                 </Text>
             </View>
         );
     }
 
-    // 🔥 SI NO HAY DISPOSITIVOS VÁLIDOS CON COORDENADAS, MOSTRAR MENSAJE ESPECÍFICO
+    // SI NO HAY DISPOSITIVOS VÁLIDOS CON COORDENADAS, MOSTRAR MENSAJE ESPECÍFICO
     if (devicesWithValidCoords.length === 0) {
         return (
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 30 }}>
@@ -205,7 +205,7 @@ const MapsScreen = () => {
                     marginTop: 16,
                     textAlign: "center"
                 }}>
-                    {t("MapsScreen.noValidCoords.title") || "Sin ubicaciones"}
+                    {t("MapsScreen.noValidCoords.title")}
                 </Text>
                 <Text style={{
                     fontSize: 16,
@@ -214,13 +214,13 @@ const MapsScreen = () => {
                     textAlign: "center",
                     lineHeight: 22
                 }}>
-                    {t("MapsScreen.noValidCoords.message") || `${devices.length} dispositivos encontrados, pero ninguno tiene coordenadas válidas.`}
+                    {t("MapsScreen.noValidCoords.message")}
                 </Text>
             </View>
         );
     }
 
-    // ✅ TODO OK - MOSTRAR MAPA
+    // ? TODO OK - MOSTRAR MAPA
     return (
         <View style={{ flex: 1 }}>
             <CustomMaps

@@ -51,28 +51,6 @@ export default function DeviceMap() {
     //     fetchSavedLocation();
     // }, [mac]);
 
-    useEffect(() => {
-        if (deviceLocation.latitude !== 0 && deviceLocation.longitude !== 0) {
-            setLocationSaved(true);
-            setMarketLocation(lastKnownLocation);
-            setLoading(false);
-        } else {
-            if (lastKnownLocation) {
-                setMarketLocation(lastKnownLocation);
-                setLoading(false);
-            } else {
-                getLocation().then((location) => {
-                    if (location) {
-                        setMarketLocation(location);
-                    } else {
-                        Alert.alert(t("DeviceMaps.errorTitle"), t("DeviceMaps.error.obtener"));
-                    }
-                    setLoading(false);
-                });
-            }
-        }
-    }, [deviceLocation, lastKnownLocation, getLocation]);
-
     const handleSaveLocation = () => {
         Alert.alert(t("DeviceMaps.titulo.guardar"), t("DeviceMaps.mensaje.guardar"), [
             {
@@ -123,40 +101,113 @@ export default function DeviceMap() {
         ]);
     };
 
+    // Reemplazar el useEffect de checkPermissionsAndLocation en DeviceMap:
+
     useEffect(() => {
         const checkPermissionsAndLocation = async () => {
             try {
-                const { status } = await Location.getForegroundPermissionsAsync();
+                setLoading(true);
+
+                //  PASO 1: Verificar permisos actuales
+                let { status } = await Location.getForegroundPermissionsAsync();
+
+                //  PASO 2: Si no están concedidos, solicitarlos
                 if (status !== 'granted') {
-                    Alert.alert(
-                        t("DeviceMaps.permiso.necesario.titulo"),
-                        t("DeviceMaps.permiso.necesario.mensaje"),
-                        [
-                            {
-                                text: t("DeviceMaps.permiso.boton.ir"),
-                                onPress: () => {
-                                    navigation.goBack();
-                                    navigation.navigate('SettingsScreen')
+                    const { status: newStatus } = await Location.requestForegroundPermissionsAsync();
+
+                    if (newStatus !== 'granted') {
+                        // Si el usuario rechaza los permisos, mostrar alerta
+                        Alert.alert(
+                            t("DeviceMaps.permiso.necesario.titulo"),
+                            t("DeviceMaps.permiso.necesario.mensaje"),
+                            [
+                                {
+                                    text: t("DeviceMaps.permiso.boton.ir"),
+                                    onPress: () => {
+                                        navigation.goBack();
+                                        navigation.navigate('SettingsScreen')
+                                    }
+                                },
+                                {
+                                    text: t("DeviceMaps.permiso.boton.cancelar"),
+                                    style: "cancel",
+                                    onPress: () => navigation.goBack()
                                 }
-                            },
-                            {
-                                text: t("DeviceMaps.permiso.boton.cancelar"),
-                                style: "cancel",
-                                onPress: () => navigation.goBack()
-                            }
-                        ]
-                    );
-                    return;
+                            ]
+                        );
+                        setLoading(false);
+                        return;
+                    }
+                    // Actualizar status después de la solicitud
+                    status = newStatus;
                 }
-                //  fetchSavedLocation();
+
+                //  PASO 3: Si tenemos permisos, proceder con la lógica de ubicación
+                if (status === 'granted') {
+                    // Verificar si ya tenemos una ubicación del dispositivo guardada
+                    if (deviceLocation.latitude !== 0 && deviceLocation.longitude !== 0) {
+                        console.log("📍 Usando ubicación guardada del dispositivo");
+                        setMarketLocation({
+                            latitude: deviceLocation.latitude,
+                            longitude: deviceLocation.longitude
+                        });
+                        setLocationSaved(true);
+                    } else {
+                        // Si no hay ubicación guardada, usar la ubicación actual del usuario
+                        console.log("📍 Obteniendo ubicación actual del usuario");
+
+                        // Primero intentar con la ubicación del store
+                        if (lastKnownLocation) {
+                            console.log("📍 Usando ubicación del store");
+                            setMarketLocation(lastKnownLocation);
+                        } else {
+                            // Si no hay en el store, obtener una nueva
+                            console.log("📍 Obteniendo nueva ubicación");
+                            const location = await getLocation();
+                            if (location) {
+                                setMarketLocation(location);
+                            } else {
+                                Alert.alert(t("DeviceMaps.errorTitle"), t("DeviceMaps.error.obtener"));
+                            }
+                        }
+                    }
+                }
             } catch (error) {
-                console.error("Error checking permissions:", error);
+                console.error(" Error checking permissions and location:", error);
+                Alert.alert(t("DeviceMaps.errorTitle"), t("DeviceMaps.error.obtener"));
+            } finally {
                 setLoading(false);
             }
         };
 
         checkPermissionsAndLocation();
-    }, []);
+    }, []); //  Dependencias vacías para que solo se ejecute una vez
+
+    //  OPCIONAL: Simplificar el otro useEffect o eliminarlo completamente
+    // Ya no necesitas este useEffect porque la lógica se maneja arriba:
+    /*
+    useEffect(() => {
+        if (deviceLocation.latitude !== 0 && deviceLocation.longitude !== 0) {
+            setLocationSaved(true);
+            setMarketLocation(lastKnownLocation);
+            setLoading(false);
+        } else {
+            if (lastKnownLocation) {
+                setMarketLocation(lastKnownLocation);
+                setLoading(false);
+            } else {
+                getLocation().then((location) => {
+                    if (location) {
+                        setMarketLocation(location);
+                    } else {
+                        Alert.alert(t("DeviceMaps.errorTitle"), t("DeviceMaps.error.obtener"));
+                    }
+                    setLoading(false);
+                });
+            }
+        }
+    }, [deviceLocation, lastKnownLocation, getLocation]);
+    */
 
     if (loading || !marketLocation) {
         return (

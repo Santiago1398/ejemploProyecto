@@ -205,26 +205,45 @@ export default function DeviceList() {
         };
     }, [updateDevice]);
 
-    useEffect(() => {
-        notificationService.connectWebSocket();
-        return () => {
-            notificationService.disconnect();
-        };
-    }, []);
+    // useEffect(() => {
+    //     notificationService.connectWebSocket();
+    //     return () => {
+    //         notificationService.disconnect();
+    //     };
+    // }, []);
 
+    // 🔥 FUNCIÓN ACTUALIZADA: getBackgroundColor con nueva lógica
     const getBackgroundColor = (alarmType: number, armed: boolean) => {
-        if (!armed) {
-            return "#facc15";
+        // 🔥 PRIMERA PRIORIDAD: Si alarmType = 2, siempre gris (sin importar armed)
+        if (alarmType === 2) {
+            return "#9E9E9E"; // Gris para alarmType 2
         }
 
+        // 🔥 SEGUNDA PRIORIDAD: Si alarmType ≠ 2 Y armed = false, amarillo
+        if (!armed) {
+            return "#facc15"; // Amarillo para desarmados (que no sean alarmType 2)
+        }
+
+        // 🔥 TERCERA PRIORIDAD: Colores normales según alarmType para dispositivos armados
         switch (alarmType) {
-            case 0: return "#78dd35";
-            case 1: return "#FF0000";
-            case 2: return "#9E9E9E";
-            case 3: return "#9E75C6";
-            default: return "#000000";
+            case 0: return "#78dd35";  // Verde para alarmType 0 armado
+            case 1: return "#FF0000";  // Rojo para alarmType 1 armado
+            case 3: return "#9E75C6";  // Morado para alarmType 3 armado
+            default: return "#000000"; // Negro por defecto
         }
     };
+
+    //  EJEMPLO DE COMPORTAMIENTO:
+    /*
+    Ejemplos con tus datos:
+    
+    1. {"alarmType": 2, "armed": true}  → Gris (#9E9E9E)
+    2. {"alarmType": 2, "armed": false} → Gris (#9E9E9E) - ¡Sin importar armed!
+    3. {"alarmType": 0, "armed": false} → Amarillo (#facc15)
+    4. {"alarmType": 1, "armed": false} → Amarillo (#facc15)  
+    5. {"alarmType": 0, "armed": true}  → Verde (#78dd35)
+    6. {"alarmType": 1, "armed": true}  → Rojo (#FF0000)
+    */
 
     // 🔥 NUEVO: Renderizar header de sección
     const renderSectionHeader = ({ section }: { section: any }) => (
