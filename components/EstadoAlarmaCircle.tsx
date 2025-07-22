@@ -30,7 +30,7 @@ export default function EstadoAlarmaCircle({ armado, disparado, raised }: Props)
     }
 
     // 🔍 DEBUG: Console log para verificar estados
-    console.log(`🔴 Alarma Circle - armado: ${armado}, disparado: ${disparado}, raised: ${raised} → ${backgroundColor}`);
+    //console.log(`🔴 Alarma Circle - armado: ${armado}, disparado: ${disparado}, raised: ${raised} → ${backgroundColor}`);
 
     return <View style={[styles.circle, { backgroundColor }]} />;
 }
