@@ -21,7 +21,9 @@
             "noConnection": "Нет соединения",
             "cannotLoadLocations": "Невозможно загрузить местоположения",
             "checkingAutomatically": "Автоматическая проверка..."
-        }
+        },
+        "Alarms": "Сигналы",
+        "TODAS_LAS_UBICACIONES": "ВСЕ ЛОКАЦИИ"
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "Есть тревога",
@@ -42,7 +44,9 @@
         "connection": {
             "noConnection": "Нет соединения",
             "deviceDisconnected": "Устройство отключено или нет связи"
-        }
+        },
+        "Min": "Мин",
+        "Max": "Макс"
     },
     "DrawerContent": {
         "logout": "Выйти",

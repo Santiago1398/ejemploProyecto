@@ -22,7 +22,9 @@
             "noConnection": "연결 없음",
             "cannotLoadLocations": "위치를 로드할 수 없습니다",
             "checkingAutomatically": "자동으로 확인 중..."
-        }
+        },
+        "Alarms": "알람",
+        "TODAS_LAS_UBICACIONES": "모든 위치"
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "경보 발생",
@@ -42,7 +44,9 @@
         "connection": {
             "noConnection": "연결 없음",
             "deviceDisconnected": "장치 연결 해제 또는 통신 불가"
-        }
+        },
+        "Min": "최소",
+        "Max": "최대"
     },
     "DrawerContent": {
         "logout": "로그아웃",

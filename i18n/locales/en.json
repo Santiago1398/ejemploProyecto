@@ -21,7 +21,9 @@
             "noConnection": "No connection",
             "cannotLoadLocations": "Cannot load locations",
             "checkingAutomatically": "Checking automatically..."
-        }
+        },
+        "Alarms": "Alarms",
+        "TODAS_LAS_UBICACIONES": "ALL LOCATIONS"
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "Alarm detected",
@@ -42,7 +44,9 @@
         "connection": {
             "noConnection": "No connection",
             "deviceDisconnected": "Device disconnected or no communication"
-        }
+        },
+        "Min": "Mín",
+        "Max": "Máx"
     },
     "DrawerContent": {
         "logout": "Logout",

@@ -21,7 +21,9 @@
             "noConnection": "Nessuna connessione",
             "cannotLoadLocations": "Impossibile caricare le posizioni",
             "checkingAutomatically": "Controllo automatico..."
-        }
+        },
+        "Alarms": "Allarmi",
+        "TODAS_LAS_UBICACIONES": "TUTTE LE POSIZIONI"
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "C'è un allarme",
@@ -42,7 +44,9 @@
         "connection": {
             "noConnection": "Nessuna connessione",
             "deviceDisconnected": "Dispositivo disconnesso o senza comunicazione"
-        }
+        },
+        "Min": "Mín",
+        "Max": "Máx"
     },
     "DrawerContent": {
         "logout": "Disconnetti",

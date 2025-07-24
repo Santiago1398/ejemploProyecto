@@ -21,7 +21,9 @@
             "noConnection": "無連接",
             "cannotLoadLocations": "無法載入位置",
             "checkingAutomatically": "自動檢查中..."
-        }
+        },
+        "Alarms": "警報",
+        "TODAS_LAS_UBICACIONES": "所有位置"
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "有警報",
@@ -42,7 +44,9 @@
         "connection": {
             "noConnection": "無連接",
             "deviceDisconnected": "設備斷開連接或無通信"
-        }
+        },
+        "Min": "最小",
+        "Max": "最大"
     },
     "DrawerContent": {
         "logout": "登出",

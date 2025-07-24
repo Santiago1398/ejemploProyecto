@@ -21,7 +21,9 @@
             "noConnection": "Pas de connexion",
             "cannotLoadLocations": "Impossible de charger les emplacements",
             "checkingAutomatically": "Vérification automatique..."
-        }
+        },
+        "Alarms": "Alarmes",
+        "TODAS_LAS_UBICACIONES": "TOUS LES EMPLACEMENTS"
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "Il y a une alarme",
@@ -42,7 +44,9 @@
         "connection": {
             "noConnection": "Pas de connexion",
             "deviceDisconnected": "Appareil déconnecté ou sans communication"
-        }
+        },
+        "Min": "Mín",
+        "Max": "Máx"
     },
     "DrawerContent": {
         "logout": "Se déconnecter",

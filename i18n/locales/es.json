@@ -21,7 +21,9 @@
             "noConnection": "Sin conexión",
             "cannotLoadLocations": "No se pueden cargar las ubicaciones",
             "checkingAutomatically": "Verificando automáticamente..."
-        }
+        },
+        "Alarmas": "Alarmas",
+        "TODAS_LAS_UBICACIONES": "TODAS LAS UBICACIONES"
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "Hay Alarma",
@@ -42,7 +44,9 @@
         "connection": {
             "noConnection": "No hay conexión",
             "deviceDisconnected": "Equipo desconectado o sin comunicación"
-        }
+        },
+        "Min": "Mín",
+        "Max": "Máx"
     },
     "DrawerContent": {
         "logout": "Cerrar sesión",

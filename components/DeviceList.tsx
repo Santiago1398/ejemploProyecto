@@ -57,7 +57,7 @@ export default function DeviceList() {
         const devicesWithAlarms = devices.filter(device => device.alarmType === 1);
         if (devicesWithAlarms.length > 0) {
             sections.push({
-                title: "ALARMAS",
+                title: t("deviceList.Alarms"),
                 data: devicesWithAlarms,
                 type: "alarms"
             });
@@ -65,7 +65,7 @@ export default function DeviceList() {
 
         // 📍 SECCIÓN 2: TODAS LAS UBICACIONES (todos los dispositivos)
         sections.push({
-            title: "TODAS LAS UBICACIONES",
+            title: t("deviceList.TODAS_LAS_UBICACIONES"),
             data: devices,
             type: "all"
         });

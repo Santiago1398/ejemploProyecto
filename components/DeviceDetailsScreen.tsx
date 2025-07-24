@@ -27,6 +27,76 @@ import { t } from "@/i18n/i18nConfig";
 import { Feather } from "@expo/vector-icons";
 import { socketService } from "@/services/socketService";
 
+// 🌡️ INTERFAZ PARA SENSORES
+interface SensorData {
+    id: number;
+    value: number;
+    minAlarm: number;
+    maxAlarm: number;
+    type: number;
+    unit: number; // Cambiado de string a number
+}
+
+// 📊 ENUM DE UNIDADES
+const UnitEnum = {
+    EN_GT_UNID_NO_UNIDAD: 0,
+    EN_GT_UNID_GRADO_CENTIGRADO: 1,
+    EN_GT_UNID_GRADO_Fahrenheit: 2,
+    EN_GT_UNID_LITROS: 3,
+    EN_GT_UNID_GALONES: 4,
+    EN_GT_UNID_KILOS: 5,
+    EN_GT_UNID_LIBRA: 6,
+    EN_GT_UNID_M3H: 7,
+    EN_GT_UNID_CFM: 8,
+    EN_GT_UNID_VATIO: 9,
+    EN_GT_UNID_PORCENTAJE: 10,
+    EN_GT_UNID_PASCALES: 11,
+    EN_GT_UNID_PPM: 12,
+    EN_GT_UNID_METRO: 13,
+    EN_GT_UNID_PULGADA: 14,
+    EN_GT_UNID_PIE: 15,
+};
+
+// 🔄 FUNCIÓN PARA CONVERTIR NÚMERO DE UNIDAD A STRING
+const getUnitString = (unitNumber: number): string => {
+    switch (unitNumber) {
+        case UnitEnum.EN_GT_UNID_NO_UNIDAD:
+            return "";
+        case UnitEnum.EN_GT_UNID_GRADO_CENTIGRADO:
+            return "°C";
+        case UnitEnum.EN_GT_UNID_GRADO_Fahrenheit:
+            return "°F";
+        case UnitEnum.EN_GT_UNID_LITROS:
+            return "L";
+        case UnitEnum.EN_GT_UNID_GALONES:
+            return "gal";
+        case UnitEnum.EN_GT_UNID_KILOS:
+            return "kg";
+        case UnitEnum.EN_GT_UNID_LIBRA:
+            return "lb";
+        case UnitEnum.EN_GT_UNID_M3H:
+            return "m³/h";
+        case UnitEnum.EN_GT_UNID_CFM:
+            return "CFM";
+        case UnitEnum.EN_GT_UNID_VATIO:
+            return "W";
+        case UnitEnum.EN_GT_UNID_PORCENTAJE:
+            return "%";
+        case UnitEnum.EN_GT_UNID_PASCALES:
+            return "Pa";
+        case UnitEnum.EN_GT_UNID_PPM:
+            return "ppm";
+        case UnitEnum.EN_GT_UNID_METRO:
+            return "m";
+        case UnitEnum.EN_GT_UNID_PULGADA:
+            return '"';
+        case UnitEnum.EN_GT_UNID_PIE:
+            return "ft";
+        default:
+            return "";
+    }
+};
+
 
 type DeviceDetailsRouteProp = RouteProp<RootStackParamList, "DeviceDetails">;
 
@@ -40,6 +110,10 @@ export default function AlarmList() {
     const [loading, setLoading] = useState(true);
     const [masterAlarmState, setMasterAlarmState] = useState<boolean>(true);
     const [initialLoad, setInitialLoad] = useState(true);
+
+    // 🌡️ ESTADOS PARA SENSORES
+    const [sensorsData, setSensorsData] = useState<SensorData[]>([]);
+    const [sensorsLoading, setSensorsLoading] = useState(false);
 
     const navigation = useNavigation<any>();
     const [headerText, setHeaderText] = useState<string>("Alarmas Activas");
@@ -82,7 +156,7 @@ export default function AlarmList() {
             setHeaderColor("#FF3B30");
         } else {
             setHeaderText(t("DeviceDetailsScreen.alarmsEnabled"));
-            setHeaderColor("#76db36");
+            setHeaderColor("#179002");
         }
     };
 
@@ -94,9 +168,9 @@ export default function AlarmList() {
                 const nuevoEstado = !masterAlarmState;
                 setMasterAlarmState(nuevoEstado);
                 updateHeaderStatus(alarms, nuevoEstado);
-                if (status === 1) {
-                    fetchAlarms();
-                }
+                // if (status === 1) {
+                // fetchAlarms();
+                // }
             }
         } catch (error) {
             Alert.alert(
@@ -112,6 +186,93 @@ export default function AlarmList() {
         );
     };
 
+    // 🌡️ FUNCIÓN PARA OBTENER SENSORES
+    const fetchSensors = async () => {
+        try {
+            setSensorsLoading(true);
+
+            // IDs de sensores que quieres obtener
+            const sensorIds = [8, 9, 10, 11];
+            const idsParam = JSON.stringify(sensorIds);
+
+            const response = await get(`alarmtc/sensors/?mac=${mac}&ids=${idsParam}`);
+
+            if (response && Array.isArray(response)) {
+                setSensorsData(response);
+                console.log("📊 Sensores obtenidos:", response);
+            } else {
+                setSensorsData([]);
+            }
+        } catch (error) {
+            console.error("❌ Error obteniendo sensores:", error);
+            setSensorsData([]);
+        } finally {
+            setSensorsLoading(false);
+        }
+    };
+
+    // 🎨 FUNCIÓN PARA OBTENER ICONO SEGÚN TIPO DE SENSOR
+    const getSensorIcon = (type: number, unitNumber: number): keyof typeof Ionicons.glyphMap => {
+        const unitString = getUnitString(unitNumber);
+
+        switch (type) {
+            case 0: // Temperatura
+                return "thermometer-outline";
+            case 1: // Humedad  
+                return "water-outline";
+            case 2: // Presión o PPM
+                return unitString === "ppm" ? "analytics-outline" : "speedometer-outline";
+            default:
+                return "hardware-chip-outline";
+        }
+    };
+
+    // 🎨 FUNCIÓN PARA OBTENER COLOR DEL SENSOR SEGÚN SU ESTADO
+    const getSensorColor = (sensor: SensorData): string => {
+        const { value, minAlarm, maxAlarm } = sensor;
+
+        // Verificar si está en rango de alarma
+        if (value <= minAlarm || value >= maxAlarm) {
+            return "#FF6B6B"; // Rojo - Valor en alarma
+        } else {
+            return "#4CAF50"; // Verde - Valor normal
+        }
+    };
+
+    // 🎨 COMPONENTE PARA MOSTRAR INFO DEL SENSOR
+    const SensorInfo = ({ alarmId }: { alarmId: number }) => {
+        const sensor = sensorsData.find(s => s.id === alarmId);
+        if (!sensor) return null;
+
+        const icon = getSensorIcon(sensor.type, sensor.unit);
+        const unitString = getUnitString(sensor.unit);
+
+        return (
+            <View style={styles.sensorRow}>
+                {/* Columna izquierda: Icono + valor */}
+                <View style={styles.leftColumn}>
+                    <Ionicons name={icon} size={24} color="#FFFFFF" style={styles.sensorIcon} />
+                    <Text style={styles.sensorMainValue}>
+                        {sensor.value} {unitString}
+                    </Text>
+                </View>
+
+                {/* Columna derecha: Max arriba, Min abajo */}
+                <View style={styles.rightColumn}>
+                    <Text style={styles.sensorLimitLabel}>
+                        {t("DeviceDetailsScreen.Max")}:
+                        <Text style={styles.sensorLimitValue}> {sensor.maxAlarm} {unitString}</Text>
+                    </Text>
+                    <Text style={styles.sensorLimitLabel}>
+                        {t("DeviceDetailsScreen.Min")}:
+                        <Text style={styles.sensorLimitValue}> {sensor.minAlarm} {unitString}</Text>
+                    </Text>
+                </View>
+            </View>
+        );
+    };
+
+
     const fetchAlarms = async (isAutoRefresh = false) => {
         try {
             if (!isAutoRefresh) {
@@ -126,9 +287,14 @@ export default function AlarmList() {
             }
 
             const scrollY = scrollOffset.current;
-            const data = await get(`alarmtc/status?mac=${mac}`);
 
-            if (!data || data.length === 0) {
+            // 🌡️ OBTENER ALARMAS Y SENSORES EN PARALELO
+            const [alarmsData] = await Promise.all([
+                get(`alarmtc/status?mac=${mac}`),
+                fetchSensors() // Esta función ya maneja sus propios errores
+            ]);
+
+            if (!alarmsData || alarmsData.length === 0) {
                 setIsConnected(false);
                 setAlarms([]);
                 setHeaderText("Sin conexión");
@@ -136,7 +302,7 @@ export default function AlarmList() {
                 return;
             }
 
-            const masterAlarm = data.find((alarm: { idAlarm: number }) => alarm.idAlarm === 1000);
+            const masterAlarm = alarmsData.find((alarm: { idAlarm: number }) => alarm.idAlarm === 1000);
             if (masterAlarm) {
                 setMasterAlarmState(masterAlarm.armado);
                 setIsSimulated(masterAlarm.simulado || false);
@@ -158,7 +324,7 @@ export default function AlarmList() {
                 return;
             }
 
-            const enabledAlarms = data
+            const enabledAlarms = alarmsData
                 .filter((alarm: { habilitado: boolean; idAlarm: number }) =>
                     alarm.habilitado && ![1000, 2000].includes(alarm.idAlarm)
                 )
@@ -187,7 +353,6 @@ export default function AlarmList() {
         }
     };
 
-    // Funciones para organizar alarmas por rangos
     const getIdRange = (idAlarm: number): number => {
         if (idAlarm < 100) return 0;
         return Math.floor(idAlarm / 100) * 100;
@@ -247,13 +412,19 @@ export default function AlarmList() {
             }));
     };
 
-    const renderSectionHeader = ({ section }: { section: { title: string } }) => {
+    const renderSectionHeader = ({ section }: { section: any }) => {
+        if (section.hideHeader) return null;
+
         const isDisconnected = section.title.includes('No conectado');
+        const bgColor = masterAlarmState
+            ? styles.sectionHeaderArmed.backgroundColor
+            : styles.sectionHeaderDisarmed.backgroundColor;
 
         return (
             <View style={[
                 styles.sectionHeader,
-                isDisconnected && styles.sectionHeaderDisconnected
+                { backgroundColor: bgColor },
+                // isDisconnected && styles.sectionHeaderDisconnected
             ]}>
                 <Text style={[
                     styles.sectionTitle,
@@ -270,66 +441,50 @@ export default function AlarmList() {
     };
 
     const renderContent = () => {
-        if (loading) {
-            return <Text style={styles.loadingText}>{t("DeviceDetailsScreen.loadingAlarms")}</Text>;
-        }
+        if (loading) return <Text style={styles.loadingText}>{t("DeviceDetailsScreen.loadingAlarms")}</Text>;
+        if (!isConnected) return (
+            <View style={styles.centeredContainer}>
+                <Ionicons name="cloud-offline-outline" size={48} color="#8a9bb9" />
+                <Text style={styles.noAlarmsText}>{t("DeviceDetailsScreen.noConnection")}</Text>
+            </View>
+        );
+        if (tc5Disconnected) return (
+            <View style={styles.centeredContainer}>
+                <Ionicons name="cloud-offline-outline" size={48} color="#8a9bb9" />
+                <Text style={styles.noAlarmsText}>{t("DeviceDetailsScreen.tc5Disconnected")}</Text>
+            </View>
+        );
 
-        if (!isConnected) {
-            return (
-                <View style={styles.centeredContainer}>
-                    <Ionicons name="cloud-offline-outline" size={64} color="#8a9bb9" />
-                    <Text style={styles.noAlarmsText}>{t("DeviceDetailsScreen.connection.noConnection")}</Text>
-                    <Text style={styles.connectionSubtext}>
-                        {t("DeviceDetailsScreen.connection.deviceDisconnected")}
-                    </Text>
-                </View>
-            );
-        }
-
-        if (tc5Disconnected) {
-            return (
-                <View style={styles.centeredContainer}>
-                    <Ionicons name="alert-circle" size={64} color="#8a9bb9" />
-                    <Text style={styles.noAlarmsText}>{t("DeviceDetailsScreen.tc5Disconnected")}</Text>
-                </View>
-            );
-        }
-
-        if (alarms.length === 0) {
-            return (
-                <View style={styles.centeredContainer}>
-                    <Text style={styles.noAlarmsText}>{t("DeviceDetailsScreen.noEnabledAlarms")}</Text>
-                </View>
-            );
-        }
+        if (alarms.length === 0) return (
+            <View style={styles.centeredContainer}>
+                <Ionicons name="notifications-off-outline" size={48} color="#8a9bb9" />
+                <Text style={styles.noAlarmsText}>{t("DeviceDetailsScreen.noEnabledAlarms")}</Text>
+            </View>
+        );
 
         const { otherAlarms, rangeGroups } = separateAlarmsByIdRange(alarms);
         const rangeSections = createRangeSections(rangeGroups);
 
-        return (
-            <ScrollView
-                ref={scrollRef}
-                onScroll={handleScroll}
-                scrollEventThrottle={16}
-                contentContainerStyle={{ paddingBottom: 100 }}
-            >
-                {otherAlarms.map((alarm) => (
-                    <View key={`other-${alarm.idAlarm}`}>
-                        {renderAlarmItem({ item: alarm })}
-                    </View>
-                ))}
+        const sections = [
+            otherAlarms.length && { data: otherAlarms, hideHeader: true },
+            ...rangeSections
+        ].filter(Boolean) as Array<
+            { data: ParamTC[]; hideHeader?: boolean } |
+            { title: string; data: ParamTC[]; range: number }
+        >;
 
-                {rangeSections.map((section) => (
-                    <View key={`range-${section.range}`}>
-                        {renderSectionHeader({ section })}
-                        {section.data.map((alarm) => (
-                            <View key={`range-${section.range}-${alarm.idAlarm}`}>
-                                {renderAlarmItem({ item: alarm })}
-                            </View>
-                        ))}
-                    </View>
-                ))}
-            </ScrollView>
+
+        return (
+            <SectionList
+                sections={sections}
+                keyExtractor={item => String(item.idAlarm)}
+                renderItem={({ item }) => renderAlarmItem({ item })}
+                renderSectionHeader={renderSectionHeader}
+                stickySectionHeadersEnabled={false}
+                contentContainerStyle={{ paddingBottom: 100 }}
+                extraData={alarms}
+            />
+
         );
     };
 
@@ -441,6 +596,9 @@ export default function AlarmList() {
 
         const isDisconnected = isAlarmDisconnected(item);
 
+        // Verificar si esta alarma tiene sensor asociado
+        const hasSensor = sensorsData.some(s => s.id === item.idAlarm);
+
         // Lógica basada en el estado REAL (raised) no en disparado
         if (!item.armado) {
             // DESARMADA → Gris
@@ -459,7 +617,7 @@ export default function AlarmList() {
         return (
             <TouchableOpacity
                 style={[
-                    styles.alarmContainer,
+                    hasSensor ? styles.alarmContainerWithSensor : styles.alarmContainer,
                     { backgroundColor },
                     isProcessing && { opacity: 0.7 }
                 ]}
@@ -474,36 +632,33 @@ export default function AlarmList() {
                     />
 
                     <View style={styles.iconAndText}>
-                        {/* {item.raised && (
-                            <Ionicons
-                                name={getIconNameForAlarm(item.texto)}
-                                size={24}
-                                color="#000"
-                                style={styles.alarmIcon}
-                            />
-                        )} */}
                         <Text style={[styles.alarmText, { color: textColor }]}>
                             {item.texto}
                         </Text>
                     </View>
-                </View>
 
-                <View style={styles.rightContainer}>
-                    {isDisconnected && (
-                        <Ionicons
-                            name="cloud-offline-outline"
-                            size={24}
-                            color="#666666"
-                            style={styles.disconnectedIcon}
-                        />
-                    )}
+                    <View style={styles.rightContainer}>
+                        {isDisconnected && (
+                            <Ionicons
+                                name="cloud-offline-outline"
+                                size={24}
+                                color="#666666"
+                                style={styles.disconnectedIcon}
+                            />
+                        )}
+                    </View>
                 </View>
+                <SensorInfo alarmId={item.idAlarm} />
             </TouchableOpacity>
         );
     };
 
     return (
-        <View style={styles.container}>
+        <View style={[
+            styles.container,
+            // 🟡 FONDO AMARILLO/NARANJA cuando master desarmado
+            !masterAlarmState && { backgroundColor: "#FFEB3B" }
+        ]}>
             <View style={[styles.customHeader, { backgroundColor: headerColor }]}>
                 <TouchableOpacity
                     style={styles.backButton}
@@ -594,6 +749,20 @@ const styles = StyleSheet.create({
         shadowRadius: 3.84,
         elevation: 4,
     },
+    alarmContainerWithSensor: {
+        flexDirection: "column",
+        marginHorizontal: 16, // Mismo margen que alarmContainer
+        marginVertical: 4,    // Mismo margen que alarmContainer
+        marginTop: 2,         // Mismo margen que alarmContainer
+        padding: 16,          // Mismo padding que alarmContainer
+        borderRadius: 12,     // Mismo radio que alarmContainer
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 3.84,
+        elevation: 4,
+        minHeight: 40, // Altura mínima razonable
+    },
     container: {
         flex: 1,
         backgroundColor: "#f4f4f4",
@@ -618,12 +787,13 @@ const styles = StyleSheet.create({
     alarmRow: {
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "flex-start",
+        justifyContent: "space-between",
         paddingVertical: 2,
     },
     iconAndText: {
         flexDirection: "row",
         alignItems: "center",
+        flex: 1,
     },
     alarmIcon: {
         marginRight: 8,
@@ -694,10 +864,11 @@ const styles = StyleSheet.create({
     disconnectedIcon: {
         marginLeft: 8,
     },
-    sectionHeaderDisconnected: {
-        backgroundColor: '#fff5f5',
-        borderLeftWidth: 4,
-        borderLeftColor: '#ff6b6b',
+    sectionHeaderArmed: {
+        backgroundColor: '#FFFFFF',
+    },
+    sectionHeaderDisarmed: {
+        backgroundColor: '#FFEB3B',
     },
     sectionTitleDisconnected: {
         color: '#d63031',
@@ -706,5 +877,66 @@ const styles = StyleSheet.create({
     sectionLineDisconnected: {
         backgroundColor: '#ff6b6b',
         height: 2,
+    },
+    // 🌡️ ESTILOS PARA SENSORES
+    sensorContainer: {
+        marginTop: 8,
+        paddingTop: 8,
+        borderTopWidth: 1,
+        borderTopColor: 'rgba(255,255,255,0.3)',
+    },
+    sensorRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 0, // Sin padding extra
+        paddingVertical: 4,
+    },
+    leftColumn: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 1,
+    },
+    sensorIcon: {
+        marginRight: 8,
+    },
+    sensorMainValue: {
+        color: '#FFFFFF',
+        fontSize: 20, // Más grande para el valor principal
+        fontWeight: 'bold',
+    },
+    rightColumn: {
+        alignItems: 'flex-end',
+    },
+    sensorLimitLabel: {
+        color: '#FFFFFF',
+        fontSize: 14, // Más grande para mejor legibilidad
+        opacity: 0.9,
+    },
+    sensorLimitValue: {
+        color: '#FFFFFF',
+        fontSize: 14, // Tamaño consistente con label
+        fontWeight: '600',
+    },
+    alarmContent: {
+        flex: 1,
+    },
+    // Estilos no usados que podrías eliminar
+    sensorValueContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 10,
+    },
+    sensorLimitsContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        paddingHorizontal: 20,
+        alignItems: 'flex-end',
+    },
+    sensorLimitRow: {
+        flexDirection: 'column',
+        alignItems: 'flex-end',
+        marginBottom: 2,
     },
 });

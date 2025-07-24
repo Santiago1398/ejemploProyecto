@@ -132,21 +132,21 @@ export default function Alarmas() {
         fetchAlarmas(false); // Carga inicial
     }, []);
 
-    //  NUEVO: INTERVAL CADA 5 SEGUNDOS PARA AUTO-REFRESH SIN LOADING
+    // INTERVAL CADA 15 SEGUNDOS PARA AUTO-REFRESH SIN LOADING
     useEffect(() => {
         const interval = setInterval(() => {
-            fetchAlarmas(true); // Auto-refresh silencioso
+            fetchAlarmas(true);
         }, 15000);
 
         return () => clearInterval(interval);
     }, []);
 
     //  FUNCIÓN PARA REFRESH MANUAL
-    const onRefresh = () => {
-        setErrorShown(false); // Permitir mostrar errores nuevos
-        setIsRefreshing(true);
-        fetchAlarmas(false); // Refresh manual (puede mostrar loading)
-    };
+    // const onRefresh = () => {
+    //     setErrorShown(false); // Permitir mostrar errores nuevos
+    //     setIsRefreshing(true);
+    //     //fetchAlarmas(false); // Refresh manual (puede mostrar loading)
+    // };
 
     const renderItem = ({ item }: { item: AlarmaDisparada }) => (
         <TouchableOpacity
@@ -192,19 +192,19 @@ export default function Alarmas() {
         </TouchableOpacity>
     );
 
-    // PANTALLA DE CARGA INICIAL
-    if (isLoading) {
-        return (
-            <PaperProvider>
-                <View style={styles.centered}>
-                    <ActivityIndicator size="large" color="#4ade80" />
-                    <Text style={styles.loadingText}>
-                        {t("AlarmasScreen.loadingAlarms")}
-                    </Text>
-                </View>
-            </PaperProvider>
-        );
-    }
+    // // PANTALLA DE CARGA INICIAL
+    // if (isLoading) {
+    //     return (
+    //         <PaperProvider>
+    //             <View style={styles.centered}>
+    //                 <ActivityIndicator size="large" color="#4ade80" />
+    //                 <Text style={styles.loadingText}>
+    //                     {t("AlarmasScreen.loadingAlarms")}
+    //                 </Text>
+    //             </View>
+    //         </PaperProvider>
+    //     );
+    // }
 
     //  PANTALLA DE ERROR
     if (hasError && alarmasDisparadas.length === 0) {
@@ -248,14 +248,14 @@ export default function Alarmas() {
                     keyExtractor={(item, index) => `${item.mac}-${item.idAlarm}-${index}`}
                     renderItem={renderItem}
                     contentContainerStyle={{ padding: 16 }}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={isRefreshing}
-                            onRefresh={onRefresh}
-                            colors={["#4ade80"]}
-                            tintColor="#4ade80"
-                        />
-                    }
+                //refreshControl={
+                // <RefreshControl
+                //     refreshing={isRefreshing}
+                //     //  onRefresh={onRefresh}
+                //     colors={["#4ade80"]}
+                //     tintColor="#4ade80"
+                // />
+                //}
                 />
             )}
         </PaperProvider>

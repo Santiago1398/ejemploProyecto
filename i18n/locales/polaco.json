@@ -42,7 +42,9 @@
         "connection": {
             "noConnection": "Brak połączenia",
             "deviceDisconnected": "Urządzenie rozłączone lub brak komunikacji"
-        }
+        },
+        "Min": "Min",
+        "Max": "Maks"
     },
     "DrawerContent": {
         "logout": "Wyloguj",

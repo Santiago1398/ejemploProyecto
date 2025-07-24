@@ -21,7 +21,9 @@
             "noConnection": "Sense connexió",
             "cannotLoadLocations": "No es poden carregar les ubicacions",
             "checkingAutomatically": "Verificant automàticament..."
-        }
+        },
+        "Alarms": "Alarmes",
+        "TODAS_LAS_UBICACIONES": "TOTES LES UBICACIONS"
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "Hi ha una alarma",
@@ -42,7 +44,9 @@
         "connection": {
             "noConnection": "Sense connexió",
             "deviceDisconnected": "Equip desconnectat o sense comunicació"
-        }
+        },
+        "Min": "Mín",
+        "Max": "Màx"
     },
     "DrawerContent": {
         "logout": "Tancar sessió",

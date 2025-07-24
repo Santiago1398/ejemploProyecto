@@ -21,7 +21,9 @@
             "noConnection": "Немає з'єднання",
             "cannotLoadLocations": "Неможливо завантажити розташування",
             "checkingAutomatically": "Автоматична перевірка..."
-        }
+        },
+        "Alarms": "Сигнали",
+        "TODAS_LAS_UBICACIONES": "ВСІ ЛОКАЦІЇ"
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "Є тривога",
@@ -42,7 +44,9 @@
         "connection": {
             "noConnection": "Немає з'єднання",
             "deviceDisconnected": "Пристрій відключений або немає зв'язку"
-        }
+        },
+        "Min": "Хв",
+        "Max": "Макс"
     },
     "DrawerContent": {
         "logout": "Вийти",
