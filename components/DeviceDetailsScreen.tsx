@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect, useRef } from "react";
+import React, { useState, useEffect, useLayoutEffect, useRef, useMemo } from "react";
 import {
     View,
     Text,
@@ -11,6 +11,7 @@ import {
     Platform,
     SectionList,
     ScrollView,
+    ActivityIndicator,
 } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -26,18 +27,27 @@ import EstadoAlarmaCircle from "./EstadoAlarmaCircle";
 import { t } from "@/i18n/i18nConfig";
 import { Feather } from "@expo/vector-icons";
 import { socketService } from "@/services/socketService";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useAuthStore } from '@/store/authStore';
 
-// 🌡️ INTERFAZ PARA SENSORES
-interface SensorData {
+
+
+//  INTERFAZ PARA SENSORES
+export interface SensorData {
     id: number;
     value: number;
     minAlarm: number;
     maxAlarm: number;
-    type: number;
-    unit: number; // Cambiado de string a number
+    type: number;  //sensor type
+    eventType: number;
+    unit: number;
+    minValueToday: number;
+    maxValueToday: number;
+    minValueYesterday: number;
+    maxValueYesterday: number;
 }
 
-// 📊 ENUM DE UNIDADES
+// ENUM DE UNIDADES
 const UnitEnum = {
     EN_GT_UNID_NO_UNIDAD: 0,
     EN_GT_UNID_GRADO_CENTIGRADO: 1,
@@ -57,7 +67,7 @@ const UnitEnum = {
     EN_GT_UNID_PIE: 15,
 };
 
-// 🔄 FUNCIÓN PARA CONVERTIR NÚMERO DE UNIDAD A STRING
+//  FUNCIÓN PARA CONVERTIR NÚMERO DE UNIDAD A STRING
 const getUnitString = (unitNumber: number): string => {
     switch (unitNumber) {
         case UnitEnum.EN_GT_UNID_NO_UNIDAD:
@@ -104,14 +114,13 @@ export default function AlarmList() {
     const route = useRoute<DeviceDetailsRouteProp>();
 
     const { device } = route.params;
-    const { mac, farmName, siteName, alarmType } = device;
+    const { mac, farmName, siteName, alarmType, swVersion } = device;
 
     const [alarms, setAlarms] = useState<ParamTC[]>([]);
     const [loading, setLoading] = useState(true);
     const [masterAlarmState, setMasterAlarmState] = useState<boolean>(true);
     const [initialLoad, setInitialLoad] = useState(true);
 
-    // 🌡️ ESTADOS PARA SENSORES
     const [sensorsData, setSensorsData] = useState<SensorData[]>([]);
     const [sensorsLoading, setSensorsLoading] = useState(false);
 
@@ -127,6 +136,42 @@ export default function AlarmList() {
     const [isConnected, setIsConnected] = useState<boolean>(true);
     const isMasterDisabled = tc5Disconnected || isDeviceDisconnected || !isConnected;
     const [isProcessing, setIsProcessing] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [triggeredCount, setTriggeredCount] = useState(0);
+    const [pendingRequests, setPendingRequests] = useState(0);
+    const [, bump] = useState(0);
+    const forceRerender = () => bump(v => v + 1);
+
+    const MIN_VISIBLE_MS = 600;
+    const lastId = useRef(0);
+    //? Para evitar múltiples peticiones simultáneas
+    const busyIds = useRef<Set<number>>(new Set());
+
+    const { userId } = useAuthStore();
+    // Forzar actualizacion
+    const sw = parseInt(swVersion ?? '-1', 10);
+    const needsUpdate = sw >= 0 && sw < 131;
+
+
+
+
+    //! Alarmas analogicas y las filtro las que tengan valor
+    const ANALOG_SENSOR_IDS = [
+        8, 9, 10, 11,
+        401, 402, 403, 404, 405, 406, 407, 408, // EXPA Alarmas
+        501, 502, 503, 504, 505, 506, 507, 508
+    ] as const;
+
+
+    const analogIdsWithValue = useMemo(
+        () =>
+            sensorsData
+                .filter(s => s.eventType === 1)  // mostrar solo sensores válidos
+                .map(s => s.id),
+        [sensorsData]
+    );
+
+    //!-------------------------------------------------------------
 
     useEffect(() => {
         if (isDeviceDisconnected) {
@@ -139,46 +184,81 @@ export default function AlarmList() {
 
     const scrollOffset = useRef(0);
 
-    const handleScroll = (event: any) => {
-        scrollOffset.current = event.nativeEvent.contentOffset.y;
-    };
+    // const handleScroll = (event: any) => {
+    //     scrollOffset.current = event.nativeEvent.contentOffset.y;
+    // };
 
+    //!Contador de alarmas disparadas
     const updateHeaderStatus = (alarms: ParamTC[], masterState: boolean) => {
+        const isTriggered = (a: ParamTC) => a.armado && a.raised;
+
+        const nuevasDisparadas = alarms.filter(isTriggered).length;
+        setTriggeredCount(nuevasDisparadas);
+
         if (!masterState) {
-            setHeaderText(t("DeviceDetailsScreen.alarmsDisabled"));
-            setHeaderColor("#4B5563");
+            setHeaderText(t('DeviceDetailsScreen.alarmsDisabled'));
+            setHeaderColor('#4B5563');
             return;
         }
 
-        const alarmaDisparada = alarms.some(alarm => alarm.disparado);
-        if (alarmaDisparada) {
-            setHeaderText(t("DeviceDetailsScreen.alarmTriggered"));
-            setHeaderColor("#FF3B30");
+        if (nuevasDisparadas > 0) {
+            setHeaderText(t('DeviceDetailsScreen.alarmTriggered')); // “Hay Alarma”
+            setHeaderColor('#FF3B30');
         } else {
-            setHeaderText(t("DeviceDetailsScreen.alarmsEnabled"));
-            setHeaderColor("#179002");
+            setHeaderText(t('DeviceDetailsScreen.alarmsEnabled'));
+            setHeaderColor('#179002');
         }
     };
+    //!-------------------------------------------------------------
 
+    //!Prueba para contar los eventos de petición
     const handleToggleMaster = async () => {
-        const status = masterAlarmState ? 0 : 1;
+        if (isMasterDisabled) return;
+        //const next = masterAlarmState ? 0 : 1;
+
         try {
-            const response = await post(`alarmtc/armMaster?mac=${mac}&status=${status}`, {});
-            if (response.status === "Master Button Alarm Armed" || response.status === "Master Button Alarm Disarmed") {
-                const nuevoEstado = !masterAlarmState;
-                setMasterAlarmState(nuevoEstado);
-                updateHeaderStatus(alarms, nuevoEstado);
-                // if (status === 1) {
-                // fetchAlarms();
-                // }
-            }
-        } catch (error) {
+            await runWithLoader(async () => {
+                const next = masterAlarmState ? 0 : 1;
+
+                await post(
+                    `alarmtc/armMaster?mac=${mac}&status=${next}&userid=${userId}`,
+                    {}
+                );
+                // await fetchAlarms(true);
+
+            });
+        } catch (e) {
             Alert.alert(
-                t("DeviceDetailsScreen.errorTitle"),
-                t("DeviceDetailsScreen.changeStatusError")
+                t('DeviceDetailsScreen.errorTitle'),
+                t('DeviceDetailsScreen.changeStatusError')
             );
         }
-    }
+    };
+    //!-------------------------------------------------------------
+    // en AlarmList
+    // const handleToggleMaster = async () => {
+    //     if (isMasterDisabled) return;
+
+    //     const next = masterAlarmState ? 0 : 1;
+    //     setIsLoading(true);                // ⏳ empieza spinner
+
+    //     try {
+    //         await post(`alarmtc/armMaster?mac=${mac}&status=${next}`, {});
+
+    //         // 💡 ESPERA a volver a leer las alarmas; eso actualiza masterAlarmState
+    //         await fetchAlarms(/*isAutoRefresh=*/true);
+    //     } catch (e) {
+    //         Alert.alert(t('DeviceDetailsScreen.errorTitle'),
+    //             t('DeviceDetailsScreen.changeStatusError'));
+    //     } finally {
+    //         /**
+    //          *  Para evitar el “flash” muy rápido deja mínimo 400 ms de spinner
+    //          *  (tiempo suficiente para que fetchAlarms devuelva y pintar de nuevo).
+    //          */
+    //         setTimeout(() => setIsLoading(false), 800);
+    //     }
+    // };
+
 
     const hasDisconnectedAlarmsInExpansion = (expansionAlarms: ParamTC[]): boolean => {
         return expansionAlarms.some(alarm =>
@@ -186,34 +266,68 @@ export default function AlarmList() {
         );
     };
 
-    // 🌡️ FUNCIÓN PARA OBTENER SENSORES
+    //! FUNCIÓN PARA OBTENER SENSORES
+    const ANALOG_SET = new Set<number>(ANALOG_SENSOR_IDS);
+
     const fetchSensors = async () => {
         try {
             setSensorsLoading(true);
 
-            // IDs de sensores que quieres obtener
-            const sensorIds = [8, 9, 10, 11];
-            const idsParam = JSON.stringify(sensorIds);
+            /* ↓ pides TODOS los analógicos de golpe */
+            const idsParam = JSON.stringify(ANALOG_SENSOR_IDS);
+            const raw = await get(`alarmtc/sensors/?mac=${mac}&ids=${idsParam}`);
+            console.log('🌡️ Sensores obtenidos:', raw);
+            /* ↓ te quedas solo con los válidos */
+            const filtrados: SensorData[] = Array.isArray(raw)
+                ? raw
+                    .filter(
+                        s =>
+                            ANALOG_SET.has(s.id) &&                // id que te interesa
+                            s.eventType === 1 &&                   // está configurado
+                            typeof s.value === 'number' &&
+                            !Number.isNaN(s.value)
+                    )
+                    .map((s): SensorData => ({
+                        ...s,
+                        // aseguras que los optional queden a null y no a 0 si prefieres:
 
-            const response = await get(`alarmtc/sensors/?mac=${mac}&ids=${idsParam}`);
+                        id: s.id,
+                        value: s.value,
 
-            if (response && Array.isArray(response)) {
-                setSensorsData(response);
-                console.log("📊 Sensores obtenidos:", response);
-            } else {
-                setSensorsData([]);
-            }
-        } catch (error) {
-            console.error("❌ Error obteniendo sensores:", error);
+                        maxValueYesterday: s.maxValueYesterday,
+                        minValueYesterday: s.minValueYesterday,
+                        maxValueToday: s.maxValueToday,
+                        minValueToday: s.minValueToday,
+                        minAlarm: s.minAlarm,
+                        maxAlarm: s.maxAlarm,
+                        eventType: s.eventType,
+
+                        type: s.type,
+                        unit: s.unit,
+                    }))
+                : [];
+
+
+            setSensorsData(filtrados);
+        } catch (e) {
+            console.error('❌ Error obteniendo sensores:', e);
             setSensorsData([]);
         } finally {
             setSensorsLoading(false);
         }
     };
 
-    // 🎨 FUNCIÓN PARA OBTENER ICONO SEGÚN TIPO DE SENSOR
+    //!-------------------------------------------------------------
+
+
+    //! FUNCIÓN PARA OBTENER ICONO SEGÚN TIPO DE SENSOR
     const getSensorIcon = (type: number, unitNumber: number): keyof typeof Ionicons.glyphMap => {
         const unitString = getUnitString(unitNumber);
+
+        // Si la unidad es °C o °F, usamos el icono de termómetro
+        if (unitString === "°C" || unitString === "°F") {
+            return "thermometer-outline";
+        }
 
         switch (type) {
             case 0: // Temperatura
@@ -227,52 +341,110 @@ export default function AlarmList() {
         }
     };
 
-    // 🎨 FUNCIÓN PARA OBTENER COLOR DEL SENSOR SEGÚN SU ESTADO
-    const getSensorColor = (sensor: SensorData): string => {
-        const { value, minAlarm, maxAlarm } = sensor;
+    //!-------------------------------------------------------------
 
-        // Verificar si está en rango de alarma
-        if (value <= minAlarm || value >= maxAlarm) {
-            return "#FF6B6B"; // Rojo - Valor en alarma
-        } else {
-            return "#4CAF50"; // Verde - Valor normal
-        }
-    };
+    //  FUNCIÓN PARA OBTENER COLOR DEL SENSOR SEGÚN SU ESTADO
+    // const getSensorColor = (sensor: SensorData): string => {
+    //     const { value, minAlarm, maxAlarm } = sensor;
 
-    // 🎨 COMPONENTE PARA MOSTRAR INFO DEL SENSOR
-    const SensorInfo = ({ alarmId }: { alarmId: number }) => {
-        const sensor = sensorsData.find(s => s.id === alarmId);
-        if (!sensor) return null;
+    //     // Verificar si está en rango de alarma
+    //     if (value <= minAlarm || value >= maxAlarm) {
+    //         return "#FF6B6B"; // Rojo - Valor en alarma
+    //     } else {
+    //         return "#4CAF50"; // Verde - Valor normal
+    //     }
+    // };
 
-        const icon = getSensorIcon(sensor.type, sensor.unit);
-        const unitString = getUnitString(sensor.unit);
+
+
+    //! COMPONENTE PARA MOSTRAR INFO DEL SENSOR
+    /* ─────  COMPONENTE SensorInfo  ───── */
+    const SensorInfo = ({ alarmId, reason }: { alarmId: number, reason: number; }) => {
+        const s = sensorsData.find(x => x.id === alarmId);
+        if (!s) return null;
+
+        const u = getUnitString(s.unit);
+        const renderMainValue = () => {
+            if (reason === 3) {
+                return <Text style={styles.errorText}>{t('DeviceDetailsScreen.errorTitle')}</Text>;
+            }
+            return (
+                <Text style={styles.valueText}>
+                    {(s.value ?? 0).toFixed(1)} {u}
+                </Text>
+            );
+        };
+
+        const renderValue = (n?: number | null) => {
+            if (n === 99999 || n === -99999) return <Text style={styles.dataCell}>—</Text>;
+            return (
+                <Text style={styles.dataCell}>
+                    {(n ?? 0).toFixed(1)}
+                    <Text style={{ marginLeft: Math.abs(n ?? 0) >= 10000 ? 6 : 2 }}>{u}</Text>
+                </Text>
+            );
+        };
 
         return (
-            <View style={styles.sensorRow}>
-                {/* Columna izquierda: Icono + valor */}
-                <View style={styles.leftColumn}>
-                    <Ionicons name={icon} size={24} color="#FFFFFF" style={styles.sensorIcon} />
-                    <Text style={styles.sensorMainValue}>
-                        {sensor.value} {unitString}
-                    </Text>
+            <View style={styles.sensorRowWrapper}>
+                {/* ─── fila principal (icono + valor + tabla) ─── */}
+                <View style={styles.topRow}>
+                    {/* valor actual */}
+                    {/*  ───── valor actual + rango ───── */}
+                    <View style={styles.valueBox}>
+                        {/* icono */}
+                        <Ionicons
+                            name={getSensorIcon(s.type, s.unit)}
+                            size={20}
+                            color="#fff"
+                            style={{ marginRight: 8 }}
+                        />
+
+                        {/* contenedor vertical (valor  +  rango) */}
+                        <View style={styles.valueCol}>
+                            {renderMainValue()}
+
+                            {s.minAlarm != null && s.maxAlarm != null &&
+                                s.minAlarm !== -99999 && s.maxAlarm !== 99999 && (
+                                    <Text style={styles.alarmRangeText}>
+                                        {s.minAlarm} – {s.maxAlarm} {u}
+                                    </Text>
+                                )}
+                        </View>
+                    </View>
+                    {/* tabla máx / min */}
+                    <View style={styles.table}>
+                        <View style={styles.headerRow}>
+                            <Text style={styles.cornerCell} />
+                            <View style={styles.headerUnderline}>
+                                <Text style={styles.headerCell}>{t('Ayer')}</Text>
+                                <Text style={styles.headerCell}>{t('Hoy')}</Text>
+                            </View>
+                        </View>
+                        <View style={styles.row}>
+                            <Text style={styles.rowTitle}>{t('Máx')}</Text>
+                            {renderValue(s.maxValueYesterday)}
+                            {renderValue(s.maxValueToday)}
+                        </View>
+                        <View style={styles.row}>
+                            <Text style={styles.rowTitle}>{t('Min')}</Text>
+                            {renderValue(s.minValueYesterday)}
+                            {renderValue(s.minValueToday)}
+                        </View>
+                    </View>
                 </View>
 
-                {/* Columna derecha: Max arriba, Min abajo */}
-                <View style={styles.rightColumn}>
-                    <Text style={styles.sensorLimitLabel}>
-                        {t("DeviceDetailsScreen.Max")}:
-                        <Text style={styles.sensorLimitValue}> {sensor.maxAlarm} {unitString}</Text>
-                    </Text>
-                    <Text style={styles.sensorLimitLabel}>
-                        {t("DeviceDetailsScreen.Min")}:
-                        <Text style={styles.sensorLimitValue}> {sensor.minAlarm} {unitString}</Text>
-                    </Text>
-                </View>
+
             </View>
         );
     };
 
 
+
+    //!-------------------------------------------------------------
+
+
+    // !FUNCIÓN PARA OBTENER ALARMAS
     const fetchAlarms = async (isAutoRefresh = false) => {
         try {
             if (!isAutoRefresh) {
@@ -288,11 +460,12 @@ export default function AlarmList() {
 
             const scrollY = scrollOffset.current;
 
-            // 🌡️ OBTENER ALARMAS Y SENSORES EN PARALELO
+            // !OBTENER ALARMAS Y SENSORES EN PARALELO
             const [alarmsData] = await Promise.all([
                 get(`alarmtc/status?mac=${mac}`),
                 fetchSensors() // Esta función ya maneja sus propios errores
             ]);
+            console.log("--------------", alarmsData, "------------")
 
             if (!alarmsData || alarmsData.length === 0) {
                 setIsConnected(false);
@@ -352,6 +525,7 @@ export default function AlarmList() {
             }
         }
     };
+    //!-------------------------------------------------------------
 
     const getIdRange = (idAlarm: number): number => {
         if (idAlarm < 100) return 0;
@@ -376,7 +550,9 @@ export default function AlarmList() {
         const baseTitle = mostFrequent || `Rango ${alarms[0]?.idAlarm ? Math.floor(alarms[0].idAlarm / 100) * 100 : ''}`;
         const hasDisconnected = hasDisconnectedAlarmsInExpansion(alarms);
 
-        return hasDisconnected ? `${baseTitle} - No conectado` : baseTitle;
+        return hasDisconnected
+            ? `${baseTitle} - ${t('DeviceDetailsScreen.No_conectado')}`
+            : baseTitle;
     };
 
     const separateAlarmsByIdRange = (alarms: ParamTC[]) => {
@@ -439,25 +615,43 @@ export default function AlarmList() {
             </View>
         );
     };
-
+    //! Renderiza cada alarma 
     const renderContent = () => {
+        if (needsUpdate) {
+            return (
+                <View style={styles.centeredContainer}>
+                    <MaterialCommunityIcons
+                        name="update"
+                        size={72}
+                        color="#8a9bb9"
+                        style={{ marginBottom: 16 }}
+                    />
+                    <Text style={styles.updateTitle}>
+                        {t('DeviceDetailsScreen.needUpdateTitle')}
+                    </Text>
+                    <Text style={styles.updateSubtitle}>
+                        {t('DeviceDetailsScreen.needUpdateSubtitle')}
+                    </Text>
+                </View>
+            );
+        }
         if (loading) return <Text style={styles.loadingText}>{t("DeviceDetailsScreen.loadingAlarms")}</Text>;
         if (!isConnected) return (
             <View style={styles.centeredContainer}>
-                <Ionicons name="cloud-offline-outline" size={48} color="#8a9bb9" />
-                <Text style={styles.noAlarmsText}>{t("DeviceDetailsScreen.noConnection")}</Text>
+                <Ionicons name="cloud-offline-outline" size={48} color="#4B5563" />
+                <Text style={styles.noAlarmsText}>{t("DeviceDetailsScreen.connection.noConnection")}</Text>
             </View>
         );
         if (tc5Disconnected) return (
             <View style={styles.centeredContainer}>
-                <Ionicons name="cloud-offline-outline" size={48} color="#8a9bb9" />
+                <Ionicons name="cloud-offline-outline" size={48} color="#4B5563" />
                 <Text style={styles.noAlarmsText}>{t("DeviceDetailsScreen.tc5Disconnected")}</Text>
             </View>
         );
 
         if (alarms.length === 0) return (
             <View style={styles.centeredContainer}>
-                <Ionicons name="notifications-off-outline" size={48} color="#8a9bb9" />
+                <Ionicons name="notifications-off-outline" size={48} color="#4B5563" />
                 <Text style={styles.noAlarmsText}>{t("DeviceDetailsScreen.noEnabledAlarms")}</Text>
             </View>
         );
@@ -488,6 +682,9 @@ export default function AlarmList() {
         );
     };
 
+    //!-------------------------------------------------------------
+
+    //! Pedir alarmas cada 15 segundos
     useEffect(() => {
         const interval = setInterval(() => {
             fetchAlarms(true);
@@ -499,35 +696,70 @@ export default function AlarmList() {
     useEffect(() => {
         fetchAlarms(false);
     }, []);
+    //!-------------------------------------------------------------
 
-    // 🔧 FUNCIÓN MEJORADA: Sin optimistic update, leer estado real primero
+    const hideTimer = useRef<NodeJS.Timeout>();
+    function keepSpinnerVisible() {
+        clearTimeout(hideTimer.current);
+        hideTimer.current = setTimeout(() => {
+            setPendingRequests(0);
+        }, MIN_VISIBLE_MS);
+    }
+
+    function runWithLoader<T>(fn: () => Promise<T>): Promise<T> {
+        const myId = ++lastId.current;
+        setPendingRequests(1);
+
+        const started = Date.now();
+        return fn().finally(() => {
+            const elapsed = Date.now() - started;
+            const wait = Math.max(0, MIN_VISIBLE_MS - elapsed);
+            setTimeout(() => {
+                if (myId === lastId.current) {
+                    keepSpinnerVisible();
+                }
+            }, wait);
+        });
+    }
+
+
+
+    //! FUNCIÓN MEJORADA: Sin optimistic update, leer estado real primero
     const handleAlarmToggle = async (alarm: ParamTC) => {
-        if (isProcessing) {
-            return;
-        }
+        const id = alarm.idAlarm;
+        const nextStatus = alarm.armado ? 0 : 1;
 
-        const newStatus = alarm.armado ? 0 : 1;
-        const idAlarm = alarm.idAlarm;
+        if (busyIds.current.has(id)) return;
+        busyIds.current.add(id);
+        forceRerender();                 // muestra opacity/spinner en la fila
 
         try {
-            setIsProcessing(true);
+            await runWithLoader(async () => {
+                // 1️⃣ POST al backend
+                console.log(mac)
+                await post(
+                    `alarmtc/arm?mac=${mac}&alarm=${id}&status=${nextStatus}&userid=${userId}`,
+                    {}
+                );
+                //console.log("-----------------envia esto", "mac", mac, "idalarm", id, "estado", nextStatus, "user", userId, "-----------------")
 
-            // 📡 Enviar al servidor SIN cambiar UI inmediatamente
-            const response = await post(`alarmtc/arm?mac=${mac}&alarm=${idAlarm}&status=${newStatus}`, {});
-
-            // 🔄 Leer estado real inmediatamente después de la respuesta
-            await fetchAlarms(true);
-
-        } catch (error) {
-            console.error("Error al cambiar estado de alarma:", error);
+                // 2️⃣ esperamos la lista confirmada
+                // await fetchAlarms(true);     // <— sin setAlarms local
+            });
+        } catch (e) {
             Alert.alert(
-                t("DeviceDetailsScreen.errorTitle"),
-                t("DeviceDetailsScreen.errorChangeAlarmState")
+                t('DeviceDetailsScreen.errorTitle'),
+                t('DeviceDetailsScreen.errorChangeAlarmState')
             );
         } finally {
-            setIsProcessing(false);
+            busyIds.current.delete(id);
+            forceRerender();               // quita el efecto “busy” de la fila
         }
     };
+
+    //!-------------------------------------------------------------
+
+
 
     useEffect(() => {
         if (isProcessing) {
@@ -557,13 +789,13 @@ export default function AlarmList() {
         };
     }, []);
 
-    const getIconNameForAlarm = (texto: string): keyof typeof Ionicons.glyphMap => {
-        const lowerText = texto.toLowerCase();
-        if (lowerText.includes("electrico")) return "flash-outline";
-        if (lowerText.includes("temperatura")) return "thermometer-outline";
-        if (lowerText.includes("humedad")) return "water-outline";
-        return "alert-circle-outline";
-    };
+    // const getIconNameForAlarm = (texto: string): keyof typeof Ionicons.glyphMap => {
+    //     const lowerText = texto.toLowerCase();
+    //     if (lowerText.includes("electrico")) return "flash-outline";
+    //     if (lowerText.includes("temperatura")) return "thermometer-outline";
+    //     if (lowerText.includes("humedad")) return "water-outline";
+    //     return "alert-circle-outline";
+    // };
 
     const isAlarmDisconnected = (alarm: ParamTC): boolean => {
         return alarm.hasOwnProperty('conectado') && alarm.conectado === false;
@@ -589,7 +821,7 @@ export default function AlarmList() {
         return () => socketService.off('register_macs', handleMacEvent);
     }, [mac]);
 
-    // 🎨 LÓGICA DE COLORES BASADA EN ESTADO REAL (raised)
+    //  LÓGICA DE COLORES BASADA EN ESTADO REAL (raised)
     const renderAlarmItem = ({ item }: { item: ParamTC }) => {
         let backgroundColor = "#8a9bb9";
         let textColor = "#000000";
@@ -648,7 +880,11 @@ export default function AlarmList() {
                         )}
                     </View>
                 </View>
-                <SensorInfo alarmId={item.idAlarm} />
+                <SensorInfo alarmId={item.idAlarm}
+                    reason={item.reason}      //  ← NUEVO
+
+
+                />
             </TouchableOpacity>
         );
     };
@@ -657,7 +893,7 @@ export default function AlarmList() {
         <View style={[
             styles.container,
             // 🟡 FONDO AMARILLO/NARANJA cuando master desarmado
-            !masterAlarmState && { backgroundColor: "#FFEB3B" }
+            !masterAlarmState && { backgroundColor: "#FFF7A1" } // "#FFEB3B"
         ]}>
             <View style={[styles.customHeader, { backgroundColor: headerColor }]}>
                 <TouchableOpacity
@@ -668,13 +904,40 @@ export default function AlarmList() {
                 </TouchableOpacity>
 
                 <View style={styles.headerTitleContainer}>
-                    <Text style={styles.headerSubtitle}>
-                        {farmName} - {siteName}
-                    </Text>
-                    <Text style={styles.headerMainTitle}>
-                        {headerText}
-                    </Text>
+                    <Text style={styles.headerSubtitle}>{farmName} - {siteName}</Text>
+
+                    <View style={{ flexDirection: 'row', alignItems: 'center', position: 'relative' }}>
+                        {/* texto + contador + campana */}
+                        <Text style={styles.headerMainTitle}>
+                            {headerText}
+                            {triggeredCount > 0 && ` (${triggeredCount})`}
+                        </Text>
+
+                        {triggeredCount > 0 && (
+                            <MaterialCommunityIcons
+                                name="bell-ring"
+                                size={18}
+                                color="#fff"
+                                style={{ marginLeft: 6, transform: [{ translateY: 1 }] }}
+                            />
+                        )}
+
+                        {pendingRequests > 0 && (
+                            <ActivityIndicator
+                                size="small"
+                                color="#fff"
+                                style={{
+                                    position: 'absolute',
+                                    right: -28,
+                                    top: '50%',
+                                    marginTop: -8,
+                                }}
+                            />
+                        )}
+                    </View>
+
                 </View>
+
 
                 <TouchableOpacity
                     style={styles.menuButton}
@@ -689,11 +952,12 @@ export default function AlarmList() {
             {renderContent()}
 
             <ButtonMaster
-                mac={mac}
-                fetchAlarms={fetchAlarms}
+                //mac={mac}
+                //fetchAlarms={fetchAlarms}
                 masterAlarmState={masterAlarmState}
                 onToggleMaster={handleToggleMaster}
-                disabled={isMasterDisabled}
+                disabled={isMasterDisabled || needsUpdate}
+
             />
 
             <Menu3Puntos
@@ -707,8 +971,10 @@ export default function AlarmList() {
                     mac: device.mac,
                     idSite: device.idSite,
                     buildingPortalRef: device.buildingPortalRef,
-                    simulado: isSimulated
+                    simulado: isSimulated,
                 }}
+                analogIds={analogIdsWithValue}
+
             />
         </View>
     );
@@ -868,7 +1134,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
     },
     sectionHeaderDisarmed: {
-        backgroundColor: '#FFEB3B',
+        backgroundColor: "#FFF7A1", // "#FFEB3B"
     },
     sectionTitleDisconnected: {
         color: '#d63031',
@@ -878,65 +1144,131 @@ const styles = StyleSheet.create({
         backgroundColor: '#ff6b6b',
         height: 2,
     },
-    // 🌡️ ESTILOS PARA SENSORES
-    sensorContainer: {
-        marginTop: 8,
-        paddingTop: 8,
-        borderTopWidth: 1,
-        borderTopColor: 'rgba(255,255,255,0.3)',
-    },
-    sensorRow: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        paddingHorizontal: 0, // Sin padding extra
-        paddingVertical: 4,
-    },
-    leftColumn: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        flex: 1,
-    },
-    sensorIcon: {
-        marginRight: 8,
-    },
-    sensorMainValue: {
-        color: '#FFFFFF',
-        fontSize: 20, // Más grande para el valor principal
-        fontWeight: 'bold',
-    },
-    rightColumn: {
-        alignItems: 'flex-end',
-    },
-    sensorLimitLabel: {
-        color: '#FFFFFF',
-        fontSize: 14, // Más grande para mejor legibilidad
-        opacity: 0.9,
-    },
-    sensorLimitValue: {
-        color: '#FFFFFF',
-        fontSize: 14, // Tamaño consistente con label
-        fontWeight: '600',
-    },
+    // ESTILOS PARA SENSORES
+
     alarmContent: {
         flex: 1,
     },
-    // Estilos no usados que podrías eliminar
-    sensorValueContainer: {
+    row: {
+        flexDirection: 'row'
+    },
+    cornerCell: {
+        width: 46
+    },
+    headerCell: {
+        minWidth: 46,
+        textAlign: 'center',
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#FFF',
+    },
+    rowTitle: {
+        width: 46,
+        textAlign: 'center',
+        fontSize: 12,
+        fontWeight: '600',
+        color: '#FFFFFF',
+    },
+    dataCell: {
+        minWidth: 46,
+        textAlign: 'center',
+        fontSize: 14,
+        color: '#FFFFFF',
+    },
+    sensorRowWrapper: {
+        position: 'relative',     // permite posicionar hijos absolutos (rango)
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        marginTop: 4,
+    },
+    topRow: {
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 10,
+        justifyContent: 'space-between',
     },
-    sensorLimitsContainer: {
+
+    /* valor actual */
+
+    table: {
+        alignSelf: 'flex-start',
+        borderWidth: 0,
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        marginLeft: 0,
+    },
+    headerRow: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
-        paddingHorizontal: 20,
-        alignItems: 'flex-end',
+        alignItems: 'center',
+        marginBottom: 4,
     },
-    sensorLimitRow: {
+    headerUnderline: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderBottomWidth: 1.2,      // grosor horizontal
+        borderBottomColor: '#FFFFFF',
+        paddingBottom: 2,            // deja un pelín de aire al texto
+    },
+
+    valueBox: {
+        flexDirection: 'row',
+        alignItems: 'flex-start',
+    },
+    valueCol: {
         flexDirection: 'column',
-        alignItems: 'flex-end',
-        marginBottom: 2,
+        alignItems: 'flex-start',
+        //justifyContent: 'center',
+        // minHeight: 0,
+        marginTop: -8
+
+
+    },
+    valueTextContainer: {
+        fontSize: 26,
+        fontWeight: 'bold',
+        color: '#fff',
+    },
+
+    valueText: {
+        fontSize: 26,
+        fontWeight: 'bold',
+        color: '#fff',
+        textAlign: 'left',
+    },
+    iconInValue: {
+        marginRight: 8,
+        marginTop: 1,
+    },
+
+    alarmRangeText: {
+        fontSize: 14,
+        color: '#fff',
+        marginTop: 2,               // espacio bajo el valor
+        textAlign: 'left',
+
+    },
+    valueRow: {
+        flexDirection: 'row',         // icono y valor en la misma línea
+        alignItems: 'center',         // alineados en vertical
+    },
+    errorText: {
+        fontSize: 26,
+        fontWeight: 'bold',
+        color: '#fff',
+        textAlign: 'left',
+        lineHeight: 32,              // ↔ misma caja que el número
+
+    },
+    updateTitle: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#4B5563',
+        textAlign: 'center',
+        marginBottom: 4,
+    },
+    updateSubtitle: {
+        fontSize: 16,
+        color: '#4B5563',
+        textAlign: 'center',
+        paddingHorizontal: 20,
     },
 });

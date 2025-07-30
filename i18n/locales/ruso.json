@@ -22,7 +22,7 @@
             "cannotLoadLocations": "Невозможно загрузить местоположения",
             "checkingAutomatically": "Автоматическая проверка..."
         },
-        "Alarms": "Сигналы",
+        "Alarmas": "Сигналы",
         "TODAS_LAS_UBICACIONES": "ВСЕ ЛОКАЦИИ"
     },
     "DeviceDetailsScreen": {
@@ -46,7 +46,10 @@
             "deviceDisconnected": "Устройство отключено или нет связи"
         },
         "Min": "Мин",
-        "Max": "Макс"
+        "Max": "Макс",
+        "No_conectado": "Не подключено",
+        "needUpdateTitle": "Требуется обновить TC5",
+        "needUpdateSubtitle": "Обновите из настроек TC5"
     },
     "DrawerContent": {
         "logout": "Выйти",
@@ -77,6 +80,8 @@
         "save": "Сохранить"
     },
     "Menu3Puntos": {
+        "HistoriaAlarmas": "История Сигналов",
+        "EstadisticasWeb": "Статистика",
         "explotacion": "Перейти на портал",
         "configuracion": "Конфигурация TC5",
         "geolocalizacion": "Геолокация",

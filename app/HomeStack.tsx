@@ -17,6 +17,8 @@ import EditarPrioridadScreen from "@/components/EditarPrioridadScreen";
 import { t } from "../i18n/i18nConfig";
 import { ResponseAlarmaSite } from "@/infrastructure/intercafe/listapi.interface";
 import DeviceLocationMap from "./extra/map/DebiceLocationMap";
+import HistoriaAlarmas from "@/components/HistoriaAlarmas";
+import EstadisticasWeb from "@/components/EstadisticasWeb";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -58,6 +60,28 @@ export type RootStackParamList = {
     SettingsScreen: undefined;
     Settings: undefined;
     AlarmasScreen: undefined;
+    HistoriaAlarmas: {
+        mac: number;
+        token: string;
+        idioma: string;
+        siteName: string;
+        farmName: string;
+        idSite: number;
+        buildingPortalRef: number;
+        simulado?: boolean;
+
+    };
+    EstadisticasWeb: {
+        mac: number;
+        token: string;
+        idioma: string;
+        siteName: string;
+        farmName: string;
+        idSite: number;
+        buildingPortalRef: number;
+        simulado?: boolean;
+        analogIds: number[]; // ⬅️  NUEVO
+    };
     Explotacion: {
         mac: number;
         token: string;
@@ -181,6 +205,28 @@ export default function HomeStack() {
                     name="MapsScreen"
                     component={MapsScreen}
                     options={{ headerTitle: "Mapas" }}
+                />
+
+                <Stack.Screen
+                    name="HistoriaAlarmas"
+                    component={HistoriaAlarmas}
+                    options={({ route }) => ({
+                        headerShown: true,
+                        title: route.params.farmName,
+                        sub: route.params.siteName,
+
+                    })}
+                />
+
+                <Stack.Screen
+                    name="EstadisticasWeb"
+                    component={EstadisticasWeb}
+                    options={({ route }) => ({
+                        headerShown: true,
+                        title: route.params.farmName,
+                        sub: route.params.siteName,
+
+                    })}
                 />
 
                 <Stack.Screen

@@ -46,7 +46,10 @@
             "deviceDisconnected": "Equipo desconectado o sin comunicación"
         },
         "Min": "Mín",
-        "Max": "Máx"
+        "Max": "Máx",
+        "No_conectado": "No conectado",
+        "needUpdateTitle": "Necesita actualizar el TC5",
+        "needUpdateSubtitle": "Actualice desde la configuración del TC5"
     },
     "DrawerContent": {
         "logout": "Cerrar sesión",
@@ -77,6 +80,8 @@
         "save": "Guardar"
     },
     "Menu3Puntos": {
+        "HistoriaAlarmas": " Historico Alarmas",
+        "EstadisticasWeb": " Estadisticas",
         "explotacion": "Ir a Portal",
         "configuracion": "Configuración TC5",
         "geolocalizacion": "Geolocalización",

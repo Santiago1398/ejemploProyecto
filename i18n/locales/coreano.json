@@ -23,7 +23,7 @@
             "cannotLoadLocations": "위치를 로드할 수 없습니다",
             "checkingAutomatically": "자동으로 확인 중..."
         },
-        "Alarms": "알람",
+        "Alarmas": "알람",
         "TODAS_LAS_UBICACIONES": "모든 위치"
     },
     "DeviceDetailsScreen": {
@@ -46,7 +46,10 @@
             "deviceDisconnected": "장치 연결 해제 또는 통신 불가"
         },
         "Min": "최소",
-        "Max": "최대"
+        "Max": "최대",
+        "No_conectado": "연결되지 않음",
+        "needUpdateTitle": "TC5 업데이트가 필요합니다",
+        "needUpdateSubtitle": "TC5 설정에서 업데이트하십시오"
     },
     "DrawerContent": {
         "logout": "로그아웃",
@@ -77,6 +80,8 @@
         "save": "저장"
     },
     "Menu3Puntos": {
+        "HistoriaAlarmas": "알람 기록",
+        "EstadisticasWeb": "통계",
         "explotacion": "포털로 이동",
         "configuracion": "TC5 구성",
         "geolocalizacion": "지리적 위치",

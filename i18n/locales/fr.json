@@ -22,7 +22,7 @@
             "cannotLoadLocations": "Impossible de charger les emplacements",
             "checkingAutomatically": "Vérification automatique..."
         },
-        "Alarms": "Alarmes",
+        "Alarmas": "Alarmes",
         "TODAS_LAS_UBICACIONES": "TOUS LES EMPLACEMENTS"
     },
     "DeviceDetailsScreen": {
@@ -46,7 +46,10 @@
             "deviceDisconnected": "Appareil déconnecté ou sans communication"
         },
         "Min": "Mín",
-        "Max": "Máx"
+        "Max": "Máx",
+        "No_conectado": "Non connecté",
+        "needUpdateTitle": "Mise à jour du TC5 requise",
+        "needUpdateSubtitle": "Veuillez mettre à jour depuis les paramètres du TC5"
     },
     "DrawerContent": {
         "logout": "Se déconnecter",
@@ -77,6 +80,8 @@
         "save": "Enregistrer"
     },
     "Menu3Puntos": {
+        "HistoriaAlarmas": "Historique des Alarmes",
+        "EstadisticasWeb": "Statistiques",
         "explotacion": "Aller au Portail",
         "configuracion": "Configuration TC5",
         "geolocalizacion": "Géolocalisation",

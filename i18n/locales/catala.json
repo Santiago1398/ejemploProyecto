@@ -22,7 +22,7 @@
             "cannotLoadLocations": "No es poden carregar les ubicacions",
             "checkingAutomatically": "Verificant automàticament..."
         },
-        "Alarms": "Alarmes",
+        "Alarmas": "Alarmes",
         "TODAS_LAS_UBICACIONES": "TOTES LES UBICACIONS"
     },
     "DeviceDetailsScreen": {
@@ -46,7 +46,10 @@
             "deviceDisconnected": "Equip desconnectat o sense comunicació"
         },
         "Min": "Mín",
-        "Max": "Màx"
+        "Max": "Màx",
+        "No_conectado": "No connectat",
+        "needUpdateTitle": "Cal actualitzar el TC5",
+        "needUpdateSubtitle": "Actualitzeu des de la configuració del TC5"
     },
     "DrawerContent": {
         "logout": "Tancar sessió",
@@ -77,6 +80,8 @@
         "save": "Desar"
     },
     "Menu3Puntos": {
+        "HistoriaAlarmas": "Històric d'Alarmes",
+        "EstadisticasWeb": "Estadístiques",
         "explotacion": "Anar al Portal",
         "configuracion": "Configuració TC5",
         "geolocalizacion": "Geolocalització",
@@ -267,14 +272,14 @@
     },
     "DeviceLocationMap": {
         "noLocation": {
-            "title": "Sin ubicación",
-            "message": "Este dispositivo no tiene una ubicación guardada."
+            "title": "Sense ubicació",
+            "message": "Aquest dispositiu no té una ubicació desada."
         },
         "error": {
             "title": "Error",
-            "message": "No se pudo obtener la información del dispositivo."
+            "message": "No s'ha pogut obtenir la informació del dispositiu."
         },
-        "loading": "Cargando ubicación...",
-        "retry": "Reintentar"
+        "loading": "Carregant ubicació...",
+        "retry": "Torna a intentar"
     }
 }

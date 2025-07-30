@@ -21,7 +21,9 @@
             "noConnection": "Nessuna connessione",
             "cannotLoadLocations": "Impossibile caricare le posizioni",
             "checkingAutomatically": "Controllo automatico..."
-        }
+        },
+        "Alarmas": "Alarmy",
+        "TODAS_LAS_UBICACIONES": "WSZYSTKIE LOKALIZACJE"
     },
     "DeviceDetailsScreen": {
         "alarmTriggered": "Jest alarm",
@@ -44,7 +46,10 @@
             "deviceDisconnected": "Urządzenie rozłączone lub brak komunikacji"
         },
         "Min": "Min",
-        "Max": "Maks"
+        "Max": "Maks",
+        "No_conectado": "Brak połączenia",
+        "needUpdateTitle": "Wymagana aktualizacja TC5",
+        "needUpdateSubtitle": "Zaktualizuj w ustawieniach TC5"
     },
     "DrawerContent": {
         "logout": "Wyloguj",
@@ -75,6 +80,8 @@
         "save": "Zapisz"
     },
     "Menu3Puntos": {
+        "HistoriaAlarmas": "Historia Alarmów",
+        "EstadisticasWeb": "Statystyki",
         "explotacion": "Przejdź do Portalu",
         "configuracion": "Konfiguracja TC5",
         "geolocalizacion": "Geolokalizacja",

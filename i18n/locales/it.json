@@ -22,7 +22,7 @@
             "cannotLoadLocations": "Impossibile caricare le posizioni",
             "checkingAutomatically": "Controllo automatico..."
         },
-        "Alarms": "Allarmi",
+        "Alarmas": "Allarmi",
         "TODAS_LAS_UBICACIONES": "TUTTE LE POSIZIONI"
     },
     "DeviceDetailsScreen": {
@@ -46,7 +46,10 @@
             "deviceDisconnected": "Dispositivo disconnesso o senza comunicazione"
         },
         "Min": "Mín",
-        "Max": "Máx"
+        "Max": "Máx",
+        "No_conectado": "Non connesso",
+        "needUpdateTitle": "È necessario aggiornare il TC5",
+        "needUpdateSubtitle": "Aggiorna dalle impostazioni del TC5"
     },
     "DrawerContent": {
         "logout": "Disconnetti",
@@ -77,6 +80,8 @@
         "save": "Salva"
     },
     "Menu3Puntos": {
+        "HistoriaAlarmas": "Storico Allarmi",
+        "EstadisticasWeb": "Statistiche",
         "explotacion": "Vai al Portale",
         "configuracion": "Configurazione TC5",
         "geolocalizacion": "Geolocalizzazione",
