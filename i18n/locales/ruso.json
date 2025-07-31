@@ -21,12 +21,14 @@
             "noConnection": "Нет соединения",
             "cannotLoadLocations": "Невозможно загрузить местоположения",
             "checkingAutomatically": "Автоматическая проверка..."
-        }
+        },
+        "Alarmas": "Сигналы",
+        "TODAS_LAS_UBICACIONES": "ВСЕ ЛОКАЦИИ"
     },
     "DeviceDetailsScreen": {
-        "alarmTriggered": "Тревога Сработала",
-        "alarmsEnabled": "Тревоги Включены",
-        "alarmsDisabled": "Тревоги Отключены",
+        "alarmTriggered": "Есть тревога",
+        "alarmsEnabled": "TC5 Включён",
+        "alarmsDisabled": "TC5 Отключён",
         "successTitle": "Успех",
         "alarmsActivated": "Тревоги были включены.",
         "alarmsDeactivated": "Тревоги были отключены.",
@@ -42,7 +44,12 @@
         "connection": {
             "noConnection": "Нет соединения",
             "deviceDisconnected": "Устройство отключено или нет связи"
-        }
+        },
+        "Min": "Мин",
+        "Max": "Макс",
+        "No_conectado": "Не подключено",
+        "needUpdateTitle": "Требуется обновить TC5",
+        "needUpdateSubtitle": "Обновите из настроек TC5"
     },
     "DrawerContent": {
         "logout": "Выйти",
@@ -73,6 +80,8 @@
         "save": "Сохранить"
     },
     "Menu3Puntos": {
+        "HistoriaAlarmas": "История Сигналов",
+        "EstadisticasWeb": "Статистика",
         "explotacion": "Перейти на портал",
         "configuracion": "Конфигурация TC5",
         "geolocalizacion": "Геолокация",
@@ -261,5 +270,22 @@
         "errorTitle": "Ошибка Конфигурации",
         "ButtonText": "Назад",
         "Reintentar": "Повторить попытку"
+    },
+    "DeviceLocationMap": {
+        "noLocation": {
+            "title": "Без расположения",
+            "message": "Это устройство не имеет сохранённого расположения."
+        },
+        "error": {
+            "title": "Ошибка",
+            "message": "Не удалось получить информацию об устройстве."
+        },
+        "loading": "Загрузка местоположения...",
+        "retry": "Повторить"
+    },
+    "TabBar": {
+        "Home": "Главная",
+        "Alarmas": "Оповещения",
+        "Maps": "Карты"
     }
 }

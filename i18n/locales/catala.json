@@ -21,12 +21,14 @@
             "noConnection": "Sense connexió",
             "cannotLoadLocations": "No es poden carregar les ubicacions",
             "checkingAutomatically": "Verificant automàticament..."
-        }
+        },
+        "Alarmas": "Alarmes",
+        "TODAS_LAS_UBICACIONES": "TOTES LES UBICACIONS"
     },
     "DeviceDetailsScreen": {
-        "alarmTriggered": "Alarma Activada",
-        "alarmsEnabled": "Alarmes Armades",
-        "alarmsDisabled": "Alarmes Desarmades",
+        "alarmTriggered": "Hi ha una alarma",
+        "alarmsEnabled": "TC5 Armat",
+        "alarmsDisabled": "TC5 Desarmat",
         "successTitle": "Èxit",
         "alarmsActivated": "Les alarmes s'han activat.",
         "alarmsDeactivated": "Les alarmes s'han desactivat.",
@@ -42,7 +44,12 @@
         "connection": {
             "noConnection": "Sense connexió",
             "deviceDisconnected": "Equip desconnectat o sense comunicació"
-        }
+        },
+        "Min": "Mín",
+        "Max": "Màx",
+        "No_conectado": "No connectat",
+        "needUpdateTitle": "Cal actualitzar el TC5",
+        "needUpdateSubtitle": "Actualitzeu des de la configuració del TC5"
     },
     "DrawerContent": {
         "logout": "Tancar sessió",
@@ -73,6 +80,8 @@
         "save": "Desar"
     },
     "Menu3Puntos": {
+        "HistoriaAlarmas": "Històric d'Alarmes",
+        "EstadisticasWeb": "Estadístiques",
         "explotacion": "Anar al Portal",
         "configuracion": "Configuració TC5",
         "geolocalizacion": "Geolocalització",
@@ -260,5 +269,22 @@
         "errorTitle": "Error de Configuració",
         "ButtonText": "Tornar",
         "Reintentar": "Tornar a intentar"
+    },
+    "DeviceLocationMap": {
+        "noLocation": {
+            "title": "Sense ubicació",
+            "message": "Aquest dispositiu no té una ubicació desada."
+        },
+        "error": {
+            "title": "Error",
+            "message": "No s'ha pogut obtenir la informació del dispositiu."
+        },
+        "loading": "Carregant ubicació...",
+        "retry": "Torna a intentar"
+    },
+    "TabBar": {
+        "Home": "Inici",
+        "Alarmas": "Alarmes",
+        "Maps": "Mapes"
     }
 }

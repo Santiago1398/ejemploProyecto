@@ -8,7 +8,7 @@ import {
     Platform,
     Alert,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -16,12 +16,14 @@ import { RootStackParamList } from "@/app/HomeStack";
 import { useAuthStore } from "@/store/authStore";
 import { t } from "@/i18n/i18nConfig";
 
+
 type DeviceDetailsNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
 export interface MenuOption {
     id: string;
     label: string;
     icon: string;
+    lib?: 'feather' | 'mc';   // ← NUEVO, por defecto feather
     onPress: () => void;
 }
 
@@ -39,6 +41,7 @@ export interface Menu3PuntosProps {
         simulado?: boolean; // 🔥 NUEVO
 
     };
+    analogIds: number[];
     options?: MenuOption[];
 }
 
@@ -46,6 +49,7 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
     visible,
     onClose,
     device,
+    analogIds,
     options,
 }) => {
     const navigation = useNavigation<DeviceDetailsNavigationProp>();
@@ -57,6 +61,55 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
 
     // 🔥 NUEVO ORDEN DE OPCIONES
     const defaultOptions: MenuOption[] = [
+        {
+            id: "HistoriaAlarmas",
+            label: t("Menu3Puntos.HistoriaAlarmas"),
+            icon: 'history',
+            lib: 'mc',
+            onPress: () => {
+                if (!token) {
+                    console.log("🔥 No hay token disponible");
+                    return;
+                }
+                console.log("🔥 Navegando a Explotacion");
+                navigation.navigate("HistoriaAlarmas", {
+                    mac: device.mac,
+                    token,
+                    idioma: "es",
+                    siteName: device.siteName,
+                    farmName: device.farmName,
+                    idSite: device.idSite,
+                    buildingPortalRef: device.buildingPortalRef,
+                    simulado: device.simulado,
+
+                });
+            },
+        },
+        {
+            id: "EstadisticasWeb", // 🔥 1️⃣ PRIMERO: Ir al Portal
+            label: t("Menu3Puntos.EstadisticasWeb"),
+            icon: 'chart-line',
+            lib: 'mc',
+            onPress: () => {
+                if (!token) {
+                    console.log("🔥 No hay token disponible");
+                    return;
+                }
+                console.log("🔥 Navegando a Explotacion");
+                navigation.navigate("EstadisticasWeb", {
+                    mac: device.mac,
+                    token,
+                    idioma: "es",
+                    siteName: device.siteName,
+                    farmName: device.farmName,
+                    idSite: device.idSite,
+                    buildingPortalRef: device.buildingPortalRef,
+                    simulado: device.simulado,
+                    analogIds,        // ⬅️  NUEVO
+
+                });
+            },
+        },
         {
             id: "explotacion", // 🔥 1️⃣ PRIMERO: Ir al Portal
             label: t("Menu3Puntos.explotacion"),
@@ -220,19 +273,29 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
                                 onPress={() => handleOptionPress(option)}
                                 activeOpacity={0.7}
                             >
-                                <Feather
-                                    name={option.icon as any}
-                                    size={24}
-                                    color="#2563EB"
-                                    style={styles.menuItemIcon}
-                                />
+                                {option.lib === 'mc' ? (
+                                    <MaterialCommunityIcons
+                                        name={option.icon as any}
+                                        size={24}
+                                        color="#2563EB"
+                                        style={styles.menuItemIcon}
+                                    />
+                                ) : (
+                                    <Feather
+                                        name={option.icon as any}
+                                        size={24}
+                                        color="#2563EB"
+                                        style={styles.menuItemIcon}
+                                    />
+                                )}
+
                                 <Text style={styles.menuItemText}>{option.label}</Text>
                             </TouchableOpacity>
-                            {index < finalOptions.length - 1 && (
-                                <View style={styles.divider} />
-                            )}
+
+                            {index < finalOptions.length - 1 && <View style={styles.divider} />}
                         </View>
                     ))}
+
                 </View>
             </TouchableOpacity>
         </Modal>

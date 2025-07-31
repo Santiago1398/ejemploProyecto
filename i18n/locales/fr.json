@@ -21,12 +21,14 @@
             "noConnection": "Pas de connexion",
             "cannotLoadLocations": "Impossible de charger les emplacements",
             "checkingAutomatically": "Vérification automatique..."
-        }
+        },
+        "Alarmas": "Alarmes",
+        "TODAS_LAS_UBICACIONES": "TOUS LES EMPLACEMENTS"
     },
     "DeviceDetailsScreen": {
-        "alarmTriggered": "Alarme Déclenchée",
-        "alarmsEnabled": "Alarmes Armées",
-        "alarmsDisabled": "Alarmes Désarmées",
+        "alarmTriggered": "Il y a une alarme",
+        "alarmsEnabled": "TC5 Armé",
+        "alarmsDisabled": "TC5 Désarmé",
         "successTitle": "Succès",
         "alarmsActivated": "Les alarmes ont été activées.",
         "alarmsDeactivated": "Les alarmes ont été désactivées.",
@@ -42,7 +44,12 @@
         "connection": {
             "noConnection": "Pas de connexion",
             "deviceDisconnected": "Appareil déconnecté ou sans communication"
-        }
+        },
+        "Min": "Mín",
+        "Max": "Máx",
+        "No_conectado": "Non connecté",
+        "needUpdateTitle": "Mise à jour du TC5 requise",
+        "needUpdateSubtitle": "Veuillez mettre à jour depuis les paramètres du TC5"
     },
     "DrawerContent": {
         "logout": "Se déconnecter",
@@ -73,6 +80,8 @@
         "save": "Enregistrer"
     },
     "Menu3Puntos": {
+        "HistoriaAlarmas": "Historique des Alarmes",
+        "EstadisticasWeb": "Statistiques",
         "explotacion": "Aller au Portail",
         "configuracion": "Configuration TC5",
         "geolocalizacion": "Géolocalisation",
@@ -260,5 +269,22 @@
         "errorTitle": "Erreur de Configuration",
         "ButtonText": "Retour",
         "Reintentar": "Réessayer"
+    },
+    "DeviceLocationMap": {
+        "noLocation": {
+            "title": "Aucune localisation",
+            "message": "Cet appareil n'a pas de localisation enregistrée."
+        },
+        "error": {
+            "title": "Erreur",
+            "message": "Impossible d'obtenir les informations de l'appareil."
+        },
+        "loading": "Chargement de l'emplacement...",
+        "retry": "Réessayer"
+    },
+    "TabBar": {
+        "Home": "Accueil",
+        "Alarmas": "Alertes",
+        "Maps": "Cartes"
     }
 }

@@ -21,12 +21,14 @@
             "noConnection": "Nessuna connessione",
             "cannotLoadLocations": "Impossibile caricare le posizioni",
             "checkingAutomatically": "Controllo automatico..."
-        }
+        },
+        "Alarmas": "Allarmi",
+        "TODAS_LAS_UBICACIONES": "TUTTE LE POSIZIONI"
     },
     "DeviceDetailsScreen": {
-        "alarmTriggered": "Allarme Attivato",
-        "alarmsEnabled": "Allarmi Armati",
-        "alarmsDisabled": "Allarmi Disarmati",
+        "alarmTriggered": "C'è un allarme",
+        "alarmsEnabled": "TC5 Armato",
+        "alarmsDisabled": "TC5 Disarmato",
         "successTitle": "Successo",
         "alarmsActivated": "Gli allarmi sono stati attivati.",
         "alarmsDeactivated": "Gli allarmi sono stati disattivati.",
@@ -42,7 +44,12 @@
         "connection": {
             "noConnection": "Nessuna connessione",
             "deviceDisconnected": "Dispositivo disconnesso o senza comunicazione"
-        }
+        },
+        "Min": "Mín",
+        "Max": "Máx",
+        "No_conectado": "Non connesso",
+        "needUpdateTitle": "È necessario aggiornare il TC5",
+        "needUpdateSubtitle": "Aggiorna dalle impostazioni del TC5"
     },
     "DrawerContent": {
         "logout": "Disconnetti",
@@ -73,6 +80,8 @@
         "save": "Salva"
     },
     "Menu3Puntos": {
+        "HistoriaAlarmas": "Storico Allarmi",
+        "EstadisticasWeb": "Statistiche",
         "explotacion": "Vai al Portale",
         "configuracion": "Configurazione TC5",
         "geolocalizacion": "Geolocalizzazione",
@@ -254,11 +263,28 @@
         "ButtonText": "Indietro",
         "Reintentar": "Riprova"
     },
-    "configuracion": {
+    "ConfiguracionTC5": {
         "loadingConfiguration": "Caricamento configurazione...",
         "errorMessage": "Impossibile caricare la configurazione del dispositivo.",
         "errorTitle": "Errore di Configurazione",
         "ButtonText": "Indietro",
         "Reintentar": "Riprova"
+    },
+    "DeviceLocationMap": {
+        "noLocation": {
+            "title": "Nessuna posizione",
+            "message": "Questo dispositivo non ha una posizione salvata."
+        },
+        "error": {
+            "title": "Errore",
+            "message": "Impossibile ottenere le informazioni del dispositivo."
+        },
+        "loading": "Caricamento posizione...",
+        "retry": "Riprova"
+    },
+    "TabBar": {
+        "Home": "Home",
+        "Alarmas": "Allarmi",
+        "Maps": "Mappe"
     }
 }

@@ -16,7 +16,7 @@
       "buildNumber": "14",
       "googleServicesFile": "./ios/TC5/GoogleService-Info.plist",
       "config": {
-        "googleMapsApiKey": "AIzaSyBqrNqrA8NEOhdflFJ334PsAMUHSatgkwk"
+        "googleMapsApiKey": "AIzaSyBdJZTv6ZQfBgLMUrKCXUvnaCGyHTiiV4I"
       },
       "infoPlist": {
         "UIBackgroundModes": [
@@ -36,7 +36,7 @@
     "android": {
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyBqrNqrA8NEOhdflFJ334PsAMUHSatgkwk"
+          "apiKey": "AIzaSyBdJZTv6ZQfBgLMUrKCXUvnaCGyHTiiV4I"
         }
       },
       "adaptiveIcon": {
@@ -87,8 +87,8 @@
       "typedRoutes": true
     },
     "extra": {
-     "apiUrl": "http://37.187.180.179:8032/api",
-      "apiUrlDev": "http://37.187.180.179:8032/api",
+     "apiUrl": "http://tc5monitor.cticontrol.com:8032/api",
+      "apiUrlDev": "http://tc5monitortest.cticontrol.com:8032/api",
       "router": {
         "origin": false
       },

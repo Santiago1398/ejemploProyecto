@@ -22,12 +22,14 @@
             "noConnection": "연결 없음",
             "cannotLoadLocations": "위치를 로드할 수 없습니다",
             "checkingAutomatically": "자동으로 확인 중..."
-        }
+        },
+        "Alarmas": "알람",
+        "TODAS_LAS_UBICACIONES": "모든 위치"
     },
     "DeviceDetailsScreen": {
-        "alarmTriggered": "알람 발생",
-        "alarmsEnabled": "알람 활성화됨",
-        "alarmsDisabled": "알람 비활성화됨",
+        "alarmTriggered": "경보 발생",
+        "alarmsEnabled": "TC5 활성화",
+        "alarmsDisabled": "TC5 비활성화",
         "successTitle": "성공",
         "alarmsActivated": "알람이 활성화되었습니다.",
         "alarmsDeactivated": "알람이 비활성화되었습니다.",
@@ -42,7 +44,12 @@
         "connection": {
             "noConnection": "연결 없음",
             "deviceDisconnected": "장치 연결 해제 또는 통신 불가"
-        }
+        },
+        "Min": "최소",
+        "Max": "최대",
+        "No_conectado": "연결되지 않음",
+        "needUpdateTitle": "TC5 업데이트가 필요합니다",
+        "needUpdateSubtitle": "TC5 설정에서 업데이트하십시오"
     },
     "DrawerContent": {
         "logout": "로그아웃",
@@ -73,6 +80,8 @@
         "save": "저장"
     },
     "Menu3Puntos": {
+        "HistoriaAlarmas": "알람 기록",
+        "EstadisticasWeb": "통계",
         "explotacion": "포털로 이동",
         "configuracion": "TC5 구성",
         "geolocalizacion": "지리적 위치",
@@ -260,5 +269,22 @@
         "errorTitle": "구성 오류",
         "ButtonText": "뒤로",
         "Reintentar": "다시 시도"
+    },
+    "DeviceLocationMap": {
+        "noLocation": {
+            "title": "위치 없음",
+            "message": "이 디바이스는 저장된 위치가 없습니다."
+        },
+        "error": {
+            "title": "오류",
+            "message": "디바이스 정보를 가져올 수 없습니다."
+        },
+        "loading": "위치 불러오는 중...",
+        "retry": "다시 시도"
+    },
+    "TabBar": {
+        "Home": "홈",
+        "Alarmas": "알림",
+        "Maps": "지도"
     }
 }

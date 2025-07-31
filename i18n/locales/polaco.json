@@ -21,12 +21,14 @@
             "noConnection": "Nessuna connessione",
             "cannotLoadLocations": "Impossibile caricare le posizioni",
             "checkingAutomatically": "Controllo automatico..."
-        }
+        },
+        "Alarmas": "Alarmy",
+        "TODAS_LAS_UBICACIONES": "WSZYSTKIE LOKALIZACJE"
     },
     "DeviceDetailsScreen": {
-        "alarmTriggered": "Alarm Uruchomiony",
-        "alarmsEnabled": "Alarmy Uzbrojone",
-        "alarmsDisabled": "Alarmy Rozbrojone",
+        "alarmTriggered": "Jest alarm",
+        "alarmsEnabled": "TC5 Uzbrojony",
+        "alarmsDisabled": "TC5 Rozbrojony",
         "successTitle": "Sukces",
         "alarmsActivated": "Alarmy zostały uzbrojone.",
         "alarmsDeactivated": "Alarmy zostały rozbrojone.",
@@ -42,7 +44,12 @@
         "connection": {
             "noConnection": "Brak połączenia",
             "deviceDisconnected": "Urządzenie rozłączone lub brak komunikacji"
-        }
+        },
+        "Min": "Min",
+        "Max": "Maks",
+        "No_conectado": "Brak połączenia",
+        "needUpdateTitle": "Wymagana aktualizacja TC5",
+        "needUpdateSubtitle": "Zaktualizuj w ustawieniach TC5"
     },
     "DrawerContent": {
         "logout": "Wyloguj",
@@ -73,6 +80,8 @@
         "save": "Zapisz"
     },
     "Menu3Puntos": {
+        "HistoriaAlarmas": "Historia Alarmów",
+        "EstadisticasWeb": "Statystyki",
         "explotacion": "Przejdź do Portalu",
         "configuracion": "Konfiguracja TC5",
         "geolocalizacion": "Geolokalizacja",
@@ -261,5 +270,22 @@
         "errorTitle": "Błąd Konfiguracji",
         "ButtonText": "Wróć",
         "Reintentar": "Ponów próbę"
+    },
+    "DeviceLocationMap": {
+        "noLocation": {
+            "title": "Brak lokalizacji",
+            "message": "To urządzenie nie ma zapisanej lokalizacji."
+        },
+        "error": {
+            "title": "Błąd",
+            "message": "Nie udało się pobrać informacji o urządzeniu."
+        },
+        "loading": "Ładowanie lokalizacji...",
+        "retry": "Spróbuj ponownie"
+    },
+    "TabBar": {
+        "Home": "Strona główna",
+        "Alarmas": "Powiadomienia",
+        "Maps": "Mapy"
     }
 }

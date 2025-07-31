@@ -21,12 +21,14 @@
             "noConnection": "Немає з'єднання",
             "cannotLoadLocations": "Неможливо завантажити розташування",
             "checkingAutomatically": "Автоматична перевірка..."
-        }
+        },
+        "Alarmas": "Сигнали",
+        "TODAS_LAS_UBICACIONES": "ВСІ ЛОКАЦІЇ"
     },
     "DeviceDetailsScreen": {
-        "alarmTriggered": "Тривога спрацювала",
-        "alarmsEnabled": "Тривоги увімкнені",
-        "alarmsDisabled": "Тривоги вимкнені",
+        "alarmTriggered": "Є тривога",
+        "alarmsEnabled": "TC5 Увімкнено",
+        "alarmsDisabled": "TC5 Вимкнено",
         "successTitle": "Успіх",
         "alarmsActivated": "Тривоги було увімкнено.",
         "alarmsDeactivated": "Тривоги було вимкнено.",
@@ -42,7 +44,12 @@
         "connection": {
             "noConnection": "Немає з'єднання",
             "deviceDisconnected": "Пристрій відключений або немає зв'язку"
-        }
+        },
+        "Min": "Хв",
+        "Max": "Макс",
+        "No_conectado": "Не підключено",
+        "needUpdateTitle": "Потрібно оновити TC5",
+        "needUpdateSubtitle": "Оновіть у налаштуваннях TC5"
     },
     "DrawerContent": {
         "logout": "Вийти",
@@ -73,6 +80,8 @@
         "save": "Зберегти"
     },
     "Menu3Puntos": {
+        "HistoriaAlarmas": "Історія Сигналів",
+        "EstadisticasWeb": "Статистика",
         "explotacion": "Перейти на портал",
         "configuracion": "Конфігурація TC5",
         "geolocalizacion": "Геолокація",
@@ -261,5 +270,22 @@
         "errorTitle": "Помилка Конфігурації",
         "ButtonText": "Назад",
         "Reintentar": "Спробувати знову"
+    },
+    "DeviceLocationMap": {
+        "noLocation": {
+            "title": "Без розташування",
+            "message": "Цей пристрій не має збереженого розташування."
+        },
+        "error": {
+            "title": "Помилка",
+            "message": "Не вдалося отримати інформацію про пристрій."
+        },
+        "loading": "Завантаження місцезнаходження...",
+        "retry": "Повторити"
+    },
+    "TabBar": {
+        "Home": "Головна",
+        "Alarmas": "Сповіщення",
+        "Maps": "Карти"
     }
 }

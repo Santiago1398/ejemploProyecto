@@ -31,7 +31,7 @@ import { useRef } from 'react';
 export default function DeviceList() {
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const { token, userId } = useAuthStore();
-    const isFocused = useIsFocused(); // 🔥 NUEVO: Detecta si la pantalla está activa
+    const isFocused = useIsFocused();
 
     const {
         devices,
@@ -49,29 +49,36 @@ export default function DeviceList() {
     const [errorAlertShown, setErrorAlertShown] = useState(false);
     const previousMacsRef = useRef<string[]>([]);
 
-    // 🔥 NUEVO: Preparar datos para SectionList
-    const prepareSectionData = () => {
-        const sections = [];
+    //! Ahora recibe la lista completa y decide qué secciones crear
+    const prepareSectionData = (deviceList: ResponseAlarmaSite[]) => {
+        const sections: {
+            title: string;
+            data: ResponseAlarmaSite[];
+            type: 'alarms' | 'all';
+        }[] = [];
 
-        // 🚨 SECCIÓN 1: ALARMAS (solo dispositivos con alarmType = 1 - rojo)
-        const devicesWithAlarms = devices.filter(device => device.alarmType === 1);
-        if (devicesWithAlarms.length > 0) {
+        // ! Sección “Alarmas” SOLO si hay +5 ubicaciones
+        const devicesWithAlarms = deviceList.filter(d => d.alarmType === 1);
+
+        if (deviceList.length > 5 && devicesWithAlarms.length > 0) {
             sections.push({
-                title: "ALARMAS",
+                title: t('deviceList.Alarmas'),
                 data: devicesWithAlarms,
-                type: "alarms"
+                type: 'alarms',
             });
         }
 
-        // 📍 SECCIÓN 2: TODAS LAS UBICACIONES (todos los dispositivos)
+        //!  Sección “Todas las ubicaciones”
         sections.push({
-            title: "TODAS LAS UBICACIONES",
-            data: devices,
-            type: "all"
+            title: t('deviceList.TODAS_LAS_UBICACIONES'),
+            data: deviceList,
+            type: 'all',
         });
 
         return sections;
     };
+    //!-------------------------------------------------------------
+
 
     useEffect(() => {
         const subscription = AppState.addEventListener("change", async (state) => {
@@ -106,12 +113,13 @@ export default function DeviceList() {
         checkAlarm();
     }, []);
 
+    //! Los Eventos
     useEffect(() => {
         const handleRegisterMacsEvent = (payload: any) => {
             // Ignora si la pantalla no está en foco
             if (!isFocused) return;
 
-            // ✅ Acepta string, número u objeto
+            //  Acepta string, número u objeto
             const eventMac = typeof payload === 'string' || typeof payload === 'number'
                 ? String(payload)
                 : String(
@@ -125,13 +133,16 @@ export default function DeviceList() {
                 console.log(`🔄 MAC ${eventMac} ha cambiado, refrescando lista`);
                 fetchDevices(true);            // true = sin loading
             } else {
-                console.log('⚠️ register_macs sin MAC, ignorado');
+                console.log(' register_macs sin MAC, ignorado');
             }
         };
 
         socketService.on('register_macs', handleRegisterMacsEvent);
         return () => socketService.off('register_macs', handleRegisterMacsEvent);
     }, [isFocused]);
+
+    //!-------------------------------------------------------------
+
 
 
     useEffect(() => {
@@ -159,6 +170,7 @@ export default function DeviceList() {
         checkTelefono();
     }, []);
 
+    //! Manejo del teléfono
     const handleConfirmTelefono = async (telefono: string) => {
         console.log(" Guardando teléfono desde DeviceList:", telefono);
         setDialogVisible(false);
@@ -170,15 +182,17 @@ export default function DeviceList() {
             await notificationService.registerDevice(Number(userId));
         }
     };
+    //!-------------------------------------------------------------
+
 
     const handleCancelTelefono = async () => {
         setDialogVisible(false);
         await AsyncStorage.setItem("telefonoPreguntado", "true");
     };
-
+    //! la función que obtiene los dispositivos
     const fetchDevices = async (isAutoRefresh = false) => {
         try {
-            console.log('🔄 fetchDevices ejecutado:');
+            console.log('------------ fetchDevices ejecutado:------------------------');
             console.log('   - isAutoRefresh:', isAutoRefresh);
             console.log('   - Origen:', new Error().stack?.split('\n')[2]); // Ver desde dónde se llamó
             console.log('   - Hora:', new Date().toLocaleTimeString());
@@ -242,6 +256,8 @@ export default function DeviceList() {
             }
         }
     };
+    //!-------------------------------------------------------------
+
 
     useEffect(() => {
         notificationService.setOnSiteAlarmDetected((macStr) => {
@@ -260,19 +276,19 @@ export default function DeviceList() {
     //     };
     // }, []);
 
-    // 🔥 FUNCIÓN ACTUALIZADA: getBackgroundColor con nueva lógica
+    // !FUNCIÓN ACTUALIZADA: getBackgroundColor con nueva lógica
     const getBackgroundColor = (alarmType: number, armed: boolean) => {
-        // 🔥 PRIMERA PRIORIDAD: Si alarmType = 2, siempre gris (sin importar armed)
+        //  PRIMERA PRIORIDAD: Si alarmType = 2, siempre gris (sin importar armed)
         if (alarmType === 2) {
             return "#6C7B8F"; // Gris para alarmType 2
         }
 
-        // 🔥 SEGUNDA PRIORIDAD: Si alarmType ≠ 2 Y armed = false, amarillo
+        // SEGUNDA PRIORIDAD: Si alarmType ≠ 2 Y armed = false, amarillo
         if (!armed) {
             return "#facc15"; // Amarillo para desarmados (que no sean alarmType 2)
         }
 
-        // 🔥 TERCERA PRIORIDAD: Colores normales según alarmType para dispositivos armados
+        // TERCERA PRIORIDAD: Colores normales según alarmType para dispositivos armados
         switch (alarmType) {
             case 0: return "#78dd35";  // Verde para alarmType 0 armado
             case 1: return "#FF0000";  // Rojo para alarmType 1 armado
@@ -281,7 +297,6 @@ export default function DeviceList() {
         }
     };
 
-    //  EJEMPLO DE COMPORTAMIENTO:
     /*
     Ejemplos con tus datos:
     
@@ -293,7 +308,10 @@ export default function DeviceList() {
     6. {"alarmType": 1, "armed": true}  → Rojo (#FF0000)
     */
 
-    // 🔥 NUEVO: Renderizar header de sección
+    //!-------------------------------------------------------------
+
+
+    // ! Renderizar header de sección
     const renderSectionHeader = ({ section }: { section: any }) => (
         <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>{section.title}</Text>
@@ -301,7 +319,10 @@ export default function DeviceList() {
         </View>
     );
 
-    // 🔥 MODIFICADO: Renderizar cada dispositivo
+    //!-------------------------------------------------------------
+
+
+    //! MODIFICADO: Renderizar cada dispositivo
     const renderDeviceItem = ({ item }: { item: ResponseAlarmaSite }) => {
         const backgroundColor = getBackgroundColor(item.alarmType, item.armed);
         const capitalize = (str: string) => str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";
@@ -336,6 +357,8 @@ export default function DeviceList() {
             </TouchableOpacity>
         );
     };
+    //!-------------------------------------------------------------
+
 
     return (
         <View style={styles.container}>
@@ -352,9 +375,9 @@ export default function DeviceList() {
             ) : devices.length === 0 ? (
                 <Text style={styles.loadingText}>{t("deviceList.noLocationsAvailable")}</Text>
             ) : (
-                // 🔥 NUEVO: Usar SectionList en lugar de FlatList
+                // !  SectionList en lugar de FlatList
                 <SectionList
-                    sections={prepareSectionData()}
+                    sections={prepareSectionData(devices)}
                     keyExtractor={(item, index) => `${item.idSite}-${item.mac}-${index}`}
                     renderItem={renderDeviceItem}
                     renderSectionHeader={renderSectionHeader}
@@ -397,7 +420,7 @@ const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: "#f2f2f2" },
     listContainer: { padding: 16 },
 
-    // 🔥 NUEVOS ESTILOS PARA HEADERS DE SECCIÓN
+    // NUEVOS ESTILOS PARA HEADERS DE SECCIÓN
     sectionHeader: {
         backgroundColor: '#f2f2f2',
         paddingVertical: 12,
@@ -420,7 +443,7 @@ const styles = StyleSheet.create({
 
     deviceContainer: {
         padding: 16,
-        marginVertical: 4, // 🔥 Reducido para mejor espaciado con headers
+        marginVertical: 4, // Reducido para mejor espaciado con headers
         borderRadius: 12,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },

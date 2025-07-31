@@ -36,4 +36,5 @@ export interface ParamTC {
     conectado: boolean;
     passwordCorrection: boolean;
     raised: boolean;
+    reason: number;
 }

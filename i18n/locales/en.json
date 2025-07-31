@@ -21,12 +21,14 @@
             "noConnection": "No connection",
             "cannotLoadLocations": "Cannot load locations",
             "checkingAutomatically": "Checking automatically..."
-        }
+        },
+        "Alarmas": "Alarms",
+        "TODAS_LAS_UBICACIONES": "ALL LOCATIONS"
     },
     "DeviceDetailsScreen": {
-        "alarmTriggered": "Alarm triggered",
-        "alarmsEnabled": "Alarms enabled",
-        "alarmsDisabled": "Alarms disabled",
+        "alarmTriggered": "Alarm detected",
+        "alarmsEnabled": "TC5 Armed",
+        "alarmsDisabled": "TC5 Disarmed",
         "successTitle": "Success",
         "alarmsActivated": "Alarms have been activated.",
         "alarmsDeactivated": "Alarms have been deactivated.",
@@ -42,7 +44,12 @@
         "connection": {
             "noConnection": "No connection",
             "deviceDisconnected": "Device disconnected or no communication"
-        }
+        },
+        "Min": "Mín",
+        "Max": "Máx",
+        "No_conectado": "Disconnected",
+        "needUpdateTitle": "TC5 update required",
+        "needUpdateSubtitle": "Please update from the TC5 settings"
     },
     "DrawerContent": {
         "logout": "Logout",
@@ -73,6 +80,8 @@
         "save": "Save"
     },
     "Menu3Puntos": {
+        "HistoriaAlarmas": "Alarm History",
+        "EstadisticasWeb": "Statistics",
         "explotacion": "Go to Portal",
         "configuracion": "TC5 Configuration",
         "geolocalizacion": "Geolocation",
@@ -261,5 +270,22 @@
         "errorTitle": "Configuration Error",
         "ButtonText": "Back",
         "Reintentar": "Retry"
+    },
+    "DeviceLocationMap": {
+        "noLocation": {
+            "title": "No location",
+            "message": "This device does not have a saved location."
+        },
+        "error": {
+            "title": "Error",
+            "message": "Could not retrieve device information."
+        },
+        "loading": "Loading location...",
+        "retry": "Retry"
+    },
+    "TabBar": {
+        "Home": "Home",
+        "Alarmas": "Alarms",
+        "Maps": "Maps"
     }
 }

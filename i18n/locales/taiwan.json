@@ -21,12 +21,14 @@
             "noConnection": "無連接",
             "cannotLoadLocations": "無法載入位置",
             "checkingAutomatically": "自動檢查中..."
-        }
+        },
+        "Alarmas": "警報",
+        "TODAS_LAS_UBICACIONES": "所有位置"
     },
     "DeviceDetailsScreen": {
-        "alarmTriggered": "警報已觸發",
-        "alarmsEnabled": "警報已啟用",
-        "alarmsDisabled": "警報已停用",
+        "alarmTriggered": "有警報",
+        "alarmsEnabled": "TC5 已啟動",
+        "alarmsDisabled": "TC5 已停用",
         "successTitle": "成功",
         "alarmsActivated": "警報已啟用。",
         "alarmsDeactivated": "警報已停用。",
@@ -42,7 +44,12 @@
         "connection": {
             "noConnection": "無連接",
             "deviceDisconnected": "設備斷開連接或無通信"
-        }
+        },
+        "Min": "最小",
+        "Max": "最大",
+        "No_conectado": "未連接",
+        "needUpdateTitle": "需要更新 TC5",
+        "needUpdateSubtitle": "請在 TC5 設定中更新"
     },
     "DrawerContent": {
         "logout": "登出",
@@ -73,6 +80,8 @@
         "save": "儲存"
     },
     "Menu3Puntos": {
+        "HistoriaAlarmas": "警報歷史",
+        "EstadisticasWeb": "統計",
         "explotacion": "前往入口網站",
         "configuracion": "TC5 配置",
         "geolocalizacion": "地理位置",
@@ -261,5 +270,22 @@
         "errorTitle": "配置錯誤",
         "ButtonText": "返回",
         "Reintentar": "重試"
+    },
+    "DeviceLocationMap": {
+        "noLocation": {
+            "title": "無位置",
+            "message": "此裝置沒有儲存的位置。"
+        },
+        "error": {
+            "title": "錯誤",
+            "message": "無法取得裝置資訊。"
+        },
+        "loading": "載入位置中...",
+        "retry": "重試"
+    },
+    "TabBar": {
+        "Home": "首頁",
+        "Alarmas": "通知",
+        "Maps": "地圖"
     }
 }
