@@ -15,6 +15,8 @@
 		A8E2C3D2ECA90893374E7E75 /* Pods_TC5.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F58D317B48126482B9877266 /* Pods_TC5.framework */; };
 		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
 		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
+		6B9269C9207B4985B7EFF34A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5F69BDD7402E463C90D748AA /* GoogleService-Info.plist */; };
+		32CDBBDEAD6541A38EB985F7 /* noop-file.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3FF0F948362D43D2BE070DB2 /* noop-file.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +34,9 @@
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		F58D317B48126482B9877266 /* Pods_TC5.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_TC5.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-TC5/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+		5F69BDD7402E463C90D748AA /* GoogleService-Info.plist */ = {isa = PBXFileReference; name = "GoogleService-Info.plist"; path = "TC5/GoogleService-Info.plist"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = text.plist.xml; explicitFileType = undefined; includeInIndex = 0; };
+		3FF0F948362D43D2BE070DB2 /* noop-file.swift */ = {isa = PBXFileReference; name = "noop-file.swift"; path = "TC5/noop-file.swift"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.swift; explicitFileType = undefined; includeInIndex = 0; };
+		A07AD8049AC143C6BFF82A70 /* TC5-Bridging-Header.h */ = {isa = PBXFileReference; name = "TC5-Bridging-Header.h"; path = "TC5/TC5-Bridging-Header.h"; sourceTree = "<group>"; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +62,9 @@
 				13B07FB71A68108700A75B9A /* main.m */,
 				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
 				A8249EF74FA4C1A3AF0B112D /* PrivacyInfo.xcprivacy */,
+				5F69BDD7402E463C90D748AA /* GoogleService-Info.plist */,
+				3FF0F948362D43D2BE070DB2 /* noop-file.swift */,
+				A07AD8049AC143C6BFF82A70 /* TC5-Bridging-Header.h */,
 			);
 			name = TC5;
 			sourceTree = "<group>";
@@ -200,6 +208,8 @@
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */,
 				48A68C261103B1713960F960 /* PrivacyInfo.xcprivacy in Resources */,
+				6B9269C9207B4985B7EFF34A /* GoogleService-Info.plist in Resources */,
+				F4BA8B6BE5B148008EBF7908 /* TC5-Bridging-Header.h in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -407,6 +417,7 @@
 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
 				13B07FC11A68108700A75B9A /* main.m in Sources */,
 				B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */,
+				32CDBBDEAD6541A38EB985F7 /* noop-file.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -435,11 +446,14 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = org.name.TC5;
-				PRODUCT_NAME = TC5;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.cticontrol.notificationtc5";
+				PRODUCT_NAME = "TC5";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				SWIFT_OBJC_BRIDGING_HEADER = TC5/TC5-Bridging-Header.h;
+				CODE_SIGN_ENTITLEMENTS = TC5/TC5.entitlements;
 			};
 			name = Debug;
 		};
@@ -460,10 +474,13 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = org.name.TC5;
-				PRODUCT_NAME = TC5;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.cticontrol.notificationtc5";
+				PRODUCT_NAME = "TC5";
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				SWIFT_OBJC_BRIDGING_HEADER = TC5/TC5-Bridging-Header.h;
+				CODE_SIGN_ENTITLEMENTS = TC5/TC5.entitlements;
 			};
 			name = Release;
 		};

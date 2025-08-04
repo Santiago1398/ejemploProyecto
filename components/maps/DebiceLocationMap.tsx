@@ -13,6 +13,7 @@ import { get } from "@/services/api";
 type DeviceLocationMapRouteProp = RouteProp<RootStackParamList, 'DeviceLocationMap'>;
 type DeviceLocationMapNavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
+
 // 🔥 INTERFAZ PARA LA RESPUESTA DEL ENDPOINT
 interface DeviceLocationData {
     mac: number;

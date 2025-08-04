@@ -1,4 +1,5 @@
 import { io, Socket } from 'socket.io-client';
+import { getSocketUrl } from './socketConfig';
 
 class SocketService {
     private socket: Socket | null = null;
@@ -38,9 +39,12 @@ class SocketService {
             this.isConnecting = true;
 
             // URL de tu servidor Socket.IO
-            const SOCKET_URL = 'ws://37.187.180.179:8032';
+            const SOCKET_URL = getSocketUrl();
+            //'https://api.tc5monitortest.cticontrol.com';
+            //const SOCKET_URL = 'https://api.tc5monitor.cticontrol.com';
 
-            console.log('🔌 Conectando a Socket.IO...');
+
+            console.log(`🔌 Conectando a Socket.IO en: ${SOCKET_URL}`);  // ← aquí imprimes
 
             this.socket = io(SOCKET_URL, {
                 // 🔥 Sin autenticación - conexión directa
@@ -138,6 +142,9 @@ class SocketService {
         this.socket.on('server_response', (data) => {
             console.log('💬 Respuesta del servidor:', data);
             this.onAlarmDetectedCallback?.(data);
+        });
+        this.socket.on('disconnect', (reason: string) => {
+            console.log(`🔌 Socket desconectado de ${getSocketUrl()} (reason: ${reason})`);
         });
     }
 

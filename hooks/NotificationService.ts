@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import { getApiUrl } from "@/utils/apiconfig";
 import { API_URL } from "@/config/apiConfig";
+import { useAuthStore } from "@/store/authStore";
 
 
 
@@ -130,29 +131,26 @@ class NotificationService {
       }
 
 
-      const LOCAL_API = await getApiUrl();
+      const apiUrl = await getApiUrl();
+            console.log("🔧 API Mode:", useAuthStore.getState().isDeveloperMode ? "DEV" : "PROD");
+            console.log("🌐 Enviando a servidor (endpoint):", `${apiUrl}/alarmtc/user/push-token`);
 
-            await fetch(`${LOCAL_API}/alarmtc/user/push-token`, {
+            const res = await fetch(`${apiUrl}/alarmtc/user/push-token`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ token, userId, deviceType: Platform.OS, telefono }),
+                body: JSON.stringify({ token, userId, deviceType: Platform.OS, telefono })
             });
-            console.log("✅ Token registrado en el backend");
 
-            console.log("🌐 Enviando a servidor:", `${API_URL}/push-token`);
-            console.log("📦 Datos enviados:", { token, userId, deviceType: Platform.OS, telefono });
-            // await post("alarmtc/user/push-token", {
-            //     token,
-            //     userId,
-            //     deviceType: Platform.OS,
-            //     telefono,
-            // });
-            //console.log("✅ Respuesta del servidor: Token registrado correctamente");
-            //Alert.alert("✅ Respuesta del servidor:", "Token registrado correctamente");
-    } catch (error) {
-      console.error(" Error registrando dispositivo:", error);
+            console.log("📤 Fetch enviado. Status:", res.status, await res.text());
+            if (!res.ok) {
+                console.error("❌ Error al registrar token:", res.status);
+                return;
+            }
+            console.log("✅ Token registrado correctamente");
+        } catch (error: any) {
+            console.error("❌ Fetch fallo por:", error.message, error);
+        }
     }
-  }
 
 public async getFCMToken(): Promise<string | null> {
   try {

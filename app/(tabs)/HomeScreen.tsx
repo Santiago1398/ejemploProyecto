@@ -1,68 +1,45 @@
 // HomeScreen.tsx
-import React from "react";
-import {
-    View,
-    Text,
-    StyleSheet,
-    ImageBackground,
-    TouchableOpacity,
-    Platform,
-    StatusBar
-} from "react-native";
-import { useNavigation, DrawerActions } from "@react-navigation/native";
-import { Ionicons } from "@expo/vector-icons";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useAuthStore } from "@/store/authStore";         // 🔥 traemos el flag
-import DeviceList from "@/components/DeviceList";
-import { t } from "@/i18n/i18nConfig";
+import React from 'react';
+import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, Platform, StatusBar } from 'react-native';
+import { useNavigation, DrawerActions } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAuthStore } from '@/store/authStore';
+import { useAppExtra } from '@/hooks/useAppExtra';   // ← nuevo
+import DeviceList from '@/components/DeviceList';
+import { t } from '@/i18n/i18nConfig';
 
 export default function HomeScreen() {
     const navigation = useNavigation();
     const insets = useSafeAreaInsets();
-    const isDev = useAuthStore(state => state.isDeveloperMode); // 🔥
+    const isDev = useAuthStore(state => state.isDeveloperMode);
+    const { devBuildNumber } = useAppExtra();        // ← aquí
 
-    const handleOpenDrawer = () => {
-        navigation.dispatch(DrawerActions.openDrawer());
-    };
+    const handleOpenDrawer = () => navigation.dispatch(DrawerActions.openDrawer());
 
     return (
         <View style={styles.container}>
-            {/* HEADER PERSONALIZADO */}
-            <View style={[
-                styles.customHeader, {
-                    paddingTop: Platform.OS === 'ios'
-                        ? insets.top
-                        : StatusBar.currentHeight || 0
-                }
-            ]}>
-                {/* Botón drawer */}
-                <TouchableOpacity
-                    style={styles.drawerButton}
-                    onPress={handleOpenDrawer}
-                >
+            <View style={[styles.customHeader, {
+                paddingTop: Platform.OS === 'ios' ? insets.top : StatusBar.currentHeight || 0
+            }]}>
+                <TouchableOpacity style={styles.drawerButton} onPress={handleOpenDrawer}>
                     <Ionicons name="menu" size={24} color="black" />
                 </TouchableOpacity>
-
-                {/* 🔥 TÍTULO PERFECTAMENTE CENTRADO */}
                 <View style={styles.titleContainer}>
                     <Text style={styles.headerTitle}>
                         <Text style={styles.cti}>{t("HomeScreen.cti")}</Text>
                         <Text style={styles.control}>{t("HomeScreen.control")}</Text>
                     </Text>
                 </View>
-
-                {/* 🔥 BADGE Dev */}
                 {isDev && (
                     <View style={styles.devBadge}>
-                        <Text style={styles.devBadgeText}>Dev</Text>
+                        <Text style={styles.devBadgeText}>
+                            Dev{devBuildNumber != null ? ` v${devBuildNumber}` : ''}
+                        </Text>
                     </View>
                 )}
-
-                {/* Espacio para balance visual */}
                 <View style={styles.headerSpacer} />
             </View>
-
-            {/* Contenido principal */}
             <ImageBackground
                 source={require("../../assets/images/pigs.png")}
                 style={styles.background}
@@ -76,6 +53,9 @@ export default function HomeScreen() {
     );
 }
 
+// ...styles idénticos a los tuyos...
+
+
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: "#f2f2f2" },
     customHeader: {
@@ -85,7 +65,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#f8f9fa',
         height: 52 + (Platform.OS === 'ios' ? 44 : 24),
         paddingHorizontal: 16,
-        position: 'relative', // para que el badge absolute se posicione dentro
+        position: 'relative',
         elevation: 2,
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 1 },
@@ -118,17 +98,18 @@ const styles = StyleSheet.create({
     control: { color: "#16a34a" },
     headerSpacer: { width: 44 },
 
-    // 🔥 estilos para el circulo debug
+    // 🔥 Badge Dev
     devBadge: {
         position: 'absolute',
         top: Platform.OS === 'ios' ? 44 : 24,
         right: 14,
-        width: 36,
+        width: 48,      // algo más ancho para "vX"
         height: 36,
         borderRadius: 18,
         backgroundColor: '#FF3B30',
         justifyContent: 'center',
         alignItems: 'center',
+        paddingHorizontal: 4,
         zIndex: 20,
     },
     devBadgeText: {
