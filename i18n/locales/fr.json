@@ -55,7 +55,8 @@
         "logout": "Se déconnecter",
         "login": "Se connecter",
         "settings": "Paramètres",
-        "maintenance": "Maintenance"
+        "maintenance": "Maintenance",
+        "softwareVersion": "Versione software:"
     },
     "EditarPrioridadScreen": {
         "errorTitle": "Erreur",
@@ -281,5 +282,10 @@
         },
         "loading": "Chargement de l'emplacement...",
         "retry": "Réessayer"
+    },
+    "TabBar": {
+        "Home": "Accueil",
+        "Alarmas": "Alertes",
+        "Maps": "Cartes"
     }
 }

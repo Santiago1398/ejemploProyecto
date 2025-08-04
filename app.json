@@ -57,8 +57,11 @@
       "typedRoutes": true
     },
     "extra": {
-      "apiUrl": "http://tc5monitor.cticontrol.com:8032/api",
-      "apiUrlDev": "http://tc5monitor.cticontrol.com:8032/api",
+      "devBuildNumber": 5,
+      "apiUrl": "https://api.tc5monitor.cticontrol.com/api",
+      "apiUrlDev": "https://api.tc5monitortest.cticontrol.com/api",
+      "socketUrl": "https://api.tc5monitor.cticontrol.com",
+      "socketUrlDev": "https://api.tc5monitortest.cticontrol.com",
       "router": {
         "origin": false
       },

@@ -4,10 +4,14 @@ import { DrawerContentComponentProps } from "@react-navigation/drawer";
 import { useAuthStore } from "../store/authStore";
 import { t } from "../i18n/i18nConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAppExtra } from '@/hooks/useAppExtra';   // ← añade esto
+
 
 export default function DrawerContent(props: DrawerContentComponentProps) {
     const { username: email, logout, isAuthenticated } = useAuthStore();
     const { navigation } = props;
+    const { devBuildNumber } = useAppExtra();            // ← lee el 1
+
 
     const handleLogout = async () => {
         try {
@@ -89,8 +93,14 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
                 </TouchableOpacity>
             )}
 
+
+
             {/* Ajustes al fondo */}
             <View style={styles.footer}>
+                {/* --- Versión --- */}
+                <Text style={styles.versionLabel}>
+                    {t('softwareVersion')}&nbsp;{devBuildNumber}
+                </Text>
                 <View style={styles.separator} />
 
                 <TouchableOpacity
@@ -189,4 +199,12 @@ const styles = StyleSheet.create({
         color: "#555",
         fontWeight: "500",
     },
+    versionLabel: {
+        fontSize: 12,
+        fontWeight: 'bold',
+        color: '#555',
+        marginBottom: 6,   // pequeño margen antes de la línea
+        textAlign: 'left',
+    },
+
 });

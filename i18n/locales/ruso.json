@@ -55,7 +55,8 @@
         "logout": "Выйти",
         "login": "Войти",
         "settings": "Настройки",
-        "maintenance": "Обслуживание"
+        "maintenance": "Обслуживание",
+        "softwareVersion": "Версия ПО:"
     },
     "EditarPrioridadScreen": {
         "errorTitle": "Ошибка",
@@ -282,5 +283,10 @@
         },
         "loading": "Загрузка местоположения...",
         "retry": "Повторить"
+    },
+    "TabBar": {
+        "Home": "Главная",
+        "Alarmas": "Оповещения",
+        "Maps": "Карты"
     }
 }

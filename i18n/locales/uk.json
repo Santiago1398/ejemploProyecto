@@ -55,7 +55,8 @@
         "logout": "Вийти",
         "login": "Увійти",
         "settings": "Налаштування",
-        "maintenance": "Обслуговування"
+        "maintenance": "Обслуговування",
+        "softwareVersion": "Версія програмного забезпечення:"
     },
     "EditarPrioridadScreen": {
         "errorTitle": "Помилка",
@@ -282,5 +283,10 @@
         },
         "loading": "Завантаження місцезнаходження...",
         "retry": "Повторити"
+    },
+    "TabBar": {
+        "Home": "Головна",
+        "Alarmas": "Сповіщення",
+        "Maps": "Карти"
     }
 }

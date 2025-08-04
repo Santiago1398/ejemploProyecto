@@ -55,7 +55,8 @@
         "logout": "Wyloguj",
         "login": "Zaloguj",
         "settings": "Ustawienia",
-        "maintenance": "Konserwacja"
+        "maintenance": "Konserwacja",
+        "softwareVersion": "Wersja oprogramowania:"
     },
     "EditarPrioridadScreen": {
         "errorTitle": "Błąd",
@@ -282,5 +283,10 @@
         },
         "loading": "Ładowanie lokalizacji...",
         "retry": "Spróbuj ponownie"
+    },
+    "TabBar": {
+        "Home": "Strona główna",
+        "Alarmas": "Powiadomienia",
+        "Maps": "Mapy"
     }
 }

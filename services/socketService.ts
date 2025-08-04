@@ -1,4 +1,6 @@
 import { io, Socket } from 'socket.io-client';
+import { getSocketUrl } from './socketConfig';
+import { useAuthStore } from '@/store/authStore';
 
 class SocketService {
     private socket: Socket | null = null;
@@ -6,6 +8,7 @@ class SocketService {
     private maxReconnectAttempts = 5;
     private reconnectDelay = 1000;
     private isConnecting = false;
+    private hasInitialized = false; // NUEVO: Flag para evitar conexión automática
 
     // 🔥 Callbacks para eventos
     private onAlarmDetectedCallback: ((data: any) => void) | null = null;
@@ -14,17 +17,26 @@ class SocketService {
     private macAddresses: string[] = [];
     private onDeviceUpdateCallback: ((eventName: string, data: any) => void) | null = null;
 
-
-
     constructor() {
-        // 🔥 Conectar automáticamente sin validaciones
+        // NO conectar automáticamente - esperar a que se llame initialize()
+        console.log('🔧 SocketService constructor - esperando inicialización manual');
+    }
+
+    // NUEVO: Método para inicializar cuando el app esté listo
+    initialize() {
+        if (this.hasInitialized) {
+            console.log('⚠️ SocketService ya fue inicializado');
+            return;
+        }
+
+        this.hasInitialized = true;
+        console.log('🚀 Inicializando SocketService...');
         this.connect();
     }
 
     setMacAddresses(macs: string[]) {
         this.macAddresses = macs;
         console.log('🔥 SocketService inicializado con direcciones MAC:', this.macAddresses);
-
     }
 
     //  CONECTAR AL SERVIDOR
@@ -37,13 +49,15 @@ class SocketService {
         try {
             this.isConnecting = true;
 
-            // URL de tu servidor Socket.IO
-            const SOCKET_URL = 'ws://37.187.180.179:8032';
+            // Obtener la URL correcta basada en el modo actual
+            const SOCKET_URL = getSocketUrl();
 
-            console.log('🔌 Conectando a Socket.IO...');
+            console.log('🔍 Verificando modo de desarrollo...');
+            const { isDeveloperMode } = useAuthStore.getState();
+            console.log(`🔧 isDeveloperMode: ${isDeveloperMode}`);
+            console.log(`🔌 Conectando a Socket.IO en: ${SOCKET_URL}`);
 
             this.socket = io(SOCKET_URL, {
-                // 🔥 Sin autenticación - conexión directa
                 transports: ['websocket', 'polling'],
                 timeout: 10000,
                 reconnection: true,
@@ -60,30 +74,37 @@ class SocketService {
         }
     }
 
+    // RECONECTAR con nueva URL si cambia el modo
+    async reconnectWithNewUrl() {
+        console.log('🔄 Reconectando con nueva URL...');
+
+        // Desconectar el socket actual
+        if (this.socket) {
+            this.socket.disconnect();
+            this.socket = null;
+        }
+
+        this.isConnecting = false;
+        this.reconnectAttempts = 0;
+
+        // Conectar con la nueva URL
+        await this.connect();
+    }
+
     // CONFIGURAR LISTENERS
     private setupEventListeners() {
         if (!this.socket) return;
 
-        // 🔍 DEBUG: Ver TODOS los eventos (quitar en producción)
+        // 🔍 DEBUG: Ver TODOS los eventos
         this.socket.onAny((eventName, ...args) => {
             console.log('🔍 EVENTO RECIBIDO DEL BACKEND:');
             console.log('   - Nombre del evento:', eventName);
             console.log('   - Datos recibidos:', JSON.stringify(args, null, 2));
             console.log('-----------------------------------');
 
-            // 🔥 IMPORTANTE: Llamar al callback genérico para cualquier evento
-            // que pueda significar una actualización de dispositivos
+            // Eventos que disparan actualización
             const eventsToWatch = [
-                'device_update',
-                'device_updated',
-                'device_status_change',
-                'mac_updated',
-                'mac_changed',
-                'alarm_detected',
-                'alarm_cleared',
-                'site_update',
-                'device_armed',
-                'device_disarmed'
+                'register_macs'
             ];
 
             if (eventsToWatch.includes(eventName)) {
@@ -91,7 +112,6 @@ class SocketService {
             }
         });
 
-        // Tus listeners existentes...
         this.socket.on('connect', () => {
             console.log('✅ Socket conectado:', this.socket?.id);
             this.isConnecting = false;
@@ -104,40 +124,26 @@ class SocketService {
 
             this.onConnectionChangeCallback?.(true);
         });
-        // Error de conexión
+
         this.socket.on('connect_error', (error) => {
             console.log('❌ Error de conexión socket:', error.message);
             this.isConnecting = false;
             this.handleReconnect();
         });
 
-        // EVENTO: Alarma detectada
-        // this.socket.on('alarm_detected', (data) => {
-        //     console.log('🚨 Alarma detectada via socket:', data);
-        //     this.onAlarmDetectedCallback?.(data);
-        // });
-
-        // EVENTO: Estado de dispositivo
-        // this.socket.on('device_status_change', (data) => {
-        //     console.log('📱 Cambio de estado de dispositivo:', data);
-        //     // Manejar cambios de estado de dispositivos
-        // });
-
-        // EVENTO: Notificación general
-        // this.socket.on('notification', (data) => {
-        //     console.log('📢 Notificación recibida:', data);
-        //     // Manejar notificaciones generales
-        // });
-
-        // 🔥 EVENTOS DE PRUEBA
         this.socket.on('test_message', (data) => {
             console.log('🧪 Mensaje de prueba recibido:', data);
-            this.onAlarmDetectedCallback?.(data); // Usar el mismo callback para simplificar
+            this.onAlarmDetectedCallback?.(data);
         });
 
         this.socket.on('server_response', (data) => {
             console.log('💬 Respuesta del servidor:', data);
             this.onAlarmDetectedCallback?.(data);
+        });
+
+        this.socket.on('disconnect', (reason: string) => {
+            console.log(`🔌 Socket desconectado de ${getSocketUrl()} (reason: ${reason})`);
+            this.onConnectionChangeCallback?.(false);
         });
     }
 
@@ -165,7 +171,6 @@ class SocketService {
         }
     }
 
-    // Método para dejar de escuchar
     off(event: string, callback?: (data: any) => void) {
         if (this.socket) {
             this.socket.off(event, callback);
@@ -173,8 +178,6 @@ class SocketService {
         }
     }
 
-
-    //  DESCONECTAR
     disconnect() {
         if (this.socket) {
             console.log('🔌 Desconectando socket...');
@@ -185,7 +188,6 @@ class SocketService {
         this.reconnectAttempts = 0;
     }
 
-    //  ENVIAR MENSAJE AL SERVIDOR
     emit(event: string, data?: any) {
         if (this.socket?.connected) {
             console.log('=====================================');
@@ -201,8 +203,7 @@ class SocketService {
         }
     }
 
-
-    //  REGISTRAR CALLBACKS
+    // REGISTRAR CALLBACKS
     setOnAlarmDetected(callback: (data: any) => void) {
         this.onAlarmDetectedCallback = callback;
     }
@@ -213,6 +214,10 @@ class SocketService {
 
     setOnError(callback: (error: string) => void) {
         this.onErrorCallback = callback;
+    }
+
+    setOnDeviceUpdate(callback: (eventName: string, data: any) => void) {
+        this.onDeviceUpdateCallback = callback;
     }
 
     // GETTERS
@@ -226,3 +231,4 @@ class SocketService {
 }
 
 export const socketService = new SocketService();
+

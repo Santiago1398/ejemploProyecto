@@ -24,7 +24,7 @@
   android:fullBackupContent="false"
   android:theme="@style/AppTheme"
   android:supportsRtl="true"
-  android:usesCleartextTraffic="true">
+  >
     <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyBdJZTv6ZQfBgLMUrKCXUvnaCGyHTiiV4I"/>
     <meta-data android:name="expo.modules.updates.ENABLED" android:value="false"/>
     <meta-data android:name="expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH" android:value="ALWAYS"/>

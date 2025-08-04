@@ -55,7 +55,8 @@
         "logout": "Logout",
         "login": "Login",
         "settings": "Settings",
-        "maintenance": "Maintenance"
+        "maintenance": "Maintenance",
+        "softwareVersion": "Software version:"
     },
     "EditarPrioridadScreen": {
         "errorTitle": "Error",
@@ -282,5 +283,10 @@
         },
         "loading": "Loading location...",
         "retry": "Retry"
+    },
+    "TabBar": {
+        "Home": "Home",
+        "Alarmas": "Alarms",
+        "Maps": "Maps"
     }
 }

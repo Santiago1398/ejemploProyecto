@@ -1,13 +1,28 @@
-// utils/apiConfig.ts
-import AsyncStorage from "@react-native-async-storage/async-storage";
+// src/config/apiConfig.ts
+import Constants from "expo-constants";
+import { useAuthStore } from "@/store/authStore";
 
-const DEFAULT_API = "http://37.187.180.179:8032/api";
-
-export const getApiUrl = async (): Promise<string> => {
-    const storedUrl = await AsyncStorage.getItem("customApiUrl");
-    return storedUrl || DEFAULT_API;
+type Extras = {
+    apiUrl: string;
+    apiUrlDev: string;
 };
 
-export const setApiUrl = async (url: string) => {
-    await AsyncStorage.setItem("customApiUrl", url);
-};
+export function getApiUrl(): string {
+    const isDev = useAuthStore.getState().isDeveloperMode;
+    // intenta leer extra de expoConfig o de manifest (Expo Go)
+    const expoExtra = (Constants.expoConfig as any)?.extra;
+    const manifestExtra = (Constants.manifest as any)?.extra;
+    console.log("🔍 Constants.expoConfig.extra:", expoExtra);
+    console.log("🔍 Constants.manifest.extra:", manifestExtra);
+
+    const extras: Extras | undefined = expoExtra || manifestExtra;
+    if (!extras) {
+        console.warn("⚠️ No se han encontrado 'extra' con apiUrl/apiUrlDev");
+        return "";
+    }
+
+    console.log(`🔧Tiene que aparecer esto API Mode: ${isDev ? "DEV" : "PROD"}`,
+        `→ usando ${isDev ? "apiUrlDev" : "apiUrl"}`,
+        isDev ? extras.apiUrlDev : extras.apiUrl);
+    return isDev ? extras.apiUrlDev : extras.apiUrl;
+}

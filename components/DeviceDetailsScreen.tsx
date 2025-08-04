@@ -12,6 +12,7 @@ import {
     SectionList,
     ScrollView,
     ActivityIndicator,
+    Dimensions,
 } from "react-native";
 import Entypo from "@expo/vector-icons/Entypo";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -150,7 +151,10 @@ export default function AlarmList() {
     const { userId } = useAuthStore();
     // Forzar actualizacion
     const sw = parseInt(swVersion ?? '-1', 10);
-    const needsUpdate = sw >= 0 && sw < 131;
+    const needsUpdate = sw >= 0 && sw < 135;
+
+
+
 
 
 
@@ -283,7 +287,7 @@ export default function AlarmList() {
                     .filter(
                         s =>
                             ANALOG_SET.has(s.id) &&                // id que te interesa
-                            s.eventType === 1 &&                   // está configurado
+                            // s.eventType === 1 &&                   // está configurado
                             typeof s.value === 'number' &&
                             !Number.isNaN(s.value)
                     )
@@ -360,8 +364,13 @@ export default function AlarmList() {
     //! COMPONENTE PARA MOSTRAR INFO DEL SENSOR
     /* ─────  COMPONENTE SensorInfo  ───── */
     const SensorInfo = ({ alarmId, reason }: { alarmId: number, reason: number; }) => {
+
         const s = sensorsData.find(x => x.id === alarmId);
+
         if (!s) return null;
+
+        const isPpm = s.unit === UnitEnum.EN_GT_UNID_PPM;
+        //const COL_W = COMPACT ? 60 : 80;   // ⬅︎ juega con estos números
 
         const u = getUnitString(s.unit);
         const renderMainValue = () => {
@@ -370,17 +379,29 @@ export default function AlarmList() {
             }
             return (
                 <Text style={styles.valueText}>
-                    {(s.value ?? 0).toFixed(1)} {u}
+                    {(s.value ?? 0)} {u}
                 </Text>
             );
         };
+        const isTemp = s.unit === UnitEnum.EN_GT_UNID_GRADO_CENTIGRADO ||
+            s.unit === UnitEnum.EN_GT_UNID_GRADO_Fahrenheit;
+        const isHum = s.unit === UnitEnum.EN_GT_UNID_PORCENTAJE;
+        const showUnitInTable = isTemp || isHum;
 
         const renderValue = (n?: number | null) => {
             if (n === 99999 || n === -99999) return <Text style={styles.dataCell}>—</Text>;
+            const formatted = isTemp
+                ? (n ?? 0).toFixed(1)          // 26.3 °C
+                : Math.round(n ?? 0).toString(); // 3250 ppm
             return (
-                <Text style={styles.dataCell}>
-                    {(n ?? 0).toFixed(1)}
-                    <Text style={{ marginLeft: Math.abs(n ?? 0) >= 10000 ? 6 : 2 }}>{u}</Text>
+                <Text
+                    style={styles.dataCell}
+                    numberOfLines={1}            //  ⬅︎ no deja que baje a 2 líneas
+                    adjustsFontSizeToFit         //  ⬅︎ reduce la fuente si hace falta
+                    minimumFontScale={0.75}      //  ⬅︎ hasta un 75 % de su tamaño
+                >
+                    {formatted}
+                    {showUnitInTable && <Text style={styles.unit}>{u}</Text>}
                 </Text>
             );
         };
@@ -404,12 +425,24 @@ export default function AlarmList() {
                         <View style={styles.valueCol}>
                             {renderMainValue()}
 
-                            {s.minAlarm != null && s.maxAlarm != null &&
-                                s.minAlarm !== -99999 && s.maxAlarm !== 99999 && (
+                            {isPpm ? (
+                                /* solo máx para ppm */
+                                s.maxAlarm != null && s.maxAlarm !== 99999 && (
+                                    <Text style={styles.alarmRangeText}>
+                                        Max: {s.maxAlarm} {u}
+                                    </Text>
+                                )
+                            ) : (
+                                /* min – max para el resto */
+                                s.minAlarm != null &&
+                                s.maxAlarm != null &&
+                                s.minAlarm !== -99999 &&
+                                s.maxAlarm !== 99999 && (
                                     <Text style={styles.alarmRangeText}>
                                         {s.minAlarm} – {s.maxAlarm} {u}
                                     </Text>
-                                )}
+                                )
+                            )}
                         </View>
                     </View>
                     {/* tabla máx / min */}
@@ -423,14 +456,16 @@ export default function AlarmList() {
                         </View>
                         <View style={styles.row}>
                             <Text style={styles.rowTitle}>{t('Máx')}</Text>
-                            {renderValue(s.maxValueYesterday)}
-                            {renderValue(s.maxValueToday)}
+                            <View style={styles.dataCol}>{renderValue(s.maxValueYesterday)}</View>
+                            <View style={styles.dataCol}>{renderValue(s.maxValueToday)}</View>
                         </View>
+
                         <View style={styles.row}>
                             <Text style={styles.rowTitle}>{t('Min')}</Text>
-                            {renderValue(s.minValueYesterday)}
-                            {renderValue(s.minValueToday)}
+                            <View style={styles.dataCol}>{renderValue(s.minValueYesterday)}</View>
+                            <View style={styles.dataCol}>{renderValue(s.minValueToday)}</View>
                         </View>
+
                     </View>
                 </View>
 
@@ -980,6 +1015,13 @@ export default function AlarmList() {
     );
 }
 
+const { width: SCREEN_W } = Dimensions.get('window');
+const COMPACT = SCREEN_W < 360;
+
+// 👉 AÑADE AQUÍ:
+const COL_W = COMPACT ? 60 : 80;   // ancho de cada columna Ayer/Hoy
+
+
 const styles = StyleSheet.create({
     sectionHeader: {
         backgroundColor: '#f4f4f4',
@@ -1016,11 +1058,13 @@ const styles = StyleSheet.create({
         elevation: 4,
     },
     alarmContainerWithSensor: {
+        marginHorizontal: COMPACT ? 8 : 16,
+        padding: COMPACT ? 12 : 16,
         flexDirection: "column",
-        marginHorizontal: 16, // Mismo margen que alarmContainer
+        // marginHorizontal: 16, // Mismo margen que alarmContainer
         marginVertical: 4,    // Mismo margen que alarmContainer
         marginTop: 2,         // Mismo margen que alarmContainer
-        padding: 16,          // Mismo padding que alarmContainer
+        //padding: 16,          // Mismo padding que alarmContainer
         borderRadius: 12,     // Mismo radio que alarmContainer
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 2 },
@@ -1156,7 +1200,8 @@ const styles = StyleSheet.create({
         width: 46
     },
     headerCell: {
-        minWidth: 46,
+        flex: 1,
+        //minWidth: COL_W,
         textAlign: 'center',
         fontSize: 12,
         fontWeight: '600',
@@ -1170,13 +1215,14 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
     },
     dataCell: {
-        minWidth: 46,
+        //  minWidth: 46,
         textAlign: 'center',
-        fontSize: 14,
+        fontSize: COMPACT ? 12 : 14,   // número algo menor en pantallas estrechas
         color: '#FFFFFF',
+        flexShrink: 1,
     },
     sensorRowWrapper: {
-        position: 'relative',     // permite posicionar hijos absolutos (rango)
+        position: 'relative',
         flexDirection: 'column',
         justifyContent: 'flex-start',
         marginTop: 4,
@@ -1190,6 +1236,7 @@ const styles = StyleSheet.create({
     /* valor actual */
 
     table: {
+        flex: 1,
         alignSelf: 'flex-start',
         borderWidth: 0,
         paddingHorizontal: 6,
@@ -1202,16 +1249,20 @@ const styles = StyleSheet.create({
         marginBottom: 4,
     },
     headerUnderline: {
+        flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        borderBottomWidth: 1.2,      // grosor horizontal
+        borderBottomWidth: 1.2,
         borderBottomColor: '#FFFFFF',
-        paddingBottom: 2,            // deja un pelín de aire al texto
+        paddingBottom: 2,
     },
 
     valueBox: {
+        maxWidth: '52%',
+        flexShrink: 1,
         flexDirection: 'row',
         alignItems: 'flex-start',
+        marginRight: 8,
     },
     valueCol: {
         flexDirection: 'column',
@@ -1223,7 +1274,7 @@ const styles = StyleSheet.create({
 
     },
     valueTextContainer: {
-        fontSize: 26,
+        fontSize: COMPACT ? 22 : 26,
         fontWeight: 'bold',
         color: '#fff',
     },
@@ -1270,5 +1321,15 @@ const styles = StyleSheet.create({
         color: '#4B5563',
         textAlign: 'center',
         paddingHorizontal: 20,
+    },
+    dataCol: {
+        flex: 1,
+        //minWidth: COL_W,          // la misma anchura
+        alignItems: 'center',
+        //marginRight: 4,           // pequeño separador a la derecha
+    },
+    unit: {
+        fontSize: COMPACT ? 10 : 12,   // unidad bastante más pequeña
+        marginLeft: 2,
     },
 });

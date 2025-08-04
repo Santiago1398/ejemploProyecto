@@ -8,6 +8,7 @@ import {
     Alert,
     ActivityIndicator,
     RefreshControl,
+    SectionList,
 } from "react-native";
 import { Ionicons, FontAwesome } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -19,9 +20,11 @@ import { PaperProvider } from "react-native-paper";
 import { t } from "@/i18n/i18nConfig";
 import { useIsFocused } from "@react-navigation/native";
 import { socketService } from "@/services/socketService";
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 
-// 🔥 NUEVA INTERFAZ BASADA EN LA RESPUESTA DEL ENDPOINT
+
+//  NUEVA INTERFAZ BASADA EN LA RESPUESTA DEL ENDPOINT
 interface AlarmaDisparada {
     mac: number;
     farmName: string;
@@ -62,7 +65,7 @@ export default function Alarmas() {
             //  UNA SOLA LLAMADA AL ENDPOINT QUE YA DEVUELVE ALARMAS DISPARADAS
             const alarmasData: AlarmaDisparada[] = await get(`alarmtc/sites/user/list/${storedUserId}`);
 
-            console.log("📡 Alarmas recibidas:", alarmasData);
+            console.log(" Alarmas recibidas:", alarmasData);
 
             //? TODO BIEN - Solo mapear si necesitas transformar algo
             const alarmasFormateadas = alarmasData.map(alarma => ({
@@ -96,7 +99,7 @@ export default function Alarmas() {
         }
     };
 
-    /* ⬇️ 1. Listener global, sin depender de isFocused */
+    /* ⬇ 1. Listener global, sin depender de isFocused */
     useEffect(() => {
         const handleAlarmEvent = (payload: any) => {
             // El backend puede enviar string, número u objeto
@@ -124,7 +127,7 @@ export default function Alarmas() {
             socketService.off("register_macs", handleAlarmEvent);
             socketService.off("alarm_triggered", handleAlarmEvent);
         };
-    }, []);           // ⬅️ sin isFocused en la dependencia
+    }, []);           // sin isFocused en la dependencia
 
 
     // CARGAR SOLO UNA VEZ AL INICIO
@@ -148,49 +151,76 @@ export default function Alarmas() {
     //     //fetchAlarmas(false); // Refresh manual (puede mostrar loading)
     // };
 
+    /* util pequeño */
+    const groupBy = <T, K extends PropertyKey>(arr: T[], key: (i: T) => K) =>
+        arr.reduce((acc, cur) => {
+            const k = key(cur);
+            (acc[k] ||= []).push(cur);
+            return acc;
+        }, {} as Record<K, T[]>);
+
+
+    const goToDetails = (a: AlarmaDisparada) => {
+        navigation.navigate("DeviceDetails", {
+            device: {
+                mac: a.mac,
+                farmName: a.farmName,
+                siteName: a.siteName,
+                latitude: a.latitude,
+                longitude: a.longitude,
+                idSite: a.idSite,
+                buildingPortalRef: a.buildingPortalRef,
+                alarmType: 1,
+                armed: true,
+            }
+        });
+    };
+
+
+    const secciones = Object.entries(
+        groupBy(alarmasDisparadas, a => a.farmName)
+    ).map(([farm, data]) => ({ title: farm, data }));
+
+
+    const renderSectionHeader = ({ section }: { section: { title: string } }) => (
+        <View style={styles.sectionHeaderContainer}>
+            <Text style={styles.sectionHeaderText}>{section.title}</Text>
+            <View style={styles.sectionHeaderLine} />
+        </View>
+    );
+
+
     const renderItem = ({ item }: { item: AlarmaDisparada }) => (
         <TouchableOpacity
+            onPress={() => goToDetails(item)}
             style={styles.card}
-            onPress={() => {
-                navigation.navigate("DeviceDetails", {
-                    device: {
-                        mac: item.mac,
-                        farmName: item.farmName,
-                        siteName: item.siteName,
-                        latitude: item.latitude,
-                        longitude: item.longitude,
-                        idSite: item.idSite,
-                        buildingPortalRef: item.buildingPortalRef,
-                        armed: true,
-                        alarmType: 1,
-                    }
-                });
-            }}
         >
-            <View style={styles.row}>
-                <Ionicons
-                    name="alert-circle"
-                    size={24}
-                    color="#000"
-                    style={{ marginRight: 8 }}
-                />
-                <View style={styles.titleRow}>
-                    <Text style={styles.leftText}>{item.farmName}</Text>
-                    <Text style={styles.rightText}>{item.siteName}</Text>
+            {/* fila superior: icono + site */}
+            <View style={styles.topRow}>
+                <View style={styles.iconHolder}>
+                    <MaterialCommunityIcons
+                        name="bell-ring"
+                        size={18}
+                        color="#fff"
+                    //style={{ marginRight: 6 }}
+                    />
                 </View>
+
+                <Text numberOfLines={1} style={styles.siteName}>{item.siteName}</Text>
             </View>
 
-            {/*  USAR EL NUEVO CAMPO textAlarm */}
-            <Text style={styles.alarmas}>{item.textAlarm}</Text>
+            {/* texto alarma */}
+            <Text style={styles.alarmText}>{item.textAlarm}</Text>
 
-            {/*  MOSTRAR UBICACIÓN SOLO SI EXISTE */}
-            {(item.town || item.province) && (
+            {/* ubicación opcional
+            {(item.town || item.province) &&
                 <Text style={styles.location}>
                     {[item.town, item.province].filter(Boolean).join(", ")}
                 </Text>
-            )}
+            } */}
         </TouchableOpacity>
     );
+
 
     // // PANTALLA DE CARGA INICIAL
     // if (isLoading) {
@@ -243,20 +273,14 @@ export default function Alarmas() {
                     </Text>
                 </View>
             ) : (
-                <FlatList
-                    data={alarmasDisparadas}
-                    keyExtractor={(item, index) => `${item.mac}-${item.idAlarm}-${index}`}
+                <SectionList
+                    sections={secciones}
+                    keyExtractor={item => `${item.mac}-${item.idAlarm}`}
+                    renderSectionHeader={renderSectionHeader}
                     renderItem={renderItem}
                     contentContainerStyle={{ padding: 16 }}
-                //refreshControl={
-                // <RefreshControl
-                //     refreshing={isRefreshing}
-                //     //  onRefresh={onRefresh}
-                //     colors={["#4ade80"]}
-                //     tintColor="#4ade80"
-                // />
-                //}
                 />
+
             )}
         </PaperProvider>
     );
@@ -264,18 +288,16 @@ export default function Alarmas() {
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: "#dc2626", //  Rojo más moderno (#dc2626 en lugar de "red")
-        borderRadius: 16, //  Bordes más redondeados (16 en lugar de 12)
-        padding: 20, // Más padding para respirar
-        marginBottom: 16, //  Más espacio entre tarjetas
+        backgroundColor: "#dc2626", //#dc2626
+        borderRadius: 12,
+        paddingHorizontal: 24,
+        paddingVertical: 14,
+        marginBottom: 16,
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 }, //  Sombra más pronunciada
-        shadowOpacity: 0.3, //  Sombra más visible
-        shadowRadius: 8, //  Sombra más suave
-        elevation: 6, //  Elevación mayor en Android
-        // NUEVO: Gradiente sutil con border
-        borderWidth: 1,
-        borderColor: "rgba(255, 255, 255, 0.1)", // Borde sutil blanco
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.2,
+        shadowRadius: 6,
+        elevation: 4,
     },
     row: {
         flexDirection: "row",
@@ -289,29 +311,24 @@ const styles = StyleSheet.create({
     },
     leftText: {
         fontWeight: "bold",
-        fontSize: 17, // 🔥 Ligeramente más grande
+        fontSize: 17, //  Ligeramente más grande
         color: "#ffffff", //  BLANCO
         letterSpacing: 0.3, //  Espaciado de letras moderno
     },
     rightText: {
         fontWeight: "bold",
-        fontSize: 17, // 🔥 Ligeramente más grande
+        fontSize: 17, //  Ligeramente más grande
         color: "#ffffff", //  BLANCO
         letterSpacing: 0.3, //  Espaciado de letras moderno
     },
     alarmas: {
-        fontSize: 15, // 🔥 Ligeramente más grande
+        fontSize: 15, //  Ligeramente más grande
         color: "#f3f4f6", //  BLANCO ligeramente gris para contraste
         marginBottom: 6, //  Más espacio
         fontWeight: "500", //  Peso medio
         lineHeight: 20, //  Altura de línea mejorada
     },
-    location: {
-        fontSize: 13, // 🔥 Un poco más grande
-        color: "rgba(255, 255, 255, 0.8)", //  BLANCO con transparencia
-        fontStyle: "italic",
-        marginTop: 4, //  Espacio superior
-    },
+
     centered: {
         flex: 1,
         justifyContent: "center",
@@ -365,5 +382,75 @@ const styles = StyleSheet.create({
         color: "#666",
         marginTop: 8,
         textAlign: "center",
+    },
+
+    topRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 6
+    },
+
+    iconHolder: {
+        width: 28, height: 28,
+        borderRadius: 14,
+        // backgroundColor: "#fff",
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 10
+    },
+    siteName: {
+        flex: 1,
+        color: "#fff",
+        fontSize: 17,
+        fontWeight: "600"
+    },
+
+    alarmText: {
+        color: "#fff",
+        fontSize: 15,
+        fontWeight: "500"
+    },
+
+    location: {
+        marginTop: 4,
+        fontSize: 13,
+        color: "rgba(255,255,255,0.8)",
+        fontStyle: "italic"
+    },
+    sectionHeaderContainer: {
+        marginTop: 24,
+        marginBottom: 8,
+    },
+    sectionHeaderText: {
+        fontSize: 18,
+        fontWeight: "700",
+        color: "#374151",
+    },
+    sectionHeaderLine: {
+        marginTop: 4,
+        height: 2,
+        backgroundColor: "#000000", // negro puro
+        // opacity: 0.3,
+        width: '100%',
+
+    },
+    sectionHeader: {
+        backgroundColor: "#f2f2f2",
+        paddingVertical: 12,
+        marginTop: 16,
+        marginBottom: 8,
+    },
+    sectionTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: "#333",
+        marginBottom: 8,
+        letterSpacing: 1,
+    },
+    sectionLine: {
+        height: 2,                   // más gruesa que tu línea anterior
+        backgroundColor: "#000",
+        width: "100%",
+        opacity: 1
     },
 });

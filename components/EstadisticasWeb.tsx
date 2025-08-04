@@ -13,6 +13,7 @@ import { RouteProp, useRoute, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "@/app/HomeStack";
 import { Feather } from "@expo/vector-icons";
 import { t } from "@/i18n/i18nConfig";
+//import {PORTAL2_API_KEY } from "../expo-env";
 
 type WebViewRouteProp = RouteProp<RootStackParamList, "EstadisticasWeb">;
 
