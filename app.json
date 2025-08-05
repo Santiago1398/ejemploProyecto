@@ -57,7 +57,7 @@
       "typedRoutes": true
     },
     "extra": {
-      "devBuildNumber": 5,
+      "devBuildNumber": 7,
       "apiUrl": "https://api.tc5monitor.cticontrol.com/api",
       "apiUrlDev": "https://api.tc5monitortest.cticontrol.com/api",
       "socketUrl": "https://api.tc5monitor.cticontrol.com",

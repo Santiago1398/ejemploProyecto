@@ -49,7 +49,9 @@
         "Max": "最大",
         "No_conectado": "未連接",
         "needUpdateTitle": "需要更新 TC5",
-        "needUpdateSubtitle": "請在 TC5 設定中更新"
+        "needUpdateSubtitle": "請在 TC5 設定中更新",
+        "Ayer": "昨天",
+        "Hoy": "今天"
     },
     "DrawerContent": {
         "logout": "登出",
@@ -287,5 +289,9 @@
         "Home": "首頁",
         "Alarmas": "通知",
         "Maps": "地圖"
+    },
+    "Estadisticas": {
+        "errorTitle": "錯誤",
+        "errorLoadingFarm": "由於沒有連線或不存在，無法載入入口網站"
     }
 }

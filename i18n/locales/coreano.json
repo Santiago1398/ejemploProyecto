@@ -49,7 +49,9 @@
         "Max": "최대",
         "No_conectado": "연결되지 않음",
         "needUpdateTitle": "TC5 업데이트가 필요합니다",
-        "needUpdateSubtitle": "TC5 설정에서 업데이트하십시오"
+        "needUpdateSubtitle": "TC5 설정에서 업데이트하십시오",
+        "Ayer": "어제",
+        "Hoy": "오늘"
     },
     "DrawerContent": {
         "logout": "로그아웃",
@@ -287,5 +289,9 @@
         "Home": "홈",
         "Alarmas": "알림",
         "Maps": "지도"
+    },
+    "Estadisticas": {
+        "errorTitle": "오류",
+        "errorLoadingFarm": "연결이 없거나 존재하지 않아 포털을 불러올 수 없습니다"
     }
 }

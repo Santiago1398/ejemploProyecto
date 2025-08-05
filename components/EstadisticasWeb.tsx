@@ -115,12 +115,12 @@ export default function WebViewEstadisticas() {
             <SafeAreaView style={styles.container}>
                 <View style={styles.errorContainer}>
                     <Feather name="alert-circle" size={64} color="#FF3B30" />
-                    <Text style={styles.errorTitle}>{t("Eplotacion.errorTitle")}</Text>
+                    <Text style={styles.errorTitle}>{t("Estadisticas.errorTitle")}</Text>
                     <Text style={styles.errorMessage}>{errorMessage}</Text>
                     <Text style={styles.errorDescription}>
-                        {t("Eplotacion.errorLoadingFarm")}
+                        {t("Estadisticas.errorLoadingFarm")}
                     </Text>
-                    <TouchableOpacity
+                    {/* <TouchableOpacity
                         style={styles.backButton}
                         onPress={() => navigation.goBack()}
                     >
@@ -128,7 +128,7 @@ export default function WebViewEstadisticas() {
                         <Text style={styles.backButtonText}>
                             {t("Eplotacion.ButtonText")}
                         </Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
             </SafeAreaView>
         );

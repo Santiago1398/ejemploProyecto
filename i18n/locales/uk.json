@@ -49,7 +49,9 @@
         "Max": "Макс",
         "No_conectado": "Не підключено",
         "needUpdateTitle": "Потрібно оновити TC5",
-        "needUpdateSubtitle": "Оновіть у налаштуваннях TC5"
+        "needUpdateSubtitle": "Оновіть у налаштуваннях TC5",
+        "Ayer": "Вчора",
+        "Hoy": "Сьогодні"
     },
     "DrawerContent": {
         "logout": "Вийти",
@@ -288,5 +290,9 @@
         "Home": "Головна",
         "Alarmas": "Сповіщення",
         "Maps": "Карти"
+    },
+    "Estadisticas": {
+        "errorTitle": "Помилка",
+        "errorLoadingFarm": "Не вдається завантажити портал, оскільки немає зʼєднання або він не існує"
     }
 }

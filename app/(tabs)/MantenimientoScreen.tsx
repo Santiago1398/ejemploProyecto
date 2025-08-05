@@ -10,174 +10,37 @@ import {
     ScrollView,
     TouchableOpacity,
 } from "react-native";
-import { getApiUrl, setApiUrl } from "@/utils/apiconfig";
 import { Ionicons } from "@expo/vector-icons";
 import * as Clipboard from 'expo-clipboard';
 import { notificationService } from '@/hooks/NotificationService';
 import { t } from "@/i18n/i18nConfig";
-//  IMPORTS PARA SOCKET.IO
-import { useSocket } from '@/hooks/useSocket';
-import { socketService } from '@/services/socketService';
+import { getApiUrl } from '@/config/apiConfig';
+import { clearApiUrl, setApiUrl } from "@/utils/apiconfig";
+
 
 export default function MantenimientoScreen() {
     const [apiUrl, setApiUrlState] = useState("");
 
-    //  ESTADOS PARA SOCKET.IO - Conexión automática
-    const { isConnected, lastError, socketId } = useSocket();
-    const [receivedMessages, setReceivedMessages] = useState<string[]>([]);
-    const [testMessage, setTestMessage] = useState("Mensaje de prueba desde app");
-
     useEffect(() => {
-        const loadApiUrl = async () => {
-            const url = await getApiUrl();
-            setApiUrlState(url);
-        };
-        loadApiUrl();
+        (async () => setApiUrlState(await getApiUrl()))();
     }, []);
-
-    //  CONFIGURAR LISTENERS DE SOCKET.IO - Solo el callback principal
-    useEffect(() => {
-        console.log('📱 [MAINTENANCE] Configurando listeners...');
-
-        socketService.setOnAlarmDetected((data) => {
-            // 🔥 LOGS DETALLADOS
-            console.log('📨 [MAINTENANCE] Mensaje recibido:', {
-                timestamp: new Date().toISOString(),
-                data: data,
-                type: typeof data,
-                keys: Object.keys(data || {}),
-                socketConnected: socketService.isConnected(),
-                socketId: socketService.getSocketId()
-            });
-
-            const timestamp = new Date().toLocaleTimeString();
-            let messageType = 'GENERAL';
-
-            if (data.from === 'maintenance_screen') {
-                messageType = 'ECHO';
-                console.log('🔄 [MAINTENANCE] Es un eco de nuestro propio mensaje');
-            } else if (data.type === 'test') {
-                messageType = 'TEST';
-                console.log('🧪 [MAINTENANCE] Es un mensaje de prueba');
-            } else if (data.response) {
-                messageType = 'RESPONSE';
-                console.log('💬 [MAINTENANCE] Es una respuesta del servidor');
-            }
-
-            setReceivedMessages(prev => {
-                const newMessage = `${timestamp}: [${messageType}] ${JSON.stringify(data)}`;
-                console.log('📝 [MAINTENANCE] Agregando mensaje a la lista:', newMessage);
-                return [...prev, newMessage];
-            });
-
-            if (messageType === 'TEST' || messageType === 'RESPONSE') {
-                console.log('🔔 [MAINTENANCE] Mostrando alerta para mensaje importante');
-                Alert.alert('🔔 Socket Message', `${messageType}: ${JSON.stringify(data)}`);
-            }
-        });
-
-        return () => {
-            console.log('🧹 [MAINTENANCE] Limpiando listeners...');
-            socketService.setOnAlarmDetected(() => { });
-        };
-    }, []);
-
-    //  EFECTO PARA MOSTRAR ESTADO DE CONEXIÓN
-    useEffect(() => {
-        console.log('🔗 [MAINTENANCE] Estado de conexión cambió:', {
-            isConnected,
-            socketId,
-            timestamp: new Date().toISOString()
-        });
-
-        if (isConnected) {
-            console.log('✅ [MAINTENANCE] Socket conectado automáticamente');
-            const timestamp = new Date().toLocaleTimeString();
-            setReceivedMessages(prev => [...prev, `${timestamp}: [SYSTEM] Socket conectado (ID: ${socketId})`]);
-        } else {
-            console.log('❌ [MAINTENANCE] Socket desconectado');
-            const timestamp = new Date().toLocaleTimeString();
-            setReceivedMessages(prev => [...prev, `${timestamp}: [SYSTEM] Socket desconectado`]);
-        }
-    }, [isConnected, socketId]);
 
     const handleSave = async () => {
         try {
-            await setApiUrl(apiUrl);
-            Alert.alert(t("MantenimientoScreen.saveSuccessTitle"), t("MantenimientoScreen.saveSuccessMessage"));
+            await setApiUrl(apiUrl);               // guarda override
+            Alert.alert('Éxito', 'URL guardada 👍');
         } catch {
-            Alert.alert(t("MantenimientoScreen.saveErrorTitle"), t("MantenimientoScreen.saveErrorMessage"));
+            Alert.alert('Error', 'No se pudo guardar');
         }
     };
 
-    //  FUNCIÓN PARA ENVIAR MENSAJE DE PRUEBA
-    const sendTestMessage = () => {
-        if (!isConnected) {
-            Alert.alert(' Error', 'Socket no está conectado');
-            return;
-        }
-
-        const messageData = {
-            message: testMessage,
-            timestamp: new Date().toISOString(),
-            from: 'maintenance_screen',
-            type: 'test',
-            socketId: socketId
-        };
-
-        socketService.emit('test_message', messageData);
-
-        const timestamp = new Date().toLocaleTimeString();
-        setReceivedMessages(prev => [...prev, `${timestamp}: [SENT] ${JSON.stringify(messageData)}`]);
-
-        Alert.alert('Mensaje Enviado', `Enviado: ${testMessage}`);
+    const handleReset = async () => {
+        await clearApiUrl();                     // vuelve al manifest
+        const url = await getApiUrl();
+        setApiUrlState(url);
+        Alert.alert('Reiniciado', 'URL predeterminada restaurada');
     };
 
-    //  FUNCIÓN PARA RECONECTAR (manual)
-    const handleReconnect = () => {
-        if (isConnected) {
-            socketService.disconnect();
-            // Reconectar después de un pequeño delay
-            setTimeout(() => {
-                socketService.connect();
-            }, 1000);
-        } else {
-            socketService.connect();
-        }
-    };
-
-    //  FUNCIÓN PARA LIMPIAR MENSAJES
-    const clearMessages = () => {
-        setReceivedMessages([]);
-        Alert.alert('🧹 Mensajes Limpiados', 'Historial de mensajes borrado');
-    };
-
-    //  FUNCIÓN PARA COPIAR SOCKET ID
-    const copySocketId = async () => {
-        if (socketId) {
-            await Clipboard.setStringAsync(socketId);
-            Alert.alert(' Socket ID Copiado', socketId);
-        }
-    };
-
-    //  FUNCIÓN PARA PROBAR DIFERENTES TIPOS DE MENSAJES
-    const sendPingTest = () => {
-        if (!isConnected) {
-            Alert.alert(' Error', 'Socket no está conectado');
-            return;
-        }
-
-        const pingData = {
-            type: 'ping',
-            timestamp: new Date().toISOString(),
-            from: 'maintenance_screen'
-        };
-
-        socketService.emit('ping', pingData);
-
-        const timestamp = new Date().toLocaleTimeString();
-        setReceivedMessages(prev => [...prev, `${timestamp}: [PING] Enviado ping al servidor`]);
-    };
 
     return (
         <ScrollView style={styles.screen}>
@@ -191,85 +54,16 @@ export default function MantenimientoScreen() {
                     placeholder={t("MantenimientoScreen.apiPlaceholder")}
                     autoCapitalize="none"
                 />
-                <Button title={t("MantenimientoScreen.saveButton")} onPress={handleSave} />
+                <Button title="Guardar URL" onPress={handleSave} />
+                <Button title="Restaurar por defecto" onPress={handleReset} />
+
             </View>
 
             {/*  SECCIÓN: SOCKET.IO TESTING - CONEXIÓN AUTOMÁTICA */}
-            <View style={styles.section}>
-                <Text style={styles.sectionTitle}>🔌 Socket.IO (Auto-Conectado)</Text>
 
-                {/* Estado de conexión */}
-                <View style={styles.statusContainer}>
-                    <View style={[styles.statusDot, { backgroundColor: isConnected ? '#4CAF50' : '#F44336' }]} />
-                    <Text style={styles.statusText}>
-                        {isConnected ? ` Conectado (ID: ${socketId?.substring(0, 8)}...)` : ' Desconectado'}
-                    </Text>
-                    {socketId && (
-                        <TouchableOpacity onPress={copySocketId} style={styles.copyButton}>
-                            <Ionicons name="copy-outline" size={16} color="#007AFF" />
-                        </TouchableOpacity>
-                    )}
-                </View>
-
-                {/* Error si existe */}
-                {lastError && (
-                    <Text style={styles.errorText}> Error: {lastError}</Text>
-                )}
-
-                {/* Botones de control */}
-                <View style={styles.buttonRow}>
-                    <TouchableOpacity
-                        style={[styles.actionButton, { backgroundColor: '#FF9800' }]}
-                        onPress={handleReconnect}
-                    >
-                        <Ionicons name="refresh-outline" size={20} color="#fff" />
-                        <Text style={styles.buttonText}>Reconectar</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={[styles.actionButton, { backgroundColor: '#9C27B0' }]}
-                        onPress={sendPingTest}
-                        disabled={!isConnected}
-                    >
-                        <Ionicons name="pulse-outline" size={20} color="#fff" />
-                        <Text style={styles.buttonText}>Ping</Text>
-                    </TouchableOpacity>
-                </View>
-
-                {/* Input para mensaje de prueba */}
-                <TextInput
-                    style={styles.input}
-                    value={testMessage}
-                    onChangeText={setTestMessage}
-                    placeholder="Mensaje de prueba..."
-                    multiline
-                />
-
-                {/* Botones de envío y limpieza */}
-                <View style={styles.buttonRow}>
-                    <TouchableOpacity
-                        style={[styles.actionButton, {
-                            backgroundColor: isConnected ? '#2196F3' : '#CCCCCC',
-                        }]}
-                        onPress={sendTestMessage}
-                        disabled={!isConnected}
-                    >
-                        <Ionicons name="send-outline" size={20} color="#fff" />
-                        <Text style={styles.buttonText}>Enviar Test</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={[styles.actionButton, { backgroundColor: '#F44336' }]}
-                        onPress={clearMessages}
-                    >
-                        <Ionicons name="trash-outline" size={20} color="#fff" />
-                        <Text style={styles.buttonText}>Limpiar</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
 
             {/*  SECCIÓN: MENSAJES RECIBIDOS */}
-            <View style={styles.section}>
+            {/* <View style={styles.section}>
                 <Text style={styles.sectionTitle}> Mensajes en Tiempo Real ({receivedMessages.length})</Text>
                 {receivedMessages.length === 0 ? (
                     <Text style={styles.noMessagesText}> Esperando mensajes del servidor...</Text>
@@ -282,7 +76,7 @@ export default function MantenimientoScreen() {
                         ))}
                     </ScrollView>
                 )}
-            </View>
+            </View> */}
 
             {/* Sección FCM existente */}
             <View style={{ marginTop: 24 }}>
