@@ -30,6 +30,9 @@ import { Feather } from "@expo/vector-icons";
 import { socketService } from "@/services/socketService";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuthStore } from '@/store/authStore';
+import { getUnitString, UnitEnum } from "@/utils/units";
+import { SensorSymbol } from "@/utils/SensorSymbol";
+
 
 
 
@@ -48,65 +51,7 @@ export interface SensorData {
     maxValueYesterday: number;
 }
 
-// ENUM DE UNIDADES
-const UnitEnum = {
-    EN_GT_UNID_NO_UNIDAD: 0,
-    EN_GT_UNID_GRADO_CENTIGRADO: 1,
-    EN_GT_UNID_GRADO_Fahrenheit: 2,
-    EN_GT_UNID_LITROS: 3,
-    EN_GT_UNID_GALONES: 4,
-    EN_GT_UNID_KILOS: 5,
-    EN_GT_UNID_LIBRA: 6,
-    EN_GT_UNID_M3H: 7,
-    EN_GT_UNID_CFM: 8,
-    EN_GT_UNID_VATIO: 9,
-    EN_GT_UNID_PORCENTAJE: 10,
-    EN_GT_UNID_PASCALES: 11,
-    EN_GT_UNID_PPM: 12,
-    EN_GT_UNID_METRO: 13,
-    EN_GT_UNID_PULGADA: 14,
-    EN_GT_UNID_PIE: 15,
-};
 
-//  FUNCIÓN PARA CONVERTIR NÚMERO DE UNIDAD A STRING
-const getUnitString = (unitNumber: number): string => {
-    switch (unitNumber) {
-        case UnitEnum.EN_GT_UNID_NO_UNIDAD:
-            return "";
-        case UnitEnum.EN_GT_UNID_GRADO_CENTIGRADO:
-            return "°C";
-        case UnitEnum.EN_GT_UNID_GRADO_Fahrenheit:
-            return "°F";
-        case UnitEnum.EN_GT_UNID_LITROS:
-            return "L";
-        case UnitEnum.EN_GT_UNID_GALONES:
-            return "gal";
-        case UnitEnum.EN_GT_UNID_KILOS:
-            return "kg";
-        case UnitEnum.EN_GT_UNID_LIBRA:
-            return "lb";
-        case UnitEnum.EN_GT_UNID_M3H:
-            return "m³/h";
-        case UnitEnum.EN_GT_UNID_CFM:
-            return "CFM";
-        case UnitEnum.EN_GT_UNID_VATIO:
-            return "W";
-        case UnitEnum.EN_GT_UNID_PORCENTAJE:
-            return "%";
-        case UnitEnum.EN_GT_UNID_PASCALES:
-            return "Pa";
-        case UnitEnum.EN_GT_UNID_PPM:
-            return "ppm";
-        case UnitEnum.EN_GT_UNID_METRO:
-            return "m";
-        case UnitEnum.EN_GT_UNID_PULGADA:
-            return '"';
-        case UnitEnum.EN_GT_UNID_PIE:
-            return "ft";
-        default:
-            return "";
-    }
-};
 
 
 type DeviceDetailsRouteProp = RouteProp<RootStackParamList, "DeviceDetails">;
@@ -325,25 +270,65 @@ export default function AlarmList() {
 
 
     //! FUNCIÓN PARA OBTENER ICONO SEGÚN TIPO DE SENSOR
-    const getSensorIcon = (type: number, unitNumber: number): keyof typeof Ionicons.glyphMap => {
-        const unitString = getUnitString(unitNumber);
+    // const getSensorIcon = (
+    //     type: number,
+    //     unitNumber: number
+    // ): keyof typeof Ionicons.glyphMap => {
+    //     const unitString = getUnitString(unitNumber);
 
-        // Si la unidad es °C o °F, usamos el icono de termómetro
-        if (unitString === "°C" || unitString === "°F") {
-            return "thermometer-outline";
+    //     /* 1️⃣  PPM → elegimos icono según el tipo de gas */
+    //     if (unitString === 'ppm') {
+    //         switch (type) {
+    //             case 3:          // NH₃
+    //                 return 'flask-outline';       // químico / laboratorio
+    //             case 2:          // CO₂
+    //                 return 'analytics-outline';   // gráfica / sensor ambiental
+    //             default:         // otros gases en ppm
+    //                 return 'speedometer-outline'; // genérico
+    //         }
+    //     }
+
+    //     /* 2️⃣ Temperaturas °C / °F */
+    //     if (unitString === '°C' || unitString === '°F') {
+    //         return 'thermometer-outline';
+    //     }
+
+    //     /* 3️⃣  Resto de sensores */
+    //     switch (type) {
+    //         case 0: return 'thermometer-outline'; // temperatura
+    //         case 1: return 'water-outline';       // humedad
+    //         case 2: return 'speedometer-outline'; // presión
+    //         default: return 'hardware-chip-outline';
+    //     }
+    // };
+
+
+
+    const getSensorIcon = (
+        type: number,
+        unit: number
+    ): keyof typeof Ionicons.glyphMap => {
+        const unitString = getUnitString(unit);
+
+        /* Temperaturas en °C / °F */
+        if (unitString === '°C' || unitString === '°F') return 'thermometer-outline';
+
+        /* Gases en ppm */
+        if (unitString === 'ppm') {
+            if (type === 3) return 'flask-outline';      // NH₃
+            if (type === 2) return 'analytics-outline';  // CO₂
+            return 'speedometer-outline';                // otros gases
         }
 
+        /* Resto de sensores */
         switch (type) {
-            case 0: // Temperatura
-                return "thermometer-outline";
-            case 1: // Humedad  
-                return "water-outline";
-            case 2: // Presión o PPM
-                return unitString === "ppm" ? "analytics-outline" : "speedometer-outline";
-            default:
-                return "hardware-chip-outline";
+            case 0: return 'thermometer-outline'; // temperatura
+            case 1: return 'water-outline';       // humedad
+            case 2: return 'speedometer-outline'; // presión
+            default: return 'hardware-chip-outline';
         }
     };
+
 
     //!-------------------------------------------------------------
 
@@ -414,12 +399,15 @@ export default function AlarmList() {
                     {/*  ───── valor actual + rango ───── */}
                     <View style={styles.valueBox}>
                         {/* icono */}
-                        <Ionicons
+                        {/* <Ionicons
                             name={getSensorIcon(s.type, s.unit)}
                             size={20}
                             color="#fff"
                             style={{ marginRight: 8 }}
-                        />
+                        /> */}
+
+                        <SensorSymbol type={s.type} unit={s.unit} />
+
 
                         {/* contenedor vertical (valor  +  rango) */}
                         <View style={styles.valueCol}>
@@ -450,18 +438,18 @@ export default function AlarmList() {
                         <View style={styles.headerRow}>
                             <Text style={styles.cornerCell} />
                             <View style={styles.headerUnderline}>
-                                <Text style={styles.headerCell}>{t('Ayer')}</Text>
-                                <Text style={styles.headerCell}>{t('Hoy')}</Text>
+                                <Text style={styles.headerCell}>{t('DeviceDetailsScreen.Ayer')}</Text>
+                                <Text style={styles.headerCell}>{t('DeviceDetailsScreen.Hoy')}</Text>
                             </View>
                         </View>
                         <View style={styles.row}>
-                            <Text style={styles.rowTitle}>{t('Máx')}</Text>
+                            <Text style={styles.rowTitle}>{t('DeviceDetailsScreen.Max')}</Text>
                             <View style={styles.dataCol}>{renderValue(s.maxValueYesterday)}</View>
                             <View style={styles.dataCol}>{renderValue(s.maxValueToday)}</View>
                         </View>
 
                         <View style={styles.row}>
-                            <Text style={styles.rowTitle}>{t('Min')}</Text>
+                            <Text style={styles.rowTitle}>{t('DeviceDetailsScreen.Min')}</Text>
                             <View style={styles.dataCol}>{renderValue(s.minValueYesterday)}</View>
                             <View style={styles.dataCol}>{renderValue(s.minValueToday)}</View>
                         </View>
