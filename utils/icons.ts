@@ -1,28 +1,35 @@
-/* icons.ts ------------------------------------------------------ */
+/* utils/icons.ts --------------------------------------------------- */
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { getUnitString, UnitEnum } from '@/utils/units';
 
-export const getSensorIcon = (
-    type: number,
-    unit: number
-): keyof typeof Ionicons.glyphMap => {
-    const unitString = getUnitString(unit);
+export type IconSpec =
+    | { lib: 'ion'; name: keyof typeof Ionicons.glyphMap }
+    | { lib: 'mc'; name: keyof typeof MaterialCommunityIcons.glyphMap };
 
-    /* Temperaturas en °C / °F */
-    if (unitString === '°C' || unitString === '°F') return 'thermometer-outline';
+export function getSensorIcon(type: number, unit: number): IconSpec {
+    const u = getUnitString(unit);
 
-    /* Gases en ppm */
-    if (unitString === 'ppm') {
-        if (type === 3) return 'flask-outline';      // NH₃
-        if (type === 2) return 'analytics-outline';  // CO₂
-        return 'speedometer-outline';                // otros gases
+    /* °C / °F ──────────────── */
+    if (u === '°C' || u === '°F')
+        return { lib: 'ion', name: 'thermometer-outline' };
+
+    /* ppm ──────────────────── */
+    if (u === 'ppm') {
+        if (type === 3) return { lib: 'ion', name: 'flask-outline' };     // NH₃
+        if (type === 2) return { lib: 'ion', name: 'analytics-outline' }; // CO₂
+        return { lib: 'ion', name: 'speedometer-outline' };               // otros
     }
 
-    /* Resto de sensores */
+    /* Pascales ─────────────── */
+    if (u === 'Pa' || type === 4)
+        return { lib: 'mc', name: 'weather-windy' };  // icono viento
+
+    /* Resto ────────────────── */
     switch (type) {
-        case 0: return 'thermometer-outline'; // temperatura
-        case 1: return 'water-outline';       // humedad
-        case 2: return 'speedometer-outline'; // presión
-        default: return 'hardware-chip-outline';
+        case 0: return { lib: 'ion', name: 'thermometer-outline' };
+        case 1: return { lib: 'ion', name: 'water-outline' };
+        case 2: return { lib: 'ion', name: 'speedometer-outline' };
+        default: return { lib: 'ion', name: 'hardware-chip-outline' };
     }
-};
+}

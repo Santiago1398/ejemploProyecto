@@ -114,7 +114,7 @@ export default function Alarmas() {
                     );
 
             if (eventMac) {
-                console.log("📡 Evento alarma →", eventMac, "→ fetchAlarmas");
+                console.log("📡 Evento alarma en pantalla 2 Tabs Alarmas →", eventMac, "→ fetchAlarmas");
                 fetchAlarmas(true);            // true = refresh silencioso
             }
         };

@@ -12,7 +12,7 @@
     "deviceList": {
         "loadingDevices": "Загрузка устройств…",
         "serverDisconnected": "Сервер отключён. Попробуйте позже.",
-        "noLocationsAvailable": "Нет доступных локаций",
+        "noLocationsAvailable": "У вас нет настроенных локаций с TC5",
         "alarmActive": "🚨 Тревога активна",
         "acceptAndStopAlarm": "Принять и остановить тревогу",
         "errorTitle": "Ошибка",
@@ -252,7 +252,9 @@
         "loading": {
             "devices": "Загрузка устройств...",
             "location": "Получение расположений"
-        }
+        },
+        "noDevicesTitle": "Нет устройств",
+        "noDevicesMessage": "Нет доступных устройств"
     },
     "HomeStack": {
         "DeviceMaps": {

@@ -12,7 +12,7 @@
     "deviceList": {
         "loadingDevices": "장치 불러오는 중...",
         "serverDisconnected": "서버 연결이 끊어졌습니다. 나중에 다시 시도하세요.",
-        "noLocationsAvailable": "사용 가능한 위치가 없습니다",
+        "noLocationsAvailable": "TC5로 설정된 위치가 없습니다",
         "alarmActive": "🚨 알람 활성화됨",
         "acceptAndStopAlarm": "알람 수락 및 중지",
         "errorTitle": "오류",
@@ -252,7 +252,9 @@
         "loading": {
             "devices": "장치 불러오는 중...",
             "location": "위치 불러오는 중..."
-        }
+        },
+        "noDevicesTitle": "장치 없음",
+        "noDevicesMessage": "사용 가능한 장치가 없습니다"
     },
     "HomeStack": {
         "DeviceMaps": {

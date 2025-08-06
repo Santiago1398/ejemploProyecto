@@ -26,6 +26,7 @@ import PhoneNumberDialog from "./PhoneNumberDialog";
 import { t } from "@/i18n/i18nConfig";
 import { socketService } from "@/services/socketService";
 import { useRef } from 'react';
+import { EmptyState } from "@/utils/EmptyState";
 
 
 export default function DeviceList() {
@@ -34,14 +35,19 @@ export default function DeviceList() {
     const isFocused = useIsFocused();
 
     const {
+
         devices,
         loading,
         error: isError,
         setDevices,
         setLoading,
         setError,
-        updateDevice
+        updateDevice,
+        // realDevices
     } = useDeviceStore();
+
+    //!Prueba de pantalla vacia 
+    const DEV_FORCE_EMPTY = true;         // ⬅︎ ponlo a true sólo para probar
 
     const [showAlarmDialog, setShowAlarmDialog] = useState(false);
     const [initialLoad, setInitialLoad] = useState(true);
@@ -130,7 +136,7 @@ export default function DeviceList() {
                 );
 
             if (eventMac) {
-                console.log(`🔄 MAC ${eventMac} ha cambiado, refrescando lista`);
+                console.log(`🔄 MAC ${eventMac} ha cambiado, refrescando lista en DeviceList 1`);
                 fetchDevices(true);            // true = sin loading
             } else {
                 console.log(' register_macs sin MAC, ignorado');
@@ -226,7 +232,12 @@ export default function DeviceList() {
                 alarmType: device.alarmType ?? 1,
                 armed: device.armed ?? true
             }));
-
+            console.log(data)
+            const FORCE_EMPTY = false;        // ponlo a *false* o bórralo cuando termines
+            if (__DEV__ && FORCE_EMPTY) {
+                setDevices([]);                // simula 0 ubicaciones
+                return;                        // salta el resto
+            }
             setDevices(formattedData);
             setErrorAlertShown(false);
 
@@ -373,7 +384,13 @@ export default function DeviceList() {
                     </Text>
                 </View>
             ) : devices.length === 0 ? (
-                <Text style={styles.loadingText}>{t("deviceList.noLocationsAvailable")}</Text>
+                <EmptyState
+                    icon="map-marker-off"
+                    lib="mc"
+                    title={t('deviceList.noLocationsAvailable')}
+                    color="#2563EB"
+                    size={88}
+                />
             ) : (
                 // !  SectionList en lugar de FlatList
                 <SectionList

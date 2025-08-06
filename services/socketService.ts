@@ -16,6 +16,7 @@ class SocketService {
     private onErrorCallback: ((error: string) => void) | null = null;
     private macAddresses: string[] = [];
     private onDeviceUpdateCallback: ((eventName: string, data: any) => void) | null = null;
+    private static instances = 0;
 
     constructor() {
         // NO conectar automáticamente - esperar a que se llame initialize()
@@ -26,6 +27,8 @@ class SocketService {
     initialize() {
         if (this.hasInitialized) {
             console.log('⚠️ SocketService ya fue inicializado');
+            console.trace("📌 stack initialize");   // 2️⃣ quién lo llamó
+
             return;
         }
 
@@ -33,16 +36,35 @@ class SocketService {
         console.log('🚀 Inicializando SocketService...');
         this.connect();
     }
+    private lastMacs: string[] = [];
 
     setMacAddresses(macs: string[]) {
+        // ⚖️ 1. ¿La lista es idéntica?
+        const same =
+            macs.length === this.lastMacs.length &&
+            macs.every((m, i) => m === this.lastMacs[i]);
+
+        if (same) return;          // ⏩ nada que hacer
+
+        // 2. Guarda copia y (si procede) emite
+        this.lastMacs = [...macs];
         this.macAddresses = macs;
-        console.log('🔥 SocketService inicializado con direcciones MAC:', this.macAddresses);
+
+        if (this.isConnected()) {
+            console.log('➡️  Enviando register_macs:', macs.join(','));
+
+            this.emit('register_macs', { macs });
+        }
     }
+
+
+
 
     //  CONECTAR AL SERVIDOR
     async connect() {
         if (this.isConnecting || this.socket?.connected) {
-            console.log('🔌 Socket ya está conectado o conectándose');
+            console.count("🔂 connect() invocado"); // 3️⃣ cuántas veces se entra
+            console.log('🔌 Socket ya está conectado ');
             return;
         }
 
@@ -56,6 +78,8 @@ class SocketService {
             const { isDeveloperMode } = useAuthStore.getState();
             console.log(`🔧 isDeveloperMode: ${isDeveloperMode}`);
             console.log(`🔌 Conectando a Socket.IO en: ${SOCKET_URL}`);
+
+            console.log("🚀 CREANDO socket…");
 
             this.socket = io(SOCKET_URL, {
                 transports: ['websocket', 'polling'],
@@ -91,13 +115,15 @@ class SocketService {
         await this.connect();
     }
 
+
+
     // CONFIGURAR LISTENERS
     private setupEventListeners() {
         if (!this.socket) return;
 
         // 🔍 DEBUG: Ver TODOS los eventos
         this.socket.onAny((eventName, ...args) => {
-            console.log('🔍 EVENTO RECIBIDO DEL BACKEND:');
+            console.log('🔍 EVENTO RECIBIDO DEL BACKEND 1:');
             console.log('   - Nombre del evento:', eventName);
             console.log('   - Datos recibidos:', JSON.stringify(args, null, 2));
             console.log('-----------------------------------');
@@ -124,6 +150,7 @@ class SocketService {
 
             this.onConnectionChangeCallback?.(true);
         });
+
 
         this.socket.on('connect_error', (error) => {
             console.log('❌ Error de conexión socket:', error.message);
@@ -163,6 +190,9 @@ class SocketService {
             this.onErrorCallback?.('No se pudo conectar al servidor');
         }
     }
+
+
+
 
     on(event: string, callback: (data: any) => void) {
         if (this.socket) {

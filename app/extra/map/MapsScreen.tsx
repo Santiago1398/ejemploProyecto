@@ -109,6 +109,8 @@ const MapsScreen = () => {
         if (devicesWithValidCoords.length > 0) {
             console.log("- Valid devices:");
             devicesWithValidCoords.forEach(device => {
+                console.log(`🌍 MAC ${device.mac}: lat=${device.latitude}  lon=${device.longitude}`)
+
                 console.log(`  * ${device.siteName} (${device.farmName}): ${device.latitude}, ${device.longitude}`);
             });
         }
