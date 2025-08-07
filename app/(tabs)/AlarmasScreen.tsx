@@ -121,11 +121,12 @@ export default function Alarmas() {
 
         /* Escucha tanto cambios de MAC como alarma disparada */
         socketService.on("register_macs", handleAlarmEvent);
-        socketService.on("alarm_triggered", handleAlarmEvent);
+        //socketService.on("alarm_triggered", handleAlarmEvent);
+
 
         return () => {
             socketService.off("register_macs", handleAlarmEvent);
-            socketService.off("alarm_triggered", handleAlarmEvent);
+            //socketService.off("alarm_triggered", handleAlarmEvent);
         };
     }, []);           // sin isFocused en la dependencia
 

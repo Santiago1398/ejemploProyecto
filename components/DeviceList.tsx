@@ -241,6 +241,11 @@ export default function DeviceList() {
             setDevices(formattedData);
             setErrorAlertShown(false);
 
+            //Aqui le envio los mac
+            const macAddresses = formattedData.map(device => String(device.mac));
+            console.log('------- Enviando MACs al socket desde DeviceList:--------- SI LOS ENVIA', macAddresses);
+            socketService.setMacAddresses(macAddresses);
+
         } catch (error) {
             console.error("Error al cargar dispositivos:", error);
             setError(true);

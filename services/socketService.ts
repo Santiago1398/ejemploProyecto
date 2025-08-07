@@ -3,15 +3,15 @@ import { getSocketUrl } from './socketConfig';
 import { useAuthStore } from '@/store/authStore';
 
 class SocketService {
-    private socket: Socket | null = null;
-    private reconnectAttempts = 0;
-    private maxReconnectAttempts = 5;
-    private reconnectDelay = 1000;
-    private isConnecting = false;
-    private hasInitialized = false; // NUEVO: Flag para evitar conexión automática
+    private socket: Socket | null = null;           // Instancia del socket
+    private reconnectAttempts = 0;                   // Contador de reintentos
+    private maxReconnectAttempts = 5;               // Máximo de reintentos
+    private reconnectDelay = 1000;                  // Delay entre reintentos
+    private isConnecting = false;                   // Flag de estado de conexión
+    private hasInitialized = false;                // Evita inicialización múltiple
 
     // 🔥 Callbacks para eventos
-    private onAlarmDetectedCallback: ((data: any) => void) | null = null;
+    private onAlarmDetectedCallback: ((data: any) => void) | null = null; //IN
     private onConnectionChangeCallback: ((connected: boolean) => void) | null = null;
     private onErrorCallback: ((error: string) => void) | null = null;
     private macAddresses: string[] = [];

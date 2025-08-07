@@ -742,7 +742,7 @@ export default function AlarmList() {
     useEffect(() => {
         const interval = setInterval(() => {
             fetchAlarms(true);
-        }, 15000);
+        }, 7000);
 
         return () => clearInterval(interval);
     }, [mac]);
