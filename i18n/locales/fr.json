@@ -49,13 +49,16 @@
         "Max": "Máx",
         "No_conectado": "Non connecté",
         "needUpdateTitle": "Mise à jour du TC5 requise",
-        "needUpdateSubtitle": "Veuillez mettre à jour depuis les paramètres du TC5"
+        "needUpdateSubtitle": "Veuillez mettre à jour depuis les paramètres du TC5",
+        "Ayer": "Hier",
+        "Hoy": "Aujourd'hui"
     },
     "DrawerContent": {
         "logout": "Se déconnecter",
         "login": "Se connecter",
         "settings": "Paramètres",
-        "maintenance": "Maintenance"
+        "maintenance": "Maintenance",
+        "softwareVersion": "Versione software:"
     },
     "EditarPrioridadScreen": {
         "errorTitle": "Erreur",
@@ -286,5 +289,9 @@
         "Home": "Accueil",
         "Alarmas": "Alertes",
         "Maps": "Cartes"
+    },
+    "Estadisticas": {
+        "errorTitle": "Erreur",
+        "errorLoadingFarm": "Impossible de charger le portail car il n'y a pas de connexion ou il n'existe pas"
     }
 }

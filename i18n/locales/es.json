@@ -49,13 +49,16 @@
         "Max": "Máx",
         "No_conectado": "No conectado",
         "needUpdateTitle": "Necesita actualizar el TC5",
-        "needUpdateSubtitle": "Actualice desde la configuración del TC5"
+        "needUpdateSubtitle": "Actualice desde la configuración del TC5",
+        "Ayer": "Ayer",
+        "Hoy": "Hoy"
     },
     "DrawerContent": {
         "logout": "Cerrar sesión",
         "login": "Iniciar Sesión",
         "settings": "Ajustes",
-        "maintenance": "Mantenimiento"
+        "maintenance": "Mantenimiento",
+        "softwareVersion": "Versión del software:"
     },
     "EditarPrioridadScreen": {
         "errorTitle": "Error",
@@ -286,5 +289,9 @@
         "Home": "Inicio",
         "Alarmas": "Alarmas",
         "Maps": "Mapas"
+    },
+    "Estadisticas": {
+        "errorTitle": "Error",
+        "errorLoadingFarm": "No se puede cargar el portal porque no hay conexion o no existe"
     }
 }

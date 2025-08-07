@@ -49,13 +49,16 @@
         "Max": "Maks",
         "No_conectado": "Brak połączenia",
         "needUpdateTitle": "Wymagana aktualizacja TC5",
-        "needUpdateSubtitle": "Zaktualizuj w ustawieniach TC5"
+        "needUpdateSubtitle": "Zaktualizuj w ustawieniach TC5",
+        "Ayer": "Wczoraj",
+        "Hoy": "Dzisiaj"
     },
     "DrawerContent": {
         "logout": "Wyloguj",
         "login": "Zaloguj",
         "settings": "Ustawienia",
-        "maintenance": "Konserwacja"
+        "maintenance": "Konserwacja",
+        "softwareVersion": "Wersja oprogramowania:"
     },
     "EditarPrioridadScreen": {
         "errorTitle": "Błąd",

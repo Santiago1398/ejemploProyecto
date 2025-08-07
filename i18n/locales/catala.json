@@ -49,13 +49,16 @@
         "Max": "Màx",
         "No_conectado": "No connectat",
         "needUpdateTitle": "Cal actualitzar el TC5",
-        "needUpdateSubtitle": "Actualitzeu des de la configuració del TC5"
+        "needUpdateSubtitle": "Actualitzeu des de la configuració del TC5",
+        "Ayer": "Ahir",
+        "Hoy": "Avui"
     },
     "DrawerContent": {
         "logout": "Tancar sessió",
         "login": "Iniciar sessió",
         "settings": "Configuració",
-        "maintenance": "Manteniment"
+        "maintenance": "Manteniment",
+        " softwareVersion": "Versió del programari:"
     },
     "EditarPrioridadScreen": {
         "errorTitle": "Error",
@@ -286,5 +289,9 @@
         "Home": "Inici",
         "Alarmas": "Alarmes",
         "Maps": "Mapes"
+    },
+    "Estadisticas": {
+        "errorTitle": "Error",
+        "errorLoadingFarm": "No es pot carregar el portal perquè no hi ha connexió o no existeix"
     }
 }

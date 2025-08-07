@@ -49,13 +49,16 @@
         "Max": "Máx",
         "No_conectado": "Non connesso",
         "needUpdateTitle": "È necessario aggiornare il TC5",
-        "needUpdateSubtitle": "Aggiorna dalle impostazioni del TC5"
+        "needUpdateSubtitle": "Aggiorna dalle impostazioni del TC5",
+        "Ayer": "Ieri",
+        "Hoy": "Oggi"
     },
     "DrawerContent": {
         "logout": "Disconnetti",
         "login": "Accedi",
         "settings": "Impostazioni",
-        "maintenance": "Manutenzione"
+        "maintenance": "Manutenzione",
+        "softwareVersion": "Versione software:"
     },
     "EditarPrioridadScreen": {
         "errorTitle": "Errore",
@@ -286,5 +289,9 @@
         "Home": "Home",
         "Alarmas": "Allarmi",
         "Maps": "Mappe"
+    },
+    "Estadisticas": {
+        "errorTitle": "Errore",
+        "errorLoadingFarm": "Impossibile caricare il portale perché non c'è connessione o non esiste"
     }
 }

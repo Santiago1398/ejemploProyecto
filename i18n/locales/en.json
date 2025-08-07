@@ -49,13 +49,16 @@
         "Max": "Máx",
         "No_conectado": "Disconnected",
         "needUpdateTitle": "TC5 update required",
-        "needUpdateSubtitle": "Please update from the TC5 settings"
+        "needUpdateSubtitle": "Please update from the TC5 settings",
+        "Ayer": "Yesterday",
+        "Hoy": "Today"
     },
     "DrawerContent": {
         "logout": "Logout",
         "login": "Login",
         "settings": "Settings",
-        "maintenance": "Maintenance"
+        "maintenance": "Maintenance",
+        "softwareVersion": "Software version:"
     },
     "EditarPrioridadScreen": {
         "errorTitle": "Error",
@@ -287,5 +290,9 @@
         "Home": "Home",
         "Alarmas": "Alarms",
         "Maps": "Maps"
+    },
+    "Estadisticas": {
+        "errorTitle": "Error",
+        "errorLoadingFarm": "The portal cannot be loaded because there is no connection or it does not exist"
     }
 }
