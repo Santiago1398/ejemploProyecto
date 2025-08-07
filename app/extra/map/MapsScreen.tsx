@@ -196,31 +196,31 @@ const MapsScreen = () => {
     }
 
     // SI NO HAY DISPOSITIVOS VÁLIDOS CON COORDENADAS, MOSTRAR MENSAJE ESPECÍFICO
-    if (devicesWithValidCoords.length === 0) {
-        return (
-            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 30 }}>
-                <FontAwesome name="map-pin" size={48} color="#ffa500" />
-                <Text style={{
-                    fontSize: 20,
-                    color: "#ffa500",
-                    fontWeight: "600",
-                    marginTop: 16,
-                    textAlign: "center"
-                }}>
-                    {t("MapsScreen.noValidCoords.title")}
-                </Text>
-                <Text style={{
-                    fontSize: 16,
-                    color: "#999",
-                    marginTop: 8,
-                    textAlign: "center",
-                    lineHeight: 22
-                }}>
-                    {t("MapsScreen.noValidCoords.message")}
-                </Text>
-            </View>
-        );
-    }
+    // if (devicesWithValidCoords.length === 0) {
+    //     return (
+    //         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 30 }}>
+    //             <FontAwesome name="map-pin" size={48} color="#ffa500" />
+    //             <Text style={{
+    //                 fontSize: 20,
+    //                 color: "#ffa500",
+    //                 fontWeight: "600",
+    //                 marginTop: 16,
+    //                 textAlign: "center"
+    //             }}>
+    //                 {t("MapsScreen.noValidCoords.title")}
+    //             </Text>
+    //             <Text style={{
+    //                 fontSize: 16,
+    //                 color: "#999",
+    //                 marginTop: 8,
+    //                 textAlign: "center",
+    //                 lineHeight: 22
+    //             }}>
+    //                 {t("MapsScreen.noValidCoords.message")}
+    //             </Text>
+    //         </View>
+    //     );
+    // }
 
     // ? TODO OK - MOSTRAR MAPA
     return (

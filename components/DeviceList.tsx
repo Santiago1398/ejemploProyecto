@@ -27,6 +27,7 @@ import { t } from "@/i18n/i18nConfig";
 import { socketService } from "@/services/socketService";
 import { useRef } from 'react';
 import { EmptyState } from "@/utils/EmptyState";
+// import { useGeneralSocketListener } from "@/hooks/useScketListener";
 
 
 export default function DeviceList() {
@@ -119,7 +120,8 @@ export default function DeviceList() {
         checkAlarm();
     }, []);
 
-    //! Los Eventos
+    //! Los Eventos Pruebas
+
     useEffect(() => {
         const handleRegisterMacsEvent = (payload: any) => {
             // Ignora si la pantalla no está en foco
@@ -147,6 +149,26 @@ export default function DeviceList() {
         return () => socketService.off('register_macs', handleRegisterMacsEvent);
     }, [isFocused]);
 
+    // useGeneralSocketListener('register_macs', (payload) => {
+    //     const eventMac = typeof payload === 'string' || typeof payload === 'number'
+    //         ? String(payload)
+    //         : String(
+    //             payload?.mac ||
+    //             payload?.device?.mac ||
+    //             payload?.macAddress ||
+    //             ''
+    //         );
+
+    //     if (eventMac) {
+    //         console.log(`🔄 MAC ${eventMac} ha cambiado, refrescando lista en DeviceList`);
+    //         fetchDevices(true);
+    //     }
+    // },
+    //     true,      // requiresFocus = true
+    //     isFocused  // estado de foco actual
+    // );
+
+
     //!-------------------------------------------------------------
 
 
@@ -154,7 +176,7 @@ export default function DeviceList() {
     useEffect(() => {
         const interval = setInterval(() => {
             if (token && userId) fetchDevices(true);
-        }, 15000);
+        }, 7000);
 
         return () => clearInterval(interval);
     }, [token, userId]);

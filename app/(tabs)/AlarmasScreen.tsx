@@ -140,7 +140,7 @@ export default function Alarmas() {
     useEffect(() => {
         const interval = setInterval(() => {
             fetchAlarmas(true);
-        }, 15000);
+        }, 7000);
 
         return () => clearInterval(interval);
     }, []);
