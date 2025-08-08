@@ -16,7 +16,9 @@ class SocketService {
     private onErrorCallback: ((error: string) => void) | null = null;
     private macAddresses: string[] = [];
     private onDeviceUpdateCallback: ((eventName: string, data: any) => void) | null = null;
-    private static instances = 0;
+    private pendingMacs: string[] = []; // MACs que se recibieron antes de conectar
+
+    // private static instances = 0;
 
     constructor() {
         // NO conectar automáticamente - esperar a que se llame initialize()
@@ -38,25 +40,45 @@ class SocketService {
     }
     private lastMacs: string[] = [];
 
+    // setMacAddresses(macs: string[]) {
+    //     // ⚖️ 1. ¿La lista es idéntica?
+    //     const same =
+    //         macs.length === this.lastMacs.length &&
+    //         macs.every((m, i) => m === this.lastMacs[i]);
+
+    //     if (same) return;          // ⏩ nada que hacer
+
+    //     // 2. Guarda copia y (si procede) emite
+    //     this.lastMacs = [...macs];
+    //     this.macAddresses = macs;
+
+    //     if (this.isConnected()) {
+    //         console.log('➡️  Enviando register_macs:', macs.join(','));
+
+    //         this.emit('register_macs', { macs });
+    //     }
+    // }
+
+
+    //!Socket Reconexion
     setMacAddresses(macs: string[]) {
-        // ⚖️ 1. ¿La lista es idéntica?
-        const same =
-            macs.length === this.lastMacs.length &&
+        const same = macs.length === this.lastMacs.length &&
             macs.every((m, i) => m === this.lastMacs[i]);
 
-        if (same) return;          // ⏩ nada que hacer
+        if (same) return;
 
-        // 2. Guarda copia y (si procede) emite
         this.lastMacs = [...macs];
         this.macAddresses = macs;
 
         if (this.isConnected()) {
             console.log('➡️  Enviando register_macs:', macs.join(','));
-
             this.emit('register_macs', { macs });
+        } else {
+            // ✅ NUEVO: Guardar MACs para enviar cuando se conecte
+            this.pendingMacs = [...macs];
+            console.log('⏳ Socket no conectado, MACs pendientes:', this.pendingMacs);
         }
     }
-
 
 
 
@@ -138,14 +160,33 @@ class SocketService {
             }
         });
 
+        // this.socket.on('connect', () => {
+        //     console.log('✅ Socket conectado:', this.socket?.id);
+        //     this.isConnecting = false;
+        //     this.reconnectAttempts = 0;
+
+        //     if (this.macAddresses.length) {
+        //         this.emit('register_macs', { macs: this.macAddresses });
+        //         console.log('📤 MACs enviadas automáticamente:', this.macAddresses);
+        //     }
+
+        //     this.onConnectionChangeCallback?.(true);
+        // });
+
         this.socket.on('connect', () => {
             console.log('✅ Socket conectado:', this.socket?.id);
             this.isConnecting = false;
             this.reconnectAttempts = 0;
 
-            if (this.macAddresses.length) {
-                this.emit('register_macs', { macs: this.macAddresses });
-                console.log('📤 MACs enviadas automáticamente:', this.macAddresses);
+            // ✅ MEJORAR: Enviar MACs pendientes O las guardadas
+            const macsToSend = this.pendingMacs.length > 0 ? this.pendingMacs : this.macAddresses;
+
+            if (macsToSend.length) {
+                this.emit('register_macs', { macs: macsToSend });
+                console.log('📤 MACs enviadas automáticamente:', macsToSend);
+
+                // Limpiar MACs pendientes ya que se enviaron
+                this.pendingMacs = [];
             }
 
             this.onConnectionChangeCallback?.(true);

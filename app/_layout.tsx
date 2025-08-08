@@ -84,13 +84,13 @@ export default function Layout() {
         };
     }, [token]); // Solo reinicializar si cambia el token
 
-    // OPCIONAL: Si quieres reconectar cuando cambie el modo dev
-    useEffect(() => {
-        if (token && socketService.isConnected()) {
-            console.log('🔄 Modo desarrollo cambió, reconectando socket...');
-            socketService.reconnectWithNewUrl();
-        }
-    }, [isDeveloperMode]);
+    // // OPCIONAL: Si quieres reconectar cuando cambie el modo dev
+    // useEffect(() => {
+    //     if (token && socketService.isConnected()) {
+    //         console.log('🔄 Modo desarrollo cambió, reconectando socket...');
+    //         socketService.reconnectWithNewUrl();
+    //     }
+    // }, [isDeveloperMode]);
 
 
     // Mostrar el modal cuando esté lista la app y detecte alarma pendiente

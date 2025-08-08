@@ -32,6 +32,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuthStore } from '@/store/authStore';
 import { getUnitString, UnitEnum } from "@/utils/units";
 import { SensorSymbol } from "@/utils/SensorSymbol";
+//import { useMacSocketListener } from "@/hooks/useSocketListener";
 
 
 
@@ -122,7 +123,8 @@ export default function AlarmList() {
         [sensorsData]
     );
 
-    //--------------------------------------------------------------
+    //!--------------------------------------------------------------
+
     useEffect(() => {
         const handleMacEvent = (payload: any) => {
             const eventMac = typeof payload === 'string' || typeof payload === 'number'
@@ -145,6 +147,16 @@ export default function AlarmList() {
         socketService.on('register_macs', handleMacEvent);
         return () => socketService.off('register_macs', handleMacEvent);
     }, [toggleWsReceived]); //TODO: quite la mac [mac,toggleWsReceived]
+
+
+    // useMacSocketListener(
+    //     'register_macs',
+    //     mac, // La MAC específica del dispositivo
+    //     () => {
+    //         fetchAlarms(true);
+    //         console.log(mac, "-------ºEvento en deviceScreen ---------------LLega el Evento");
+    //     }
+    // );
 
     //!-------------------------------------------------------------
 
@@ -860,7 +872,7 @@ export default function AlarmList() {
     //  LÓGICA DE COLORES BASADA EN ESTADO REAL (raised)
     const renderAlarmItem = ({ item }: { item: ParamTC }) => {
         let backgroundColor = "#8a9bb9";
-        let textColor = "#000000";
+        let textColor = "#F4F5F7"; // #F9FAFB - #F4F5F7
 
         const isDisconnected = isAlarmDisconnected(item);
 
@@ -878,7 +890,7 @@ export default function AlarmList() {
                 backgroundColor = "#FF0000";
             } else {
                 // ARMADA + NO RAISED → Verde (estado normal)
-                backgroundColor = "#77dc36";
+                backgroundColor = "#63C723"; // #77dc36 - #6BD826 - #63C723
             }
         }
 
@@ -928,8 +940,8 @@ export default function AlarmList() {
     return (
         <View style={[
             styles.container,
-            // 🟡 FONDO AMARILLO/NARANJA cuando master desarmado
-            !masterAlarmState && { backgroundColor: "#0269fa" } // "#FFEB3B" #faf202 FFF7A1 #028bfa #0269fa
+            //  FONDO azul cuando master desarmado
+            !masterAlarmState && { backgroundColor: "#3b99cf" } // "#FFEB3B" #faf202 FFF7A1 #028bfa #0269fa // ESTE ME GUSTA "#0a6da6" "#1d6caa" "#1165a6"
         ]}>
             <View style={[styles.customHeader, { backgroundColor: headerColor }]}>
                 <TouchableOpacity
@@ -1055,7 +1067,7 @@ const styles = StyleSheet.create({
         marginTop: 2,
         padding: 16,
         borderRadius: 12,
-        shadowColor: "#000",
+        shadowColor: "#000", //
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.15,
         shadowRadius: 3.84,
@@ -1183,7 +1195,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
     },
     sectionHeaderDisarmed: {
-        backgroundColor: "#0269fa", // "#FFEB3B"
+        backgroundColor: "#3b99cf", // "#FFEB3B" //SECSION RANGOS 
     },
     sectionTitleDisconnected: {
         color: '#d63031',
@@ -1287,7 +1299,7 @@ const styles = StyleSheet.create({
     valueText: {
         fontSize: 26,
         fontWeight: 'bold',
-        color: '#fff',
+        color: '#F9FAFB', // #F9FAFB
         textAlign: 'left',
     },
     iconInValue: {
@@ -1297,7 +1309,7 @@ const styles = StyleSheet.create({
 
     alarmRangeText: {
         fontSize: 14,
-        color: '#fff',
+        color: '#F9FAFB', // #F9FAFB
         marginTop: 2,               // espacio bajo el valor
         textAlign: 'left',
 
