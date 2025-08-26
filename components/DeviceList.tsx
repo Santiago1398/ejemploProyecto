@@ -26,6 +26,8 @@ import PhoneNumberDialog from "./PhoneNumberDialog";
 import { t } from "@/i18n/i18nConfig";
 import { socketService } from "@/services/socketService";
 import { useRef } from 'react';
+import { EmptyState } from "@/utils/EmptyState";
+//import { useGeneralSocketListener } from "@/hooks/useSocketListener";
 
 
 export default function DeviceList() {
@@ -34,14 +36,19 @@ export default function DeviceList() {
     const isFocused = useIsFocused();
 
     const {
+
         devices,
         loading,
         error: isError,
         setDevices,
         setLoading,
         setError,
-        updateDevice
+        updateDevice,
+        // realDevices
     } = useDeviceStore();
+
+    //!Prueba de pantalla vacia 
+    // const DEV_FORCE_EMPTY = true;         // ⬅︎ ponlo a true sólo para probar
 
     const [showAlarmDialog, setShowAlarmDialog] = useState(false);
     const [initialLoad, setInitialLoad] = useState(true);
@@ -80,6 +87,18 @@ export default function DeviceList() {
     //!-------------------------------------------------------------
 
 
+    // En DeviceList.tsx - AGREGAR después de los imports
+    useEffect(() => {
+        // Inicializar socket cuando DeviceList se monta
+        console.log('🚀 DeviceList montado, inicializando SocketService...');
+        socketService.initialize();
+
+        return () => {
+            // Opcional: desconectar cuando se desmonta DeviceList
+            // socketService.disconnect();
+        };
+    }, []); // Solo una vez al montar
+
     useEffect(() => {
         const subscription = AppState.addEventListener("change", async (state) => {
             if (state === "active") {
@@ -113,7 +132,8 @@ export default function DeviceList() {
         checkAlarm();
     }, []);
 
-    //! Los Eventos
+    //! Los Eventos Pruebas
+
     useEffect(() => {
         const handleRegisterMacsEvent = (payload: any) => {
             // Ignora si la pantalla no está en foco
@@ -130,7 +150,7 @@ export default function DeviceList() {
                 );
 
             if (eventMac) {
-                console.log(`🔄 MAC ${eventMac} ha cambiado, refrescando lista`);
+                console.log(`🔄 MAC ${eventMac} ha cambiado, refrescando lista en DeviceList 1`);
                 fetchDevices(true);            // true = sin loading
             } else {
                 console.log(' register_macs sin MAC, ignorado');
@@ -141,6 +161,26 @@ export default function DeviceList() {
         return () => socketService.off('register_macs', handleRegisterMacsEvent);
     }, [isFocused]);
 
+    // useGeneralSocketListener('register_macs', (payload) => {
+    //     const eventMac = typeof payload === 'string' || typeof payload === 'number'
+    //         ? String(payload)
+    //         : String(
+    //             payload?.mac ||
+    //             payload?.device?.mac ||
+    //             payload?.macAddress ||
+    //             ''
+    //         );
+
+    //     if (eventMac) {
+    //         console.log(`🔄 MAC ${eventMac} ha cambiado, refrescando lista en DeviceList`);
+    //         fetchDevices(true);
+    //     }
+    // },
+    //     true,      // requiresFocus = true
+    //     isFocused  // estado de foco actual
+    // );
+
+
     //!-------------------------------------------------------------
 
 
@@ -148,7 +188,7 @@ export default function DeviceList() {
     useEffect(() => {
         const interval = setInterval(() => {
             if (token && userId) fetchDevices(true);
-        }, 15000);
+        }, 7000);
 
         return () => clearInterval(interval);
     }, [token, userId]);
@@ -226,9 +266,31 @@ export default function DeviceList() {
                 alarmType: device.alarmType ?? 1,
                 armed: device.armed ?? true
             }));
-
+            console.log(data)
+            const FORCE_EMPTY = false;        // ponlo a *false* o bórralo cuando termines
+            if (__DEV__ && FORCE_EMPTY) {
+                setDevices([]);                // simula 0 ubicaciones
+                return;                        // salta el resto
+            }
             setDevices(formattedData);
             setErrorAlertShown(false);
+
+            //Aqui le envio los mac
+            const macAddresses = formattedData.map(device => String(device.mac));
+            console.log('------- Enviando MACs al socket desde DeviceList:--------- SI LOS ENVIA', macAddresses);
+            socketService.setMacAddresses(macAddresses);
+
+            // if (!socketService.isConnected()) {
+            //     console.log('🔄 Socket no conectado, inicializando...');
+            //     socketService.initialize();
+
+            //     // Esperar un momento para que se conecte antes de enviar MACs
+            //     setTimeout(() => {
+            //         socketService.setMacAddresses(macAddresses);
+            //     }, 1000);
+            // } else {
+            //     socketService.setMacAddresses(macAddresses);
+            // }
 
         } catch (error) {
             console.error("Error al cargar dispositivos:", error);
@@ -285,12 +347,12 @@ export default function DeviceList() {
 
         // SEGUNDA PRIORIDAD: Si alarmType ≠ 2 Y armed = false, amarillo
         if (!armed) {
-            return "#facc15"; // Amarillo para desarmados (que no sean alarmType 2)
+            return "#3b99cf"; // Amarillo para desarmados (que no sean alarmType 2)
         }
 
         // TERCERA PRIORIDAD: Colores normales según alarmType para dispositivos armados
         switch (alarmType) {
-            case 0: return "#78dd35";  // Verde para alarmType 0 armado
+            case 0: return "#63C723";  // Verde para alarmType 0 armado
             case 1: return "#FF0000";  // Rojo para alarmType 1 armado
             case 3: return "#9E75C6";  // Morado para alarmType 3 armado
             default: return "#000000"; // Negro por defecto
@@ -347,7 +409,8 @@ export default function DeviceList() {
                 }}
             >
                 <View style={styles.row}>
-                    <Ionicons name="home-outline" size={24} color="#000" style={{ marginRight: 8 }} />
+                    {/* #e9e9e7-#e2e2e0  - #dcdcd9 - #F9FAFB */}
+                    <Ionicons name="home-outline" size={24} color="#F8F9FA" style={{ marginRight: 8 }} />
                     <Text style={styles.deviceTitle}>{capitalize(item.farmName)}</Text>
                 </View>
                 <Text style={styles.deviceSubtitle}>{capitalize(item.siteName)}</Text>
@@ -373,7 +436,13 @@ export default function DeviceList() {
                     </Text>
                 </View>
             ) : devices.length === 0 ? (
-                <Text style={styles.loadingText}>{t("deviceList.noLocationsAvailable")}</Text>
+                <EmptyState
+                    icon="map-marker-off"
+                    lib="mc"
+                    title={t('deviceList.noLocationsAvailable')}
+                    color="#2563EB"
+                    size={88}
+                />
             ) : (
                 // !  SectionList en lugar de FlatList
                 <SectionList
@@ -459,16 +528,16 @@ const styles = StyleSheet.create({
     deviceTitle: {
         fontSize: 18,
         fontWeight: "bold",
-        color: "#000",
+        color: "#F3F4F6", // #000 - #e9e9e7 -#e2e2e0 - #dcdcd9 - #c9c9c7 - #d3d3d1 - #dcdcd9 - #F9FAFB - #F3F4F6 - #F4F5F7 - #F4F5F7
     },
     deviceSubtitle: {
         fontSize: 16,
-        color: "#000",
+        color: "#F3F4F6", // #e9e9e7 - #e2e2e0 - #dcdcd9 - #c9c9c7 -#d3d3d1 -#dcdcd9 - #F9FAFB - #F3F4F6 - #F4F5F7 - #F4F5F7
         marginBottom: 4,
     },
     deviceLocation: {
         fontSize: 14,
-        color: "#000",
+        color: "#F3F4F6", // #e9e9e7 -#e2e2e0 - #dcdcd9 - #c9c9c7 - #d3d3d1 - #dcdcd9 - #F9FAFB - #F3F4F6 - #F4F5F7 - #F4F5F7
     },
     loadingText: {
         fontSize: 18,
@@ -518,7 +587,7 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: "bold",
         marginBottom: 10,
-        color: "#FF3B30",
+        color: "#FF3B30", // #FF3B30
         textAlign: "center",
     },
     modalButtonText: {

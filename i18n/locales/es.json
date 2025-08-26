@@ -12,7 +12,7 @@
     "deviceList": {
         "loadingDevices": "Cargando dispositivos...",
         "serverDisconnected": "Servidor desconectado. Por favor, inténtalo más tarde.",
-        "noLocationsAvailable": "No hay ubicaciones disponibles",
+        "noLocationsAvailable": "No tiene ubicaciones instaladas con TC5",
         "alarmActive": "🚨 Alarma activa",
         "acceptAndStopAlarm": "Aceptar y detener alarma",
         "errorTitle": "Error",
@@ -252,6 +252,10 @@
         "loading": {
             "devices": "Cargando dispositivos...",
             "location": "Obteniendo ubicaciónes"
+        },
+        "noValidCoords": {
+            "title": "Ubicaciones sin coordenadas",
+            "message": "Ninguna de las granjas tiene ubicacion"
         }
     },
     "HomeStack": {

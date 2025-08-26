@@ -12,7 +12,7 @@
     "deviceList": {
         "loadingDevices": "正在載入裝置...",
         "serverDisconnected": "伺服器已斷線，請稍後再試。",
-        "noLocationsAvailable": "沒有可用的位置",
+        "noLocationsAvailable": "您尚未設定任何 TC5 位置",
         "alarmActive": "🚨 警報啟動",
         "acceptAndStopAlarm": "接受並停止警報",
         "errorTitle": "錯誤",
@@ -251,7 +251,9 @@
         "loading": {
             "devices": "載入裝置中...",
             "location": "載入位置中"
-        }
+        },
+        "noDevicesTitle": "無裝置",
+        "noDevicesMessage": "沒有可用的裝置"
     },
     "HomeStack": {
         "DeviceMaps": {

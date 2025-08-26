@@ -38,3 +38,18 @@ export interface ParamTC {
     raised: boolean;
     reason: number;
 }
+
+//  INTERFAZ PARA SENSORES
+export interface SensorData {
+    id: number;
+    value: number;
+    minAlarm: number;
+   maxAlarm: number;
+     type: number;  //sensor type
+    eventType: number;
+   unit: number;
+   minValueToday: number;
+    maxValueToday: number;
+    minValueYesterday: number;
+   maxValueYesterday: number;
+}

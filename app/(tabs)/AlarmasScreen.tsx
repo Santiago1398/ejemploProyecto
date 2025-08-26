@@ -21,6 +21,7 @@ import { t } from "@/i18n/i18nConfig";
 import { useIsFocused } from "@react-navigation/native";
 import { socketService } from "@/services/socketService";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+//import { useGeneralSocketListener } from "@/hooks/useSocketListener";
 
 
 
@@ -99,7 +100,7 @@ export default function Alarmas() {
         }
     };
 
-    /* ⬇ 1. Listener global, sin depender de isFocused */
+    //!Los Eventos Pruebas ------
     useEffect(() => {
         const handleAlarmEvent = (payload: any) => {
             // El backend puede enviar string, número u objeto
@@ -114,20 +115,44 @@ export default function Alarmas() {
                     );
 
             if (eventMac) {
-                console.log("📡 Evento alarma →", eventMac, "→ fetchAlarmas");
+                console.log("📡 Evento alarma en pantalla 2 Tabs Alarmas →", eventMac, "→ fetchAlarmas");
                 fetchAlarmas(true);            // true = refresh silencioso
             }
         };
 
         /* Escucha tanto cambios de MAC como alarma disparada */
         socketService.on("register_macs", handleAlarmEvent);
-        socketService.on("alarm_triggered", handleAlarmEvent);
+        //socketService.on("alarm_triggered", handleAlarmEvent);
+
 
         return () => {
             socketService.off("register_macs", handleAlarmEvent);
-            socketService.off("alarm_triggered", handleAlarmEvent);
+            //socketService.off("alarm_triggered", handleAlarmEvent);
         };
     }, []);           // sin isFocused en la dependencia
+
+    // useGeneralSocketListener(
+    //     'register_macs',
+    //     (payload) => {
+    //         const eventMac = typeof payload === 'string' || typeof payload === 'number'
+    //             ? String(payload)
+    //             : String(
+    //                 payload?.mac ||
+    //                 payload?.device?.mac ||
+    //                 payload?.macAddress ||
+    //                 ''
+    //             );
+
+    //         if (eventMac) {
+    //             console.log("📡 Evento alarma en pantalla Alarmas →", eventMac);
+    //             fetchAlarmas(true);
+    //         }
+    //     }
+    //     // No requiere foco, por eso no se pasan los últimos parámetros
+    // );
+
+
+    //!---------------------------------
 
 
     // CARGAR SOLO UNA VEZ AL INICIO
@@ -139,7 +164,7 @@ export default function Alarmas() {
     useEffect(() => {
         const interval = setInterval(() => {
             fetchAlarmas(true);
-        }, 15000);
+        }, 7000);
 
         return () => clearInterval(interval);
     }, []);
@@ -201,7 +226,7 @@ export default function Alarmas() {
                     <MaterialCommunityIcons
                         name="bell-ring"
                         size={18}
-                        color="#fff"
+                        color="#F9FAFB"
                     //style={{ marginRight: 6 }}
                     />
                 </View>
@@ -288,7 +313,7 @@ export default function Alarmas() {
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: "#dc2626", //#dc2626
+        backgroundColor: "red", //#dc2626
         borderRadius: 12,
         paddingHorizontal: 24,
         paddingVertical: 14,
@@ -299,35 +324,7 @@ const styles = StyleSheet.create({
         shadowRadius: 6,
         elevation: 4,
     },
-    row: {
-        flexDirection: "row",
-        alignItems: "center",
-        marginBottom: 8, //  Más espacio
-    },
-    titleRow: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        flex: 1,
-    },
-    leftText: {
-        fontWeight: "bold",
-        fontSize: 17, //  Ligeramente más grande
-        color: "#ffffff", //  BLANCO
-        letterSpacing: 0.3, //  Espaciado de letras moderno
-    },
-    rightText: {
-        fontWeight: "bold",
-        fontSize: 17, //  Ligeramente más grande
-        color: "#ffffff", //  BLANCO
-        letterSpacing: 0.3, //  Espaciado de letras moderno
-    },
-    alarmas: {
-        fontSize: 15, //  Ligeramente más grande
-        color: "#f3f4f6", //  BLANCO ligeramente gris para contraste
-        marginBottom: 6, //  Más espacio
-        fontWeight: "500", //  Peso medio
-        lineHeight: 20, //  Altura de línea mejorada
-    },
+
 
     centered: {
         flex: 1,
@@ -335,12 +332,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingHorizontal: 30,
     },
-    loadingText: {
-        fontSize: 16,
-        color: "#666",
-        marginTop: 16,
-        textAlign: "center",
-    },
+
     errorTitle: {
         fontSize: 20,
         color: "#ef4444",
@@ -355,21 +347,7 @@ const styles = StyleSheet.create({
         textAlign: "center",
         lineHeight: 22,
     },
-    retryButton: {
-        flexDirection: "row",
-        alignItems: "center",
-        backgroundColor: "#4ade80",
-        paddingHorizontal: 24,
-        paddingVertical: 12,
-        borderRadius: 8,
-        marginTop: 24,
-    },
-    retryButtonText: {
-        color: "#fff",
-        fontSize: 16,
-        fontWeight: "600",
-        marginLeft: 8,
-    },
+
     noAlarmText: {
         fontSize: 20,
         color: "#4ade80",
@@ -400,23 +378,17 @@ const styles = StyleSheet.create({
     },
     siteName: {
         flex: 1,
-        color: "#fff",
+        color: "#F9FAFB", // Purbeas de color testo #f7f7f7 - #e3ddd1 - #ffffff - #e9e9e7 -"#f7f7f7 - #F9FAFB
         fontSize: 17,
         fontWeight: "600"
     },
 
     alarmText: {
-        color: "#fff",
+        color: "#F9FAFB", // Purbeas de color testo #f7f7f7 - #e3ddd1 - #ffffff - #F9FAFB
         fontSize: 15,
         fontWeight: "500"
     },
 
-    location: {
-        marginTop: 4,
-        fontSize: 13,
-        color: "rgba(255,255,255,0.8)",
-        fontStyle: "italic"
-    },
     sectionHeaderContainer: {
         marginTop: 24,
         marginBottom: 8,
@@ -426,6 +398,7 @@ const styles = StyleSheet.create({
         fontWeight: "700",
         color: "#374151",
     },
+
     sectionHeaderLine: {
         marginTop: 4,
         height: 2,
@@ -434,23 +407,5 @@ const styles = StyleSheet.create({
         width: '100%',
 
     },
-    sectionHeader: {
-        backgroundColor: "#f2f2f2",
-        paddingVertical: 12,
-        marginTop: 16,
-        marginBottom: 8,
-    },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: "#333",
-        marginBottom: 8,
-        letterSpacing: 1,
-    },
-    sectionLine: {
-        height: 2,                   // más gruesa que tu línea anterior
-        backgroundColor: "#000",
-        width: "100%",
-        opacity: 1
-    },
+
 });

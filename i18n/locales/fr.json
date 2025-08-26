@@ -12,7 +12,7 @@
     "deviceList": {
         "loadingDevices": "Chargement des appareils…",
         "serverDisconnected": "Serveur déconnecté. Veuillez réessayer plus tard.",
-        "noLocationsAvailable": "Aucun emplacement disponible",
+        "noLocationsAvailable": "Vous n'avez aucun emplacement installé avec TC5",
         "alarmActive": "🚨 Alarme active",
         "acceptAndStopAlarm": "Accepter et arrêter l’alarme",
         "errorTitle": "Erreur",
@@ -252,7 +252,9 @@
         "loading": {
             "devices": "Chargement des appareils...",
             "location": "Obtention des emplacements"
-        }
+        },
+        "noDevicesTitle": "Aucun appareil",
+        "noDevicesMessage": "Aucun appareil disponible"
     },
     "HomeStack": {
         "DeviceMaps": {

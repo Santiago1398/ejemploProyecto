@@ -10,12 +10,14 @@ import {
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { t } from '@/i18n/i18nConfig';
 
+
 interface Props {
     masterAlarmState: boolean;
     onToggleMaster: () => void;
     disabled?: boolean;
     isLoading?: boolean;
-    //  swVersion: string;
+    swVersion: string;
+    passwordCorrection: boolean;
 
 }
 

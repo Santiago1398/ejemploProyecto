@@ -12,7 +12,7 @@
     "deviceList": {
         "loadingDevices": "Loading devices...",
         "serverDisconnected": "Server disconnected. Please try again later.",
-        "noLocationsAvailable": "No locations available",
+        "noLocationsAvailable": "You have no locations set up with TC5",
         "alarmActive": "🚨 Alarm active",
         "acceptAndStopAlarm": "Accept and stop alarm",
         "errorTitle": "Error",
@@ -253,7 +253,9 @@
         "loading": {
             "devices": "Loading devices...",
             "location": "Getting locations"
-        }
+        },
+        "noDevicesTitle": "No devices",
+        "noDevicesMessage": "No devices available"
     },
     "HomeStack": {
         "DeviceMaps": {

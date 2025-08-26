@@ -12,7 +12,7 @@
     "deviceList": {
         "loadingDevices": "Caricamento dispositivi...",
         "serverDisconnected": "Server disconnesso. Riprova più tardi.",
-        "noLocationsAvailable": "Nessuna posizione disponibile",
+        "noLocationsAvailable": "Non hai sedi installate con TC5",
         "alarmActive": "🚨 Allarme attivo",
         "acceptAndStopAlarm": "Accetta e ferma l'allarme",
         "errorTitle": "Errore",
@@ -252,7 +252,9 @@
         "loading": {
             "devices": "Caricamento dispositivi...",
             "location": "Caricamento posizioni"
-        }
+        },
+        "noDevicesTitle": "Nessun dispositivo",
+        "noDevicesMessage": "Nessun dispositivo disponibile"
     },
     "HomeStack": {
         "DeviceMaps": {

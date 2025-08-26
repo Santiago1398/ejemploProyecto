@@ -12,7 +12,7 @@
     "deviceList": {
         "loadingDevices": "Carregant dispositius...",
         "serverDisconnected": "Servidor desconnectat. Torna-ho a intentar més tard.",
-        "noLocationsAvailable": "No hi ha ubicacions disponibles",
+        "noLocationsAvailable": "No tens ubicacions instal·lades amb TC5",
         "alarmActive": "🚨 Alarma activa",
         "acceptAndStopAlarm": "Acceptar i aturar l'alarma",
         "errorTitle": "Error",
@@ -257,7 +257,9 @@
     "HomeStack": {
         "DeviceMaps": {
             "title": "Fixar ubicació del dispositiu"
-        }
+        },
+        "noDevicesTitle": "Sense dispositius",
+        "noDevicesMessage": "No hi ha dispositius disponibles"
     },
     "Explotacion": {
         "loadingFarm": "Carregant explotació...",

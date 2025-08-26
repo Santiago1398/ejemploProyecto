@@ -21,6 +21,10 @@ import { notificationService } from "@/hooks/NotificationService";
 //import HeaderLeftButton from "@/components/HeaderLeftButton";
 import MantenimientoScreen from "./(tabs)/MantenimientoScreen";
 import SolicitarMantenimientoScreen from "@/utils/SolicitarMantenimiento";
+import { socketService } from "@/services/socketService";
+
+
+
 
 
 
@@ -31,6 +35,8 @@ export default function Layout() {
     const { isAuthenticated } = useAuthStore();
     const [showAlarmDialog, setShowAlarmDialog] = useState(false);
     const [ready, setReady] = useState(false);
+    const { isDeveloperMode, token } = useAuthStore();
+
 
     const configureNotificationChannel = async () => {
         try {
@@ -61,6 +67,30 @@ export default function Layout() {
             setShowAlarmDialog(false);
         }
     };
+
+
+    //! prueba  WebSocket
+    useEffect(() => {
+        // Inicializar el socket cuando el app esté listo
+        // y tengamos el estado de auth cargado
+        if (token) {
+            console.log('🚀 Inicializando SocketService con modo:', isDeveloperMode ? 'DEV' : 'PROD');
+            socketService.initialize();
+        }
+
+        // Cleanup al desmontar
+        return () => {
+            socketService.disconnect();
+        };
+    }, [token]); // Solo reinicializar si cambia el token
+
+    // // OPCIONAL: Si quieres reconectar cuando cambie el modo dev
+    // useEffect(() => {
+    //     if (token && socketService.isConnected()) {
+    //         console.log('🔄 Modo desarrollo cambió, reconectando socket...');
+    //         socketService.reconnectWithNewUrl();
+    //     }
+    // }, [isDeveloperMode]);
 
 
     // Mostrar el modal cuando esté lista la app y detecte alarma pendiente

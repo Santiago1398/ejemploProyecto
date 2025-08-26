@@ -20,7 +20,7 @@ import { get, post } from "@/services/api";
 import { useRoute, RouteProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "@/types/navigation";
 import ButtonMaster from "./BottonMaster";
-import { ParamTC } from "@/infrastructure/intercafe/listapi.interface";
+import { ParamTC, SensorData } from "@/infrastructure/intercafe/listapi.interface";
 import Menu3Puntos from "@/components/Menu3Puntos";
 
 import { notificationService } from '@/hooks/NotificationService';
@@ -32,24 +32,25 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useAuthStore } from '@/store/authStore';
 import { getUnitString, UnitEnum } from "@/utils/units";
 import { SensorSymbol } from "@/utils/SensorSymbol";
+//import { useMacSocketListener } from "@/hooks/useSocketListener";
 
 
 
 
 //  INTERFAZ PARA SENSORES
-export interface SensorData {
-    id: number;
-    value: number;
-    minAlarm: number;
-    maxAlarm: number;
-    type: number;  //sensor type
-    eventType: number;
-    unit: number;
-    minValueToday: number;
-    maxValueToday: number;
-    minValueYesterday: number;
-    maxValueYesterday: number;
-}
+// export interface SensorData {
+//     id: number;
+//     value: number;
+//     minAlarm: number;
+//     maxAlarm: number;
+//     type: number;  //sensor type
+//     eventType: number;
+//     unit: number;
+//     minValueToday: number;
+//     maxValueToday: number;
+//     minValueYesterday: number;
+//     maxValueYesterday: number;
+// }
 
 
 
@@ -85,6 +86,8 @@ export default function AlarmList() {
     const [isLoading, setIsLoading] = useState(false);
     const [triggeredCount, setTriggeredCount] = useState(0);
     const [pendingRequests, setPendingRequests] = useState(0);
+    const [toggleWsReceived, setToggleWsReceived] = useState(true);
+
     const [, bump] = useState(0);
     const forceRerender = () => bump(v => v + 1);
 
@@ -120,6 +123,41 @@ export default function AlarmList() {
         [sensorsData]
     );
 
+    //!--------------------------------------------------------------
+
+    useEffect(() => {
+        const handleMacEvent = (payload: any) => {
+            const eventMac = typeof payload === 'string' || typeof payload === 'number'
+                ? String(payload)
+                : String(
+                    payload?.mac ||
+                    payload?.device?.mac ||
+                    payload?.macAddress ||
+                    ''
+                );
+
+            if (eventMac === String(mac)) {
+                fetchAlarms(true);
+            }
+            console.log(mac, "Evento en deviceScreen 1.1")
+            setToggleWsReceived(!toggleWsReceived)
+
+        };
+
+        socketService.on('register_macs', handleMacEvent);
+        return () => socketService.off('register_macs', handleMacEvent);
+    }, [toggleWsReceived]); //TODO: quite la mac [mac,toggleWsReceived]
+
+
+    // useMacSocketListener(
+    //     'register_macs',
+    //     mac, // La MAC específica del dispositivo
+    //     () => {
+    //         fetchAlarms(true);
+    //         console.log(mac, "-------ºEvento en deviceScreen ---------------LLega el Evento");
+    //     }
+    // );
+
     //!-------------------------------------------------------------
 
     useEffect(() => {
@@ -130,6 +168,9 @@ export default function AlarmList() {
             updateHeaderStatus([], false);
         }
     }, [isDeviceDisconnected])
+
+
+
 
     const scrollOffset = useRef(0);
 
@@ -225,7 +266,7 @@ export default function AlarmList() {
             /* ↓ pides TODOS los analógicos de golpe */
             const idsParam = JSON.stringify(ANALOG_SENSOR_IDS);
             const raw = await get(`alarmtc/sensors/?mac=${mac}&ids=${idsParam}`);
-            console.log('🌡️ Sensores obtenidos:', raw);
+            // console.log('---------------------Sensores obtenidos:-----------', raw);
             /* ↓ te quedas solo con los válidos */
             const filtrados: SensorData[] = Array.isArray(raw)
                 ? raw
@@ -304,30 +345,30 @@ export default function AlarmList() {
 
 
 
-    const getSensorIcon = (
-        type: number,
-        unit: number
-    ): keyof typeof Ionicons.glyphMap => {
-        const unitString = getUnitString(unit);
+    // const getSensorIcon = (
+    //     type: number,
+    //     unit: number
+    // ): keyof typeof Ionicons.glyphMap => {
+    //     const unitString = getUnitString(unit);
 
-        /* Temperaturas en °C / °F */
-        if (unitString === '°C' || unitString === '°F') return 'thermometer-outline';
+    //     /* Temperaturas en °C / °F */
+    //     if (unitString === '°C' || unitString === '°F') return 'thermometer-outline';
 
-        /* Gases en ppm */
-        if (unitString === 'ppm') {
-            if (type === 3) return 'flask-outline';      // NH₃
-            if (type === 2) return 'analytics-outline';  // CO₂
-            return 'speedometer-outline';                // otros gases
-        }
+    //     /* Gases en ppm */
+    //     if (unitString === 'ppm') {
+    //         if (type === 3) return 'flask-outline';      // NH₃
+    //         if (type === 2) return 'analytics-outline';  // CO₂
+    //         return 'speedometer-outline';                // otros gases
+    //     }
 
-        /* Resto de sensores */
-        switch (type) {
-            case 0: return 'thermometer-outline'; // temperatura
-            case 1: return 'water-outline';       // humedad
-            case 2: return 'speedometer-outline'; // presión
-            default: return 'hardware-chip-outline';
-        }
-    };
+    //     /* Resto de sensores */
+    //     switch (type) {
+    //         case 0: return 'thermometer-outline'; // temperatura
+    //         case 1: return 'water-outline';       // humedad
+    //         case 2: return 'speedometer-outline'; // presión
+    //         default: return 'hardware-chip-outline';
+    //     }
+    // };
 
 
     //!-------------------------------------------------------------
@@ -368,10 +409,12 @@ export default function AlarmList() {
                 </Text>
             );
         };
-        const isTemp = s.unit === UnitEnum.EN_GT_UNID_GRADO_CENTIGRADO ||
-            s.unit === UnitEnum.EN_GT_UNID_GRADO_Fahrenheit;
+        const isTemp = s.unit === UnitEnum.EN_GT_UNID_GRADO_CENTIGRADO || s.unit === UnitEnum.EN_GT_UNID_GRADO_Fahrenheit;
         const isHum = s.unit === UnitEnum.EN_GT_UNID_PORCENTAJE;
         const showUnitInTable = isTemp || isHum;
+        const isPas = s.unit === UnitEnum.EN_GT_UNID_PASCALES; // Pa
+        const oneSided = isPpm || isPas;
+
 
         const renderValue = (n?: number | null) => {
             if (n === 99999 || n === -99999) return <Text style={styles.dataCell}>—</Text>;
@@ -413,7 +456,7 @@ export default function AlarmList() {
                         <View style={styles.valueCol}>
                             {renderMainValue()}
 
-                            {isPpm ? (
+                            {oneSided ? (
                                 /* solo máx para ppm */
                                 s.maxAlarm != null && s.maxAlarm !== 99999 && (
                                     <Text style={styles.alarmRangeText}>
@@ -488,7 +531,7 @@ export default function AlarmList() {
                 get(`alarmtc/status?mac=${mac}`),
                 fetchSensors() // Esta función ya maneja sus propios errores
             ]);
-            console.log("--------------", alarmsData, "------------")
+            //   console.log("--------------", alarmsData, "------------")
 
             if (!alarmsData || alarmsData.length === 0) {
                 setIsConnected(false);
@@ -522,7 +565,7 @@ export default function AlarmList() {
 
             const enabledAlarms = alarmsData
                 .filter((alarm: { habilitado: boolean; idAlarm: number }) =>
-                    alarm.habilitado && ![1000, 2000].includes(alarm.idAlarm)
+                    alarm.habilitado && ![1000].includes(alarm.idAlarm)
                 )
                 .map((alarm: ParamTC) => ({
                     ...alarm,
@@ -711,7 +754,7 @@ export default function AlarmList() {
     useEffect(() => {
         const interval = setInterval(() => {
             fetchAlarms(true);
-        }, 15000);
+        }, 7000);
 
         return () => clearInterval(interval);
     }, [mac]);
@@ -759,7 +802,7 @@ export default function AlarmList() {
         try {
             await runWithLoader(async () => {
                 // 1️⃣ POST al backend
-                console.log(mac)
+                // console.log(mac)
                 await post(
                     `alarmtc/arm?mac=${mac}&alarm=${id}&status=${nextStatus}&userid=${userId}`,
                     {}
@@ -824,30 +867,12 @@ export default function AlarmList() {
         return alarm.hasOwnProperty('conectado') && alarm.conectado === false;
     };
 
-    useEffect(() => {
-        const handleMacEvent = (payload: any) => {
-            const eventMac = typeof payload === 'string' || typeof payload === 'number'
-                ? String(payload)
-                : String(
-                    payload?.mac ||
-                    payload?.device?.mac ||
-                    payload?.macAddress ||
-                    ''
-                );
 
-            if (eventMac === String(mac)) {
-                fetchAlarms(true);
-            }
-        };
-
-        socketService.on('register_macs', handleMacEvent);
-        return () => socketService.off('register_macs', handleMacEvent);
-    }, [mac]);
 
     //  LÓGICA DE COLORES BASADA EN ESTADO REAL (raised)
     const renderAlarmItem = ({ item }: { item: ParamTC }) => {
         let backgroundColor = "#8a9bb9";
-        let textColor = "#000000";
+        let textColor = "#F4F5F7"; // #F9FAFB - #F4F5F7
 
         const isDisconnected = isAlarmDisconnected(item);
 
@@ -865,7 +890,7 @@ export default function AlarmList() {
                 backgroundColor = "#FF0000";
             } else {
                 // ARMADA + NO RAISED → Verde (estado normal)
-                backgroundColor = "#77dc36";
+                backgroundColor = "#63C723"; // #77dc36 - #6BD826 - #63C723
             }
         }
 
@@ -915,8 +940,8 @@ export default function AlarmList() {
     return (
         <View style={[
             styles.container,
-            // 🟡 FONDO AMARILLO/NARANJA cuando master desarmado
-            !masterAlarmState && { backgroundColor: "#FFF7A1" } // "#FFEB3B"
+            //  FONDO azul cuando master desarmado
+            !masterAlarmState && { backgroundColor: "#3b99cf" } // "#FFEB3B" #faf202 FFF7A1 #028bfa #0269fa // ESTE ME GUSTA "#0a6da6" "#1d6caa" "#1165a6"
         ]}>
             <View style={[styles.customHeader, { backgroundColor: headerColor }]}>
                 <TouchableOpacity
@@ -964,12 +989,12 @@ export default function AlarmList() {
 
                 <TouchableOpacity
                     style={styles.menuButton}
-                    onPress={() => {
-                        setMenuVisible(true);
-                    }}
+                    onPress={() => setMenuVisible(true)}
+                    hitSlop={{ top: 6, bottom: 6, left: 6, right: 6 }}
                 >
                     <Feather name="more-vertical" size={24} color="#fff" />
                 </TouchableOpacity>
+
             </View>
 
             {renderContent()}
@@ -980,6 +1005,9 @@ export default function AlarmList() {
                 masterAlarmState={masterAlarmState}
                 onToggleMaster={handleToggleMaster}
                 disabled={isMasterDisabled || needsUpdate}
+                isLoading={isLoading}
+                swVersion={String(swVersion)} // o simplemente swVersion si ya es string
+                passwordCorrection={true}
 
             />
 
@@ -1039,7 +1067,7 @@ const styles = StyleSheet.create({
         marginTop: 2,
         padding: 16,
         borderRadius: 12,
-        shadowColor: "#000",
+        shadowColor: "#000", //
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.15,
         shadowRadius: 3.84,
@@ -1141,12 +1169,13 @@ const styles = StyleSheet.create({
         marginTop: 2,
     },
     menuButton: {
-        width: 44,
-        height: 44,
+        width: 28,
+        height: 28,
         justifyContent: 'center',
         alignItems: 'center',
         borderRadius: 22,
-        backgroundColor: 'rgba(255,255,255,0.1)',
+        backgroundColor: 'transparent',
+        marginRight: 6,
     },
     connectionSubtext: {
         fontSize: 16,
@@ -1166,7 +1195,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
     },
     sectionHeaderDisarmed: {
-        backgroundColor: "#FFF7A1", // "#FFEB3B"
+        backgroundColor: "#3b99cf", // "#FFEB3B" //SECSION RANGOS 
     },
     sectionTitleDisconnected: {
         color: '#d63031',
@@ -1270,7 +1299,7 @@ const styles = StyleSheet.create({
     valueText: {
         fontSize: 26,
         fontWeight: 'bold',
-        color: '#fff',
+        color: '#F9FAFB', // #F9FAFB
         textAlign: 'left',
     },
     iconInValue: {
@@ -1280,7 +1309,7 @@ const styles = StyleSheet.create({
 
     alarmRangeText: {
         fontSize: 14,
-        color: '#fff',
+        color: '#F9FAFB', // #F9FAFB
         marginTop: 2,               // espacio bajo el valor
         textAlign: 'left',
 
