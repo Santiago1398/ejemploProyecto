@@ -7,12 +7,13 @@ import {
     Image,
     Platform,
 } from "react-native";
-import { DrawerContentComponentProps } from "@react-navigation/drawer";
+import { DrawerContentComponentProps, DrawerContentScrollView } from "@react-navigation/drawer";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuthStore } from "../store/authStore";
 import { t } from "../i18n/i18nConfig";
 import { useAppExtra } from "@/hooks/useAppExtra";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const COLORS = {
     bg: "#F7F8FA",
@@ -30,6 +31,8 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
     const { navigation } = props;
     const { username: email, logout, isAuthenticated } = useAuthStore();
     const { devBuildNumber } = useAppExtra();
+      const insets = useSafeAreaInsets(); // 👈
+
 
     // Cierra sesión inmediatamente (sin confirmación)
     const doLogout = async () => {
@@ -93,42 +96,46 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
     );
 
     return (
-        <View style={styles.container}>
-            {/* Header */}
-            <View style={styles.headerCard}>
-                <Image
-                    source={require("../assets/images/logo-cti-verde-renombrado.png")}
-                    style={styles.logo}
-                    resizeMode="contain"
-                />
+    <DrawerContentScrollView
+      {...props}
+      // 👇 padding respetando notch y home indicator
+      contentContainerStyle={{
+        flexGrow: 1,
+        paddingHorizontal: 16,
+        paddingTop: insets.top + 8,       // sube/desciende el header
+        paddingBottom: insets.bottom + 12 // separa el footer del borde
+      }}
+      // evita que el ScrollView añada su propio padding top en iOS
+      alwaysBounceVertical={false}
+    >
+      {/* Header */}
+      <View style={styles.headerCard}>
+        <Image
+          source={require('../assets/images/logo-cti-verde-renombrado.png')}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+        <Text style={styles.product}>TC5</Text>
+        <Text style={styles.email} numberOfLines={1}>{email}</Text>
+      </View>
 
-                <Text style={styles.product}>TC5</Text>
+      {/* Menú */}
+      <View style={styles.menuGroup}>
+        <MenuRow icon="settings-outline" label={t('DrawerContent.settings')} onPress={goSettings} />
+        <MenuRow icon="construct-outline" label={t('DrawerContent.maintenance')} onPress={goMaintenance} />
+        {isAuthenticated
+          ? <MenuRow icon="log-out-outline" label={t('DrawerContent.logout')} onPress={doLogout} danger />
+          : <MenuRow icon="log-in-outline" label={t('DrawerContent.login')} onPress={() => props.navigation.closeDrawer()} />
+        }
+      </View>
 
-                <Text style={styles.email} numberOfLines={1}>
-                    {email}
-                </Text>
-            </View>
-
-            {/* Menú (sin tarjeta contenedora; solo filas con línea separadora) */}
-            <View style={styles.menuGroup}>
-                <MenuRow icon="settings-outline" label={t("DrawerContent.settings")} onPress={goSettings} />
-                <MenuRow icon="construct-outline" label={t("DrawerContent.maintenance")} onPress={goMaintenance} />
-                {isAuthenticated ? (
-                    <MenuRow icon="log-out-outline" label={t("DrawerContent.logout")} onPress={doLogout} danger />
-                ) : (
-                    <MenuRow icon="log-in-outline" label={t("DrawerContent.login")} onPress={() => props.navigation.closeDrawer()} />
-                )}
-            </View>
-
-            {/* Footer / versión */}
-            <View style={styles.footer}>
-                <View style={styles.divider} />
-                <Text style={styles.version}>
-                    {t("softwareVersion")}&nbsp;{devBuildNumber}
-                </Text>
-            </View>
-        </View>
-    );
+      {/* Footer pegado abajo pero con safe area */}
+      <View style={[styles.footer, { marginTop: 'auto' }]}>
+        <View style={styles.divider} />
+        <Text style={styles.version}>{t('softwareVersion')}&nbsp;{devBuildNumber}</Text>
+      </View>
+    </DrawerContentScrollView>
+  );
 }
 
 const styles = StyleSheet.create({
