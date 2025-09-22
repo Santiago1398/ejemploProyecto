@@ -22,6 +22,8 @@ import { useIsFocused } from "@react-navigation/native";
 import { socketService } from "@/services/socketService";
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 //import { useGeneralSocketListener } from "@/hooks/useSocketListener";
+import { LinearGradient } from 'expo-linear-gradient';
+
 
 
 
@@ -99,6 +101,11 @@ export default function Alarmas() {
             setIsRefreshing(false);
         }
     };
+
+    const PALETTE = { red1: '#FF0000', red2: '#dc2626' } as const;
+    type GradientTuple = readonly [string, string];
+    const RED_GRADIENT: GradientTuple = [PALETTE.red1, PALETTE.red2];
+
 
     //!Los Eventos Pruebas ------
     useEffect(() => {
@@ -216,33 +223,22 @@ export default function Alarmas() {
 
 
     const renderItem = ({ item }: { item: AlarmaDisparada }) => (
-        <TouchableOpacity
-            onPress={() => goToDetails(item)}
-            style={styles.card}
-        >
-            {/* fila superior: icono + site */}
-            <View style={styles.topRow}>
-                <View style={styles.iconHolder}>
-                    <MaterialCommunityIcons
-                        name="bell-ring"
-                        size={18}
-                        color="#F9FAFB"
-                    //style={{ marginRight: 6 }}
-                    />
+        <TouchableOpacity onPress={() => goToDetails(item)} activeOpacity={0.9}>
+            <LinearGradient
+                colors={RED_GRADIENT}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}   // equivalente a bg-gradient-to-r
+                style={styles.card}
+            >
+                <View style={styles.topRow}>
+                    <View style={styles.iconHolder}>
+                        <MaterialCommunityIcons name="bell-ring" size={18} color="#F9FAFB" />
+                    </View>
+                    <Text numberOfLines={1} style={styles.siteName}>{item.siteName}</Text>
                 </View>
 
-                <Text numberOfLines={1} style={styles.siteName}>{item.siteName}</Text>
-            </View>
-
-            {/* texto alarma */}
-            <Text style={styles.alarmText}>{item.textAlarm}</Text>
-
-            {/* ubicación opcional
-            {(item.town || item.province) &&
-                <Text style={styles.location}>
-                    {[item.town, item.province].filter(Boolean).join(", ")}
-                </Text>
-            } */}
+                <Text style={styles.alarmText}>{item.textAlarm}</Text>
+            </LinearGradient>
         </TouchableOpacity>
     );
 
@@ -313,7 +309,6 @@ export default function Alarmas() {
 
 const styles = StyleSheet.create({
     card: {
-        backgroundColor: "red", //#dc2626
         borderRadius: 12,
         paddingHorizontal: 24,
         paddingVertical: 14,
@@ -323,6 +318,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 6,
         elevation: 4,
+        overflow: 'hidden',
     },
 
 
@@ -369,13 +365,15 @@ const styles = StyleSheet.create({
     },
 
     iconHolder: {
-        width: 28, height: 28,
+        width: 28,
+        height: 28,
         borderRadius: 14,
-        // backgroundColor: "#fff",
+        backgroundColor: 'rgba(255,255,255,0.12)', // leve resalte
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 10
+        marginRight: 10,
     },
+
     siteName: {
         flex: 1,
         color: "#F9FAFB", // Purbeas de color testo #f7f7f7 - #e3ddd1 - #ffffff - #e9e9e7 -"#f7f7f7 - #F9FAFB

@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import {
-    FlatList,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -25,18 +24,84 @@ import * as Notifications from "expo-notifications";
 import PhoneNumberDialog from "./PhoneNumberDialog";
 import { t } from "@/i18n/i18nConfig";
 import { socketService } from "@/services/socketService";
-import { useRef } from 'react';
 import { EmptyState } from "@/utils/EmptyState";
-//import { useGeneralSocketListener } from "@/hooks/useSocketListener";
+import { LinearGradient } from "expo-linear-gradient";
 
+
+// ===== Paleta de gradientes =====
+const PALETTE = {
+
+    green1: '#059669', // emerald-600
+    green2: '#065F46', // emerald-900
+
+    red1: "#FF0000",
+    red2: "#dc2626",
+
+    blue1: "#3b99cf",
+    blue2: "#2f7fad",
+
+    gray1: "#6C7B8F",
+    gray2: "#546173",
+
+    purple1: "#9E75C6",
+    purple2: "#7b5aa2",
+
+    black1: "#111827",
+    black2: "#000000",
+
+    yellow1: "#facc15",
+    yellow2: "#eab308",
+} as const;
+
+const TEXT = {
+    onCardPrimary: '#E5E7EB', // gray-200
+    onCardSecondary: '#CBD5E1', // slate-300
+    onCardMuted: '#94A3B8', // slate-400
+} as const;
+
+type GradientTuple = readonly [string, string];
+
+const getGradientColors = (alarmType: number, armed: boolean): GradientTuple => {
+    if (alarmType === 2) return [PALETTE.gray1, PALETTE.gray2] as const;
+    if (!armed) return [PALETTE.blue1, PALETTE.blue2] as const;
+
+    switch (alarmType) {
+        case 0: return [PALETTE.green1, PALETTE.green2] as const;
+        case 1: return [PALETTE.red1, PALETTE.red2] as const;
+        case 3: return [PALETTE.purple1, PALETTE.purple2] as const;
+        default: return [PALETTE.black1, PALETTE.black2] as const;
+    }
+};
+
+
+// Devuelve colores del gradiente según estado
+// const getGradientColors = (alarmType: number, armed: boolean) => {
+//     // 1) alarmType = 2 → gris siempre (mute)
+//     if (alarmType === 2) return [PALETTE.gray1, PALETTE.gray2];
+
+//     // 2) Si no está armado → amarillo (indicativo)
+//     if (!armed) return [PALETTE.blue1, PALETTE.blue2];
+
+//     // 3) Armado → por tipo de alarma
+//     switch (alarmType) {
+//         case 0:
+//             return [PALETTE.green1, PALETTE.green2]; // OK → verde gradiente (emerald→teal vibe)
+//         case 1:
+//             return [PALETTE.red1, PALETTE.red2]; // Alarma → rojo
+//         case 3:
+//             return [PALETTE.purple1, PALETTE.purple2]; // Otro estado → morado
+//         default:
+//             return [PALETTE.black1, PALETTE.black2]; // Fallback
+//     }
+// };
 
 export default function DeviceList() {
-    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+    const navigation =
+        useNavigation<NativeStackNavigationProp<RootStackParamList>>();
     const { token, userId } = useAuthStore();
     const isFocused = useIsFocused();
 
     const {
-
         devices,
         loading,
         error: isError,
@@ -44,11 +109,7 @@ export default function DeviceList() {
         setLoading,
         setError,
         updateDevice,
-        // realDevices
     } = useDeviceStore();
-
-    //!Prueba de pantalla vacia 
-    // const DEV_FORCE_EMPTY = true;         // ⬅︎ ponlo a true sólo para probar
 
     const [showAlarmDialog, setShowAlarmDialog] = useState(false);
     const [initialLoad, setInitialLoad] = useState(true);
@@ -56,260 +117,179 @@ export default function DeviceList() {
     const [errorAlertShown, setErrorAlertShown] = useState(false);
     const previousMacsRef = useRef<string[]>([]);
 
-    //! Ahora recibe la lista completa y decide qué secciones crear
+    // Secciones (Alarmas + Todas)
     const prepareSectionData = (deviceList: ResponseAlarmaSite[]) => {
         const sections: {
             title: string;
             data: ResponseAlarmaSite[];
-            type: 'alarms' | 'all';
+            type: "alarms" | "all";
         }[] = [];
 
-        // ! Sección “Alarmas” SOLO si hay +5 ubicaciones
-        const devicesWithAlarms = deviceList.filter(d => d.alarmType === 1);
+        const devicesWithAlarms = deviceList.filter((d) => d.alarmType === 1);
 
         if (deviceList.length > 5 && devicesWithAlarms.length > 0) {
             sections.push({
-                title: t('deviceList.Alarmas'),
+                title: t("deviceList.Alarmas"),
                 data: devicesWithAlarms,
-                type: 'alarms',
+                type: "alarms",
             });
         }
 
-        //!  Sección “Todas las ubicaciones”
         sections.push({
-            title: t('deviceList.TODAS_LAS_UBICACIONES'),
+            title: t("deviceList.TODAS_LAS_UBICACIONES"),
             data: deviceList,
-            type: 'all',
+            type: "all",
         });
 
         return sections;
     };
-    //!-------------------------------------------------------------
+    // Para imprimir MAC en formato 
+    const formatMac = (mac: string | number) => {
+        const s = String(mac).replace(/[^0-9A-Fa-f]/g, '').toUpperCase();
+        return s.length === 12 ? s.match(/.{1,2}/g)!.join(':') : String(mac);
+    };
 
 
-    // En DeviceList.tsx - AGREGAR después de los imports
+    // Inicializar socket
     useEffect(() => {
-        // Inicializar socket cuando DeviceList se monta
-        console.log('🚀 DeviceList montado, inicializando SocketService...');
+        console.log("🚀 DeviceList montado, inicializando SocketService...");
         socketService.initialize();
-
         return () => {
-            // Opcional: desconectar cuando se desmonta DeviceList
             // socketService.disconnect();
         };
-    }, []); // Solo una vez al montar
+    }, []);
 
+    // Limpiar notificaciones al volver
     useEffect(() => {
         const subscription = AppState.addEventListener("change", async (state) => {
             if (state === "active") {
-                // console.log(" App volvió del background, matando notificaciones...");
                 await Notifications.dismissAllNotificationsAsync();
             }
         });
-
         return () => subscription.remove();
     }, []);
 
+    // Callback alarma (push/ws)
     useEffect(() => {
-        notificationService.setOnAlarmDetected((idAlarm) => {
-            //console.log(" WebSocket callback ejecutado con idAlarm:", idAlarm);
+        notificationService.setOnAlarmDetected((_idAlarm) => {
             setShowAlarmDialog(true);
         });
-
         return () => {
             notificationService.setOnAlarmDetected(() => { });
         };
     }, []);
 
+    // Comprobar alarma pendiente
     useEffect(() => {
         const checkAlarm = async () => {
             const pendiente = await AsyncStorage.getItem("alarma_activa_pendiente");
-            if (pendiente === "true") {
-                setShowAlarmDialog(true);
-            }
+            if (pendiente === "true") setShowAlarmDialog(true);
         };
-
         checkAlarm();
     }, []);
 
-    //! Los Eventos Pruebas
-
+    // Evento socket: register_macs
     useEffect(() => {
         const handleRegisterMacsEvent = (payload: any) => {
-            // Ignora si la pantalla no está en foco
             if (!isFocused) return;
 
-            //  Acepta string, número u objeto
-            const eventMac = typeof payload === 'string' || typeof payload === 'number'
-                ? String(payload)
-                : String(
-                    payload?.mac ||
-                    payload?.device?.mac ||
-                    payload?.macAddress ||
-                    ''
-                );
+            const eventMac =
+                typeof payload === "string" || typeof payload === "number"
+                    ? String(payload)
+                    : String(payload?.mac || payload?.device?.mac || payload?.macAddress || "");
 
             if (eventMac) {
-                console.log(`🔄 MAC ${eventMac} ha cambiado, refrescando lista en DeviceList 1`);
-                fetchDevices(true);            // true = sin loading
+                console.log(
+                    `🔄 MAC ${eventMac} ha cambiado, refrescando lista en DeviceList`
+                );
+                fetchDevices(true);
             } else {
-                console.log(' register_macs sin MAC, ignorado');
+                console.log(" register_macs sin MAC, ignorado");
             }
         };
 
-        socketService.on('register_macs', handleRegisterMacsEvent);
-        return () => socketService.off('register_macs', handleRegisterMacsEvent);
+        socketService.on("register_macs", handleRegisterMacsEvent);
+        return () => socketService.off("register_macs", handleRegisterMacsEvent);
     }, [isFocused]);
 
-    // useGeneralSocketListener('register_macs', (payload) => {
-    //     const eventMac = typeof payload === 'string' || typeof payload === 'number'
-    //         ? String(payload)
-    //         : String(
-    //             payload?.mac ||
-    //             payload?.device?.mac ||
-    //             payload?.macAddress ||
-    //             ''
-    //         );
-
-    //     if (eventMac) {
-    //         console.log(`🔄 MAC ${eventMac} ha cambiado, refrescando lista en DeviceList`);
-    //         fetchDevices(true);
-    //     }
-    // },
-    //     true,      // requiresFocus = true
-    //     isFocused  // estado de foco actual
-    // );
-
-
-    //!-------------------------------------------------------------
-
-
-
+    // Auto refresh
     useEffect(() => {
         const interval = setInterval(() => {
             if (token && userId) fetchDevices(true);
         }, 7000);
-
         return () => clearInterval(interval);
     }, [token, userId]);
 
+    // Primera carga
     useEffect(() => {
         fetchDevices(false);
     }, []);
 
+    // Diálogo teléfono inicial
     useEffect(() => {
         const checkTelefono = async () => {
             const telefono = await AsyncStorage.getItem("telefono");
             const preguntado = await AsyncStorage.getItem("telefonoPreguntado");
-
-            if (!telefono && !preguntado) {
-                setDialogVisible(true);
-            }
+            if (!telefono && !preguntado) setDialogVisible(true);
         };
-
         checkTelefono();
     }, []);
 
-    //! Manejo del teléfono
     const handleConfirmTelefono = async (telefono: string) => {
         console.log(" Guardando teléfono desde DeviceList:", telefono);
         setDialogVisible(false);
         await AsyncStorage.setItem("telefono", telefono);
         await AsyncStorage.setItem("telefonoPreguntado", "true");
 
-        const userId = await AsyncStorage.getItem("userId");
-        if (userId) {
-            await notificationService.registerDevice(Number(userId));
+        const uId = await AsyncStorage.getItem("userId");
+        if (uId) {
+            await notificationService.registerDevice(Number(uId));
         }
     };
-    //!-------------------------------------------------------------
-
 
     const handleCancelTelefono = async () => {
         setDialogVisible(false);
         await AsyncStorage.setItem("telefonoPreguntado", "true");
     };
-    //! la función que obtiene los dispositivos
+
+    // Cargar dispositivos
     const fetchDevices = async (isAutoRefresh = false) => {
         try {
-            console.log('------------ fetchDevices ejecutado:------------------------');
-            console.log('   - isAutoRefresh:', isAutoRefresh);
-            console.log('   - Origen:', new Error().stack?.split('\n')[2]); // Ver desde dónde se llamó
-            console.log('   - Hora:', new Date().toLocaleTimeString());
             if (!isAutoRefresh) setLoading(true);
-
-            if (isError && !errorAlertShown) {
-                setErrorAlertShown(false);
-            }
-
+            if (isError && !errorAlertShown) setErrorAlertShown(false);
             setError(false);
-            const startTime = Date.now();
 
             const storedUserId = await AsyncStorage.getItem("userId");
-            //console.log('🌐 PETICIÓN HTTP:');
-            //console.log(`   - URL: alarmtc/sites/usershared2/${storedUserId}`);
-            //console.log('   - Método: GET');
-            //const data: ResponseAlarmaSite[] = await get(`alarmtc/sites/user/${storedUserId}`);
-            const data: ResponseAlarmaSite[] = await get(`alarmtc/sites/usershared2/${storedUserId}`);
-            // const endTime = Date.now();
-
-            // console.log('✅ RESPUESTA HTTP:');
-            //console.log(`   - Tiempo: ${endTime - startTime}ms`);
-            // console.log(`   - Dispositivos recibidos: ${data.length}`);
-            //  console.log('   - Datos:', JSON.stringify(data.slice(0, 2), null, 2));
-
-            //console.log("📍 Dispositivos del backend:", data.length);
+            const data: ResponseAlarmaSite[] = await get(
+                `alarmtc/sites/usershared2/${storedUserId}`
+            );
 
             const formattedData = data.map((device) => ({
                 ...device,
                 mac: Number(device.mac),
                 alarmType: device.alarmType ?? 1,
-                armed: device.armed ?? true
+                armed: device.armed ?? true,
             }));
-            console.log(data)
-            const FORCE_EMPTY = false;        // ponlo a *false* o bórralo cuando termines
-            if (__DEV__ && FORCE_EMPTY) {
-                setDevices([]);                // simula 0 ubicaciones
-                return;                        // salta el resto
-            }
+
             setDevices(formattedData);
             setErrorAlertShown(false);
 
-            //Aqui le envio los mac
-            const macAddresses = formattedData.map(device => String(device.mac));
-            console.log('------- Enviando MACs al socket desde DeviceList:--------- SI LOS ENVIA', macAddresses);
+            // Enviar MACs al socket
+            const macAddresses = formattedData.map((d) => String(d.mac));
+            console.log(
+                "------- Enviando MACs al socket desde DeviceList:---------",
+                macAddresses
+            );
             socketService.setMacAddresses(macAddresses);
-
-            // if (!socketService.isConnected()) {
-            //     console.log('🔄 Socket no conectado, inicializando...');
-            //     socketService.initialize();
-
-            //     // Esperar un momento para que se conecte antes de enviar MACs
-            //     setTimeout(() => {
-            //         socketService.setMacAddresses(macAddresses);
-            //     }, 1000);
-            // } else {
-            //     socketService.setMacAddresses(macAddresses);
-            // }
-
         } catch (error) {
             console.error("Error al cargar dispositivos:", error);
             setError(true);
 
             if (!isAutoRefresh && !errorAlertShown) {
                 setErrorAlertShown(true);
-                Alert.alert(
-                    "Error de conexión",
-                    t("deviceList.deviceLoadError"),
-                    [
-                        {
-                            text: "OK",
-                            onPress: () => {
-                                console.log("Usuario cerró el alert de error");
-                            }
-                        }
-                    ]
-                );
+                Alert.alert("Error de conexión", t("deviceList.deviceLoadError"), [
+                    { text: "OK", onPress: () => { } },
+                ]);
             }
         } finally {
             if (!isAutoRefresh) {
@@ -318,9 +298,8 @@ export default function DeviceList() {
             }
         }
     };
-    //!-------------------------------------------------------------
 
-
+    // Alarma site detectada → pasa a alarmType 2 (mute/gris)
     useEffect(() => {
         notificationService.setOnSiteAlarmDetected((macStr) => {
             const mac = Number(macStr);
@@ -331,67 +310,56 @@ export default function DeviceList() {
         };
     }, [updateDevice]);
 
-    // useEffect(() => {
-    //     notificationService.connectWebSocket();
-    //     return () => {
-    //         notificationService.disconnect();
-    //     };
-    // }, []);
+    // Header de sección
+    // Header de sección mejorado
+    const renderSectionHeader = ({ section }: { section: any }) => {
+        const isAll = section.type === "all";
+        const count = section.data?.length ?? 0;
 
-    // !FUNCIÓN ACTUALIZADA: getBackgroundColor con nueva lógica
-    const getBackgroundColor = (alarmType: number, armed: boolean) => {
-        //  PRIMERA PRIORIDAD: Si alarmType = 2, siempre gris (sin importar armed)
-        if (alarmType === 2) {
-            return "#6C7B8F"; // Gris para alarmType 2
-        }
+        return (
+            <View style={styles.sectionHeader}>
+                <View style={styles.sectionHeaderRow}>
+                    <View style={styles.sectionTitleWrap}>
+                        <Ionicons name={isAll ? "albums-outline" : "alert-circle-outline"} size={18} color="#111827" style={{ marginRight: 6 }} />
+                        <Text style={styles.sectionTitle}>{section.title}</Text>
+                        {/* Badge de cantidad */}
+                        {isAll && (
+                            <View style={styles.countBadge}>
+                                <Text style={styles.countBadgeText}>{count}</Text>
+                            </View>
+                        )}
+                    </View>
 
-        // SEGUNDA PRIORIDAD: Si alarmType ≠ 2 Y armed = false, amarillo
-        if (!armed) {
-            return "#3b99cf"; // Amarillo para desarmados (que no sean alarmType 2)
-        }
+                    {/* Acción opcional (ordenar / filtrar)
+                    <TouchableOpacity
+                        activeOpacity={0.7}
+                        onPress={() => Alert.alert("Ordenar", "Aquí puedes abrir tu modal de orden/filtrado")}
+                        style={styles.actionBtn}
+                    >
+                        <Ionicons name="funnel-outline" size={18} color="#111827" />
+                    </TouchableOpacity> */}
+                </View>
 
-        // TERCERA PRIORIDAD: Colores normales según alarmType para dispositivos armados
-        switch (alarmType) {
-            case 0: return "#63C723";  // Verde para alarmType 0 armado
-            case 1: return "#FF0000";  // Rojo para alarmType 1 armado
-            case 3: return "#9E75C6";  // Morado para alarmType 3 armado
-            default: return "#000000"; // Negro por defecto
-        }
+                {/* Separador con gradiente */}
+                <LinearGradient
+                    colors={["#111827", "#6B7280"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.sectionLineGradient}
+                />
+            </View>
+        );
     };
 
-    /*
-    Ejemplos con tus datos:
-    
-    1. {"alarmType": 2, "armed": true}  → Gris (#9E9E9E)
-    2. {"alarmType": 2, "armed": false} → Gris (#9E9E9E) - ¡Sin importar armed!
-    3. {"alarmType": 0, "armed": false} → Amarillo (#facc15)
-    4. {"alarmType": 1, "armed": false} → Amarillo (#facc15)  
-    5. {"alarmType": 0, "armed": true}  → Verde (#78dd35)
-    6. {"alarmType": 1, "armed": true}  → Rojo (#FF0000)
-    */
-
-    //!-------------------------------------------------------------
-
-
-    // ! Renderizar header de sección
-    const renderSectionHeader = ({ section }: { section: any }) => (
-        <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>{section.title}</Text>
-            <View style={styles.sectionLine} />
-        </View>
-    );
-
-    //!-------------------------------------------------------------
-
-
-    //! MODIFICADO: Renderizar cada dispositivo
+    // Render item con gradiente
     const renderDeviceItem = ({ item }: { item: ResponseAlarmaSite }) => {
-        const backgroundColor = getBackgroundColor(item.alarmType, item.armed);
-        const capitalize = (str: string) => str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";
+        const colors = getGradientColors(item.alarmType, item.armed);
+        const capitalize = (str: string) =>
+            str ? str.charAt(0).toUpperCase() + str.slice(1).toLowerCase() : "";
 
         return (
             <TouchableOpacity
-                style={[styles.deviceContainer, { backgroundColor }]}
+                activeOpacity={0.9}
                 onPress={() => {
                     navigation.navigate("DeviceDetails", {
                         device: {
@@ -403,32 +371,42 @@ export default function DeviceList() {
                             idSite: item.idSite,
                             buildingPortalRef: item.buildingPortalRef,
                             armed: item.armed,
-                            alarmType: item.alarmType
-                        }
+                            alarmType: item.alarmType,
+                        },
                     });
                 }}
             >
-                <View style={styles.row}>
-                    {/* #e9e9e7-#e2e2e0  - #dcdcd9 - #F9FAFB */}
-                    <Ionicons name="home-outline" size={24} color="#F8F9FA" style={{ marginRight: 8 }} />
-                    <Text style={styles.deviceTitle}>{capitalize(item.farmName)}</Text>
-                </View>
-                <Text style={styles.deviceSubtitle}>{capitalize(item.siteName)}</Text>
-                <Text style={styles.deviceLocation}>
-                    {capitalize(item.town)}, {capitalize(item.province)}, {capitalize(item.country)}
-                </Text>
+                <LinearGradient
+                    colors={colors}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.deviceContainer}
+                >
+                    <View style={styles.row}>
+                        <Ionicons name="home-outline" size={24} color="#F8F9FA" style={{ marginRight: 8 }} />
+                        <Text style={styles.deviceTitle}>{capitalize(item.farmName)}</Text>
+                    </View>
+
+                    <Text style={styles.deviceSubtitle}>{capitalize(item.siteName)}</Text>
+                    <Text style={styles.deviceLocation}>{/* … */}</Text>
+
+                    {/* 👉 Chip con la MAC en la esquina inferior derecha */}
+                    <View style={styles.macBadge}>
+                        <Ionicons name="hardware-chip-outline" size={14} color="#E5E7EB" style={{ marginRight: 4 }} />
+                        <Text style={styles.macText}>{formatMac(item.mac)}</Text>
+                    </View>
+                </LinearGradient>
+
             </TouchableOpacity>
         );
     };
-    //!-------------------------------------------------------------
-
 
     return (
         <View style={styles.container}>
             {initialLoad ? (
                 <Text style={styles.loadingText}>{t("deviceList.loadingDevices")}</Text>
             ) : isError ? (
-                <View style={styles.centeredContainer}>
+                <View className="centeredContainer" style={styles.centeredContainer}>
                     <Ionicons name="cloud-offline-outline" size={64} color="#FF6B6B" />
                     <Text style={styles.errorTitle}>{t("deviceList.error.noConnection")}</Text>
                     <Text style={styles.errorMessage}>
@@ -439,19 +417,18 @@ export default function DeviceList() {
                 <EmptyState
                     icon="map-marker-off"
                     lib="mc"
-                    title={t('deviceList.noLocationsAvailable')}
+                    title={t("deviceList.noLocationsAvailable")}
                     color="#2563EB"
                     size={88}
                 />
             ) : (
-                // !  SectionList en lugar de FlatList
                 <SectionList
                     sections={prepareSectionData(devices)}
                     keyExtractor={(item, index) => `${item.idSite}-${item.mac}-${index}`}
                     renderItem={renderDeviceItem}
                     renderSectionHeader={renderSectionHeader}
                     contentContainerStyle={styles.listContainer}
-                    stickySectionHeadersEnabled={false}
+                    stickySectionHeadersEnabled={true}
                 />
             )}
 
@@ -471,11 +448,16 @@ export default function DeviceList() {
                             <TouchableOpacity
                                 onPress={async () => {
                                     await stopAlarmSound();
-                                    await AsyncStorage.multiRemove(["alarmPlaying", "alarma_activa_pendiente"]);
+                                    await AsyncStorage.multiRemove([
+                                        "alarmPlaying",
+                                        "alarma_activa_pendiente",
+                                    ]);
                                     setShowAlarmDialog(false);
                                 }}
                             >
-                                <Text style={styles.modalButtonText}>{t("deviceList.acceptAndStopAlarm")}</Text>
+                                <Text style={styles.modalButtonText}>
+                                    {t("deviceList.acceptAndStopAlarm")}
+                                </Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -489,37 +471,23 @@ const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: "#f2f2f2" },
     listContainer: { padding: 16 },
 
-    // NUEVOS ESTILOS PARA HEADERS DE SECCIÓN
-    sectionHeader: {
-        backgroundColor: '#f2f2f2',
-        paddingVertical: 12,
-        paddingHorizontal: 0,
-        marginTop: 16,
-        marginBottom: 8,
-    },
-    sectionTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 8,
-        letterSpacing: 1,
-    },
     sectionLine: {
         height: 2,
-        backgroundColor: '#333',
-        width: '100%',
+        backgroundColor: "#333",
+        width: "100%",
     },
 
-    deviceContainer: {
-        padding: 16,
-        marginVertical: 4, // Reducido para mejor espaciado con headers
-        borderRadius: 12,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.15,
-        shadowRadius: 3.84,
-        elevation: 4,
-    },
+    // Tarjeta de dispositivo (sin backgroundColor: lo pinta el LinearGradient)
+    // deviceContainer: {
+    //     padding: 16,
+    //     marginVertical: 4,
+    //     borderRadius: 12,
+    //     shadowColor: "#000",
+    //     shadowOffset: { width: 0, height: 2 },
+    //     shadowOpacity: 0.15,
+    //     shadowRadius: 3.84,
+    //     elevation: 4,
+    // },
     row: {
         flexDirection: "row",
         alignItems: "center",
@@ -528,16 +496,16 @@ const styles = StyleSheet.create({
     deviceTitle: {
         fontSize: 18,
         fontWeight: "bold",
-        color: "#F3F4F6", // #000 - #e9e9e7 -#e2e2e0 - #dcdcd9 - #c9c9c7 - #d3d3d1 - #dcdcd9 - #F9FAFB - #F3F4F6 - #F4F5F7 - #F4F5F7
+        color: TEXT.onCardPrimary,
     },
     deviceSubtitle: {
         fontSize: 16,
-        color: "#F3F4F6", // #e9e9e7 - #e2e2e0 - #dcdcd9 - #c9c9c7 -#d3d3d1 -#dcdcd9 - #F9FAFB - #F3F4F6 - #F4F5F7 - #F4F5F7
+        color: TEXT.onCardPrimary,
         marginBottom: 4,
     },
     deviceLocation: {
         fontSize: 14,
-        color: "#F3F4F6", // #e9e9e7 -#e2e2e0 - #dcdcd9 - #c9c9c7 - #d3d3d1 - #dcdcd9 - #F9FAFB - #F3F4F6 - #F4F5F7 - #F4F5F7
+        color: TEXT.onCardMuted,
     },
     loadingText: {
         fontSize: 18,
@@ -587,7 +555,7 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: "bold",
         marginBottom: 10,
-        color: "#FF3B30", // #FF3B30
+        color: "#FF3B30",
         textAlign: "center",
     },
     modalButtonText: {
@@ -602,4 +570,103 @@ const styles = StyleSheet.create({
         marginTop: 10,
         borderRadius: 8,
     },
+    sectionHeader: {
+        backgroundColor: "#f2f2f2",
+        paddingTop: 6,
+        paddingBottom: 10,
+        paddingHorizontal: 0,
+        marginTop: 8,
+    },
+
+    sectionHeaderRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+    },
+
+    sectionTitleWrap: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+
+    sectionTitle: {
+        fontSize: 16,
+        fontWeight: "700",
+        color: "#111827",
+        letterSpacing: 0.5,
+        textTransform: "uppercase",
+    },
+
+    countBadge: {
+        marginLeft: 8,
+        backgroundColor: "#E5E7EB",
+        borderRadius: 999,
+        paddingHorizontal: 8,
+        paddingVertical: 2,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+
+    countBadgeText: {
+        fontSize: 12,
+        fontWeight: "700",
+        color: "#111827",
+    },
+
+    actionBtn: {
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 8,
+        backgroundColor: "#ffffff",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 2,
+        elevation: 2,
+    },
+
+    // Sustituye la antigua línea por esta con gradiente
+    sectionLineGradient: {
+        height: 2,
+        width: "100%",
+        borderRadius: 2,
+        marginTop: 8,
+    },
+    deviceContainer: {
+        padding: 16,
+        paddingBottom: 26,       // un poco más para que el chip no pise el texto
+        marginVertical: 4,
+        borderRadius: 12,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.15,
+        shadowRadius: 3.84,
+        elevation: 4,
+        position: 'relative',    // ← necesario para posicionar el chip
+    },
+
+    macBadge: {
+        position: 'absolute',
+        right: 12,
+        bottom: 10,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 999,
+        backgroundColor: 'rgba(255,255,255,0.12)',
+        borderWidth: 1,
+        borderColor: 'rgba(255,255,255,0.18)',
+    },
+
+    macText: {
+        color: TEXT.onCardPrimary, //'#E5E7EB',        // gris claro sobre verde oscuro
+        fontSize: 12.5,          // se ve bien sin ser enorme
+        fontWeight: '700',
+        letterSpacing: 0.5,
+        // fontFamily opcional si quieres monospace:
+        // fontFamily: Platform.OS === 'ios' ? 'Menlo' : 'monospace',
+    },
+
+
 });

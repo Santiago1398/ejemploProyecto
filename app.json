@@ -2,7 +2,7 @@
   "expo": {
     "name": "TC5",
     "slug": "notification-tc5",
-    "version": "1.0.0",
+    "version": "1.0.3",
     "orientation": "portrait",
     "icon": "./assets/images/TC5-3-RAYAS.png",
     "scheme": "myapp",
@@ -13,7 +13,6 @@
       "icon": "./assets/images/TC5-3-RAYAS.png",
       "supportsTablet": true,
       "bundleIdentifier": "com.cticontrol.notificationtc5",
-      "buildNumber": "14",
       "googleServicesFile": "./ios/TC5/GoogleService-Info.plist",
       "config": {
         "googleMapsApiKey": "AIzaSyBdJZTv6ZQfBgLMUrKCXUvnaCGyHTiiV4I"
@@ -31,7 +30,8 @@
       },
       "entitlements": {
         "aps-environment": "production"
-      }
+      },
+      "buildNumber": "2"
     },
     "android": {
       "config": {
@@ -87,7 +87,7 @@
       "typedRoutes": true
     },
     "extra": {
-     "devBuildNumber": 20,
+      "devBuildNumber": 21,
       "apiUrl": "https://api.tc5monitor.cticontrol.com/api",
       "apiUrlDev": "https://api.tc5monitortest.cticontrol.com/api",
       "socketUrl": "https://api.tc5monitor.cticontrol.com",

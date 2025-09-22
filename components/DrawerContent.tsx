@@ -1,125 +1,131 @@
-import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Image, Alert } from "react-native";
+import React from "react";
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    Image,
+    Platform,
+} from "react-native";
 import { DrawerContentComponentProps } from "@react-navigation/drawer";
+import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuthStore } from "../store/authStore";
 import { t } from "../i18n/i18nConfig";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useAppExtra } from '@/hooks/useAppExtra';   // ← añade esto
+import { useAppExtra } from "@/hooks/useAppExtra";
 
+const COLORS = {
+    bg: "#F7F8FA",
+    card: "#FFFFFF",
+    line: "#E5E7EB",
+    text: "#111827",
+    textSub: "#6B7280",
+    brand: "#15803d",      // forest-700
+    brandDark: "#14532d",  // forest-900
+    danger: "#ef4444",
+    dangerBg: "rgba(239,68,68,0.08)",
+};
 
 export default function DrawerContent(props: DrawerContentComponentProps) {
-    const { username: email, logout, isAuthenticated } = useAuthStore();
     const { navigation } = props;
-    const { devBuildNumber } = useAppExtra();            // ← lee el 1
+    const { username: email, logout, isAuthenticated } = useAuthStore();
+    const { devBuildNumber } = useAppExtra();
 
-
-    const handleLogout = async () => {
+    // Cierra sesión inmediatamente (sin confirmación)
+    const doLogout = async () => {
         try {
-            // Cerrar el drawer primero
             props.navigation.closeDrawer();
-
-            // Pequeña pausa para asegurar que el drawer se cierre
-            await new Promise(resolve => setTimeout(resolve, 200));
-
-            // Limpiar AsyncStorage
+            await new Promise((r) => setTimeout(r, 220));
             await AsyncStorage.removeItem("userToken");
-
-            // Ejecutar logout del store
             logout();
-
-            console.log("Logout exitoso");
-        } catch (error) {
-            console.error("Error al cerrar sesión:", error);
+        } catch (e) {
+            console.error("Error al cerrar sesión:", e);
         }
     };
 
-    const handleNavigateToSettings = async () => {
-        try {
-            props.navigation.closeDrawer();
-            // Pausa más larga para Samsung
-            await new Promise(resolve => setTimeout(resolve, 300));
-            navigation.navigate("Settings" as never);
-        } catch (error) {
-            console.error("Error navegando a Settings:", error);
-        }
+    const goSettings = async () => {
+        props.navigation.closeDrawer();
+        await new Promise((r) => setTimeout(r, 280));
+        navigation.navigate("Settings" as never);
     };
 
-    const handleNavigateToMaintenance = async () => {
-        try {
-            props.navigation.closeDrawer();
-            await new Promise(resolve => setTimeout(resolve, 300));
-            navigation.navigate("SolicitarMantenimiento" as never);
-        } catch (error) {
-            console.error("Error navegando a Mantenimiento:", error);
-        }
+    const goMaintenance = async () => {
+        props.navigation.closeDrawer();
+        await new Promise((r) => setTimeout(r, 280));
+        navigation.navigate("SolicitarMantenimiento" as never);
     };
+
+    const MenuRow = ({
+        icon,
+        label,
+        onPress,
+        danger = false,
+    }: {
+        icon: keyof typeof Ionicons.glyphMap;
+        label: string;
+        onPress: () => void;
+        danger?: boolean;
+    }) => (
+        <TouchableOpacity
+            activeOpacity={0.7}
+            onPress={onPress}
+            style={[
+                styles.row,
+                danger && { backgroundColor: COLORS.dangerBg, borderColor: "transparent" },
+            ]}
+            {...(Platform.OS === "android"
+                ? { android_ripple: { color: danger ? "rgba(239,68,68,0.15)" : "rgba(0,0,0,0.05)" } }
+                : {})}
+        >
+            <View style={styles.rowLeft}>
+                <Ionicons
+                    name={icon}
+                    size={20}
+                    color={danger ? COLORS.danger : COLORS.text}
+                    style={{ marginRight: 10 }}
+                />
+                <Text style={[styles.rowLabel, danger && { color: COLORS.danger, fontWeight: "700" }]}>
+                    {label}
+                </Text>
+            </View>
+            {!danger && <Ionicons name="chevron-forward" size={18} color={COLORS.textSub} />}
+        </TouchableOpacity>
+    );
 
     return (
         <View style={styles.container}>
-            {/* Logo de CTIcontrol */}
-            <Image
-                source={require("../assets/images/logo-cti-verde-renombrado.png")}
-                style={styles.logo}
-                resizeMode="contain"
-            />
+            {/* Header */}
+            <View style={styles.headerCard}>
+                <Image
+                    source={require("../assets/images/logo-cti-verde-renombrado.png")}
+                    style={styles.logo}
+                    resizeMode="contain"
+                />
 
-            {/* Texto TC5 */}
-            <Text style={styles.tc5}>TC5</Text>
+                <Text style={styles.product}>TC5</Text>
 
-            {/* Email del usuario */}
-            <Text style={styles.email}>{email}</Text>
-
-            {/* Botón de sesión */}
-            {isAuthenticated ? (
-                <TouchableOpacity
-                    onPress={handleLogout}
-                    style={styles.logoutButton}
-                    activeOpacity={0.8}
-                    delayPressIn={0}
-                >
-                    <Text style={styles.logoutText}>{t("DrawerContent.logout")}</Text>
-                </TouchableOpacity>
-            ) : (
-                <TouchableOpacity
-                    onPress={() => {
-                        props.navigation.closeDrawer();
-                        // El login se maneja automáticamente por el estado de App.js
-                    }}
-                    style={styles.loginButton}
-                    activeOpacity={0.8}
-                    delayPressIn={0}
-                >
-                    <Text style={styles.loginText}>{t("DrawerContent.login")}</Text>
-                </TouchableOpacity>
-            )}
-
-
-
-            {/* Ajustes al fondo */}
-            <View style={styles.footer}>
-                {/* --- Versión --- */}
-                <Text style={styles.versionLabel}>
-                    Versión software:&nbsp;{devBuildNumber}
+                <Text style={styles.email} numberOfLines={1}>
+                    {email}
                 </Text>
-                <View style={styles.separator} />
+            </View>
 
-                <TouchableOpacity
-                    onPress={handleNavigateToSettings}
-                    style={styles.footerButton}
-                    activeOpacity={0.8}
-                    delayPressIn={0}
-                >
-                    <Text style={styles.footerText}>{t("DrawerContent.settings")}</Text>
-                </TouchableOpacity>
+            {/* Menú (sin tarjeta contenedora; solo filas con línea separadora) */}
+            <View style={styles.menuGroup}>
+                <MenuRow icon="settings-outline" label={t("DrawerContent.settings")} onPress={goSettings} />
+                <MenuRow icon="construct-outline" label={t("DrawerContent.maintenance")} onPress={goMaintenance} />
+                {isAuthenticated ? (
+                    <MenuRow icon="log-out-outline" label={t("DrawerContent.logout")} onPress={doLogout} danger />
+                ) : (
+                    <MenuRow icon="log-in-outline" label={t("DrawerContent.login")} onPress={() => props.navigation.closeDrawer()} />
+                )}
+            </View>
 
-                <TouchableOpacity
-                    onPress={handleNavigateToMaintenance}
-                    style={styles.footerButton}
-                    activeOpacity={0.8}
-                    delayPressIn={0}
-                >
-                    <Text style={styles.footerText}>{t("DrawerContent.maintenance")}</Text>
-                </TouchableOpacity>
+            {/* Footer / versión */}
+            <View style={styles.footer}>
+                <View style={styles.divider} />
+                <Text style={styles.version}>
+                    {t("softwareVersion")}&nbsp;{devBuildNumber}
+                </Text>
             </View>
         </View>
     );
@@ -128,83 +134,87 @@ export default function DrawerContent(props: DrawerContentComponentProps) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
-        backgroundColor: "#f9f9f9",
-        justifyContent: "flex-start",
-    },
-    logo: {
-        width: "100%",
-        height: 50,
-        marginBottom: 5,
-    },
-    tc5: {
-        fontSize: 36,
-        fontWeight: "bold",
-        color: "#A2D927",
-        marginBottom: 20,
-        textAlign: "center",
-    },
-    email: {
-        fontSize: 16,
-        fontWeight: "bold",
-        color: "#333",
-        textAlign: "center",
-        marginBottom: 30,
-    },
-    loginButton: {
-        padding: 12,
-        backgroundColor: "blue",
-        borderRadius: 8,
-        minHeight: 44, // Altura mínima para mejor toque
-    },
-    loginText: {
-        color: "#fff",
-        fontWeight: "bold",
-        textAlign: "center",
-        fontSize: 16,
-    },
-    logoutButton: {
-        padding: 12,
-        backgroundColor: "red",
-        borderRadius: 8,
-        minHeight: 44,
-    },
-    logoutText: {
-        color: "#fff",
-        fontWeight: "bold",
-        textAlign: "center",
-        fontSize: 16,
-    },
-    footer: {
-        position: "absolute",
-        bottom: 20,
-        left: 20,
-        right: 20,
-        alignItems: "flex-start",
-    },
-    separator: {
-        height: 0.5,
-        width: "100%",
-        backgroundColor: "#ccc",
-        marginBottom: 8,
-    },
-    footerButton: {
-        paddingVertical: 8,
-        paddingHorizontal: 4,
-        minHeight: 36,
-        justifyContent: "center",
-    },
-    footerText: {
-        fontSize: 16,
-        color: "#555",
-        fontWeight: "500",
-    },
-    versionLabel: {
-        fontSize: 12,
-        fontWeight: 'bold',
-        color: '#555',
-        marginBottom: 6,   // pequeño margen antes de la línea
-        textAlign: 'left',
+        backgroundColor: COLORS.bg,
+        paddingHorizontal: 16,
+        paddingTop: 14,
     },
 
+    // Header
+    headerCard: {
+        backgroundColor: COLORS.card,
+        borderRadius: 16,
+        paddingHorizontal: 16,
+        paddingVertical: 14,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 6,
+        elevation: 2,
+        marginBottom: 16,
+        alignItems: "center",
+    },
+    logo: {
+        width: "70%",
+        height: 44,
+        marginBottom: 8,
+    },
+    product: {
+        fontSize: 26,
+        fontWeight: "800",
+        color: COLORS.brand,
+        letterSpacing: 0.5,
+        marginBottom: 4,
+    },
+    email: {
+        fontSize: 14,
+        color: COLORS.textSub,
+        fontWeight: "600",
+    },
+
+    // Menu
+    menuGroup: {
+        backgroundColor: "transparent",
+        borderRadius: 0,
+        borderWidth: 0,
+        paddingVertical: 0,
+        overflow: "visible",
+        marginTop: 8,
+    },
+    row: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        paddingHorizontal: 4, // sube a 12 si lo prefieres
+        paddingVertical: 12,
+        backgroundColor: "transparent",
+        borderBottomWidth: 1, // línea separadora
+        borderColor: COLORS.line,
+    },
+    rowLeft: {
+        flexDirection: "row",
+        alignItems: "center",
+        flexShrink: 1,
+    },
+    rowLabel: {
+        fontSize: 16,
+        color: COLORS.text,
+        fontWeight: "600",
+    },
+
+    // Footer
+    footer: {
+        marginTop: "auto",
+        paddingVertical: 12,
+    },
+    divider: {
+        height: 1,
+        backgroundColor: COLORS.line,
+        marginBottom: 8,
+        borderRadius: 1,
+    },
+    version: {
+        fontSize: 12,
+        color: COLORS.textSub,
+        fontWeight: "700",
+    },
 });
