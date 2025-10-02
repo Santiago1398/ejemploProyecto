@@ -1,0 +1,300 @@
+{
+    "AlarmasScreen": {
+        "errorLoadingAlarms": "Não foi possível carregar os alarmes acionados",
+        "noAlarms": "Sem alarmes ativos",
+        "loadingAlarms": "Carregando alarmes...",
+        "errorTitle": "Erro",
+        "errorMessage": "Não foi possível carregar os alarmes.",
+        "connectionError": "Erro de conexão",
+        "connectionErrorMessage": "Não foi possível carregar os alarmes. Verifique sua conexão com a internet.",
+        "noAlarmsMessage": "Todos os seus dispositivos estão funcionando corretamente"
+    },
+    "deviceList": {
+        "loadingDevices": "Carregando dispositivos...",
+        "serverDisconnected": "Servidor desconectado. Tente novamente mais tarde.",
+        "noLocationsAvailable": "Você não possui locais configurados com TC5",
+        "alarmActive": "🚨 Alarme ativo",
+        "acceptAndStopAlarm": "Aceitar e parar alarme",
+        "errorTitle": "Erro",
+        "deviceLoadError": "Não foi possível carregar os dispositivos.",
+        "error": {
+            "noConnection": "Sem conexão",
+            "cannotLoadLocations": "Não foi possível carregar os locais",
+            "checkingAutomatically": "Verificando automaticamente..."
+        },
+        "Alarmas": "Alarmes",
+        "TODAS_LAS_UBICACIONES": "TODOS OS LOCAIS"
+    },
+    "DeviceDetailsScreen": {
+        "alarmTriggered": "Alarme detectado",
+        "alarmsEnabled": "TC5 Ativado",
+        "alarmsDisabled": "TC5 Desativado",
+        "successTitle": "Sucesso",
+        "alarmsActivated": "Os alarmes foram ativados.",
+        "alarmsDeactivated": "Os alarmes foram desativados.",
+        "changeStatusError": "Falha ao alterar o estado do alarme.",
+        "tc5Disconnected": "TC5 Desconectado",
+        "errorTitle": "Erro",
+        "errorLoadingAlarms": "Falha ao carregar alarmes.",
+        "errorChangeAlarmState": "Falha ao alterar o estado do alarme.",
+        "loadingAlarms": "Carregando alarmes...",
+        "noEnabledAlarms": "Sem conexão",
+        "armed": "Ativado",
+        "disarmed": "Desativado",
+        "connection": {
+            "noConnection": "Sem conexão",
+            "deviceDisconnected": "Dispositivo desconectado ou sem comunicação"
+        },
+        "Min": "Mín",
+        "Max": "Máx",
+        "No_conectado": "Desconectado",
+        "needUpdateTitle": "Atualização do TC5 necessária",
+        "needUpdateSubtitle": "Por favor, atualize nas configurações do TC5",
+        "Ayer": "Ontem",
+        "Hoy": "Hoje"
+    },
+    "DrawerContent": {
+        "logout": "Sair",
+        "login": "Entrar",
+        "settings": "Configurações",
+        "maintenance": "Manutenção",
+        "softwareVersion": "Versão do software:"
+    },
+    "EditarPrioridadScreen": {
+        "errorTitle": "Erro",
+        "invalidPhone": "Insira um número de telefone válido.",
+        "successTitle": "Sucesso",
+        "SaveInformacion": "Informações salvas com sucesso",
+        "sendError": "Não foi possível enviar as informações",
+        "title": "Prioridade",
+        "label": "Número de telefone:",
+        "placeholder": "123456789",
+        "save": "Salvar",
+        "selectCountry": "Selecionar país",
+        "cancel": "Cancelar"
+    },
+    "BottonMaster": {
+        "label": "Master"
+    },
+    "CustomMaps": {
+        "saveTitle": "Salvar Localização",
+        "saveMessage": "Deseja salvar a localização atual?",
+        "cancel": "Cancelar",
+        "save": "Salvar"
+    },
+    "Menu3Puntos": {
+        "HistoriaAlarmas": "Histórico de Alarmes",
+        "EstadisticasWeb": "Estatísticas",
+        "explotacion": "Ir para o Portal",
+        "configuracion": "Configuração TC5",
+        "geolocalizacion": "Geolocalização",
+        "ajustes": "Configurações",
+        "volver": "Voltar",
+        "guardarUbicacion": "Salvar Localização"
+    },
+    "PhoneNumberDialog": {
+        "title": "Digite seu número de telefone",
+        "subtitle": "Para que o aplicativo TC5 reconheça seu número.",
+        "placeholder": "ex.: 612345678",
+        "cancel": "Cancelar",
+        "save": "Salvar",
+        "invalid": "Número inválido. Deve ter 9 dígitos."
+    },
+    "HomeScreen": {
+        "cti": "CTI",
+        "control": "Controle",
+        "home": "Início"
+    },
+    "CustomHeader": {
+        "home": "Início"
+    },
+    "MantenimientoScreen": {
+        "apiTitle": "Servidor API",
+        "apiPlaceholder": "http://192.168.1.1:8032/api",
+        "saveButton": "Salvar URL",
+        "saveSuccessTitle": "Salvo",
+        "saveSuccessMessage": "A URL do servidor foi atualizada.",
+        "saveErrorTitle": "Erro",
+        "saveErrorMessage": "Não foi possível salvar a URL.",
+        "fcmTitle": "Token FCM do dispositivo",
+        "fcmButton": "Obter Token FCM",
+        "fcmCopiedTitle": "Token copiado",
+        "fcmCopiedMessage": "Token FCM copiado para a área de transferência:\n\n{{token}}",
+        "fcmErrorTitle": "Erro",
+        "fcmErrorMessage": "Não foi possível obter o token."
+    },
+    "SettingsScreen": {
+        "notificaciones": {
+            "desactivar": {
+                "titulo": "Desativar notificações",
+                "mensaje": "Deseja desativar as notificações do aplicativo?"
+            },
+            "activar": {
+                "titulo": "Ativar notificações",
+                "mensaje": "Deseja receber notificações de alarmes e atualizações?"
+            },
+            "cancelar": "Cancelar",
+            "desactivars": "Desativar",
+            "no": "Não",
+            "si": "Sim"
+        },
+        "ubicacion": {
+            "desactivar": "Desativar localização",
+            "permisos": {
+                "desactivar": "Deseja desativar as permissões de localização?"
+            },
+            "label": "Permissões de Localização"
+        },
+        "titulo": {
+            "permisos": "Permissões",
+            "notificaciones": "Notificações",
+            "nivelPrioridad": "Nível de Prioridade"
+        },
+        "telefono": {
+            "presente": "Telefone:",
+            "ausente": "Nenhum número de telefone atribuído"
+        },
+        "language": {
+            "title": "Idioma"
+        }
+    },
+    "login": {
+        "titulo": "Entrar",
+        "subtitulo": "Por favor, faça login para continuar",
+        "correo": "Email",
+        "contrasena": "Senha",
+        "boton": "Entrar",
+        "error": {
+            "datos": "Email ou senha incorretos",
+            "general": "Erro",
+            "mensaje": "Algo deu errado"
+        }
+    },
+    "useNotificationPermission": {
+        "alerta": {
+            "titulo": "Notificações",
+            "mensaje": "Ative as notificações para receber alarmes TC5",
+            "boton": "Permitir"
+        },
+        "error": {
+            "permisos": "Erro ao lidar com permissões de notificação",
+            "verificacion": "Erro ao verificar o status da permissão"
+        }
+    },
+    "locations": {
+        "alerta": {
+            "titulo": "Permissão de localização necessária",
+            "mensaje": "Para continuar, habilite a permissão de localização nas configurações do aplicativo",
+            "abrirAjustes": "Abrir configurações",
+            "cancelar": "Cancelar"
+        }
+    },
+    "DeviceMaps": {
+        "errorTitle": "Erro",
+        "save": "Salvar",
+        "error": {
+            "mensaje": "Não foi possível obter sua localização.",
+            "title": "Erro",
+            "obtener": "Não foi possível obter sua localização."
+        },
+        "titulo": {
+            "guardar": "Salvar Localização"
+        },
+        "mensaje": {
+            "guardar": "Deseja salvar a localização atual?"
+        },
+        "cancelar": "Cancelar",
+        "guardar": "Salvar",
+        "ubicacion": {
+            "guardada": {
+                "titulo": "Localização Salva",
+                "mensaje": "A localização do dispositivo foi salva com sucesso."
+            },
+            "no": {
+                "guardada": "Falha ao salvar a localização do dispositivo."
+            }
+        },
+        "permiso": {
+            "necesario": {
+                "titulo": "Permissões Necessárias",
+                "mensaje": "Você precisa habilitar as permissões de localização para usar este recurso."
+            },
+            "boton": {
+                "ir": "Ir para Configurações",
+                "cancelar": "Cancelar"
+            }
+        },
+        "loading": {
+            "verificando": "Verificando permissões...",
+            "cargando": "Carregando localização..."
+        }
+    },
+    "MapsScreen": {
+        "permission": {
+            "title": "Permissões necessárias",
+            "message": "Ative a geolocalização para posicionar seu TC5 no mapa",
+            "deniedTitle": "Permissões negadas",
+            "deniedMessage": "Você deve permitir permissões de localização para exibir o mapa.",
+            "goToSettings": "Ir para Configurações",
+            "accept": "Aceitar"
+        },
+        "errorTitle": "Erro",
+        "errorMessage": "Ocorreu um erro ao verificar as permissões de localização.",
+        "noDevices": {
+            "title": "Sem dispositivos",
+            "message": "Não há dispositivos para mostrar no mapa."
+        },
+        "errors": {
+            "title": "Erro",
+            "loadDevicesError": "Não foi possível carregar os dispositivos.",
+            "noDevicesTitle": "Sem dispositivos",
+            "noDevicesMessage": "Nenhum dispositivo disponível"
+        },
+        "loading": {
+            "devices": "Carregando dispositivos...",
+            "location": "Obtendo localizações"
+        },
+        "noDevicesTitle": "Sem dispositivos",
+        "noDevicesMessage": "Nenhum dispositivo disponível"
+    },
+    "HomeStack": {
+        "DeviceMaps": {
+            "title": "Definir Localização do Dispositivo"
+        }
+    },
+    "Explotacion": {
+        "loadingFarm": "Carregando exploração...",
+        "errorLoadingFarm": "Não é possível carregar o portal porque não há conexão ou ele não existe",
+        "errorTitle": "Erro de Configuração",
+        "ButtonText": "Voltar",
+        "Reintentar": "Tentar novamente"
+    },
+    "ConfiguracionTC5": {
+        "loadingConfiguration": "Carregando configuração...",
+        "errorLoadingConfiguration": "Não foi possível carregar a configuração do TC5",
+        "errorTitle": "Erro de Configuração",
+        "ButtonText": "Voltar",
+        "Reintentar": "Tentar novamente"
+    },
+    "DeviceLocationMap": {
+        "noLocation": {
+            "title": "Sem localização",
+            "message": "Este dispositivo não possui uma localização salva."
+        },
+        "error": {
+            "title": "Erro",
+            "message": "Não foi possível obter informações do dispositivo."
+        },
+        "loading": "Carregando localização...",
+        "retry": "Tentar novamente"
+    },
+    "TabBar": {
+        "Home": "Início",
+        "Alarmas": "Alarmes",
+        "Maps": "Mapas"
+    },
+    "Estadisticas": {
+        "errorTitle": "Erro",
+        "errorLoadingFarm": "O portal não pode ser carregado porque não há conexão ou ele não existe"
+    }
+}

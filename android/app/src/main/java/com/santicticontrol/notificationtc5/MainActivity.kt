@@ -1,4 +1,4 @@
-package com.santicticontrol.notificationtc5
+package com.cticontrol.notificationtc5
 import expo.modules.splashscreen.SplashScreenManager
 
 import android.os.Build

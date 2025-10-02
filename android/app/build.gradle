@@ -86,14 +86,14 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace 'com.santicticontrol.notificationtc5'
+    namespace 'com.cticontrol.notificationtc5'
     defaultConfig {
-        applicationId 'com.santicticontrol.notificationtc5'
+        applicationId 'com.cticontrol.notificationtc5'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0.0"
-        resConfigs "en", "es"
+        versionCode 6
+        versionName "1.0.1"
+        resConfigs "en", "es", "it", "fr", "ca", "ru", "uk", "pl", "ko", "zh-rTW"
 
     }
     signingConfigs {
@@ -103,12 +103,12 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
-    //      release {
-    //     storeFile file(MYAPP_RELEASE_STORE_FILE)
-    //     storePassword MYAPP_RELEASE_STORE_PASSWORD
-    //     keyAlias MYAPP_RELEASE_KEY_ALIAS
-    //     keyPassword MYAPP_RELEASE_KEY_PASSWORD
-    // }
+         release {
+        storeFile file(MYAPP_RELEASE_STORE_FILE)
+        storePassword MYAPP_RELEASE_STORE_PASSWORD
+        keyAlias MYAPP_RELEASE_KEY_ALIAS
+        keyPassword MYAPP_RELEASE_KEY_PASSWORD
+    }
     }
     buildTypes {
         debug {
@@ -118,8 +118,8 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
-            //signingConfig signingConfigs.release
+           // signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
 
             shrinkResources (findProperty('android.enableShrinkResourcesInReleaseBuilds')?.toBoolean() ?: false)
             minifyEnabled enableProguardInReleaseBuilds

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
     View, StyleSheet, Text, Switch, Platform, Linking, Alert, TouchableOpacity, ScrollView,
     KeyboardAvoidingView, Modal,
+    FlatList,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { usePermissionsStore } from "@/store/usePermissions";
@@ -29,6 +30,7 @@ const AVAILABLE_LANGUAGES = [
     { code: 'polaco', name: 'Polski', flag: '🇵🇱' },
     { code: 'coreano', name: '한국어', flag: '🇰🇷' },
     { code: 'taiwan', name: '繁體中文', flag: '🇹🇼' },
+    { code: 'pt-PT', name: 'Português', flag: '🇵🇹' }
 ];
 
 export default function SettingsScreen() {
@@ -97,7 +99,8 @@ export default function SettingsScreen() {
                 'uk': { title: 'Мову змінено', message: 'Додаток тепер українською мовою' },
                 'polaco': { title: 'Język zmieniony', message: 'Aplikacja jest teraz w języku polskim' },
                 'coreano': { title: '언어 변경됨', message: '앱이 이제 한국어로 표시됩니다' },
-                'taiwan': { title: '語言已更改', message: '應用程式現在使用繁體中文' }
+                'taiwan': { title: '語言已更改', message: '應用程式現在使用繁體中文' },
+                'pt-PT': { title: 'Idioma alterado', message: 'A aplicação está agora em português' }
             };
 
             const msg = confirmationMessages[languageCode] || confirmationMessages['en'];
@@ -284,20 +287,20 @@ export default function SettingsScreen() {
                 <View style={styles.modalContainer}>
                     <View style={styles.modalHeader}>
                         <TouchableOpacity onPress={() => setShowLanguageModal(false)}>
-                            <Text style={styles.cancelButton}>
-                                {t('EditarPrioridadScreen.cancel')}
-                            </Text>
+                            <Text style={styles.cancelButton}>{t('EditarPrioridadScreen.cancel')}</Text>
                         </TouchableOpacity>
-                        <Text style={styles.modalTitle}>
-                            {t('SettingsScreen.language.title')}
-                        </Text>
+                        <Text style={styles.modalTitle}>{t('SettingsScreen.language.title')}</Text>
                         <View style={styles.headerSpacer} />
                     </View>
 
-                    <ScrollView style={styles.languageList}>
-                        {AVAILABLE_LANGUAGES.map((language) => (
+                    <FlatList
+                        data={AVAILABLE_LANGUAGES}
+                        keyExtractor={(item) => item.code}
+                        contentContainerStyle={styles.languageListContent}
+                        ItemSeparatorComponent={() => <View style={{ height: 8 }} />}
+                        showsVerticalScrollIndicator
+                        renderItem={({ item: language }) => (
                             <TouchableOpacity
-                                key={language.code}
                                 style={[
                                     styles.languageOption,
                                     currentLanguage === language.code && styles.selectedLanguageOption
@@ -306,21 +309,25 @@ export default function SettingsScreen() {
                             >
                                 <View style={styles.languageOptionContent}>
                                     <Text style={styles.languageFlag}>{language.flag}</Text>
-                                    <Text style={[
-                                        styles.languageName,
-                                        currentLanguage === language.code && styles.selectedLanguageName
-                                    ]}>
+                                    <Text
+                                        style={[
+                                            styles.languageName,
+                                            currentLanguage === language.code && styles.selectedLanguageName
+                                        ]}
+                                    >
                                         {language.name}
                                     </Text>
                                 </View>
+
                                 {currentLanguage === language.code && (
                                     <Ionicons name="checkmark" size={24} color="#007AFF" />
                                 )}
                             </TouchableOpacity>
-                        ))}
-                    </ScrollView>
+                        )}
+                    />
                 </View>
             </Modal>
+
         </KeyboardAvoidingView>
     );
 }
@@ -465,5 +472,10 @@ const styles = StyleSheet.create({
         padding: 8,
         borderRadius: 20,
         backgroundColor: '#f0f8ff',
+    },
+    languageListContent: {
+        paddingTop: 16,
+        paddingHorizontal: 16,
+        paddingBottom: 32, // margen inferior para evitar solaparse con el borde
     },
 });

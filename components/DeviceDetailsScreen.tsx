@@ -33,6 +33,8 @@ import { useAuthStore } from '@/store/authStore';
 import { getUnitString, UnitEnum } from "@/utils/units";
 import { SensorSymbol } from "@/utils/SensorSymbol";
 //import { useMacSocketListener } from "@/hooks/useSocketListener";
+import { LinearGradient } from 'expo-linear-gradient';
+
 
 
 
@@ -100,6 +102,52 @@ export default function AlarmList() {
     // Forzar actualizacion
     const sw = parseInt(swVersion ?? '-1', 10);
     const needsUpdate = sw >= 0 && sw < 135;
+
+    //  Paleta para las tarjetas
+    const PALETTE = {
+        green1: '#63C723', green2: '#34d399', // OK (armada y sin alarma)
+        red1: '#FF0000', red2: '#c81e1e', // dc2626
+        // gray1: '#8a9bb9', gray2: '#6f83a5', // desarmada / “gris” de tu UI
+        gray1: '#9AA6BF',  // más claro que el tuyo
+        gray2: '#364152',  // más oscuro que el tuyo
+    } as const;
+
+    type GradientTuple = readonly [string, string];
+
+    const getCardGradient = (alarm: ParamTC): GradientTuple => {
+        // DESARMADA → gris
+        if (!alarm.armado) return [PALETTE.gray1, PALETTE.gray2] as const;
+        // ARMADA + RAISED → rojo
+        if (alarm.raised) return [PALETTE.red1, PALETTE.red2] as const;
+        // ARMADA + sin alarma → verde
+        return [PALETTE.green1, PALETTE.green2] as const;
+    };
+
+    //  Paleta para las header
+
+    const PALETTEHEADER = {
+        green1: '#22C55E', // green-500
+        green2: '#166534', // green-800
+        red1: '#FF0000', red2: '#c81e1e', // dc2626
+        // gray1: '#8a9bb9', gray2: '#6f83a5', // desarmada / “gris” de tu UI
+        gray1: '#9AA6BF',  // más claro que el tuyo
+        gray2: '#364152',  // más oscuro que el tuyo
+    } as const;
+    type HeaderStops = readonly [string, string];
+
+    const getHeaderGradient = (): HeaderStops => {
+        // Desconectado (o TC5 desconectado) → gris
+        if (!isConnected || tc5Disconnected) return [PALETTEHEADER.gray1, PALETTEHEADER.gray2] as const;
+
+        // Master desarmado → gris
+        if (!masterAlarmState) return [PALETTEHEADER.gray1, PALETTEHEADER.gray2] as const;
+
+        // Hay alarmas activas → rojo
+        if (triggeredCount > 0) return [PALETTEHEADER.red1, PALETTEHEADER.red2] as const;
+
+        // Todo OK → verde
+        return [PALETTEHEADER.green1, PALETTEHEADER.green2] as const;
+    };
 
 
 
@@ -871,68 +919,53 @@ export default function AlarmList() {
 
     //  LÓGICA DE COLORES BASADA EN ESTADO REAL (raised)
     const renderAlarmItem = ({ item }: { item: ParamTC }) => {
-        let backgroundColor = "#8a9bb9";
-        let textColor = "#F4F5F7"; // #F9FAFB - #F4F5F7
-
         const isDisconnected = isAlarmDisconnected(item);
-
-        // Verificar si esta alarma tiene sensor asociado
         const hasSensor = sensorsData.some(s => s.id === item.idAlarm);
-
-        // Lógica basada en el estado REAL (raised) no en disparado
-        if (!item.armado) {
-            // DESARMADA → Gris
-            backgroundColor = "#8a9bb9";
-        } else {
-            // ARMADA → Color basado en RAISED (estado real)
-            if (item.raised) {
-                // ARMADA + RAISED → Rojo (alarma real activa)
-                backgroundColor = "#FF0000";
-            } else {
-                // ARMADA + NO RAISED → Verde (estado normal)
-                backgroundColor = "#63C723"; // #77dc36 - #6BD826 - #63C723
-            }
-        }
+        const colors = getCardGradient(item);
 
         return (
             <TouchableOpacity
-                style={[
-                    hasSensor ? styles.alarmContainerWithSensor : styles.alarmContainer,
-                    { backgroundColor },
-                    isProcessing && { opacity: 0.7 }
-                ]}
+                activeOpacity={0.9}
                 onPress={() => handleAlarmToggle(item)}
                 disabled={isProcessing}
             >
-                <View style={styles.alarmRow}>
-                    <EstadoAlarmaCircle
-                        armado={item.armado}
-                        disparado={item.disparado}
-                        raised={item.raised}
-                    />
+                <LinearGradient
+                    colors={colors}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}          // ← “to-r”
+                    style={[
+                        hasSensor ? styles.alarmContainerWithSensor : styles.alarmContainer,
+                        isProcessing && { opacity: 0.7 },
+                    ]}
+                >
+                    <View style={styles.alarmRow}>
+                        <EstadoAlarmaCircle
+                            armado={item.armado}
+                            disparado={item.disparado}
+                            raised={item.raised}
+                        />
 
-                    <View style={styles.iconAndText}>
-                        <Text style={[styles.alarmText, { color: textColor }]}>
-                            {item.texto}
-                        </Text>
+                        <View style={styles.iconAndText}>
+                            <Text style={[styles.alarmText, { color: '#F4F5F7' }]}>
+                                {item.texto}
+                            </Text>
+                        </View>
+
+                        <View style={styles.rightContainer}>
+                            {isDisconnected && (
+                                <Ionicons
+                                    name="cloud-offline-outline"
+                                    size={24}
+                                    color="#666666"
+                                    style={styles.disconnectedIcon}
+                                />
+                            )}
+                        </View>
                     </View>
 
-                    <View style={styles.rightContainer}>
-                        {isDisconnected && (
-                            <Ionicons
-                                name="cloud-offline-outline"
-                                size={24}
-                                color="#666666"
-                                style={styles.disconnectedIcon}
-                            />
-                        )}
-                    </View>
-                </View>
-                <SensorInfo alarmId={item.idAlarm}
-                    reason={item.reason}      //  ← NUEVO
-
-
-                />
+                    {/* Info del sensor (si aplica) */}
+                    <SensorInfo alarmId={item.idAlarm} reason={item.reason} />
+                </LinearGradient>
             </TouchableOpacity>
         );
     };
@@ -943,7 +976,12 @@ export default function AlarmList() {
             //  FONDO azul cuando master desarmado
             !masterAlarmState && { backgroundColor: "#3b99cf" } // "#FFEB3B" #faf202 FFF7A1 #028bfa #0269fa // ESTE ME GUSTA "#0a6da6" "#1d6caa" "#1165a6"
         ]}>
-            <View style={[styles.customHeader, { backgroundColor: headerColor }]}>
+            <LinearGradient
+                colors={getHeaderGradient()}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.customHeader}
+            >
                 <TouchableOpacity
                     style={styles.backButton}
                     onPress={() => navigation.goBack()}
@@ -995,7 +1033,8 @@ export default function AlarmList() {
                     <Feather name="more-vertical" size={24} color="#fff" />
                 </TouchableOpacity>
 
-            </View>
+            </LinearGradient>
+
 
             {renderContent()}
 

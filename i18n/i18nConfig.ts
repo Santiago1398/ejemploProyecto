@@ -114,7 +114,7 @@ import uk from './locales/uk.json';
 import polaco from './locales/polaco.json';
 import coreano from './locales/coreano.json';
 import taiwan from './locales/taiwan.json';
-
+import ptPT from './locales/pt-PT.json';
 
 
 
@@ -136,7 +136,8 @@ i18n.translations = {
     uk,
     polaco,
     coreano,
-    taiwan
+    taiwan,
+    'pt-PT': ptPT // Portugués no soportado, usar inglés
 };
 
 i18n.fallbacks = true;
@@ -151,7 +152,8 @@ const SUPPORTED_LANGUAGES = [
     "uk",
     "polaco",
     "coreano",
-    "taiwan"
+    "taiwan",
+    "pt-PT"
 ]
 
 // console.log('🔍 DEBUG: i18n configurado');
@@ -179,7 +181,8 @@ const initializeLanguage = async () => {
                 'uk': 'uk',
                 'pl': 'polaco',
                 'ko': 'coreano',
-                'zh': 'taiwan'
+                'zh': 'taiwan',
+                'pt': 'pt-PT'
             };
             i18n.locale = languageMap[deviceLanguage] || 'en';
             //console.log(`🌍 Usando idioma del dispositivo: ${i18n.locale}`);
