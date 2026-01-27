@@ -51,7 +51,13 @@
         "needUpdateTitle": "È necessario aggiornare il TC5",
         "needUpdateSubtitle": "Aggiorna dalle impostazioni del TC5",
         "Ayer": "Ieri",
-        "Hoy": "Oggi"
+        "Hoy": "Oggi",
+        "confirmacion": "Conferma",
+        "enable": "abilita",
+        "disable": "disabilita",
+        "confirmQuestion": "Vuoi {{accion}} l'allarme \"{{alarma}}\"?",
+        "confirmEnableAll": "Vuoi abilitare tutti gli allarmi?",
+        "confirmDisableAll": "Vuoi disabilitare tutti gli allarmi?"
     },
     "DrawerContent": {
         "logout": "Disconnetti",
@@ -295,5 +301,40 @@
     "Estadisticas": {
         "errorTitle": "Errore",
         "errorLoadingFarm": "Impossibile caricare il portale perché non c'è connessione o non esiste"
-    }
+    },
+    "ActivacionRele": {
+  "activacionExitosa": "Attivazione riuscita",
+  "errorActivacion": "Errore di attivazione",
+  "activarRele": "Attiva relè",
+  "desactivarRele": "Disattiva relè",
+  "confirmarActivacion": "Sei sicuro di voler attivare il relè?",
+  "confirmarDesactivacion": "Sei sicuro di voler disattivare il relè?",
+  "si": "Sì",
+  "no": "No",
+  "loading": "Elaborazione richiesta...",
+  "errorTitle": "Errore",
+  "successTitle": "Successo",
+
+  "noConectado": "Non connesso",
+  "noActivado": "Non attivato",
+
+  "modo": "Modalità",
+  "automatico": "Automatico",
+  "manual": "Manuale",
+  "automaticoContacto": "Automatico: {{contacto}}",
+
+  "control": "Controllo",
+
+  "on": "ON",
+  "off": "OFF",
+
+  "macInvalida": "MAC non valido",
+  "sinDatos": "Formato inatteso o nessun dato",
+  "errorDesconocido": "Errore sconosciuto",
+
+  "cambioModoError": "Impossibile cambiare la modalità del relè.",
+  "cambioEstadoError": "Impossibile cambiare lo stato del relè.",
+    "ActivacionRele": "Attivazione relè"
+}
+
 }

@@ -55,3 +55,8 @@ npx expo install i18n-js expo-localization
 
 # Instalar Socket
 npx expo install socket.io-client
+
+
+# Subir a AppStore
+eas build --platform ios --profile production 
+eas submit --platform ios --profile production

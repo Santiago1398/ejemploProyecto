@@ -51,7 +51,13 @@
         "needUpdateTitle": "Mise à jour du TC5 requise",
         "needUpdateSubtitle": "Veuillez mettre à jour depuis les paramètres du TC5",
         "Ayer": "Hier",
-        "Hoy": "Aujourd'hui"
+        "Hoy": "Aujourd'hui",
+        "confirmacion": "Confirmation",
+        "enable": "activer",
+        "disable": "désactiver",
+        "confirmQuestion": "Voulez-vous {{accion}} l’alarme \"{{alarma}}\" ?",
+        "confirmEnableAll": "Voulez-vous activer toutes les alarmes ?",
+        "confirmDisableAll": "Voulez-vous désactiver toutes les alarmes ?"
     },
     "DrawerContent": {
         "logout": "Se déconnecter",
@@ -295,5 +301,40 @@
     "Estadisticas": {
         "errorTitle": "Erreur",
         "errorLoadingFarm": "Impossible de charger le portail car il n'y a pas de connexion ou il n'existe pas"
-    }
+    },
+    "ActivacionRele": {
+  "activacionExitosa": "Activation réussie",
+  "errorActivacion": "Erreur d'activation",
+  "activarRele": "Activer le relais",
+  "desactivarRele": "Désactiver le relais",
+  "confirmarActivacion": "Êtes-vous sûr de vouloir activer le relais ?",
+  "confirmarDesactivacion": "Êtes-vous sûr de vouloir désactiver le relais ?",
+  "si": "Oui",
+  "no": "Non",
+  "loading": "Traitement de la demande...",
+  "errorTitle": "Erreur",
+  "successTitle": "Succès",
+
+  "noConectado": "Non connecté",
+  "noActivado": "Non activé",
+
+  "modo": "Mode",
+  "automatico": "Automatique",
+  "manual": "Manuel",
+  "automaticoContacto": "Automatique : {{contacto}}",
+
+  "control": "Contrôle",
+
+  "on": "ON",
+  "off": "OFF",
+
+  "macInvalida": "MAC invalide",
+  "sinDatos": "Format inattendu ou aucune donnée",
+  "errorDesconocido": "Erreur inconnue",
+
+  "cambioModoError": "Impossible de changer le mode du relais.",
+  "cambioEstadoError": "Impossible de changer l'état du relais.",
+    "ActivacionRele": "Activation du relais"    
+}
+
 }

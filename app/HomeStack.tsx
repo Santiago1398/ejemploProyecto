@@ -19,6 +19,7 @@ import { ResponseAlarmaSite } from "@/infrastructure/intercafe/listapi.interface
 import HistoriaAlarmas from "@/components/HistoriaAlarmas";
 import EstadisticasWeb from "@/components/EstadisticasWeb";
 import DeviceLocationMap from "@/components/maps/DebiceLocationMap";
+import RelaysScreen from "@/components/ActivacionRele";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -116,6 +117,13 @@ export type RootStackParamList = {
         mac: number;
         idSite: number;
     };
+    ActivacionRele: {
+        id: string
+        siteName: string;
+        farmName: string;
+        mac: number;
+
+    }
 }
 
 export type RootDrawerParamList = {
@@ -206,6 +214,17 @@ export default function HomeStack() {
                     component={MapsScreen}
                     options={{ headerTitle: "Mapas" }}
                 />
+
+                <Stack.Screen
+                    name="ActivacionRele"
+                    component={RelaysScreen}
+                    options={({ route }) => ({
+                        headerShown: true,
+                        title: route.params.farmName,
+                        sub: route.params.siteName,
+
+
+                    })} />
 
                 <Stack.Screen
                     name="HistoriaAlarmas"

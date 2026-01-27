@@ -51,7 +51,13 @@
         "needUpdateTitle": "Wymagana aktualizacja TC5",
         "needUpdateSubtitle": "Zaktualizuj w ustawieniach TC5",
         "Ayer": "Wczoraj",
-        "Hoy": "Dzisiaj"
+        "Hoy": "Dzisiaj",
+        "confirmacion": "Potwierdzenie",
+        "enable": "uzbroić",
+        "disable": "rozbroić",
+        "confirmQuestion": "Czy chcesz {{accion}} alarmę \"{{alarma}}\"?",
+        "confirmEnableAll": "Czy chcesz uzbroić wszystkie alarmy?",
+        "confirmDisableAll": "Czy chcesz rozbroić wszystkie alarmy?"
     },
     "DrawerContent": {
         "logout": "Wyloguj",
@@ -292,5 +298,40 @@
         "Home": "Strona główna",
         "Alarmas": "Powiadomienia",
         "Maps": "Mapy"
-    }
+    },
+    "ActivacionRele": {
+  "activacionExitosa": "Aktywacja zakończona powodzeniem",
+  "errorActivacion": "Błąd aktywacji",
+  "activarRele": "Włącz przekaźnik",
+  "desactivarRele": "Wyłącz przekaźnik",
+  "confirmarActivacion": "Czy na pewno chcesz włączyć przekaźnik?",
+  "confirmarDesactivacion": "Czy na pewno chcesz wyłączyć przekaźnik?",
+  "si": "Tak",
+  "no": "Nie",
+  "loading": "Przetwarzanie żądania...",
+  "errorTitle": "Błąd",
+  "successTitle": "Sukces",
+
+  "noConectado": "Brak połączenia",
+  "noActivado": "Nieaktywne",
+
+  "modo": "Tryb",
+  "automatico": "Automatyczny",
+  "manual": "Ręczny",
+  "automaticoContacto": "Automatyczny: {{contacto}}",
+
+  "control": "Sterowanie",
+
+  "on": "ON",
+  "off": "OFF",
+
+  "macInvalida": "Nieprawidłowy MAC",
+  "sinDatos": "Nieoczekiwany format lub brak danych",
+  "errorDesconocido": "Nieznany błąd",
+
+  "cambioModoError": "Nie udało się zmienić trybu przekaźnika.",
+  "cambioEstadoError": "Nie udało się zmienić stanu przekaźnika.",
+  "ActivacionRele": "Aktywacja przekaźnika"
+}
+
 }

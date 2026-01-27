@@ -90,6 +90,22 @@ export default function AlarmList() {
     const [pendingRequests, setPendingRequests] = useState(0);
     const [toggleWsReceived, setToggleWsReceived] = useState(true);
 
+    const confirmandoId = useRef<number | null>(null);
+    const confirmandoMaster = useRef(false);
+
+    //  Confirm Modal (reemplaza Alert.alert para confirmaciones)
+    const [confirmVisible, setConfirmVisible] = useState(false);
+    const [confirmMensaje, setConfirmMensaje] = useState("");
+    const resolverConfirmacion = useRef<((v: boolean) => void) | null>(null);
+
+    const cerrarConfirmacion = (respuesta: boolean) => {
+        setConfirmVisible(false);
+        // esperamos un tick para que cierre suave (opcional)
+        const resolver = resolverConfirmacion.current;
+        resolverConfirmacion.current = null;
+        resolver?.(respuesta);
+    };
+
     const [, bump] = useState(0);
     const forceRerender = () => bump(v => v + 1);
 
@@ -150,7 +166,13 @@ export default function AlarmList() {
     };
 
 
-
+    const confirmarCambioAlarma = (mensaje: string) => {
+        return new Promise<boolean>((resolve) => {
+            resolverConfirmacion.current = resolve;
+            setConfirmMensaje(mensaje);
+            setConfirmVisible(true);
+        });
+    };
 
 
 
@@ -250,19 +272,31 @@ export default function AlarmList() {
     //!-------------------------------------------------------------
 
     //!Prueba para contar los eventos de petición
-    const handleToggleMaster = async () => {
+ const handleToggleMaster = async () => {
         if (isMasterDisabled) return;
-        //const next = masterAlarmState ? 0 : 1;
+        if (confirmandoMaster.current) return;
+
+        const vaADeshabilitar = masterAlarmState; // si está armado -> vas a desarmar
+        const mensaje = masterAlarmState
+            ? t('DeviceDetailsScreen.confirmDisableAll')
+            : t('DeviceDetailsScreen.confirmEnableAll');
+
+
+        confirmandoMaster.current = true;
+        const confirmar = await confirmarCambioAlarma(mensaje);
+        confirmandoMaster.current = false;
+
+        if (!confirmar) return;
 
         try {
             await runWithLoader(async () => {
-                const next = masterAlarmState ? 0 : 1;
+                const next = vaADeshabilitar ? 0 : 1;
 
                 await post(
                     `alarmtc/armMaster?mac=${mac}&status=${next}&userid=${userId}`,
                     {}
                 );
-                // await fetchAlarms(true);
+                await fetchAlarms(true);
 
             });
         } catch (e) {
@@ -839,26 +873,38 @@ export default function AlarmList() {
 
 
     //! FUNCIÓN MEJORADA: Sin optimistic update, leer estado real primero
-    const handleAlarmToggle = async (alarm: ParamTC) => {
+   const handleAlarmToggle = async (alarm: ParamTC) => {
         const id = alarm.idAlarm;
-        const nextStatus = alarm.armado ? 0 : 1;
+        const vaADeshabilitar = alarm.armado;
 
-        if (busyIds.current.has(id)) return;
+        const nextStatus = vaADeshabilitar ? 0 : 1;  // 0=desarmar, 1=armar
+
+        // evita doble tap y evita múltiples alerts
+        if (busyIds.current.has(id) || confirmandoId.current === id) return;
+
+        confirmandoId.current = id;
+
+        const textoAccion = vaADeshabilitar
+            ? t("DeviceDetailsScreen.disable")
+            : t("DeviceDetailsScreen.enable");
+
+        const mensaje = `¿Desea ${textoAccion} la alarma "${alarm.texto}"?`;
+
+        const confirmar = await confirmarCambioAlarma(mensaje);
+        confirmandoId.current = null;
+
+        if (!confirmar) return;
+
+
         busyIds.current.add(id);
-        forceRerender();                 // muestra opacity/spinner en la fila
+        forceRerender();
 
         try {
             await runWithLoader(async () => {
-                // 1️⃣ POST al backend
-                // console.log(mac)
                 await post(
                     `alarmtc/arm?mac=${mac}&alarm=${id}&status=${nextStatus}&userid=${userId}`,
                     {}
                 );
-                //console.log("-----------------envia esto", "mac", mac, "idalarm", id, "estado", nextStatus, "user", userId, "-----------------")
-
-                // 2️⃣ esperamos la lista confirmada
-                // await fetchAlarms(true);     // <— sin setAlarms local
             });
         } catch (e) {
             Alert.alert(
@@ -867,10 +913,9 @@ export default function AlarmList() {
             );
         } finally {
             busyIds.current.delete(id);
-            forceRerender();               // quita el efecto “busy” de la fila
+            forceRerender();
         }
     };
-
     //!-------------------------------------------------------------
 
 
@@ -1054,6 +1099,8 @@ export default function AlarmList() {
                 visible={menuVisible}
                 onClose={() => setMenuVisible(false)}
                 device={{
+                    id: device.id,
+                    userid: device.userid,
                     latitude: device.latitude,
                     longitude: device.longitude,
                     farmName: device.farmName,
@@ -1066,6 +1113,41 @@ export default function AlarmList() {
                 analogIds={analogIdsWithValue}
 
             />
+            <Modal
+                visible={confirmVisible}
+                transparent
+                animationType="fade"
+                onRequestClose={() => cerrarConfirmacion(false)} // Android back
+            >
+                <Pressable
+                    style={styles.confirmOverlay}
+                    onPress={() => cerrarConfirmacion(false)} // tocar fuera = cancelar
+                >
+                    {/* Caja */}
+                    <Pressable
+                        style={styles.confirmCard}
+                        onPress={() => { }} // evita que el tap "atraviese" el card
+                    >
+                        <Text style={styles.confirmMessage}>{confirmMensaje}</Text>
+
+                        <View style={styles.confirmActions}>
+                            <Pressable
+                                style={[styles.confirmBtn, styles.confirmBtnGhost]}
+                                onPress={() => cerrarConfirmacion(false)}
+                            >
+                                <Text style={styles.confirmBtnGhostText}>{t("common.cancel")}</Text>
+                            </Pressable>
+
+                            <Pressable
+                                style={[styles.confirmBtn, styles.confirmBtnPrimary]}
+                                onPress={() => cerrarConfirmacion(true)}
+                            >
+                                <Text style={styles.confirmBtnPrimaryText}>{t("common.ok")}</Text>
+                            </Pressable>
+                        </View>
+                    </Pressable>
+                </Pressable>
+            </Modal>
         </View>
     );
 }
@@ -1387,5 +1469,57 @@ const styles = StyleSheet.create({
     unit: {
         fontSize: COMPACT ? 10 : 12,   // unidad bastante más pequeña
         marginLeft: 2,
+    },
+    confirmOverlay: {
+        flex: 1,
+        backgroundColor: "rgba(0,0,0,0.45)",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 18,
+    },
+    confirmCard: {
+        width: "100%",
+        maxWidth: 420,
+        backgroundColor: "#fff",
+        borderRadius: 12,     // MÁS REDONDO
+        overflow: "hidden",   //  importante para recortar
+        padding: 18,
+
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.18,
+        shadowRadius: 18,
+        elevation: 8,
+    },
+    confirmMessage: {
+        fontSize: 16,
+        color: "#111827",
+        fontWeight: "600",
+        lineHeight: 22,
+    },
+    confirmActions: {
+        flexDirection: "row",
+        justifyContent: "flex-end",
+        gap: 10,
+        marginTop: 16,
+    },
+    confirmBtn: {
+        paddingVertical: 10,
+        paddingHorizontal: 14,
+        borderRadius: 14, // botones también más redondos
+    },
+    confirmBtnGhost: {
+        backgroundColor: "#F3F4F6",
+    },
+    confirmBtnGhostText: {
+        color: "#111827",
+        fontWeight: "800",
+    },
+    confirmBtnPrimary: {
+        backgroundColor: "#2563EB",
+    },
+    confirmBtnPrimaryText: {
+        color: "#fff",
+        fontWeight: "900",
     },
 });

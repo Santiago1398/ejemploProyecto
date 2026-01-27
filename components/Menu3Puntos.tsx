@@ -31,6 +31,8 @@ export interface Menu3PuntosProps {
     visible: boolean;
     onClose: () => void;
     device: {
+        id: string;
+        userid: string;
         latitude: number;
         longitude: number;
         farmName: string;
@@ -38,7 +40,7 @@ export interface Menu3PuntosProps {
         mac: number;
         idSite: number;
         buildingPortalRef: number;
-        simulado?: boolean; // 🔥 NUEVO
+        simulado?: boolean; //  NUEVO
 
     };
     analogIds: number[];
@@ -56,11 +58,32 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
     const token = useAuthStore((state) => state.token);
     const insets = useSafeAreaInsets();
 
-    // 🔥 ESTADO PARA CONTROLAR QUÉ MENÚ MOSTRAR
+    //  ESTADO PARA CONTROLAR QUÉ MENÚ MOSTRAR
     const [currentMenu, setCurrentMenu] = useState<'main' | 'ajustes'>('main');
 
-    // 🔥 NUEVO ORDEN DE OPCIONES
+    //  NUEVO ORDEN DE OPCIONES
     const defaultOptions: MenuOption[] = [
+        {
+            id: "ActivacionRele",
+            label: t("ActivacionRele.ActivacionRele"),
+            icon: "toggle-switch",
+            lib: "mc",
+            onPress: () => {
+                if (!device.mac) {
+                    console.log(" No hay mac disponible");
+                    return;
+                }
+                navigation.navigate("ActivacionRele", {
+                    id: device.userid,
+                    siteName: device.siteName,
+                    farmName: device.farmName,
+                    mac: device.mac,
+
+
+                });
+            },
+        },
+
         {
             id: "HistoriaAlarmas",
             label: t("Menu3Puntos.HistoriaAlarmas"),
@@ -68,10 +91,10 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
             lib: 'mc',
             onPress: () => {
                 if (!token) {
-                    console.log("🔥 No hay token disponible");
+                    console.log(" No hay token disponible");
                     return;
                 }
-                console.log("🔥 Navegando a Explotacion");
+                console.log(" Navegando a Explotacion");
                 navigation.navigate("HistoriaAlarmas", {
                     mac: device.mac,
                     token,
@@ -86,16 +109,16 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
             },
         },
         {
-            id: "EstadisticasWeb", // 🔥 1️⃣ PRIMERO: Ir al Portal
+            id: "EstadisticasWeb", //  1️ PRIMERO: Ir al Portal
             label: t("Menu3Puntos.EstadisticasWeb"),
             icon: 'chart-line',
             lib: 'mc',
             onPress: () => {
                 if (!token) {
-                    console.log("🔥 No hay token disponible");
+                    console.log(" No hay token disponible");
                     return;
                 }
-                console.log("🔥 Navegando a Explotacion");
+                console.log(" Navegando a Explotacion");
                 navigation.navigate("EstadisticasWeb", {
                     mac: device.mac,
                     token,
@@ -111,15 +134,15 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
             },
         },
         {
-            id: "explotacion", // 🔥 1️⃣ PRIMERO: Ir al Portal
+            id: "explotacion", //   PRIMERO: Ir al Portal
             label: t("Menu3Puntos.explotacion"),
             icon: "external-link",
             onPress: () => {
                 if (!token) {
-                    console.log("🔥 No hay token disponible");
+                    console.log(" No hay token disponible");
                     return;
                 }
-                console.log("🔥 Navegando a Explotacion");
+                console.log(" Navegando a Explotacion");
                 navigation.navigate("Explotacion", {
                     mac: device.mac,
                     token,
@@ -133,15 +156,15 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
             },
         },
         {
-            id: "configuracion", // 🔥 2️⃣ SEGUNDO: Configuración TC5
+            id: "configuracion", //   SEGUNDO: Configuración TC5
             label: t("Menu3Puntos.configuracion"),
             icon: "settings",
             onPress: () => {
                 if (!token) {
-                    console.log("🔥 No hay token disponible");
+                    console.log(" No hay token disponible");
                     return;
                 }
-                console.log("🔥 Navegando a ConfiguracionTC5");
+                console.log(" Navegando a ConfiguracionTC5");
                 navigation.navigate("ConfiguracionTC5", {
                     mac: device.mac,
                     token,
@@ -154,11 +177,11 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
             },
         },
         {
-            id: "geolocalizacion", // 🔥 3️⃣ TERCERO: Geolocalización (solo visualización)
+            id: "geolocalizacion", //  TERCERO: Geolocalización (solo visualización)
             label: t("Menu3Puntos.geolocalizacion"),
             icon: "map-pin",
             onPress: () => {
-                console.log("🔥 Navegando a DeviceLocationMap (solo visualización)");
+                console.log(" Navegando a DeviceLocationMap (solo visualización)");
                 navigation.navigate("DeviceLocationMap", {
                     deviceLocation: {
                         latitude: device.latitude,
@@ -172,24 +195,24 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
             },
         },
         {
-            id: "ajustes", // 🔥 4️⃣ CUARTO: Ajustes (abre submenu)
+            id: "ajustes", //  CUARTO: Ajustes (abre submenu)
             label: t("Menu3Puntos.ajustes"),
             icon: "more-horizontal",
             onPress: () => {
-                console.log("🔥 Abriendo submenu de Ajustes");
+                console.log(" Abriendo submenu de Ajustes");
                 setCurrentMenu('ajustes'); // Cambiar al submenu
             },
         },
     ];
 
-    // 🔥 OPCIONES DEL SUBMENU DE AJUSTES
+    // OPCIONES DEL SUBMENU DE AJUSTES
     const ajustesOptions: MenuOption[] = [
         {
             id: "volver",
             label: t("Menu3Puntos.volver"),
             icon: "arrow-left",
             onPress: () => {
-                console.log("🔥 Volver al menú principal");
+                console.log(" Volver al menú principal");
                 setCurrentMenu('main'); // Volver al menú principal
             },
         },
@@ -198,7 +221,7 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
             label: t("Menu3Puntos.guardarUbicacion"),
             icon: "save",
             onPress: () => {
-                console.log("🔥 Navegando a DeviceMaps para guardar ubicación");
+                console.log(" Navegando a DeviceMaps para guardar ubicación");
                 onClose(); // Cerrar el menú
                 navigation.navigate("DeviceMaps", {
                     deviceLocation: {
@@ -214,19 +237,19 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
         },
     ];
 
-    // 🔥 DETERMINAR QUÉ OPCIONES MOSTRAR
+    //  DETERMINAR QUÉ OPCIONES MOSTRAR
     const finalOptions = options ?? (currentMenu === 'main' ? defaultOptions : ajustesOptions);
 
     const handleOptionPress = (option: MenuOption) => {
-        console.log(`🔥 Opción ${option.id} presionada`);
+        console.log(` Opción ${option.id} presionada`);
 
-        // 🔥 Si es una acción de navegación entre menus, ejecutar inmediatamente
+        //  Si es una acción de navegación entre menus, ejecutar inmediatamente
         if (option.id === 'ajustes' || option.id === 'volver') {
             option.onPress();
             return;
         }
 
-        // 🔥 Para otras acciones, cerrar menú y ejecutar
+        //  Para otras acciones, cerrar menú y ejecutar
         onClose();
         setTimeout(() => {
             option.onPress();
@@ -234,12 +257,12 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
     };
 
     const handleBackdropPress = () => {
-        console.log("🔥 Backdrop presionado - cerrando menú");
+        console.log(" Backdrop presionado - cerrando menú");
         setCurrentMenu('main'); // Resetear al menú principal
         onClose();
     };
 
-    //console.log("🔥 Menu3Puntos renderizado - visible:", visible);
+    //console.log(" Menu3Puntos renderizado - visible:", visible);
 
     if (!visible) return null;
 
@@ -259,7 +282,7 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
                 onPress={handleBackdropPress}
             >
                 <View style={[styles.menuContainer, { top: insets.top + 60 }]}>
-                    {/* 🔥 TÍTULO DEL MENÚ SEGÚN EL ESTADO */}
+                    {/*  TÍTULO DEL MENÚ SEGÚN EL ESTADO */}
                     {currentMenu === 'ajustes' && (
                         <View style={styles.menuHeader}>
                             <Text style={styles.menuHeaderText}>{t("Menu3Puntos.ajustes")}</Text>
@@ -347,7 +370,7 @@ const styles = StyleSheet.create({
         marginHorizontal: 12,
     },
 
-    // 🔥 NUEVOS ESTILOS PARA EL HEADER DEL SUBMENU
+    //  NUEVOS ESTILOS PARA EL HEADER DEL SUBMENU
     menuHeader: {
         paddingVertical: 8,
         paddingHorizontal: 16,

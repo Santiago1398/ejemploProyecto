@@ -51,7 +51,13 @@
         "needUpdateTitle": "TC5 update required",
         "needUpdateSubtitle": "Please update from the TC5 settings",
         "Ayer": "Yesterday",
-        "Hoy": "Today"
+        "Hoy": "Today",
+        "confirmacion": "Confirmation",
+        "enable": "enable",
+        "disable": "disable",
+        "confirmQuestion": "Do you want to {{accion}} the alarm \"{{alarma}}\"?",
+        "confirmEnableAll": "Do you want to enable all alarms?",
+        "confirmDisableAll": "Do you want to disable all alarms?"
     },
     "DrawerContent": {
         "logout": "Logout",
@@ -296,5 +302,40 @@
     "Estadisticas": {
         "errorTitle": "Error",
         "errorLoadingFarm": "The portal cannot be loaded because there is no connection or it does not exist"
-    }
+    },
+    "ActivacionRele": {
+  "activacionExitosa": "Activation successful",
+  "errorActivacion": "Activation error",
+  "activarRele": "Turn relay on",
+  "desactivarRele": "Turn relay off",
+  "confirmarActivacion": "Are you sure you want to turn the relay on?",
+  "confirmarDesactivacion": "Are you sure you want to turn the relay off?",
+  "si": "Yes",
+  "no": "No",
+  "loading": "Processing request...",
+  "errorTitle": "Error",
+  "successTitle": "Success",
+
+  "noConectado": "Not connected",
+  "noActivado": "Not enabled",
+
+  "modo": "Mode",
+  "automatico": "Automatic",
+  "manual": "Manual",
+  "automaticoContacto": "Automatic: {{contacto}}",
+
+  "control": "Control",
+
+  "on": "ON",
+  "off": "OFF",
+
+  "macInvalida": "Invalid MAC",
+  "sinDatos": "Unexpected format or no data",
+  "errorDesconocido": "Unknown error",
+
+  "cambioModoError": "Couldn't change the relay mode.",
+  "cambioEstadoError": "Couldn't change the relay state.",
+  "ActivacionRele": "Relay Activation"
+}
+
 }

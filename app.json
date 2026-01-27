@@ -2,7 +2,7 @@
   "expo": {
     "name": "TC5",
     "slug": "notification-tc5",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "orientation": "portrait",
     "icon": "./assets/images/TC5-3-RAYAS.png",
     "scheme": "myapp",
@@ -31,7 +31,7 @@
       "entitlements": {
         "aps-environment": "production"
       },
-      "buildNumber": "4"
+      "buildNumber": "5"
     },
     "android": {
       "config": {
