@@ -1506,8 +1506,8 @@ const styles = StyleSheet.create({
         width: "100%",
         maxWidth: 420,
         backgroundColor: "#fff",
-        borderRadius: 24,     // 👈 MÁS REDONDO
-        overflow: "hidden",   // 👈 importante para recortar
+        borderRadius: 12,     //  MÁS REDONDO
+        overflow: "hidden",   //  importante para recortar
         padding: 18,
 
         shadowColor: "#000",
@@ -1531,7 +1531,7 @@ const styles = StyleSheet.create({
     confirmBtn: {
         paddingVertical: 10,
         paddingHorizontal: 14,
-        borderRadius: 14, // 👈 botones también más redondos
+        borderRadius: 14, //  botones también más redondos
     },
     confirmBtnGhost: {
         backgroundColor: "#F3F4F6",
