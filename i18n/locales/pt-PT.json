@@ -51,7 +51,13 @@
         "needUpdateTitle": "Atualização do TC5 necessária",
         "needUpdateSubtitle": "Por favor, atualize nas configurações do TC5",
         "Ayer": "Ontem",
-        "Hoy": "Hoje"
+        "Hoy": "Hoje",
+        "confirmacion": "Confirmação",
+        "enable": "ativar",
+        "disable": "desativar",
+        "confirmQuestion": "Deseja {{accion}} o alarme \"{{alarma}}\"?",
+        "confirmEnableAll": "Deseja ativar todos os alarmes?",
+        "confirmDisableAll": "Deseja desativar todos os alarmes?"
     },
     "DrawerContent": {
         "logout": "Sair",
@@ -296,5 +302,33 @@
     "Estadisticas": {
         "errorTitle": "Erro",
         "errorLoadingFarm": "O portal não pode ser carregado porque não há conexão ou ele não existe"
+    },
+    "ActivacionRele": {
+        "activacionExitosa": "Ativação bem-sucedida",
+        "errorActivacion": "Erro na ativação",
+        "activarRele": "Ativar relé",
+        "desactivarRele": "Desativar relé",
+        "confirmarActivacion": "Tem a certeza de que pretende ativar o relé?",
+        "confirmarDesactivacion": "Tem a certeza de que pretende desativar o relé?",
+        "si": "Sim",
+        "no": "Não",
+        "loading": "A processar pedido...",
+        "errorTitle": "Erro",
+        "successTitle": "Sucesso",
+        "noConectado": "Não ligado",
+        "noActivado": "Não ativado",
+        "modo": "Modo",
+        "automatico": "Automático",
+        "manual": "Manual",
+        "automaticoContacto": "Automático: {{contacto}}",
+        "estado": "Estado do relé",
+        "on": "ON",
+        "off": "OFF",
+        "macInvalida": "MAC inválido",
+        "sinDatos": "Formato inesperado ou sem dados",
+        "errorDesconocido": "Erro desconhecido",
+        "cambioModoError": "Não foi possível alterar o modo do relé.",
+        "cambioEstadoError": "Não foi possível alterar o estado do relé.",
+        "ActivacionRele": "Ativação do Relé"
     }
 }

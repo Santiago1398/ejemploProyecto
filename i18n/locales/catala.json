@@ -51,7 +51,13 @@
         "needUpdateTitle": "Cal actualitzar el TC5",
         "needUpdateSubtitle": "Actualitzeu des de la configuració del TC5",
         "Ayer": "Ahir",
-        "Hoy": "Avui"
+        "Hoy": "Avui",
+        "confirmacion": "Confirmació",
+        "enable": "activar",
+        "disable": "desactivar",
+        "confirmQuestion": "Voleu {{accion}} l’alarma \"{{alarma}}\"?",
+        "confirmEnableAll": "Voleu activar totes les alarmes?",
+        "confirmDisableAll": "Voleu desactivar totes les alarmes?"
     },
     "DrawerContent": {
         "logout": "Tancar sessió",
@@ -295,5 +301,33 @@
     "Estadisticas": {
         "errorTitle": "Error",
         "errorLoadingFarm": "No es pot carregar el portal perquè no hi ha connexió o no existeix"
+    },
+    "ActivacionRele": {
+        "activacionExitosa": "Activació correcta",
+        "errorActivacion": "Error en l'activació",
+        "activarRele": "Activar relé",
+        "desactivarRele": "Desactivar relé",
+        "confirmarActivacion": "Segur que vols activar el relé?",
+        "confirmarDesactivacion": "Segur que vols desactivar el relé?",
+        "si": "Sí",
+        "no": "No",
+        "loading": "Processant la sol·licitud...",
+        "errorTitle": "Error",
+        "successTitle": "Èxit",
+        "noConectado": "No connectat",
+        "noActivado": "No activat",
+        "modo": "Mode",
+        "automatico": "Automàtic",
+        "manual": "Manual",
+        "automaticoContacto": "Automàtic: {{contacto}}",
+        "estado": "Estat relé",
+        "on": "ON",
+        "off": "OFF",
+        "macInvalida": "MAC no vàlida",
+        "sinDatos": "Format inesperat o sense dades",
+        "errorDesconocido": "Error desconegut",
+        "cambioModoError": "No s'ha pogut canviar el mode del relé.",
+        "cambioEstadoError": "No s'ha pogut canviar l'estat del relé.",
+        "ActivacionRele": "Activació de relé"
     }
 }

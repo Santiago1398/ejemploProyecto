@@ -61,3 +61,5 @@ npx expo install i18n-js expo-localization
 
 # Instalar Socket
 npx expo install socket.io-client  
+
+npx expo start -c 

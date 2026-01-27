@@ -51,7 +51,13 @@
         "needUpdateTitle": "Потрібно оновити TC5",
         "needUpdateSubtitle": "Оновіть у налаштуваннях TC5",
         "Ayer": "Вчора",
-        "Hoy": "Сьогодні"
+        "Hoy": "Сьогодні",
+        "confirmacion": "Підтвердження",
+        "enable": "увімкнути",
+        "disable": "вимкнути",
+        "confirmQuestion": "Бажаєте {{accion}} тривогу \"{{alarma}}\"?",
+        "confirmEnableAll": "Бажаєте увімкнути всі тривоги?",
+        "confirmDisableAll": "Бажаєте вимкнути всі тривоги?"
     },
     "DrawerContent": {
         "logout": "Вийти",
@@ -296,5 +302,33 @@
     "Estadisticas": {
         "errorTitle": "Помилка",
         "errorLoadingFarm": "Не вдається завантажити портал, оскільки немає зʼєднання або він не існує"
+    },
+    "ActivacionRele": {
+        "activacionExitosa": "Активація успішна",
+        "errorActivacion": "Помилка активації",
+        "activarRele": "Увімкнути реле",
+        "desactivarRele": "Вимкнути реле",
+        "confirmarActivacion": "Ви впевнені, що хочете увімкнути реле?",
+        "confirmarDesactivacion": "Ви впевнені, що хочете вимкнути реле?",
+        "si": "Так",
+        "no": "Ні",
+        "loading": "Обробка запиту...",
+        "errorTitle": "Помилка",
+        "successTitle": "Успіх",
+        "noConectado": "Не підключено",
+        "noActivado": "Не активовано",
+        "modo": "Режим",
+        "automatico": "Автоматичний",
+        "manual": "Ручний",
+        "automaticoContacto": "Автоматичний: {{contacto}}",
+        "estado": "Стан реле",
+        "on": "ON",
+        "off": "OFF",
+        "macInvalida": "Некоректний MAC",
+        "sinDatos": "Неочікуваний формат або немає даних",
+        "errorDesconocido": "Невідома помилка",
+        "cambioModoError": "Не вдалося змінити режим реле.",
+        "cambioEstadoError": "Не вдалося змінити стан реле.",
+        "ActivacionRele": "Активація реле"
     }
 }

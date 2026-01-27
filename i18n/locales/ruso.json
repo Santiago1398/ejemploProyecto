@@ -51,7 +51,13 @@
         "needUpdateTitle": "Требуется обновить TC5",
         "needUpdateSubtitle": "Обновите из настроек TC5",
         "Ayer": "Вчера",
-        "Hoy": "Сегодня"
+        "Hoy": "Сегодня",
+        "confirmacion": "Подтверждение",
+        "enable": "включить",
+        "disable": "отключить",
+        "confirmQuestion": "Вы хотите {{accion}} сигнализацию \"{{alarma}}\"?",
+        "confirmEnableAll": "Вы хотите включить все сигнализации?",
+        "confirmDisableAll": "Вы хотите отключить все сигнализации?"
     },
     "DrawerContent": {
         "logout": "Выйти",
@@ -296,5 +302,33 @@
     "Estadisticas": {
         "errorTitle": "Ошибка",
         "errorLoadingFarm": "Не удаётся загрузить портал, потому что нет соединения или он не существует"
+    },
+    "ActivacionRele": {
+        "activacionExitosa": "Активация выполнена успешно",
+        "errorActivacion": "Ошибка активации",
+        "activarRele": "Включить реле",
+        "desactivarRele": "Выключить реле",
+        "confirmarActivacion": "Вы уверены, что хотите включить реле?",
+        "confirmarDesactivacion": "Вы уверены, что хотите выключить реле?",
+        "si": "Да",
+        "no": "Нет",
+        "loading": "Обработка запроса...",
+        "errorTitle": "Ошибка",
+        "successTitle": "Успешно",
+        "noConectado": "Нет соединения",
+        "noActivado": "Не активировано",
+        "modo": "Режим",
+        "automatico": "Автоматический",
+        "manual": "Ручной",
+        "automaticoContacto": "Автоматический: {{contacto}}",
+        "estado": "Статус реле",
+        "on": "ON",
+        "off": "OFF",
+        "macInvalida": "Неверный MAC",
+        "sinDatos": "Неожиданный формат или нет данных",
+        "errorDesconocido": "Неизвестная ошибка",
+        "cambioModoError": "Не удалось изменить режим реле.",
+        "cambioEstadoError": "Не удалось изменить состояние реле.",
+        "ActivacionRele": "Активация реле"
     }
 }

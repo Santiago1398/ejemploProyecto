@@ -51,7 +51,13 @@
         "needUpdateTitle": "TC5 업데이트가 필요합니다",
         "needUpdateSubtitle": "TC5 설정에서 업데이트하십시오",
         "Ayer": "어제",
-        "Hoy": "오늘"
+        "Hoy": "오늘",
+        "confirmacion": "확인",
+        "enable": "활성화",
+        "disable": "비활성화",
+        "confirmQuestion": "\"{{alarma}}\" 알람을 {{accion}}하시겠습니까?",
+        "confirmEnableAll": "모든 알람을 활성화하시겠습니까?",
+        "confirmDisableAll": "모든 알람을 비활성화하시겠습니까?"
     },
     "DrawerContent": {
         "logout": "로그아웃",
@@ -295,5 +301,33 @@
     "Estadisticas": {
         "errorTitle": "오류",
         "errorLoadingFarm": "연결이 없거나 존재하지 않아 포털을 불러올 수 없습니다"
+    },
+    "ActivacionRele": {
+        "activacionExitosa": "활성화 성공",
+        "errorActivacion": "활성화 오류",
+        "activarRele": "릴레이 켜기",
+        "desactivarRele": "릴레이 끄기",
+        "confirmarActivacion": "릴레이를 켜시겠습니까?",
+        "confirmarDesactivacion": "릴레이를 끄시겠습니까?",
+        "si": "예",
+        "no": "아니요",
+        "loading": "요청 처리 중...",
+        "errorTitle": "오류",
+        "successTitle": "성공",
+        "noConectado": "연결되지 않음",
+        "noActivado": "비활성화됨",
+        "modo": "모드",
+        "automatico": "자동",
+        "manual": "수동",
+        "automaticoContacto": "자동: {{contacto}}",
+        "estado": "릴레이 상태",
+        "on": "ON",
+        "off": "OFF",
+        "macInvalida": "유효하지 않은 MAC",
+        "sinDatos": "예상치 못한 형식 또는 데이터 없음",
+        "errorDesconocido": "알 수 없는 오류",
+        "cambioModoError": "릴레이 모드를 변경할 수 없습니다.",
+        "cambioEstadoError": "릴레이 상태를 변경할 수 없습니다.",
+        "ActivacionRele": "릴레이 활성화"
     }
 }
