@@ -48,12 +48,73 @@ export default function Layout() {
                     sound: "alarmcar",
                     vibrationPattern: [0, 250, 250, 250],
                     lightColor: "#FF231F7C",
+                    bypassDnd: true,
+                    lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+                    enableLights: true,
+                    enableVibrate: true,
+                    showBadge: true,
+
                 });
+                //await requestDndPermission();
+                // 🔕 Canal NORMAL (alta prioridad pero SIN sonido)
+                await Notifications.setNotificationChannelAsync("channel-normal", {
+                    name: "Notificaciones sin sonido",
+                    importance: Notifications.AndroidImportance.HIGH,
+                    sound: null,
+                    vibrationPattern: [0, 250, 250, 250],
+                    lightColor: "#FF231F7C",
+                    bypassDnd: false,
+                    lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+                    enableLights: true,
+                    enableVibrate: true,
+                    showBadge: true,
+
+
+                });
+                await requestDndPermission();
             }
         } catch (err) {
             console.error("Error configurando canal:", err);
         }
     };
+
+    const requestDndPermission = async () => {
+        try {
+            // Primero los permisos básicos de notificaciones
+            const { status } = await Notifications.getPermissionsAsync();
+
+            if (status !== 'granted') {
+                const response = await Notifications.requestPermissionsAsync({
+                    ios: {
+                        allowAlert: true,
+                        allowBadge: true,
+                        allowSound: true,
+                        allowCriticalAlerts: true, // Para iOS (requiere aprobación de Apple)
+                    },
+                    android: {
+                        allowAlert: true,
+                        allowBadge: true,
+                        allowSound: true,
+                        allowDisplayOverOtherApps: true,
+                    }
+                });
+
+                console.log('Permisos de notificaciones:', response.status);
+            }
+
+            // Para Android: Verificar si tiene permisos DND
+            if (Platform.OS === 'android') {
+                // Nota: Esto requiere que el usuario vaya manualmente a 
+                // Configuración > Apps > Tu App > Notificaciones > Acceso especial
+                console.log('⚠️ Para bypass DND: El usuario debe habilitar manualmente');
+                console.log('   Configuración > Apps > [Tu App] > Permisos especiales > Acceso a No molestar');
+            }
+
+        } catch (error) {
+            console.error('Error solicitando permisos DND:', error);
+        }
+    };
+
 
     const handleAlarmState = async (isActive: boolean) => {
         if (isActive) {

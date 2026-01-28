@@ -10,6 +10,7 @@ import { PermissionStatus } from "@/infrastructure/intercafe/location";
 import * as Notifications from 'expo-notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
 import { requestLocationPermission } from "@/core/actions/permissions/locations";
 import { registerForPushNotificationsAsync } from "@/utils/notifications";
 import { useNavigation } from "@react-navigation/native";
@@ -43,6 +44,78 @@ export default function SettingsScreen() {
 
 
     const [apiUrl, setApiUrlState] = useState("");
+
+    // Agregar estos imports al inicio de tu archivo
+
+    // Agregar este estado junto con tus otros estados
+    const [criticalAlertsEnabled, setCriticalAlertsEnabled] = useState(false);
+
+    // Agregar estas funciones después de tus funciones existentes
+    const requestDndPermissionDirectly = async () => {
+        try {
+            if (Platform.OS === 'android') {
+                Alert.alert(
+                    "🚨 Alarmas Críticas",
+                    "Para recibir alertas de emergencia incluso en modo 'No Molestar', necesitamos activar un permiso especial.\n\n¿Abrir configuración?",
+                    [
+                        { text: "Más tarde", style: "cancel" },
+                        {
+                            text: "Sí, abrir",
+                            onPress: () => openAppSettings()
+                        }
+                    ]
+                );
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    };
+
+    const openAppSettings = async () => {
+        try {
+            await Linking.openSettings();
+        } catch (error) {
+            console.error('Error abriendo configuración:', error);
+            Linking.openURL('app-settings:');
+        }
+    };
+
+    const handleCriticalAlertsToggle = async () => {
+        if (criticalAlertsEnabled) {
+            // Si ya está activado, mostrar info sobre cómo desactivar
+            Alert.alert(
+                "Alarmas Críticas",
+                "Para desactivar las alarmas críticas, ve a Configuración > Notificaciones de la app.",
+                [
+                    { text: "Cancelar", style: "cancel" },
+                    { text: "Abrir Config", onPress: () => openAppSettings() }
+                ]
+            );
+        } else {
+            // Si no está activado, pedir permisos
+            await requestDndPermissionDirectly();
+            // Simular activación (en realidad necesitarías verificar el estado real)
+            setCriticalAlertsEnabled(true);
+        }
+    };
+
+    // Función para verificar el estado inicial (opcional)
+    const checkCriticalAlertsStatus = async () => {
+        // Aquí podrías verificar si ya tiene los permisos DND
+        // Por simplicidad, lo dejamos como false inicialmente
+        setCriticalAlertsEnabled(false);
+    };
+
+    // Agregar useEffect para verificar estado inicial
+    useEffect(() => {
+        const initializeAllPermissions = async () => {
+            await checkLocationPermission();
+            await checkNotificationStatus();
+            await checkCriticalAlertsStatus(); // Nueva función
+        };
+
+        initializeAllPermissions();
+    }, []);
 
     useEffect(() => {
         const loadApiUrl = async () => {
@@ -225,6 +298,20 @@ export default function SettingsScreen() {
                             value={locationStatus === PermissionStatus.GRANTED}
                         />
                     </View>
+                    {/* 🚨 NUEVA SECCIÓN: Control de Alarmas Críticas
+                    <View style={styles.button}>
+                        <View style={styles.buttonText}>
+                            <Ionicons name="warning-outline" size={24} color="#FF6B35" />
+                            <Text style={styles.buttonText}>Notificacion fallo desconexion</Text>
+                        </View>
+                        <Switch
+                            trackColor={{ false: "#767577", true: "#81b0ff" }}
+                            thumbColor={criticalAlertsEnabled ? "#FF6B35" : "#f4f3f4"}
+                            ios_backgroundColor="#3e3e3e"
+                            onValueChange={handleCriticalAlertsToggle}
+                            value={criticalAlertsEnabled}
+                        />
+                    </View> */}
 
                     {/* Control de Notificaciones */}
                     <View style={styles.button}>

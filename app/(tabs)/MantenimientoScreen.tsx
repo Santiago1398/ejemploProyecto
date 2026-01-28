@@ -16,10 +16,17 @@ import { notificationService } from '@/hooks/NotificationService';
 import { t } from "@/i18n/i18nConfig";
 import { getApiUrl } from '@/config/apiConfig';
 import { clearApiUrl, setApiUrl } from "@/utils/apiconfig";
+import { get } from "@/services/api";
 
 
 export default function MantenimientoScreen() {
     const [apiUrl, setApiUrlState] = useState("");
+    const [phone, setPhone] = useState("616365634");
+    const [title, setTitle] = useState("Titulo notificacion");
+    const [body, setBody] = useState("cuerpo notificacion");
+    const [data, setData] = useState("12345678");
+    const [mode, setMode] = useState<"normal" | "alarm">("normal");
+
 
     useEffect(() => {
         (async () => setApiUrlState(await getApiUrl()))();
@@ -40,6 +47,28 @@ export default function MantenimientoScreen() {
         setApiUrlState(url);
         Alert.alert('Reiniciado', 'URL predeterminada restaurada');
     };
+
+    //!Prueba Notificaciones FCM
+    const enviarNotiPrueba = async () => {
+        try {
+            if (!phone?.trim()) {
+                Alert.alert("Error", "Introduce un teléfono");
+                return;
+            }
+
+            const url = `alarmtc/sendphonenotification/${encodeURIComponent(phone.trim())}` +
+                `?title=${encodeURIComponent(title)}` +
+                `&body=${encodeURIComponent(body)}` +
+                `&data=${encodeURIComponent(data)}` +
+                `&mode=${encodeURIComponent(mode)}`;
+
+            await get(url);
+            Alert.alert("OK", `Notificación enviada (mode=${mode})`);
+        } catch (e: any) {
+            Alert.alert("Error", String(e?.message ?? e));
+        }
+    };
+
 
 
     return (
@@ -101,6 +130,71 @@ export default function MantenimientoScreen() {
                     <Text style={{ color: "#fff", fontWeight: "bold" }}>Obtener Token FCM</Text>
                 </TouchableOpacity>
             </View>
+            <View style={styles.section}>
+                <Text style={styles.sectionTitle}>Test notificación (backend)</Text>
+
+                <TextInput
+                    style={styles.input}
+                    value={phone}
+                    onChangeText={setPhone}
+                    placeholder="Teléfono (sin prefijo)"
+                    keyboardType="phone-pad"
+                />
+
+                <TextInput
+                    style={styles.input}
+                    value={title}
+                    onChangeText={setTitle}
+                    placeholder="Title"
+                />
+
+                <TextInput
+                    style={styles.input}
+                    value={body}
+                    onChangeText={setBody}
+                    placeholder="Body"
+                />
+
+                <TextInput
+                    style={styles.input}
+                    value={data}
+                    onChangeText={setData}
+                    placeholder="Data"
+                />
+
+                {/* selector simple de modo */}
+                <View style={{ flexDirection: "row", gap: 10, marginBottom: 10 }}>
+                    <TouchableOpacity
+                        onPress={() => setMode("normal")}
+                        style={[
+                            styles.modeChip,
+                            mode === "normal" && styles.modeChipActive,
+                        ]}
+                    >
+                        <Text style={[styles.modeChipText, mode === "normal" && styles.modeChipTextActive]}>
+                            normal (sin sonido)
+                        </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                        onPress={() => setMode("alarm")}
+                        style={[
+                            styles.modeChip,
+                            mode === "alarm" && styles.modeChipActive,
+                        ]}
+                    >
+                        <Text style={[styles.modeChipText, mode === "alarm" && styles.modeChipTextActive]}>
+                            alarm (con sonido)
+                        </Text>
+                    </TouchableOpacity>
+                </View>
+
+                <TouchableOpacity style={styles.testButton} onPress={enviarNotiPrueba}>
+                    <Ionicons name="send-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
+                    <Text style={{ color: "#fff", fontWeight: "bold" }}>Enviar notificación</Text>
+                </TouchableOpacity>
+            </View>
+
         </ScrollView>
     );
 }
@@ -210,4 +304,35 @@ const styles = StyleSheet.create({
         fontStyle: 'italic',
         padding: 20,
     },
+    modeChip: {
+        flex: 1,
+        borderWidth: 1,
+        borderColor: "#D1D5DB",
+        paddingVertical: 10,
+        borderRadius: 12,
+        alignItems: "center",
+        backgroundColor: "#fff",
+    },
+    modeChipActive: {
+        backgroundColor: "#2563EB",
+        borderColor: "#2563EB",
+    },
+    modeChipText: {
+        fontWeight: "700",
+        color: "#374151",
+        fontSize: 12,
+    },
+    modeChipTextActive: {
+        color: "#fff",
+    },
+    testButton: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "#16A34A",
+        padding: 12,
+        borderRadius: 12,
+        marginTop: 6,
+    },
+
 });
