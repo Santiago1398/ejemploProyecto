@@ -57,7 +57,10 @@
         "disable": "disattivare",
         "confirmQuestion": "Vuoi {{accion}} l’allarme \"{{alarma}}\"?",
         "confirmEnableAll": "Vuoi attivare tutti gli allarmi?",
-        "confirmDisableAll": "Vuoi disattivare tutti gli allarmi?"
+        "confirmDisableAll": "Vuoi disattivare tutti gli allarmi?",
+        "alerta_titutlo": "Allerta: dispositivo scollegato",
+        "alerta_subtitulo": "Conferma di aver letto l’avviso di allarme",
+        "alert_aceptar": "Accetta"
     },
     "DrawerContent": {
         "logout": "Disconnetti",

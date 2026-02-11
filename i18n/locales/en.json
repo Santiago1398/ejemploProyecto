@@ -57,7 +57,10 @@
         "disable": "disable",
         "confirmQuestion": "Do you want to {{accion}} the alarm \"{{alarma}}\"?",
         "confirmEnableAll": "Do you want to enable all alarms?",
-        "confirmDisableAll": "Do you want to disable all alarms?"
+        "confirmDisableAll": "Do you want to disable all alarms?",
+        "alerta_titutlo": "Disconnected equipment alert",
+        "alerta_subtitulo": "Confirm that you have read the alarm notice",
+        "alert_aceptar": "Acept"
     },
     "DrawerContent": {
         "logout": "Logout",

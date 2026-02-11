@@ -57,7 +57,10 @@
         "disable": "deshabilitar",
         "confirmQuestion": "¿Desea {{accion}} la alarma \"{{alarma}}\"?",
         "confirmEnableAll": "¿Desea habilitar todas las alarmas?",
-        "confirmDisableAll": "¿Desea deshabilitar todas las alarmas?"
+        "confirmDisableAll": "¿Desea deshabilitar todas las alarmas?",
+        "alerta_titutlo": "Alerta de Equipo desconectado",
+        "alerta_subtitulo": "Confirmar que ha leido el aviso de Alarma",
+        "alert_aceptar": "Aceptar"
     },
     "common": {
         "cancel": "Cancelar",

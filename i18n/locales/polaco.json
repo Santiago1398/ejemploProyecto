@@ -57,7 +57,10 @@
         "disable": "wyłączyć",
         "confirmQuestion": "Czy chcesz {{accion}} alarm \"{{alarma}}\"?",
         "confirmEnableAll": "Czy chcesz włączyć wszystkie alarmy?",
-        "confirmDisableAll": "Czy chcesz wyłączyć wszystkie alarmy?"
+        "confirmDisableAll": "Czy chcesz wyłączyć wszystkie alarmy?",
+        "alerta_titutlo": "Alert: urządzenie odłączone",
+        "alerta_subtitulo": "Potwierdź, że przeczytano komunikat alarmowy",
+        "alert_aceptar": "Akceptuj"
     },
     "DrawerContent": {
         "logout": "Wyloguj",

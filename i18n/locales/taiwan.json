@@ -57,7 +57,10 @@
         "disable": "停用",
         "confirmQuestion": "是否要{{accion}}警報「{{alarma}}」？",
         "confirmEnableAll": "是否要啟用所有警報？",
-        "confirmDisableAll": "是否要停用所有警報？"
+        "confirmDisableAll": "是否要停用所有警報？",
+        "alerta_titutlo": "設備斷線警示",
+        "alerta_subtitulo": "請確認您已閱讀警報通知",
+        "alert_aceptar": "接受"
     },
     "DrawerContent": {
         "logout": "登出",

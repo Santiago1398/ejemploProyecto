@@ -17,7 +17,7 @@ import {
 import Entypo from "@expo/vector-icons/Entypo";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { get, post } from "@/services/api";
-import { useRoute, RouteProp, useNavigation } from "@react-navigation/native";
+import { useRoute, RouteProp, useNavigation, useFocusEffect } from "@react-navigation/native";
 import { RootStackParamList } from "@/types/navigation";
 import ButtonMaster from "./BottonMaster";
 import { ParamTC, SensorData } from "@/infrastructure/intercafe/listapi.interface";
@@ -90,7 +90,15 @@ export default function AlarmList() {
     const [pendingRequests, setPendingRequests] = useState(0);
     const [toggleWsReceived, setToggleWsReceived] = useState(true);
     const confirmandoId = useRef<number | null>(null);
+    const criticalAlertShownRef = useRef(false);
+    const postingCriticalRef = useRef(false);
+    const [criticalVisible, setCriticalVisible] = useState(false);
+
+
     const confirmandoMaster = useRef(false);
+    const parseBool = (v: any) =>
+        v === true || v === "true" || v === 1 || v === "1";
+
 
     //  Confirm Modal (reemplaza Alert.alert para confirmaciones)
     const [confirmVisible, setConfirmVisible] = useState(false);
@@ -393,6 +401,47 @@ export default function AlarmList() {
     };
 
     //!-------------------------------------------------------------
+
+    //!--------------------DEMO Alert Notificacion------------------
+
+    const checkCriticalAlarmDemo = async () => {
+        // Evita repetir alert o lanzar mientras está posteando
+        if (criticalAlertShownRef.current || postingCriticalRef.current) return;
+
+        try {
+            const res = await get(`alarmtc/criticalalarmdemo`);
+
+            // intenta sacar el boolean de varias formas típicas
+            const status =
+                parseBool(res) ||
+                parseBool(res?.data) ||
+                parseBool(res?.status) ||
+                parseBool(res?.data?.status);
+
+            if (!status) return;
+
+            // Marcamos como mostrado ANTES de abrir el alert
+            criticalAlertShownRef.current = true;
+
+            criticalAlertShownRef.current = true;
+            setCriticalVisible(true);
+        } catch (e) {
+            console.log("❌ Error en GET criticalalarmdemo:", e);
+        }
+    };
+
+    useFocusEffect(
+        React.useCallback(() => {
+            // reset opcional si quieres que se muestre cada vez que entras:
+            // criticalAlertShownRef.current = false;
+
+            checkCriticalAlarmDemo();
+        }, [])
+    );
+
+
+
+    //!--------------------FIN DEMO ALERT NOTIFICACION--------------
 
 
     //! FUNCIÓN PARA OBTENER ICONO SEGÚN TIPO DE SENSOR
@@ -1170,6 +1219,45 @@ export default function AlarmList() {
                 </Pressable>
             </Modal>
 
+            //!--------Modal Notificacion
+            <Modal
+                visible={criticalVisible}
+                transparent
+                animationType="fade"
+                onRequestClose={() => { }} // no cerrar con back
+            >
+                <Pressable style={styles.confirmOverlay} onPress={() => { }}>
+                    <Pressable style={styles.criticalCard} onPress={() => { }}>
+                        <Text style={styles.criticalTitle}>{t("DeviceDetailsScreen.alerta_titutlo")}</Text>
+                        <Text style={styles.criticalMessage}>{t("DeviceDetailsScreen.alerta_subtitulo")}</Text>
+
+                        <View style={styles.criticalActions}>
+                            <Pressable
+                                style={[styles.confirmBtn, styles.confirmBtnPrimary]}
+                                onPress={async () => {
+                                    setCriticalVisible(false);
+
+                                    // try {
+                                    //     await runWithLoader(() =>
+                                    //         post(`alarmtc/criticalalarmdemo?status=false`, {})
+                                    //     );
+                                    //     setCriticalVisible(false);
+                                    // } catch (e) {
+                                    //     criticalAlertShownRef.current = false;
+                                    //     Alert.alert(t("DeviceDetailsScreen.errorTitle"), "No se pudo confirmar el aviso");
+                                    // } finally {
+                                    //     postingCriticalRef.current = false;
+                                    // }
+                                }}
+                            >
+                                <Text style={styles.confirmBtnPrimaryText}>{t("DeviceDetailsScreen.alert_aceptar")}</Text>
+                            </Pressable>
+                        </View>
+                    </Pressable>
+                </Pressable>
+            </Modal>
+
+
         </View>
 
 
@@ -1547,5 +1635,36 @@ const styles = StyleSheet.create({
         color: "#fff",
         fontWeight: "900",
     },
+
+    criticalCard: {
+        width: "100%",
+        maxWidth: 420,
+        backgroundColor: "#fff",
+        borderRadius: 12, // 👈 round suave (no mucho)
+        padding: 18,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.18,
+        shadowRadius: 18,
+        elevation: 8,
+    },
+    criticalTitle: {
+        fontSize: 16,
+        fontWeight: "800",
+        color: "#111827",
+        marginBottom: 8,
+    },
+    criticalMessage: {
+        fontSize: 14,
+        fontWeight: "600",
+        color: "#374151",
+        lineHeight: 20,
+    },
+    criticalActions: {
+        flexDirection: "row",
+        justifyContent: "flex-end",
+        marginTop: 16,
+    },
+
 
 });

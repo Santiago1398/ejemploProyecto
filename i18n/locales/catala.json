@@ -57,7 +57,10 @@
         "disable": "desactivar",
         "confirmQuestion": "Voleu {{accion}} l’alarma \"{{alarma}}\"?",
         "confirmEnableAll": "Voleu activar totes les alarmes?",
-        "confirmDisableAll": "Voleu desactivar totes les alarmes?"
+        "confirmDisableAll": "Voleu desactivar totes les alarmes?",
+        "alerta_titutlo": "Alerta d’equip desconnectat",
+        "alerta_subtitulo": "Confirma que has llegit l’avís d’alarma",
+        "alert_aceptar": "Acceptar"
     },
     "DrawerContent": {
         "logout": "Tancar sessió",

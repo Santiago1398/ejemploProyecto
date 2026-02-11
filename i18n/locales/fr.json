@@ -57,7 +57,10 @@
         "disable": "désactiver",
         "confirmQuestion": "Voulez-vous {{accion}} l’alarme \"{{alarma}}\" ?",
         "confirmEnableAll": "Voulez-vous activer toutes les alarmes ?",
-        "confirmDisableAll": "Voulez-vous désactiver toutes les alarmes ?"
+        "confirmDisableAll": "Voulez-vous désactiver toutes les alarmes ?",
+        "alerta_titutlo": "Alerte : équipement déconnecté",
+        "alerta_subtitulo": "Confirmez avoir lu l’avis d’alarme",
+        "alert_aceptar": "Accepter"
     },
     "DrawerContent": {
         "logout": "Se déconnecter",

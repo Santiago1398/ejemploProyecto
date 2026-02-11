@@ -57,7 +57,10 @@
         "disable": "вимкнути",
         "confirmQuestion": "Бажаєте {{accion}} тривогу \"{{alarma}}\"?",
         "confirmEnableAll": "Бажаєте увімкнути всі тривоги?",
-        "confirmDisableAll": "Бажаєте вимкнути всі тривоги?"
+        "confirmDisableAll": "Бажаєте вимкнути всі тривоги?",
+        "alerta_titutlo": "Сповіщення: обладнання відключено",
+        "alerta_subtitulo": "Підтвердьте, що ви прочитали повідомлення тривоги",
+        "alert_aceptar": "Прийняти"
     },
     "DrawerContent": {
         "logout": "Вийти",

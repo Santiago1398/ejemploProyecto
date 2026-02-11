@@ -57,7 +57,10 @@
         "disable": "desativar",
         "confirmQuestion": "Deseja {{accion}} o alarme \"{{alarma}}\"?",
         "confirmEnableAll": "Deseja ativar todos os alarmes?",
-        "confirmDisableAll": "Deseja desativar todos os alarmes?"
+        "confirmDisableAll": "Deseja desativar todos os alarmes?",
+        "alerta_titutlo": "Alerta de equipamento desligado",
+        "alerta_subtitulo": "Confirme que leu o aviso de alarme",
+        "alert_aceptar": "Aceitar"
     },
     "DrawerContent": {
         "logout": "Sair",
