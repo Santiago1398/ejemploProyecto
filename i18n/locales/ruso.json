@@ -57,7 +57,9 @@
         "disable": "отключить",
         "confirmQuestion": "Вы хотите {{accion}} тревогу \"{{alarma}}\"?",
         "confirmEnableAll": "Вы хотите включить все тревоги?",
-        "confirmDisableAll": "Вы хотите отключить все тревоги?"
+        "confirmDisableAll": "Вы хотите отключить все тревоги?",
+        "cancel": "Отмена",
+        "ok": "ОК"
     },
     "DrawerContent": {
         "logout": "Выйти",
@@ -324,7 +326,7 @@
   "manual": "Ручной",
   "automaticoContacto": "Автоматический: {{contacto}}",
 
-  "control": "Управление",
+  "estado": "Состояние реле",
 
   "on": "ON",
   "off": "OFF",

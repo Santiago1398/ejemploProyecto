@@ -57,7 +57,9 @@
         "disable": "desativar",
         "confirmQuestion": "Deseja {{accion}} o alarme \"{{alarma}}\"?",
         "confirmEnableAll": "Deseja ativar todos os alarmes?",
-        "confirmDisableAll": "Deseja desativar todos os alarmes?"
+        "confirmDisableAll": "Deseja desativar todos os alarmes?",
+        "cancel": "Cancelar",
+        "ok": "Aceitar"
     },
     "DrawerContent": {
         "logout": "Sair",
@@ -324,7 +326,7 @@
   "manual": "Manual",
   "automaticoContacto": "Automático: {{contacto}}",
 
-  "control": "Controlo",
+  "estado": "Estado do Relé",
 
   "on": "ON",
   "off": "OFF",

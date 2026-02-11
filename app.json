@@ -31,7 +31,7 @@
       "entitlements": {
         "aps-environment": "production"
       },
-      "buildNumber": "5"
+      "buildNumber": "13"
     },
     "android": {
       "config": {
@@ -81,7 +81,15 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-localization"
+      "expo-localization",
+      [
+        "expo-notifications",
+        {
+          "sounds": [
+            "./assets/sounds/alarmcar_30s.caf"
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

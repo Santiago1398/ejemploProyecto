@@ -49,6 +49,17 @@ export default function Layout() {
                     vibrationPattern: [0, 250, 250, 250],
                     lightColor: "#FF231F7C",
                 });
+                await Notifications.setNotificationChannelAsync("channel-normal", {
+                    name: "Notificaciones (sin sonido)",
+                    importance: Notifications.AndroidImportance.MAX,
+                    sound: null,
+                    vibrationPattern: [0, 250, 250, 250],
+                    lightColor: "#FF231F7C",
+                    bypassDnd: true,
+                    lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+
+                });
+                
             }
         } catch (err) {
             console.error("Error configurando canal:", err);

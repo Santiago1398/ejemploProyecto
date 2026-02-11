@@ -8,9 +8,12 @@ import TabsNavigator from "./(tabs)/TabsNavigator";
 import LoginScreen from "./login";
 
 
+
 export default function App() {
     const [ready, setReady] = useState(false);
     const [userLoggedIn, setUserLoggedIn] = useState(false);
+
+
     // const [showAlarmDialog, setShowAlarmDialog] = useState(false);
 
     // useEffect(() => {

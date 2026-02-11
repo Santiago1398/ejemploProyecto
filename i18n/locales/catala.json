@@ -57,7 +57,10 @@
         "disable": "desactivar",
         "confirmQuestion": "Vols {{accion}} l'alarma \"{{alarma}}\"?",
         "confirmEnableAll": "Vols activar totes les alarmes?",
-        "confirmDisableAll": "Vols desactivar totes les alarmes?"
+        "confirmDisableAll": "Vols desactivar totes les alarmes?",
+        "cancel": "Cancel·lar",
+        "ok": "Acceptar"
+
     },
     "DrawerContent": {
         "logout": "Tancar sessió",
@@ -323,7 +326,7 @@
   "manual": "Manual",
   "automaticoContacto": "Automàtic: {{contacto}}",
 
-  "control": "Control",
+  "estado": "Estat relé",
 
   "on": "ON",
   "off": "OFF",

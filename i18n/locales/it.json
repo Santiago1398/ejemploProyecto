@@ -57,7 +57,9 @@
         "disable": "disabilita",
         "confirmQuestion": "Vuoi {{accion}} l'allarme \"{{alarma}}\"?",
         "confirmEnableAll": "Vuoi abilitare tutti gli allarmi?",
-        "confirmDisableAll": "Vuoi disabilitare tutti gli allarmi?"
+        "confirmDisableAll": "Vuoi disabilitare tutti gli allarmi?",
+        "cancel": "Annulla",
+        "ok": "Accetta"
     },
     "DrawerContent": {
         "logout": "Disconnetti",
@@ -323,7 +325,7 @@
   "manual": "Manuale",
   "automaticoContacto": "Automatico: {{contacto}}",
 
-  "control": "Controllo",
+  "estado": "Stato relè",
 
   "on": "ON",
   "off": "OFF",

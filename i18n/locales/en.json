@@ -57,7 +57,9 @@
         "disable": "disable",
         "confirmQuestion": "Do you want to {{accion}} the alarm \"{{alarma}}\"?",
         "confirmEnableAll": "Do you want to enable all alarms?",
-        "confirmDisableAll": "Do you want to disable all alarms?"
+        "confirmDisableAll": "Do you want to disable all alarms?",
+        "cancel": "Cancel",
+        "ok": "OK"
     },
     "DrawerContent": {
         "logout": "Logout",
@@ -324,7 +326,7 @@
   "manual": "Manual",
   "automaticoContacto": "Automatic: {{contacto}}",
 
-  "control": "Control",
+  "estado": "Relay State",
 
   "on": "ON",
   "off": "OFF",

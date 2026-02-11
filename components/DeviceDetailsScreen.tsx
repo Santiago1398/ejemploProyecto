@@ -1135,14 +1135,14 @@ export default function AlarmList() {
                                 style={[styles.confirmBtn, styles.confirmBtnGhost]}
                                 onPress={() => cerrarConfirmacion(false)}
                             >
-                                <Text style={styles.confirmBtnGhostText}>{t("common.cancel")}</Text>
+                                <Text style={styles.confirmBtnGhostText}>{t("DeviceDetailsScreen.cancel")}</Text>
                             </Pressable>
 
                             <Pressable
                                 style={[styles.confirmBtn, styles.confirmBtnPrimary]}
                                 onPress={() => cerrarConfirmacion(true)}
                             >
-                                <Text style={styles.confirmBtnPrimaryText}>{t("common.ok")}</Text>
+                                <Text style={styles.confirmBtnPrimaryText}>{t("DeviceDetailsScreen.ok")}</Text>
                             </Pressable>
                         </View>
                     </Pressable>

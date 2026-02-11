@@ -57,7 +57,9 @@
         "disable": "вимкнути",
         "confirmQuestion": "Ви хочете {{accion}} тривогу \"{{alarma}}\"?",
         "confirmEnableAll": "Ви хочете увімкнути всі тривоги?",
-        "confirmDisableAll": "Ви хочете вимкнути всі тривоги?"
+        "confirmDisableAll": "Ви хочете вимкнути всі тривоги?",
+        "cancel": "Скасувати",
+        "ok": "ОК"
     },
     "DrawerContent": {
         "logout": "Вийти",
@@ -108,7 +110,7 @@
     },
     "HomeScreen": {
         "cti": "CTI",
-        "control": "Control",
+        "estado": "Стан реле",
         "Home": "Головна"
     },
     "CustomHeader": {

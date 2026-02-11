@@ -57,7 +57,9 @@
         "disable": "rozbroić",
         "confirmQuestion": "Czy chcesz {{accion}} alarmę \"{{alarma}}\"?",
         "confirmEnableAll": "Czy chcesz uzbroić wszystkie alarmy?",
-        "confirmDisableAll": "Czy chcesz rozbroić wszystkie alarmy?"
+        "confirmDisableAll": "Czy chcesz rozbroić wszystkie alarmy?",
+        "cancel": "Anuluj",
+        "ok": "Akceptuj"
     },
     "DrawerContent": {
         "logout": "Wyloguj",
@@ -320,7 +322,7 @@
   "manual": "Ręczny",
   "automaticoContacto": "Automatyczny: {{contacto}}",
 
-  "control": "Sterowanie",
+  "estado": "Stan przekaźnika",
 
   "on": "ON",
   "off": "OFF",

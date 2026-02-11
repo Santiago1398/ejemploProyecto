@@ -57,7 +57,9 @@
         "disable": "비활성화",
         "confirmQuestion": "알람 \"{{alarma}}\"를 {{accion}}하시겠습니까?",
         "confirmEnableAll": "모든 알람을 활성화하시겠습니까?",
-        "confirmDisableAll": "모든 알람을 비활성화하시겠습니까?"
+        "confirmDisableAll": "모든 알람을 비활성화하시겠습니까?",
+        "cancel": "취소",
+        "ok": "확인"
     },
     "DrawerContent": {
         "logout": "로그아웃",
@@ -323,7 +325,7 @@
   "manual": "수동",
   "automaticoContacto": "자동: {{contacto}}",
 
-  "control": "제어",
+  "estado": "릴레이 상태",
 
   "on": "ON",
   "off": "OFF",

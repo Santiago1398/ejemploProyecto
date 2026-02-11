@@ -57,7 +57,9 @@
         "disable": "停用",
         "confirmQuestion": "您想要{{accion}}警報 \"{{alarma}}\" 嗎？",
         "confirmEnableAll": "您想要啟用所有警報嗎？",
-        "confirmDisableAll": "您想要停用所有警報嗎？"
+        "confirmDisableAll": "您想要停用所有警報嗎？",
+        "cancel": "取消",
+        "ok": "接受"
     },
     "DrawerContent": {
         "logout": "登出",
@@ -323,7 +325,7 @@
   "manual": "手動",
   "automaticoContacto": "自動：{{contacto}}",
 
-  "control": "控制",
+  "estado": "繼電器狀態",
 
   "on": "ON",
   "off": "OFF",

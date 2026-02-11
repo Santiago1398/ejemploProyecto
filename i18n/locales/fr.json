@@ -57,7 +57,9 @@
         "disable": "désactiver",
         "confirmQuestion": "Voulez-vous {{accion}} l’alarme \"{{alarma}}\" ?",
         "confirmEnableAll": "Voulez-vous activer toutes les alarmes ?",
-        "confirmDisableAll": "Voulez-vous désactiver toutes les alarmes ?"
+        "confirmDisableAll": "Voulez-vous désactiver toutes les alarmes ?",
+        "cancel": "Annuler",
+        "ok": "Accepter"
     },
     "DrawerContent": {
         "logout": "Se déconnecter",
@@ -323,7 +325,7 @@
   "manual": "Manuel",
   "automaticoContacto": "Automatique : {{contacto}}",
 
-  "control": "Contrôle",
+  "estado": "État du relais",
 
   "on": "ON",
   "off": "OFF",
