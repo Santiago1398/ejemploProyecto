@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { t } from "@/i18n/i18nConfig";
 
-
 interface Props {
     visible: boolean;
     onClose: () => void;
@@ -12,13 +11,46 @@ interface Props {
 export default function PhoneNumberDialog({ visible, onClose, onConfirm }: Props) {
     const [telefono, setTelefono] = useState("");
 
+    //  NUEVA función de validación
+    const isValidPhone = (phone: string): boolean => {
+        // Si empieza con +, formato internacional
+        if (phone.startsWith('+')) {
+            // Mínimo +34 + 9 dígitos, máximo +999 + 12 dígitos
+            return phone.length >= 12 && phone.length <= 16;
+        } else {
+            // Formato nacional español: exactamente 9 dígitos
+            return phone.length === 9;
+        }
+    };
+
+    //  NUEVA función de formateo
+    const formatPhoneInput = (text: string): string => {
+        // Permitir solo números y el símbolo + al inicio
+        let cleaned = text.replace(/[^0-9+]/g, '');
+
+        // Si empieza con +, formato internacional
+        if (cleaned.startsWith('+')) {
+            // Máximo 16 caracteres (+34 + hasta 12 dígitos)
+            return cleaned.substring(0, 16);
+        } else {
+            // Solo números nacionales, máximo 9 dígitos
+            return cleaned.substring(0, 9);
+        }
+    };
+
+    //  MODIFICAR handleConfirm
     const handleConfirm = () => {
-        if (telefono.length === 9) {
-            console.log("📱 Teléfono válido ingresado:", telefono);
+        if (isValidPhone(telefono)) {
+            console.log(" Teléfono válido ingresado:", telefono);
             onConfirm(telefono);
             setTelefono("");
         } else {
-            alert(t("PhoneNumberDialog.invalid"));
+            // Mensaje de error más específico
+            if (telefono.startsWith('+')) {
+                alert("Formato internacional inválido. Ej: +34612345678");
+            } else {
+                alert(t("PhoneNumberDialog.invalid"));
+            }
         }
     };
 
@@ -27,13 +59,17 @@ export default function PhoneNumberDialog({ visible, onClose, onConfirm }: Props
             <View style={styles.overlay}>
                 <View style={styles.dialog}>
                     <Text style={styles.title}>{t("PhoneNumberDialog.title")}</Text>
-                    <Text style={styles.subtitle}>{t("PhoneNumberDialog.subtitle")}</Text>
+                    {/*  subtitle para mencionar formato internacional */}
+                    <Text style={styles.subtitle}>
+                        {t("PhoneNumberDialog.subtitle")} {"\n"}
+                        612345678 o +34612345678
+                    </Text>
                     <TextInput
-                        placeholder="Ej: 612345678"
+                        placeholder="612345678"
                         keyboardType="phone-pad"
                         style={styles.input}
                         value={telefono}
-                        onChangeText={(text) => setTelefono(text.replace(/[^0-9]/g, "").slice(0, 9))}
+                        onChangeText={(text) => setTelefono(formatPhoneInput(text))}
                     />
                     <View style={styles.buttons}>
                         <TouchableOpacity onPress={onClose} style={styles.cancel}>
@@ -96,6 +132,4 @@ const styles = StyleSheet.create({
     confirm: {
         paddingHorizontal: 10,
     },
-
-
 });

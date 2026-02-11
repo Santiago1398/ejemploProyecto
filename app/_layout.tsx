@@ -11,6 +11,7 @@ import { stopAlarmSound } from "@/utils/sound";
 import {
     Platform,
     AppState,
+    Vibration,
 } from "react-native";
 import * as Notifications from "expo-notifications";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -46,14 +47,21 @@ export default function Layout() {
                     name: "Notificaciones de alarma",
                     importance: Notifications.AndroidImportance.MAX,
                     sound: "alarmcar",
-                    vibrationPattern: [0, 250, 250, 250],
+                    vibrationPattern: [0, 1000, 200, 1000, 200, 1000, 200, 1000, 200, 1000],
                     lightColor: "#FF231F7C",
                     bypassDnd: true,
                     lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
                     enableLights: true,
                     enableVibrate: true,
                     showBadge: true,
-
+                    audioAttributes: {
+                        contentType: Notifications.AndroidAudioContentType.SONIFICATION,
+                        usage: Notifications.AndroidAudioUsage.ALARM,
+                        flags: {
+                            enforceAudibility: true,
+                            requestHardwareAudioVideoSynchronization: false
+                        }
+                    },
                 });
                 //await requestDndPermission();
                 // 🔕 Canal NORMAL (alta prioridad pero SIN sonido)
@@ -61,7 +69,7 @@ export default function Layout() {
                     name: "Notificaciones sin sonido",
                     importance: Notifications.AndroidImportance.HIGH,
                     sound: null,
-                    vibrationPattern: [0, 250, 250, 250],
+                    vibrationPattern: [0, 1000, 200, 1000, 200, 1000, 200, 1000, 200, 1000],
                     lightColor: "#FF231F7C",
                     bypassDnd: false,
                     lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
@@ -89,7 +97,6 @@ export default function Layout() {
                         allowAlert: true,
                         allowBadge: true,
                         allowSound: true,
-                        allowCriticalAlerts: true, // Para iOS (requiere aprobación de Apple)
                     },
                     android: {
                         allowAlert: true,
@@ -103,15 +110,15 @@ export default function Layout() {
             }
 
             // Para Android: Verificar si tiene permisos DND
-            if (Platform.OS === 'android') {
-                // Nota: Esto requiere que el usuario vaya manualmente a 
-                // Configuración > Apps > Tu App > Notificaciones > Acceso especial
-                console.log('⚠️ Para bypass DND: El usuario debe habilitar manualmente');
-                console.log('   Configuración > Apps > [Tu App] > Permisos especiales > Acceso a No molestar');
-            }
+            // if (Platform.OS === 'android') {
+            //     // Nota: Esto requiere que el usuario vaya manualmente a 
+            //     // Configuración > Apps > Tu App > Notificaciones > Acceso especial
+            //     console.log('⚠️ Para bypass DND: El usuario debe habilitar manualmente');
+            //     console.log('   Configuración > Apps > [Tu App] > Permisos especiales > Acceso a No molestar');
+            // }
 
         } catch (error) {
-            console.error('Error solicitando permisos DND:', error);
+            // console.error('Error solicitando permisos DND:', error);
         }
     };
 
