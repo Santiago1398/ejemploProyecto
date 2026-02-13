@@ -404,24 +404,24 @@ export default function AlarmList() {
 
     //!--------------------DEMO Alert Notificacion------------------
 
-    const checkCriticalAlarmDemo = async () => {
+    const checkCriticalAlarmDemo = async (masterConnected: boolean) => {
+        // Si está conectado, NO mostramos el alert
+        if (masterConnected) return;
+
         // Evita repetir alert o lanzar mientras está posteando
         if (criticalAlertShownRef.current || postingCriticalRef.current) return;
 
         try {
             const res = await get(`alarmtc/criticalalarmdemo`);
 
-            // intenta sacar el boolean de varias formas típicas
             const status =
                 parseBool(res) ||
                 parseBool(res?.data) ||
                 parseBool(res?.status) ||
                 parseBool(res?.data?.status);
 
+            // Solo si el endpoint dice true Y el master está desconectado
             if (!status) return;
-
-            // Marcamos como mostrado ANTES de abrir el alert
-            criticalAlertShownRef.current = true;
 
             criticalAlertShownRef.current = true;
             setCriticalVisible(true);
@@ -430,14 +430,15 @@ export default function AlarmList() {
         }
     };
 
-    useFocusEffect(
-        React.useCallback(() => {
-            // reset opcional si quieres que se muestre cada vez que entras:
-            // criticalAlertShownRef.current = false;
 
-            checkCriticalAlarmDemo();
-        }, [])
-    );
+    // useFocusEffect(
+    //     React.useCallback(() => {
+    //         // reset opcional si quieres que se muestre cada vez que entras:
+    //         // criticalAlertShownRef.current = false;
+
+    //         checkCriticalAlarmDemo();
+    //     }, [])
+    // );
 
 
 
@@ -662,11 +663,12 @@ export default function AlarmList() {
             const scrollY = scrollOffset.current;
 
             // !OBTENER ALARMAS Y SENSORES EN PARALELO
+            console.log("Peticon alarmas")
             const [alarmsData] = await Promise.all([
                 get(`alarmtc/status?mac=${mac}`),
                 fetchSensors() // Esta función ya maneja sus propios errores
             ]);
-            //   console.log("--------------", alarmsData, "------------")
+            console.log("alarmtc/status response:Debugg-----------------------------------------------------", JSON.stringify(alarmsData));
 
             if (!alarmsData || alarmsData.length === 0) {
                 setIsConnected(false);
@@ -682,7 +684,10 @@ export default function AlarmList() {
                 setIsSimulated(masterAlarm.simulado || false);
 
                 const connected = masterAlarm.conectado !== undefined ? masterAlarm.conectado : true;
+
                 setIsConnected(connected);
+                void checkCriticalAlarmDemo(connected);
+
 
                 if (!connected) {
                     setAlarms([]);
@@ -1219,7 +1224,6 @@ export default function AlarmList() {
                 </Pressable>
             </Modal>
 
-            //!--------Modal Notificacion
             <Modal
                 visible={criticalVisible}
                 transparent

@@ -263,6 +263,7 @@ export default function DeviceList() {
             const data: ResponseAlarmaSite[] = await get(
                 `alarmtc/sites/usershared2/${storedUserId}`
             );
+            console.log("usuario", storedUserId, data)
 
             const formattedData = data.map((device) => ({
                 ...device,
