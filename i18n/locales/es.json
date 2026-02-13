@@ -59,7 +59,10 @@
         "confirmEnableAll": "¿Desea habilitar todas las alarmas?",
         "confirmDisableAll": "¿Desea deshabilitar todas las alarmas?",
         "cancel": "Cancelar",
-        "ok": "Aceptar"
+        "ok": "Aceptar",
+        "alerta_titutlo": "Alerta de Equipo desconectado",
+        "alerta_subtitulo": "Confirmar que ha leido el aviso de Alarma",
+        "alert_aceptar": "Aceptar"
     },
     "DrawerContent": {
         "logout": "Cerrar sesión",

@@ -59,7 +59,10 @@
         "confirmEnableAll": "Deseja ativar todos os alarmes?",
         "confirmDisableAll": "Deseja desativar todos os alarmes?",
         "cancel": "Cancelar",
-        "ok": "Aceitar"
+        "ok": "Aceitar",
+        "alerta_titutlo": "Alerta de Equipamento Desconectado",
+        "alerta_subtitulo": "Confirme que leu o aviso de alarme",
+        "alert_aceptar": "Aceitar"
     },
     "DrawerContent": {
         "logout": "Sair",

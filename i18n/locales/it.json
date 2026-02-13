@@ -59,7 +59,10 @@
         "confirmEnableAll": "Vuoi abilitare tutti gli allarmi?",
         "confirmDisableAll": "Vuoi disabilitare tutti gli allarmi?",
         "cancel": "Annulla",
-        "ok": "Accetta"
+        "ok": "Accetta",
+        "alerta_titutlo": "Allerta di disconnessione dell'attrezzatura",
+        "alerta_subtitulo": "Conferma di aver letto l'avviso di allerta",
+        "alert_aceptar": "Accetta"
     },
     "DrawerContent": {
         "logout": "Disconnetti",

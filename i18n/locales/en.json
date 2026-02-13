@@ -59,7 +59,10 @@
         "confirmEnableAll": "Do you want to enable all alarms?",
         "confirmDisableAll": "Do you want to disable all alarms?",
         "cancel": "Cancel",
-        "ok": "OK"
+        "ok": "OK",
+        "alerta_titutlo": "Disconnected equipment alert",
+        "alerta_subtitulo": "Confirm that you have read the alarm notice",
+        "alert_aceptar": "Acept"
     },
     "DrawerContent": {
         "logout": "Logout",

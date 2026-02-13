@@ -59,7 +59,10 @@
         "confirmEnableAll": "Czy chcesz uzbroić wszystkie alarmy?",
         "confirmDisableAll": "Czy chcesz rozbroić wszystkie alarmy?",
         "cancel": "Anuluj",
-        "ok": "Akceptuj"
+        "ok": "Akceptuj",
+        "alerta_titutlo": "Alerta de Equipo desconectado",
+        "alerta_subtitulo": "Confirmar que ha leido el aviso de Alarma",
+        "alert_aceptar": "Aceptar"
     },
     "DrawerContent": {
         "logout": "Wyloguj",

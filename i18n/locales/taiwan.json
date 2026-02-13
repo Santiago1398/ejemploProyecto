@@ -59,7 +59,10 @@
         "confirmEnableAll": "您想要啟用所有警報嗎？",
         "confirmDisableAll": "您想要停用所有警報嗎？",
         "cancel": "取消",
-        "ok": "接受"
+        "ok": "接受",
+        "alerta_titutlo": "設備斷開連接警報",
+        "alerta_subtitulo": "確認您已閱讀警報通知",
+        "alert_aceptar": "接受"
     },
     "DrawerContent": {
         "logout": "登出",
