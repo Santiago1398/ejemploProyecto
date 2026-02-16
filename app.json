@@ -31,7 +31,7 @@
       "entitlements": {
         "aps-environment": "production"
       },
-      "buildNumber": "15"
+      "buildNumber": "19"
     },
     "android": {
       "config": {
@@ -95,7 +95,7 @@
       "typedRoutes": true
     },
     "extra": {
-      "devBuildNumber": 23,
+      "devBuildNumber": 25,
       "apiUrl": "https://api.tc5monitor.cticontrol.com/api",
       "apiUrlDev": "https://api.tc5monitortest.cticontrol.com/api",
       "socketUrl": "https://api.tc5monitor.cticontrol.com",
