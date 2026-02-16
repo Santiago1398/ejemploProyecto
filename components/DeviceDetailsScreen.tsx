@@ -241,13 +241,19 @@ export default function AlarmList() {
     //!-------------------------------------------------------------
 
     useEffect(() => {
-        if (isDeviceDisconnected) {
-            setAlarms([]);
-            setMasterAlarmState(false);
-            setIsConnected(false);
-            updateHeaderStatus([], false);
-        }
-    }, [isDeviceDisconnected])
+        if (!isDeviceDisconnected) return;
+
+        setAlarms([]);
+        setMasterAlarmState(false);
+        setIsConnected(false);
+
+        setHeaderText("Sin conexión");
+        setHeaderColor("#8a9bb9");
+        updateHeaderStatus([], false);
+
+        // ✅ dispara el modal demo también aquí
+        void checkCriticalAlarmDemo(false, true);
+    }, [isDeviceDisconnected]);
 
 
 
@@ -403,16 +409,19 @@ export default function AlarmList() {
     //!-------------------------------------------------------------
 
     //!--------------------DEMO Alert Notificacion------------------
+    const checkCriticalAlarmDemo = async (masterConnected: boolean, alarmsEmpty: boolean) => {
+        // ✅ Solo nos interesa comprobar si:
+        // - el master NO está conectado, o
+        // - NO hay alarmas en el listado (array vacío)
+        const shouldCheck = !masterConnected || alarmsEmpty;
+        if (!shouldCheck) return;
 
-    const checkCriticalAlarmDemo = async (masterConnected: boolean) => {
-        // Si está conectado, NO mostramos el alert
-        if (masterConnected) return;
-
-        // Evita repetir alert o lanzar mientras está posteando
+        // Evita repetir modal o lanzar mientras está posteando
         if (criticalAlertShownRef.current || postingCriticalRef.current) return;
 
         try {
             const res = await get(`alarmtc/criticalalarmdemo`);
+            console.log("estado varibale get--------------", res)
 
             const status =
                 parseBool(res) ||
@@ -420,7 +429,6 @@ export default function AlarmList() {
                 parseBool(res?.status) ||
                 parseBool(res?.data?.status);
 
-            // Solo si el endpoint dice true Y el master está desconectado
             if (!status) return;
 
             criticalAlertShownRef.current = true;
@@ -429,6 +437,7 @@ export default function AlarmList() {
             console.log("❌ Error en GET criticalalarmdemo:", e);
         }
     };
+
 
 
     // useFocusEffect(
@@ -649,71 +658,98 @@ export default function AlarmList() {
     // !FUNCIÓN PARA OBTENER ALARMAS
     const fetchAlarms = async (isAutoRefresh = false) => {
         try {
-            if (!isAutoRefresh) {
-                setLoading(true);
-            }
+            if (!isAutoRefresh) setLoading(true);
+
             if (isDeviceDisconnected) {
                 setAlarms([]);
                 updateHeaderStatus([], false);
                 setMasterAlarmState(false);
                 setIsConnected(false);
+
+                setHeaderText("Sin conexión");
+                setHeaderColor("#8a9bb9");
+
+                // para que también salte el demo aquí
+                void checkCriticalAlarmDemo(false, true);
+
                 return;
             }
 
+
             const scrollY = scrollOffset.current;
 
-            // !OBTENER ALARMAS Y SENSORES EN PARALELO
-            console.log("Peticon alarmas")
+            console.log("Peticon alarmas");
+
+            //  alarmas + sensores en paralelo
             const [alarmsData] = await Promise.all([
                 get(`alarmtc/status?mac=${mac}`),
-                fetchSensors() // Esta función ya maneja sus propios errores
+                fetchSensors(), // ya maneja errores internamente
             ]);
-            console.log("alarmtc/status response:Debugg-----------------------------------------------------", JSON.stringify(alarmsData));
 
+            console.log(
+                "alarmtc/status response:Debugg-----------------------------------------------------",
+                JSON.stringify(alarmsData)
+            );
+
+            //  si no hay respuesta válida => sin conexión
             if (!alarmsData || alarmsData.length === 0) {
                 setIsConnected(false);
                 setAlarms([]);
                 setHeaderText("Sin conexión");
                 setHeaderColor("#8a9bb9");
+                void checkCriticalAlarmDemo(false, true);
                 return;
             }
 
-            const masterAlarm = alarmsData.find((alarm: { idAlarm: number }) => alarm.idAlarm === 1000);
-            if (masterAlarm) {
-                setMasterAlarmState(masterAlarm.armado);
-                setIsSimulated(masterAlarm.simulado || false);
+            //  IMPORTANTE: declarar connected fuera para usarlo luego
+            let connected = true;
 
-                const connected = masterAlarm.conectado !== undefined ? masterAlarm.conectado : true;
+            const masterAlarm = alarmsData.find(
+                (alarm: { idAlarm: number }) => alarm.idAlarm === 1000
+            );
 
-                setIsConnected(connected);
-                void checkCriticalAlarmDemo(connected);
-
-
-                if (!connected) {
-                    setAlarms([]);
-                    setHeaderText("Sin conexión");
-                    setHeaderColor("#8a9bb9");
-                    return;
-                }
-            } else {
+            if (!masterAlarm) {
                 setIsConnected(false);
                 setAlarms([]);
                 setHeaderText("Sin conexión");
                 setHeaderColor("#8a9bb9");
+                void checkCriticalAlarmDemo(false, true);
                 return;
             }
 
-            const enabledAlarms = alarmsData
-                .filter((alarm: { habilitado: boolean; idAlarm: number }) =>
-                    alarm.habilitado && ![1000].includes(alarm.idAlarm)
+            setMasterAlarmState(masterAlarm.armado);
+            setIsSimulated(masterAlarm.simulado || false);
+
+            connected =
+                masterAlarm.conectado !== undefined ? masterAlarm.conectado : true;
+
+            setIsConnected(connected);
+
+            //  si está desconectado, no seguimos
+            if (!connected) {
+                setAlarms([]);
+                setHeaderText("Sin conexión");
+                setHeaderColor("#8a9bb9");
+                void checkCriticalAlarmDemo(false, true);
+                return;
+            }
+
+            //  alarmas habilitadas (excluyendo master 1000)
+            const enabledAlarms: ParamTC[] = alarmsData
+                .filter(
+                    (alarm: { habilitado: boolean; idAlarm: number }) =>
+                        alarm.habilitado && ![1000].includes(alarm.idAlarm)
                 )
                 .map((alarm: ParamTC) => ({
                     ...alarm,
                     activada: false,
                 }));
 
+            //  tu nueva condición: si NO hay alarmas (array vacío) y el endpoint devuelve true => mostrar modal
+            void checkCriticalAlarmDemo(connected, enabledAlarms.length === 0);
+
             setAlarms(enabledAlarms);
-            updateHeaderStatus(enabledAlarms, masterAlarm?.armado ?? false);
+            updateHeaderStatus(enabledAlarms, masterAlarm.armado ?? false);
 
             setTimeout(() => {
                 scrollRef.current?.scrollTo({ y: scrollY, animated: false });
@@ -723,7 +759,12 @@ export default function AlarmList() {
             setAlarms([]);
             setHeaderText("Sin conexión");
             setHeaderColor("#8a9bb9");
-            Alert.alert(t("DeviceDetailsScreen.errorTitle"), t("DeviceDetailsScreen.errorLoadingAlarms"));
+            void checkCriticalAlarmDemo(false, true);
+
+            Alert.alert(
+                t("DeviceDetailsScreen.errorTitle"),
+                t("DeviceDetailsScreen.errorLoadingAlarms")
+            );
         } finally {
             if (!isAutoRefresh) {
                 setLoading(false);
@@ -731,6 +772,7 @@ export default function AlarmList() {
             }
         }
     };
+
     //!-------------------------------------------------------------
 
     const getIdRange = (idAlarm: number): number => {
@@ -1228,38 +1270,63 @@ export default function AlarmList() {
                 visible={criticalVisible}
                 transparent
                 animationType="fade"
-                onRequestClose={() => { }} // no cerrar con back
+                onRequestClose={() => { }}
             >
-                <Pressable style={styles.confirmOverlay} onPress={() => { }}>
-                    <Pressable style={styles.criticalCard} onPress={() => { }}>
-                        <Text style={styles.criticalTitle}>{t("DeviceDetailsScreen.alerta_titutlo")}</Text>
-                        <Text style={styles.criticalMessage}>{t("DeviceDetailsScreen.alerta_subtitulo")}</Text>
-
-                        <View style={styles.criticalActions}>
-                            <Pressable
-                                style={[styles.confirmBtn, styles.confirmBtnPrimary]}
-                                onPress={async () => {
-                                    setCriticalVisible(false);
-
-                                    // try {
-                                    //     await runWithLoader(() =>
-                                    //         post(`alarmtc/criticalalarmdemo?status=false`, {})
-                                    //     );
-                                    //     setCriticalVisible(false);
-                                    // } catch (e) {
-                                    //     criticalAlertShownRef.current = false;
-                                    //     Alert.alert(t("DeviceDetailsScreen.errorTitle"), "No se pudo confirmar el aviso");
-                                    // } finally {
-                                    //     postingCriticalRef.current = false;
-                                    // }
-                                }}
-                            >
-                                <Text style={styles.confirmBtnPrimaryText}>{t("DeviceDetailsScreen.alert_aceptar")}</Text>
-                            </Pressable>
+                <Pressable style={styles.criticalOverlay2} onPress={() => { }}>
+                    <Pressable style={styles.criticalCard2} onPress={() => { }}>
+                        {/* Icono arriba */}
+                        <View style={styles.criticalIconWrap2}>
+                            <MaterialCommunityIcons name="alert" size={30} color="#DC2626" />
                         </View>
+
+                        {/* Título centrado */}
+                        <Text style={styles.criticalTitle2}>
+                            {t("DeviceDetailsScreen.alerta_titutlo")}
+                        </Text>
+
+                        {/* Separador */}
+                        <View style={styles.criticalDivider2} />
+
+                        {/* Mensaje */}
+                        <Text style={styles.criticalMessage2}>
+                            {t("DeviceDetailsScreen.alerta_subtitulo")}
+                        </Text>
+
+                        {/* Botón */}
+                        <Pressable
+                            style={styles.criticalBtn2}
+                            onPress={async () => {
+                                if (postingCriticalRef.current) return;
+                                postingCriticalRef.current = true;
+
+                                try {
+                                    await runWithLoader(() =>
+                                        post(
+                                            `alarmtc/confirmcriticalalarm?mac=${encodeURIComponent(String(mac))}`,
+                                            {}
+                                        )
+                                    );
+                                    setCriticalVisible(false);
+                                } catch (e) {
+                                    criticalAlertShownRef.current = false;
+                                    Alert.alert(
+                                        t("DeviceDetailsScreen.errorTitle"),
+                                        "No se pudo confirmar el aviso"
+                                    );
+                                } finally {
+                                    postingCriticalRef.current = false;
+                                }
+                            }}
+                        >
+                            <Text style={styles.criticalBtnText2}>
+                                {t("DeviceDetailsScreen.alert_aceptar")}
+                            </Text>
+                        </Pressable>
                     </Pressable>
                 </Pressable>
             </Modal>
+
+
 
 
         </View>
@@ -1640,35 +1707,77 @@ const styles = StyleSheet.create({
         fontWeight: "900",
     },
 
-    criticalCard: {
+    criticalOverlay2: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 18,
+        backgroundColor: "rgba(220, 38, 38, 0.22)", // overlay con rojo
+    },
+
+    criticalCard2: {
         width: "100%",
         maxWidth: 420,
-        backgroundColor: "#fff",
-        borderRadius: 12, // 👈 round suave (no mucho)
+        backgroundColor: "#FFFFFF",
+        borderRadius: 18,
         padding: 18,
+        borderWidth: 1.5,
+        borderColor: "rgba(220,38,38,0.35)", // borde rojo suave
         shadowColor: "#000",
-        shadowOffset: { width: 0, height: 10 },
+        shadowOffset: { width: 0, height: 12 },
         shadowOpacity: 0.18,
         shadowRadius: 18,
-        elevation: 8,
+        elevation: 10,
     },
-    criticalTitle: {
-        fontSize: 16,
-        fontWeight: "800",
+
+    criticalIconWrap2: {
+        alignSelf: "center",
+        width: 54,
+        height: 54,
+        borderRadius: 27,
+        backgroundColor: "rgba(220,38,38,0.10)",
+        alignItems: "center",
+        justifyContent: "center",
+        marginBottom: 10,
+    },
+
+    criticalTitle2: {
+        fontSize: 18,
+        fontWeight: "900",
         color: "#111827",
-        marginBottom: 8,
+        textAlign: "center",
     },
-    criticalMessage: {
-        fontSize: 14,
-        fontWeight: "600",
+
+    criticalDivider2: {
+        height: 1,
+        backgroundColor: "rgba(220,38,38,0.22)",
+        marginTop: 12,
+        marginBottom: 12,
+    },
+
+    criticalMessage2: {
+        fontSize: 15,
+        fontWeight: "700",
         color: "#374151",
+        textAlign: "center",
         lineHeight: 20,
+        marginBottom: 14,
     },
-    criticalActions: {
-        flexDirection: "row",
-        justifyContent: "flex-end",
-        marginTop: 16,
+
+    criticalBtn2: {
+        backgroundColor: "#DC2626",
+        paddingVertical: 12,
+        borderRadius: 14,
+        alignItems: "center",
     },
+
+    criticalBtnText2: {
+        color: "#FFFFFF",
+        fontWeight: "900",
+        fontSize: 16,
+    },
+
+
 
 
 });
