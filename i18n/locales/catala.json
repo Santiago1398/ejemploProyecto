@@ -45,6 +45,11 @@
             "noConnection": "Sense connexió",
             "deviceDisconnected": "Equip desconnectat o sense comunicació"
         },
+        "common": {
+            "cancel": "Cancel·lar",
+            "ok": "Acceptar"
+        },
+        "errorDialog": "No s'ha pogut confirmar l'avís",
         "Min": "Mín",
         "Max": "Màx",
         "No_conectado": "No connectat",

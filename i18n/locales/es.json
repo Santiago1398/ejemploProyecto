@@ -45,6 +45,11 @@
             "noConnection": "No hay conexión",
             "deviceDisconnected": "Equipo desconectado o sin comunicación"
         },
+        "common": {
+            "cancel": "Cancelar",
+            "ok": "Aceptar"
+        },
+        "errorDialog": "No se pudo confirmar el aviso",
         "Min": "Mín",
         "Max": "Máx",
         "No_conectado": "No conectado",
@@ -61,10 +66,6 @@
         "alerta_titutlo": "Alerta de Equipo desconectado",
         "alerta_subtitulo": "Confirmar que ha leido el aviso de Alarma",
         "alert_aceptar": "Aceptar"
-    },
-    "common": {
-        "cancel": "Cancelar",
-        "ok": "Aceptar"
     },
     "DrawerContent": {
         "logout": "Cerrar sesión",

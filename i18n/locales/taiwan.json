@@ -45,6 +45,11 @@
             "noConnection": "無連接",
             "deviceDisconnected": "設備斷開連接或無通信"
         },
+        "common": {
+            "cancel": "取消",
+            "ok": "接受"
+        },
+        "errorDialog": "無法確認通知",
         "Min": "最小",
         "Max": "最大",
         "No_conectado": "未連接",

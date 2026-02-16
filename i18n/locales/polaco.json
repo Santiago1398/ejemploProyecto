@@ -45,6 +45,11 @@
             "noConnection": "Brak połączenia",
             "deviceDisconnected": "Urządzenie rozłączone lub brak komunikacji"
         },
+        "common": {
+            "cancel": "Anuluj",
+            "ok": "Akceptuj"
+        },
+        "errorDialog": "Nie udało się potwierdzić alertu",
         "Min": "Min",
         "Max": "Maks",
         "No_conectado": "Brak połączenia",

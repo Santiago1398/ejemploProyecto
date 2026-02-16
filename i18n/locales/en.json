@@ -45,6 +45,11 @@
             "noConnection": "No connection",
             "deviceDisconnected": "Device disconnected or no communication"
         },
+        "common": {
+            "cancel": "Cancel",
+            "ok": "Accept"
+        },
+        "errorDialog": "The alert could not be confirmed",
         "Min": "Mín",
         "Max": "Máx",
         "No_conectado": "Disconnected",
