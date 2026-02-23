@@ -45,6 +45,8 @@
             "noConnection": "Pas de connexion",
             "deviceDisconnected": "Appareil déconnecté ou sans communication"
         },
+        "common": { "cancel": "Annuler", "ok": "Accepter" },
+        "errorDialog": "Impossible de confirmer l’alerte.",
         "Min": "Mín",
         "Max": "Máx",
         "No_conectado": "Non connecté",

@@ -247,7 +247,9 @@ export default function AlarmList() {
         setMasterAlarmState(false);
         setIsConnected(false);
 
-        setHeaderText("Sin conexión");
+        // setHeaderText("Sin conexión");
+        setHeaderText(t("deviceList.error.noConnection"));
+
         setHeaderColor("#8a9bb9");
         updateHeaderStatus([], false);
 
@@ -666,7 +668,9 @@ export default function AlarmList() {
                 setMasterAlarmState(false);
                 setIsConnected(false);
 
-                setHeaderText("Sin conexión");
+                // setHeaderText("Sin conexión");
+                setHeaderText(t("deviceList.error.noConnection"));
+
                 setHeaderColor("#8a9bb9");
 
                 // para que también salte el demo aquí
@@ -695,7 +699,9 @@ export default function AlarmList() {
             if (!alarmsData || alarmsData.length === 0) {
                 setIsConnected(false);
                 setAlarms([]);
-                setHeaderText("Sin conexión");
+                // setHeaderText("Sin conexión");
+                setHeaderText(t("deviceList.error.noConnection"));
+
                 setHeaderColor("#8a9bb9");
                 void checkCriticalAlarmDemo(false, true);
                 return;
@@ -711,7 +717,9 @@ export default function AlarmList() {
             if (!masterAlarm) {
                 setIsConnected(false);
                 setAlarms([]);
-                setHeaderText("Sin conexión");
+                // setHeaderText("Sin conexión");
+                setHeaderText(t("deviceList.error.noConnection"));
+
                 setHeaderColor("#8a9bb9");
                 void checkCriticalAlarmDemo(false, true);
                 return;
@@ -728,7 +736,9 @@ export default function AlarmList() {
             //  si está desconectado, no seguimos
             if (!connected) {
                 setAlarms([]);
-                setHeaderText("Sin conexión");
+                // setHeaderText("Sin conexión");
+                setHeaderText(t("deviceList.error.noConnection"));
+
                 setHeaderColor("#8a9bb9");
                 void checkCriticalAlarmDemo(false, true);
                 return;
@@ -757,7 +767,9 @@ export default function AlarmList() {
         } catch (error) {
             setIsConnected(false);
             setAlarms([]);
-            setHeaderText("Sin conexión");
+            // setHeaderText("Sin conexión");
+            setHeaderText(t("deviceList.error.noConnection"));
+
             setHeaderColor("#8a9bb9");
             void checkCriticalAlarmDemo(false, true);
 
@@ -988,7 +1000,12 @@ export default function AlarmList() {
             ? t("DeviceDetailsScreen.disable")
             : t("DeviceDetailsScreen.enable");
 
-        const mensaje = `¿Desea ${textoAccion} la alarma "${alarm.texto}"?`;
+        // const mensaje = `¿Desea ${textoAccion} la alarma "${alarm.texto}"?`;
+        const mensaje = t("DeviceDetailsScreen.confirmQuestion", {
+            accion: textoAccion,
+            alarma: alarm.texto,
+        });
+
 
         const confirmar = await confirmarCambioAlarma(mensaje);
         confirmandoId.current = null;
@@ -1252,14 +1269,14 @@ export default function AlarmList() {
                                 style={[styles.confirmBtn, styles.confirmBtnGhost]}
                                 onPress={() => cerrarConfirmacion(false)}
                             >
-                                <Text style={styles.confirmBtnGhostText}>{t("common.cancel")}</Text>
+                                <Text style={styles.confirmBtnGhostText}>{t("DeviceDetailsScreen.common.cancel")}</Text>
                             </Pressable>
 
                             <Pressable
                                 style={[styles.confirmBtn, styles.confirmBtnPrimary]}
                                 onPress={() => cerrarConfirmacion(true)}
                             >
-                                <Text style={styles.confirmBtnPrimaryText}>{t("common.ok")}</Text>
+                                <Text style={styles.confirmBtnPrimaryText}>{t("DeviceDetailsScreen.common.ok")}</Text>
                             </Pressable>
                         </View>
                     </Pressable>
@@ -1310,7 +1327,7 @@ export default function AlarmList() {
                                 } catch (e) {
                                     criticalAlertShownRef.current = false;
                                     Alert.alert(
-                                        t("DeviceDetailsScreen.errorTitle"),
+                                        t("DeviceDetailsScreen.errorDialog"),
                                         "No se pudo confirmar el aviso"
                                     );
                                 } finally {

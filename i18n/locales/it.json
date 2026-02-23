@@ -45,6 +45,8 @@
             "noConnection": "Nessuna connessione",
             "deviceDisconnected": "Dispositivo disconnesso o senza comunicazione"
         },
+        "common": { "cancel": "Annulla", "ok": "Accetta" },
+        "errorDialog": "Non è stato possibile confermare l’avviso.",
         "Min": "Mín",
         "Max": "Máx",
         "No_conectado": "Non connesso",
