@@ -34,6 +34,8 @@ import { getUnitString, UnitEnum } from "@/utils/units";
 import { SensorSymbol } from "@/utils/SensorSymbol";
 //import { useMacSocketListener } from "@/hooks/useSocketListener";
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTopLinkedTc5Alarm } from "@/hooks/useTopLinkedTc5Alarm";
+
 
 
 
@@ -93,6 +95,84 @@ export default function AlarmList() {
     const criticalAlertShownRef = useRef(false);
     const postingCriticalRef = useRef(false);
     const [criticalVisible, setCriticalVisible] = useState(false);
+    const token = useAuthStore((s) => s.token);
+
+
+    //!--------CARD DE LAS ALARAS------------
+    //  DEMO (por ahora simulada)
+    // const SHOW_TOP_ALARM_DEMO = true;
+
+    // //  Alarmas activas reales (si luego quieres quitar demo)
+    // const triggeredAlarms = useMemo(() => {
+    //     return alarms.filter(a => a.armado && a.raised);
+    // }, [alarms]);
+
+    // //  top alarm a mostrar (solo 1)
+    // const demoTopAlarm = useMemo(() => {
+    //     return {
+    //         idAlarm: 1,
+    //         texto: "Temperatura alta",
+    //         armado: true,
+    //         raised: true,
+    //     } as any; // <- para no pelearte con el tipo ParamTC ahora
+    // }, []);
+
+    // const topAlarm = SHOW_TOP_ALARM_DEMO ? demoTopAlarm : triggeredAlarms[0];
+    // const totalTriggered = SHOW_TOP_ALARM_DEMO ? 3 : triggeredAlarms.length;
+
+    // //  Mostrar card solo si hay alarma (demo o real)
+    // const showTopAlarmCard = SHOW_TOP_ALARM_DEMO ? true : totalTriggered > 0;
+
+    // // Para fecha/hora (simple)
+    // const now = useMemo(() => new Date(), [totalTriggered]);
+
+    // const handleGoToExplotacion = () => {
+    //     if (!token) {
+    //         console.log("❌ No hay token disponible");
+    //         return;
+    //     }
+
+    //     navigation.navigate("Explotacion", {
+    //         mac: device.mac,
+    //         token,
+    //         idioma: "es",
+    //         siteName: device.siteName,
+    //         farmName: device.farmName,
+    //         idSite: device.idSite,
+    //         buildingPortalRef: device.buildingPortalRef,
+    //         simulado: isSimulated,
+    //     });
+    // };
+
+    const {
+        topAlarmCard,
+        totalLinkedAlarms,
+        loadingTopAlarm,
+        refetchTopAlarm,
+    } = useTopLinkedTc5Alarm(mac, t);
+
+    const showTopAlarmCard = !!topAlarmCard;
+
+    const handleGoToExplotacion = () => {
+        if (!token) {
+            console.log("❌ No hay token disponible");
+            return;
+        }
+
+        navigation.navigate("Explotacion", {
+            mac: device.mac,
+            token,
+            idioma: "es",
+            siteName: device.siteName,
+            farmName: device.farmName,
+            idSite: device.idSite,
+            buildingPortalRef: device.buildingPortalRef,
+            simulado: isSimulated,
+        });
+    };
+
+
+    //!-----------Fin CARD ALARMAS-----------
 
 
     const confirmandoMaster = useRef(false);
@@ -240,22 +320,47 @@ export default function AlarmList() {
 
     //!-------------------------------------------------------------
 
-    useEffect(() => {
-        if (!isDeviceDisconnected) return;
+    const debugDisconnectOnceRef = useRef(false);
 
+    useEffect(() => {
+        if (!isDeviceDisconnected) {
+            debugDisconnectOnceRef.current = false; // si vuelve a conectarse, permites debug de nuevo
+            return;
+        }
+
+        // ✅ tu lógica actual
         setAlarms([]);
         setMasterAlarmState(false);
         setIsConnected(false);
-
-        // setHeaderText("Sin conexión");
         setHeaderText(t("deviceList.error.noConnection"));
-
         setHeaderColor("#8a9bb9");
         updateHeaderStatus([], false);
-
-        // ✅ dispara el modal demo también aquí
         void checkCriticalAlarmDemo(false, true);
-    }, [isDeviceDisconnected]);
+
+        // ✅ DEBUG: ver qué devuelve el endpoint SIN cambiar la UI
+        if (__DEV__ && !debugDisconnectOnceRef.current) {
+            debugDisconnectOnceRef.current = true;
+
+            (async () => {
+                try {
+                    console.log("🧪 [DEBUG] isDeviceDisconnected=true, probando alarmtc/status...", { mac, alarmType });
+                    const raw = await get(`alarmtc/status?mac=${mac}`);
+
+                    console.log("🧪 [DEBUG] alarmtc/status raw:", raw);
+                    console.log("🧪 [DEBUG] length:", Array.isArray(raw) ? raw.length : "no-array");
+
+                    // si quieres ver solo master y 2-3 primeras:
+                    if (Array.isArray(raw)) {
+                        const master = raw.find((a: any) => a?.idAlarm === 1000);
+                        console.log("🧪 [DEBUG] master(1000):", master);
+                        console.log("🧪 [DEBUG] sample(0..2):", raw.slice(0, 3));
+                    }
+                } catch (e) {
+                    console.log("❌ [DEBUG] alarmtc/status falló:", e);
+                }
+            })();
+        }
+    }, [isDeviceDisconnected, mac, alarmType]);
 
 
 
@@ -367,7 +472,7 @@ export default function AlarmList() {
             /* ↓ pides TODOS los analógicos de golpe */
             const idsParam = JSON.stringify(ANALOG_SENSOR_IDS);
             const raw = await get(`alarmtc/sensors/?mac=${mac}&ids=${idsParam}`);
-            // console.log('---------------------Sensores obtenidos:-----------', raw);
+            console.log('---------------------Sensores obtenidos:-----------', raw);
             /* ↓ te quedas solo con los válidos */
             const filtrados: SensorData[] = Array.isArray(raw)
                 ? raw
@@ -398,6 +503,7 @@ export default function AlarmList() {
                     }))
                 : [];
 
+            console.log("🟩 SENSORS FILTRADOS:", filtrados);
 
             setSensorsData(filtrados);
         } catch (e) {
@@ -1149,6 +1255,118 @@ export default function AlarmList() {
         );
     };
 
+    //!--------CARD DE LAS ALARAS------------
+    const TopAlarmCard = ({
+        title,
+        statusText,
+        chipText,
+        dateText,
+        timeText,
+        count,
+        onPressAll,
+        onPressCard,
+    }: {
+        title: string;
+        statusText: string;
+        chipText: string;
+        dateText: string;
+        timeText: string;
+        count: number;
+        onPressAll: () => void;
+        onPressCard: () => void;
+    }) => {
+        return (
+            <View style={styles.topAlarmWrap}>
+                {/*  Card clicable */}
+                <Pressable
+                    onPress={onPressCard}
+                    android_ripple={{ color: "rgba(0,0,0,0.06)" }}
+                    style={({ pressed }) => [
+                        styles.topAlarmCard,
+                        pressed && { opacity: 0.92 },
+                    ]}
+                >
+                    {/* barra superior */}
+                    <LinearGradient
+                        colors={["#dc2626", "#ef4444"]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={styles.topAlarmBar}
+                    >
+                        <View style={styles.topAlarmBarLeft}>
+                            <MaterialCommunityIcons name="bell-ring-outline" size={18} color="#fff" />
+                            <Text style={styles.topAlarmBarTitle}>{title}</Text>
+                        </View>
+                    </LinearGradient>
+
+                    {/* contenido */}
+                    <View style={styles.topAlarmBody}>
+                        <Text style={styles.topAlarmStatus} numberOfLines={1}>
+                            {statusText}
+                        </Text>
+
+                        <View style={styles.topAlarmDateTimeRow}>
+                            <Text style={styles.topAlarmDateTime}>{dateText}</Text>
+                            <Text style={styles.topAlarmDateTime}> • </Text>
+                            <Text style={styles.topAlarmDateTime}>{timeText}</Text>
+                        </View>
+                    </View>
+
+                    {/* chip */}
+                    <View style={styles.topAlarmChipRow}>
+                        <View style={styles.topAlarmChip}>
+                            <Ionicons name="hardware-chip-outline" size={14} color="#111827" />
+                            <Text style={styles.topAlarmChipText}>{chipText}</Text>
+                        </View>
+                    </View>
+                </Pressable>
+
+                {/*  Botón separado (ya lo tienes bien) */}
+                <Pressable style={styles.topAlarmLinkRow} onPress={onPressAll}>
+                    <MaterialCommunityIcons
+                        name="bell-ring"
+                        size={18}
+                        color="#DC2626"
+                        style={{ marginLeft: 6, transform: [{ translateY: 1 }] }}
+                    />
+                    <Text style={styles.topAlarmLinkText}>Ver todas las Alarmas</Text>
+                    <Ionicons name="chevron-forward" size={16} color="#DC2626" />
+                </Pressable>
+                {/* <Pressable
+                    onPress={onPressAll}
+                    android_ripple={{ color: "rgba(220,38,38,0.12)" }}
+                    style={({ pressed }) => [
+                        styles.verTodasBtn,
+                        pressed && styles.verTodasBtnPressed,
+                    ]}
+                    hitSlop={8}
+                >
+                    <MaterialCommunityIcons
+                        name="bell-ring"
+                        size={18}
+                        color="#DC2626"
+                        style={{ marginLeft: 6, transform: [{ translateY: 1 }] }}
+                    />
+                    <Text style={styles.verTodasText}>Ver todas las Alarmas</Text>
+                    <Ionicons name="chevron-forward" size={18} color="#DC2626" />
+                </Pressable> */}
+
+                {/* <Pressable onPress={onPressAll} style={({ pressed }) => [styles.btnChipAll, pressed && { opacity: 0.75 }]}>
+                    <Text style={styles.btnChipAllText}>Ver todas las alarmas</Text>
+                    <View style={styles.btnChipBadge}><Text style={styles.btnChipBadgeText}>ALL</Text></View>
+                </Pressable> */}
+
+
+
+
+            </View>
+        );
+    };
+
+    //6B7280 gris 
+
+    //!-----------Fin CARD ALARMAS-----------
+
     return (
         <View style={[
             styles.container,
@@ -1214,9 +1432,26 @@ export default function AlarmList() {
 
             </LinearGradient>
 
-
-            {renderContent()}
-
+            {showTopAlarmCard && topAlarmCard && (
+                <TopAlarmCard
+                    title={topAlarmCard.nombreEquipo}
+                    statusText={topAlarmCard.textoAlarma}
+                    chipText={topAlarmCard.mac}
+                    dateText={topAlarmCard.fecha}
+                    timeText={topAlarmCard.hora}
+                    count={totalLinkedAlarms}
+                    onPressCard={handleGoToExplotacion}
+                    onPressAll={() => {
+                        navigation.navigate("AlarmasActivasScreen", {
+                            device,
+                            analogIds: analogIdsWithValue,
+                        });
+                    }}
+                />
+            )}
+            <View style={{ flex: 1 }}>
+                {renderContent()}
+            </View>
             <ButtonMaster
                 //mac={mac}
                 //fetchAlarms={fetchAlarms}
@@ -1794,6 +2029,179 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
 
+    topAlarmWrap: {
+        paddingHorizontal: 14,
+        paddingTop: 12,
+        paddingBottom: 6,
+    },
+    topAlarmCard: {
+        backgroundColor: "#fff",
+        borderRadius: 14,
+        overflow: "hidden",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.12,
+        shadowRadius: 12,
+        elevation: 6,
+
+        borderWidth: 2,
+        borderColor: "rgba(239,68,68,0.65)",
+    },
+
+    topAlarmBar: {
+        height: 42,
+        paddingHorizontal: 12,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+    },
+    topAlarmBarLeft: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+    },
+    topAlarmBarTitle: {
+        color: "#fff",
+        fontWeight: "900",
+        fontSize: 16,
+    },
+    topAlarmBarDate: {
+        color: "rgba(255,255,255,0.95)",
+        fontWeight: "700",
+        fontSize: 12,
+    },
+    topAlarmBody: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        paddingHorizontal: 12,
+        paddingTop: 12,
+        paddingBottom: 10,
+    },
+    topAlarmStatus: {
+        flex: 1,
+        fontSize: 14,
+        fontWeight: "800",
+        color: "#111827",
+        marginRight: 10,
+    },
+    topAlarmTime: {
+        fontSize: 12,
+        fontWeight: "700",
+        color: "#374151",
+    },
+    topAlarmChipRow: {
+        paddingHorizontal: 12,
+        paddingBottom: 10,
+    },
+    topAlarmChip: {
+        alignSelf: "flex-start",
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+        backgroundColor: "#F3F4F6",
+        paddingHorizontal: 10,
+        paddingVertical: 7,
+        borderRadius: 10,
+    },
+    topAlarmChipText: {
+        fontSize: 12,
+        fontWeight: "800",
+        color: "#111827",
+    },
+    topAlarmLinkRow: {
+        alignSelf: "flex-end",        // ✅ lo pega a la derecha
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+
+        marginTop: 10,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+
+        borderWidth: 1.6,
+        borderColor: "#DC2626",
+        borderRadius: 12,
+        backgroundColor: "#FFFFFF",
+
+        maxWidth: "92%",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.08,
+        shadowRadius: 10,
+        elevation: 3,
+
+    },
+
+    topAlarmLinkText: {
+        fontSize: 13,
+        fontWeight: "900",
+        color: "#DC2626",
+    },
+
+    //!-------------------------------
+    // topAlarmLinkRow: {
+    //     alignSelf: "flex-end",
+    //     flexDirection: "row",
+    //     alignItems: "center",
+    //     gap: 8,
+    //     marginTop: 10,
+    //     paddingHorizontal: 16,
+    //     paddingVertical: 12,
+    //     borderRadius: 18,
+    //     backgroundColor: "#DC2626",
+    //     maxWidth: "92%",
+    //     shadowColor: "#DC2626",
+    //     shadowOffset: { width: 0, height: 6 },
+    //     shadowOpacity: 0.3,
+    //     shadowRadius: 10,
+    //     elevation: 5,
+    // },
+    // topAlarmLinkText: {
+    //     fontSize: 13,
+    //     fontWeight: "700",
+    //     color: "#FFFFFF",
+    // },
+    // topAlarmLinkRowPressed: {
+    //     backgroundColor: "#FEF2F2",
+    //     borderColor: "#B91C1C",
+    //     transform: [{ scale: 0.98 }],
+    //     shadowOpacity: 0.25,
+    // },
+    //!-----------------------------------
+
+
+    topAlarmDateTimeRow: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+
+    topAlarmDateTime: {
+        fontSize: 13,        // sube a 14 si lo quieres más grande
+        fontWeight: "800",
+        color: "#374151",
+    },
+
+    verTodasBtn: {
+        alignSelf: "flex-end",
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+
+        paddingVertical: 8,
+        paddingHorizontal: 6,
+        borderBottomWidth: 2,
+        borderBottomColor: "rgba(220,38,38,0.45)",
+    },
+    verTodasBtnPressed: {
+        borderBottomColor: "rgba(220,38,38,0.9)",
+        opacity: 0.9,
+    },
+    verTodasText: {
+        fontSize: 13,
+        fontWeight: "900",
+        color: "#DC2626",
+    },
 
 
 
