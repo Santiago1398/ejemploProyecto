@@ -6,6 +6,7 @@ import { resultado } from '@/infrastructure/interface/listapi.interface'; // Imp
 export type RootStackParamList = {
     DeviceList: undefined; // No parameters for DeviceList
     DeviceDetails: { device: resultado }; // Pass `device` as a parameter
+    AlarmasActivasScreen: { device: resultado } | undefined; // Optional `device` parameter for AlarmasActivasScreen
 };
 
 // Navigation prop for DeviceList screen

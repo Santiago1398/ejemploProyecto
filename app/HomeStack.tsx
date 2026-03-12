@@ -20,6 +20,8 @@ import HistoriaAlarmas from "@/components/HistoriaAlarmas";
 import EstadisticasWeb from "@/components/EstadisticasWeb";
 import DeviceLocationMap from "@/components/maps/DebiceLocationMap";
 import RelaysScreen from "@/components/ActivacionRele";
+import AlarmasActivasScreen from "@/components/AlarmasActivasScreen";
+
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -124,6 +126,21 @@ export type RootStackParamList = {
         mac: number;
 
     }
+    AlarmasActivasScreen: {
+        device: {
+            id: string;
+            userid: string;
+            latitude: number;
+            longitude: number;
+            farmName: string;
+            siteName: string;
+            mac: number;
+            idSite: number;
+            buildingPortalRef: number;
+            simulado?: boolean;
+        };
+        analogIds?: number[];
+    };
 }
 
 export type RootDrawerParamList = {
@@ -280,6 +297,14 @@ export default function HomeStack() {
                         // sub: route.params.siteName,
 
                     })}
+                />
+                <Stack.Screen
+                    name="AlarmasActivasScreen"
+                    component={AlarmasActivasScreen}
+                    options={{
+                        headerShown: true,
+                        title: "Alarmas activas",
+                    }}
                 />
             </Stack.Navigator>
         </PaperProvider>
