@@ -794,6 +794,7 @@ export default function AlarmList() {
             const [alarmsData] = await Promise.all([
                 get(`alarmtc/status?mac=${mac}`),
                 fetchSensors(), // ya maneja errores internamente
+                refetchTopAlarm(),
             ]);
 
             console.log(
@@ -1258,16 +1259,17 @@ export default function AlarmList() {
     //!--------CARD DE LAS ALARAS------------
     const TopAlarmCard = ({
         title,
-        statusText,
+        locationText,
+        detailText,
         chipText,
         dateText,
         timeText,
-        count,
         onPressAll,
         onPressCard,
     }: {
         title: string;
-        statusText: string;
+        locationText?: string;
+        detailText: string;
         chipText: string;
         dateText: string;
         timeText: string;
@@ -1277,88 +1279,87 @@ export default function AlarmList() {
     }) => {
         return (
             <View style={styles.topAlarmWrap}>
-                {/*  Card clicable */}
                 <Pressable
                     onPress={onPressCard}
                     android_ripple={{ color: "rgba(0,0,0,0.06)" }}
-                    style={({ pressed }) => [
-                        styles.topAlarmCard,
-                        pressed && { opacity: 0.92 },
-                    ]}
+                    style={({ pressed }) => [styles.topAlarmCard, pressed && { opacity: 0.92 }]}
                 >
-                    {/* barra superior */}
+                    {/*  Título dentro de la card */}
+                    <View style={styles.portalTitleInsideWrap}>
+                        <Text style={styles.portalTitleInsideText}>Alarma Portal</Text>
+                        {/* <View style={styles.portalTitleInsideDivider} /> */}
+                    </View>
+
+                    {/*  Barra roja más abajo */}
                     <LinearGradient
                         colors={["#dc2626", "#ef4444"]}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 0 }}
-                        style={styles.topAlarmBar}
+                        style={styles.topAlarmBarInside}
                     >
                         <View style={styles.topAlarmBarLeft}>
                             <MaterialCommunityIcons name="bell-ring-outline" size={18} color="#fff" />
                             <Text style={styles.topAlarmBarTitle}>{title}</Text>
                         </View>
+                        <View style={styles.topAlarmBarMac}>
+                            <Ionicons name="hardware-chip-outline" size={14} color="#fff" />
+                            <Text style={styles.topAlarmBarMacText} numberOfLines={1}>{chipText}</Text>
+                        </View>
                     </LinearGradient>
 
-                    {/* contenido */}
                     <View style={styles.topAlarmBody}>
-                        <Text style={styles.topAlarmStatus} numberOfLines={1}>
-                            {statusText}
-                        </Text>
+                        {/* fila 1: ubicación + fecha/hora */}
+                        <View style={styles.topAlarmBodyRow}>
+                            {!!locationText && (
+                                <Text style={styles.topAlarmLocation} numberOfLines={1}>
+                                    {locationText}
+                                </Text>
+                            )}
 
-                        <View style={styles.topAlarmDateTimeRow}>
-                            <Text style={styles.topAlarmDateTime}>{dateText}</Text>
-                            <Text style={styles.topAlarmDateTime}> • </Text>
-                            <Text style={styles.topAlarmDateTime}>{timeText}</Text>
+                            <View style={styles.topAlarmDateTimeRow}>
+                                <Text style={styles.topAlarmDateTime}>{dateText}</Text>
+                                <Text style={styles.topAlarmDateTime}> • </Text>
+                                <Text style={styles.topAlarmDateTime}>{timeText}</Text>
+                            </View>
                         </View>
-                    </View>
 
-                    {/* chip */}
-                    <View style={styles.topAlarmChipRow}>
+                        {/* fila 2: alarmText (detalle) */}
+                        <Text style={styles.topAlarmStatus} numberOfLines={1}>
+                            {detailText}
+                        </Text>
+                    </View>
+                    {/* <View style={styles.topAlarmChipRow}>
                         <View style={styles.topAlarmChip}>
                             <Ionicons name="hardware-chip-outline" size={14} color="#111827" />
                             <Text style={styles.topAlarmChipText}>{chipText}</Text>
                         </View>
-                    </View>
+                    </View> */}
+
+                    <View style={styles.topAlarmDivider} />
+
+                    {/* ✅ Link plano (sin caja) */}
+                    <Pressable
+                        onPress={onPressAll}
+                        hitSlop={10}
+                        style={({ pressed }) => [styles.topAlarmLinkPlainRow, pressed && { opacity: 0.65 }]}
+                    >
+                        <View style={styles.plusCircle}>
+                            <MaterialCommunityIcons name="plus" size={16} color="#DC2626" />
+                        </View>
+
+                        {/* ✅ SOLO un texto (aquí tenías dos) */}
+                        <Text style={styles.topAlarmLinkPlainText} numberOfLines={1}>
+                            Más Alarmas Portal
+                        </Text>
+
+                        <Ionicons
+                            name="chevron-forward"
+                            size={16}
+                            color="#DC2626"
+                            style={{ marginLeft: "auto" }}
+                        />
+                    </Pressable>
                 </Pressable>
-
-                {/*  Botón separado (ya lo tienes bien) */}
-                <Pressable style={styles.topAlarmLinkRow} onPress={onPressAll}>
-                    <MaterialCommunityIcons
-                        name="bell-ring"
-                        size={18}
-                        color="#DC2626"
-                        style={{ marginLeft: 6, transform: [{ translateY: 1 }] }}
-                    />
-                    <Text style={styles.topAlarmLinkText}>Ver todas las Alarmas</Text>
-                    <Ionicons name="chevron-forward" size={16} color="#DC2626" />
-                </Pressable>
-                {/* <Pressable
-                    onPress={onPressAll}
-                    android_ripple={{ color: "rgba(220,38,38,0.12)" }}
-                    style={({ pressed }) => [
-                        styles.verTodasBtn,
-                        pressed && styles.verTodasBtnPressed,
-                    ]}
-                    hitSlop={8}
-                >
-                    <MaterialCommunityIcons
-                        name="bell-ring"
-                        size={18}
-                        color="#DC2626"
-                        style={{ marginLeft: 6, transform: [{ translateY: 1 }] }}
-                    />
-                    <Text style={styles.verTodasText}>Ver todas las Alarmas</Text>
-                    <Ionicons name="chevron-forward" size={18} color="#DC2626" />
-                </Pressable> */}
-
-                {/* <Pressable onPress={onPressAll} style={({ pressed }) => [styles.btnChipAll, pressed && { opacity: 0.75 }]}>
-                    <Text style={styles.btnChipAllText}>Ver todas las alarmas</Text>
-                    <View style={styles.btnChipBadge}><Text style={styles.btnChipBadgeText}>ALL</Text></View>
-                </Pressable> */}
-
-
-
-
             </View>
         );
     };
@@ -1433,22 +1434,29 @@ export default function AlarmList() {
             </LinearGradient>
 
             {showTopAlarmCard && topAlarmCard && (
-                <TopAlarmCard
-                    title={topAlarmCard.nombreEquipo}
-                    statusText={topAlarmCard.textoAlarma}
-                    chipText={topAlarmCard.mac}
-                    dateText={topAlarmCard.fecha}
-                    timeText={topAlarmCard.hora}
-                    count={totalLinkedAlarms}
-                    onPressCard={handleGoToExplotacion}
-                    onPressAll={() => {
-                        navigation.navigate("AlarmasActivasScreen", {
-                            device,
-                            analogIds: analogIdsWithValue,
-                        });
-                    }}
-                />
+
+                <>
+
+                    <TopAlarmCard
+                        title={topAlarmCard.nombreEquipo}
+                        locationText={topAlarmCard.ubicacion}
+                        detailText={topAlarmCard.detalle}
+                        chipText={topAlarmCard.mac}
+                        dateText={topAlarmCard.fecha}
+                        timeText={topAlarmCard.hora}
+                        count={totalLinkedAlarms}
+                        onPressCard={handleGoToExplotacion}
+                        onPressAll={() => {
+                            navigation.navigate("AlarmasActivasScreen", {
+                                device,
+                                analogIds: analogIdsWithValue,
+                            });
+                        }}
+                    />
+                </>
             )}
+            {showTopAlarmCard && <View style={styles.separatorLine} />}
+
             <View style={{ flex: 1 }}>
                 {renderContent()}
             </View>
@@ -2031,8 +2039,8 @@ const styles = StyleSheet.create({
 
     topAlarmWrap: {
         paddingHorizontal: 14,
-        paddingTop: 12,
-        paddingBottom: 6,
+        paddingTop: 8,
+        paddingBottom: 2,
     },
     topAlarmCard: {
         backgroundColor: "#fff",
@@ -2059,6 +2067,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         gap: 8,
+        flex: 1,
+        marginRight: 10,
     },
     topAlarmBarTitle: {
         color: "#fff",
@@ -2071,15 +2081,15 @@ const styles = StyleSheet.create({
         fontSize: 12,
     },
     topAlarmBody: {
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
+        // flexDirection: "row",
+        // alignItems: "center",
+        //  justifyContent: "space-between",
         paddingHorizontal: 12,
-        paddingTop: 12,
-        paddingBottom: 10,
+        paddingTop: 8,
+        paddingBottom: 6,
     },
     topAlarmStatus: {
-        flex: 1,
+        // flex: 1,
         fontSize: 14,
         fontWeight: "800",
         color: "#111827",
@@ -2095,7 +2105,7 @@ const styles = StyleSheet.create({
         paddingBottom: 10,
     },
     topAlarmChip: {
-        alignSelf: "flex-start",
+        alignSelf: "flex-end",
         flexDirection: "row",
         alignItems: "center",
         gap: 8,
@@ -2203,6 +2213,119 @@ const styles = StyleSheet.create({
         color: "#DC2626",
     },
 
+    topAlarmLocation: {
+        flex: 1,
+        marginRight: 10,
+        fontSize: 13,
+        fontWeight: "700",
+        color: "#111827",
+    },
+    topAlarmDivider: {
+        height: 1,
+        backgroundColor: "rgba(17,24,39,0.08)", // gris suave
+    },
 
+    topAlarmLinkPlainRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 12,
+        alignSelf: "flex-start", // ✅ a la izquierda
+    },
+
+    topAlarmLinkPlainText: {
+        fontSize: 13,
+        fontWeight: "900",
+        color: "#DC2626", // rojo
+    },
+
+    portalHeaderWrap: {
+        paddingHorizontal: 14,
+        paddingTop: 12,
+        paddingBottom: 6,
+    },
+
+    portalHeaderTitle: {
+        fontSize: 16,
+        fontWeight: "900",
+        color: "#111827",
+    },
+
+    portalHeaderDivider: {
+        marginTop: 8,
+        height: 1,
+        backgroundColor: "rgba(17,24,39,0.12)",
+    },
+    plusCircle: {
+        width: 22,
+        height: 22,
+        borderRadius: 11,
+        borderWidth: 2,
+        borderColor: "#DC2626",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    portalTitleInsideWrap: {
+        paddingHorizontal: 12,
+        paddingTop: 6,
+        paddingBottom: 6,
+        backgroundColor: "#fff",
+    },
+
+    portalTitleInsideText: {
+        fontSize: 16,
+        fontWeight: "900",
+        color: "#111827",
+    },
+    portalTitleInsideDivider: {
+        marginTop: 10,
+        height: 1,
+        backgroundColor: "rgba(17,24,39,0.10)",
+    },
+    topAlarmBarInside: {
+        height: 36,
+        marginTop: 0,     // ✅ esto “baja” la barra roja
+        paddingHorizontal: 12,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+    },
+    topAlarmBarRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        width: "100%",
+    },
+
+    topAlarmBarMac: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+        // paddingHorizontal: 10,
+        // paddingVertical: 5,
+        // borderRadius: 999,
+        // backgroundColor: "rgba(255,255,255,0.18)", // pill suave
+        // maxWidth: "38%", // para que no empuje demasiado el título
+    },
+
+    topAlarmBarMacText: {
+        color: "#fff",
+        fontWeight: "900",
+        fontSize: 12,
+    },
+    topAlarmBodyRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+    },
+    separatorLine: {
+        height: 1.5, // prueba 2 o 3
+        backgroundColor: "rgba(0,0,0,1)",
+        marginHorizontal: 16,
+        marginTop: 8,
+        marginBottom: 8,
+        borderRadius: 1,
+    },
 
 });

@@ -1,8 +1,6 @@
 import { LinkedTc5AlarmResponse, TopAlarmCardData } from "@/types/LinkedTc5AlarmInterface";
 import { deviceName, deviceTraduccionAlarmas } from "./switch/dispositivos";
 
-
-
 export function resolverTextoAlarma(
     mac: string,
     alarmRef: number,
@@ -28,18 +26,27 @@ export function obtenerTopAlarmCardData(
     );
 
     const ultima = ordenadas[0];
-
     const fechaObj = new Date(ultima.timestamp);
 
+    const nombreEquipo = deviceName(ultima.mac);
+    const textoAlarma = resolverTextoAlarma(
+        ultima.mac,
+        ultima.alarmRef,
+        ultima.alarmText,
+        t
+    );
+
+    const ubicacion = [ultima.farm, ultima.building]
+        .filter((valor) => valor?.trim())
+        .join(" - ");
+
+    const detalle = textoAlarma;
     return {
         mac: ultima.mac,
-        nombreEquipo: deviceName(ultima.mac),
-        textoAlarma: resolverTextoAlarma(
-            ultima.mac,
-            ultima.alarmRef,
-            ultima.alarmText,
-            t
-        ),
+        titulo: "Alarma Portal",
+        nombreEquipo,
+        ubicacion,
+        detalle,
         fecha: fechaObj.toLocaleDateString("es-ES"),
         hora: fechaObj.toLocaleTimeString("es-ES", {
             hour: "2-digit",
