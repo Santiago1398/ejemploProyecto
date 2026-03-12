@@ -12,9 +12,12 @@ export interface LinkedTc5AlarmResponse {
 
 export interface TopAlarmCardData {
     mac: string;
-    nombreEquipo: string;
-    textoAlarma: string;
+    titulo: string;
+    ubicacion: string;
+    detalle: string;
     fecha: string;
     hora: string;
     timestamp: string;
-}
+    nombreEquipo: string;
+    key?: string;
+};

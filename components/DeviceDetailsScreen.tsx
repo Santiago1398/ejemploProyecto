@@ -34,6 +34,10 @@ import { getUnitString, UnitEnum } from "@/utils/units";
 import { SensorSymbol } from "@/utils/SensorSymbol";
 //import { useMacSocketListener } from "@/hooks/useSocketListener";
 import { LinearGradient } from 'expo-linear-gradient';
+import { useTopLinkedTc5Alarm } from "@/hooks/useTopLinkedTc5Alarm";
+
+
+
 
 
 
@@ -93,6 +97,95 @@ export default function AlarmList() {
     const criticalAlertShownRef = useRef(false);
     const postingCriticalRef = useRef(false);
     const [criticalVisible, setCriticalVisible] = useState(false);
+    const token = useAuthStore((s) => s.token);
+
+
+
+
+    //!--------CARD DE LAS ALARAS------------
+    //  DEMO (por ahora simulada)
+    // const SHOW_TOP_ALARM_DEMO = true;
+
+    // //  Alarmas activas reales (si luego quieres quitar demo)
+    // const triggeredAlarms = useMemo(() => {
+    //     return alarms.filter(a => a.armado && a.raised);
+    // }, [alarms]);
+
+    // //  top alarm a mostrar (solo 1)
+    // const demoTopAlarm = useMemo(() => {
+    //     return {
+    //         idAlarm: 1,
+    //         texto: "Temperatura alta",
+    //         armado: true,
+    //         raised: true,
+    //     } as any; // <- para no pelearte con el tipo ParamTC ahora
+    // }, []);
+
+    // const topAlarm = SHOW_TOP_ALARM_DEMO ? demoTopAlarm : triggeredAlarms[0];
+    // const totalTriggered = SHOW_TOP_ALARM_DEMO ? 3 : triggeredAlarms.length;
+
+    // //  Mostrar card solo si hay alarma (demo o real)
+    // const showTopAlarmCard = SHOW_TOP_ALARM_DEMO ? true : totalTriggered > 0;
+
+    // // Para fecha/hora (simple)
+    // const now = useMemo(() => new Date(), [totalTriggered]);
+
+    // const handleGoToExplotacion = () => {
+    //     if (!token) {
+    //         console.log("❌ No hay token disponible");
+    //         return;
+    //     }
+
+    //     navigation.navigate("Explotacion", {
+    //         mac: device.mac,
+    //         token,
+    //         idioma: "es",
+    //         siteName: device.siteName,
+    //         farmName: device.farmName,
+    //         idSite: device.idSite,
+    //         buildingPortalRef: device.buildingPortalRef,
+    //         simulado: isSimulated,
+    //     });
+    // };
+
+    const {
+        topAlarmCard,
+        totalLinkedAlarms,
+        loadingTopAlarm,
+        refetchTopAlarm,
+    } = useTopLinkedTc5Alarm(mac, t);
+
+    const showTopAlarmCard = !!topAlarmCard;
+
+    const handleGoToExplotacion = () => {
+        if (!token) {
+            console.log("❌ No hay token disponible");
+            return;
+        }
+
+        navigation.navigate("Explotacion", {
+            mac: device.mac,
+            token,
+            idioma: "es",
+            siteName: device.siteName,
+            farmName: device.farmName,
+            idSite: device.idSite,
+            buildingPortalRef: device.buildingPortalRef,
+            simulado: isSimulated,
+        });
+
+    };
+    const irAlPortal = handleGoToExplotacion;
+
+    const irAListaAlarmasPortal = () => {
+        navigation.navigate("AlarmasActivasScreen", {
+            device,
+            analogIds: analogIdsWithValue,
+        });
+    };
+
+
+    //!-----------Fin CARD ALARMAS-----------
 
 
     const confirmandoMaster = useRef(false);
@@ -240,22 +333,47 @@ export default function AlarmList() {
 
     //!-------------------------------------------------------------
 
-    useEffect(() => {
-        if (!isDeviceDisconnected) return;
+    const debugDisconnectOnceRef = useRef(false);
 
+    useEffect(() => {
+        if (!isDeviceDisconnected) {
+            debugDisconnectOnceRef.current = false; // si vuelve a conectarse, permites debug de nuevo
+            return;
+        }
+
+        // ✅ tu lógica actual
         setAlarms([]);
         setMasterAlarmState(false);
         setIsConnected(false);
-
-        // setHeaderText("Sin conexión");
         setHeaderText(t("deviceList.error.noConnection"));
-
         setHeaderColor("#8a9bb9");
         updateHeaderStatus([], false);
-
-        // ✅ dispara el modal demo también aquí
         void checkCriticalAlarmDemo(false, true);
-    }, [isDeviceDisconnected]);
+
+        // ✅ DEBUG: ver qué devuelve el endpoint SIN cambiar la UI
+        if (__DEV__ && !debugDisconnectOnceRef.current) {
+            debugDisconnectOnceRef.current = true;
+
+            (async () => {
+                try {
+                    console.log("🧪 [DEBUG] isDeviceDisconnected=true, probando alarmtc/status...", { mac, alarmType });
+                    const raw = await get(`alarmtc/status?mac=${mac}`);
+
+                    console.log("🧪 [DEBUG] alarmtc/status raw:", raw);
+                    console.log("🧪 [DEBUG] length:", Array.isArray(raw) ? raw.length : "no-array");
+
+                    // si quieres ver solo master y 2-3 primeras:
+                    if (Array.isArray(raw)) {
+                        const master = raw.find((a: any) => a?.idAlarm === 1000);
+                        console.log("🧪 [DEBUG] master(1000):", master);
+                        console.log("🧪 [DEBUG] sample(0..2):", raw.slice(0, 3));
+                    }
+                } catch (e) {
+                    console.log("❌ [DEBUG] alarmtc/status falló:", e);
+                }
+            })();
+        }
+    }, [isDeviceDisconnected, mac, alarmType]);
 
 
 
@@ -367,7 +485,7 @@ export default function AlarmList() {
             /* ↓ pides TODOS los analógicos de golpe */
             const idsParam = JSON.stringify(ANALOG_SENSOR_IDS);
             const raw = await get(`alarmtc/sensors/?mac=${mac}&ids=${idsParam}`);
-            // console.log('---------------------Sensores obtenidos:-----------', raw);
+            console.log('---------------------Sensores obtenidos:-----------', raw);
             /* ↓ te quedas solo con los válidos */
             const filtrados: SensorData[] = Array.isArray(raw)
                 ? raw
@@ -398,6 +516,7 @@ export default function AlarmList() {
                     }))
                 : [];
 
+            console.log("🟩 SENSORS FILTRADOS:", filtrados);
 
             setSensorsData(filtrados);
         } catch (e) {
@@ -688,6 +807,7 @@ export default function AlarmList() {
             const [alarmsData] = await Promise.all([
                 get(`alarmtc/status?mac=${mac}`),
                 fetchSensors(), // ya maneja errores internamente
+                refetchTopAlarm(),
             ]);
 
             console.log(
@@ -1149,6 +1269,125 @@ export default function AlarmList() {
         );
     };
 
+    //!--------CARD DE LAS ALARAS------------
+    const TopAlarmCard = ({
+        title,
+        locationText,
+        detailText,
+        chipText,
+        dateText,
+        timeText,
+        count,
+        onPressAll,
+        onPressCard,
+    }: {
+        title: string;
+        locationText?: string;
+        detailText: string;
+        chipText: string;
+        dateText: string;
+        timeText: string;
+        count: number;
+        onPressAll: () => void;
+        onPressCard: () => void;
+    }) => {
+        const hayMasDeUna = (count ?? 0) > 1;
+
+        const onPressCardFinal = hayMasDeUna ? onPressAll : onPressCard;
+
+        return (
+            <View style={styles.topAlarmWrap}>
+                <Pressable
+                    onPress={onPressCardFinal}
+                    android_ripple={{ color: "rgba(0,0,0,0.06)" }}
+                    style={({ pressed }) => [styles.topAlarmCard, pressed && { opacity: 0.92 }]}
+                >
+                    {/*  Título dentro de la card */}
+                    <View style={styles.portalTitleInsideWrap}>
+                        <Text style={styles.portalTitleInsideText}>Alarma Portal</Text>
+                        {/* <View style={styles.portalTitleInsideDivider} /> */}
+                    </View>
+
+                    {/*  Barra roja más abajo */}
+                    <LinearGradient
+                        colors={["#dc2626", "#ef4444"]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                        style={styles.topAlarmBarInside}
+                    >
+                        <View style={styles.topAlarmBarLeft}>
+                            <MaterialCommunityIcons name="bell-ring-outline" size={18} color="#fff" />
+                            <Text style={styles.topAlarmBarTitle}>{title}</Text>
+                        </View>
+                        <View style={styles.topAlarmBarMac}>
+                            <Ionicons name="hardware-chip-outline" size={14} color="#fff" />
+                            <Text style={styles.topAlarmBarMacText} numberOfLines={1}>{chipText}</Text>
+                        </View>
+                    </LinearGradient>
+
+                    <View style={styles.topAlarmBody}>
+                        {/* fila 1: ubicación + fecha/hora */}
+                        <View style={styles.topAlarmBodyRow}>
+                            {!!locationText && (
+                                <Text style={styles.topAlarmLocation} numberOfLines={1}>
+                                    {locationText}
+                                </Text>
+                            )}
+
+                            <View style={styles.topAlarmDateTimeRow}>
+                                <Text style={styles.topAlarmDateTime}>{dateText}</Text>
+                                <Text style={styles.topAlarmDateTime}> • </Text>
+                                <Text style={styles.topAlarmDateTime}>{timeText}</Text>
+                            </View>
+                        </View>
+
+                        {/* fila 2: alarmText (detalle) */}
+                        <Text style={styles.topAlarmStatus} numberOfLines={1}>
+                            {detailText}
+                        </Text>
+                    </View>
+                    {/* <View style={styles.topAlarmChipRow}>
+                        <View style={styles.topAlarmChip}>
+                            <Ionicons name="hardware-chip-outline" size={14} color="#111827" />
+                            <Text style={styles.topAlarmChipText}>{chipText}</Text>
+                        </View>
+                    </View> */}
+
+                    <View style={styles.topAlarmDivider} />
+
+                    {/* ✅ Link plano (sin caja) */}
+                    {hayMasDeUna && (
+                        <Pressable
+                            onPress={onPressAll} // (puede ser el mismo que la card, no pasa nada)
+                            hitSlop={10}
+                            style={({ pressed }) => [styles.topAlarmLinkPlainRow, pressed && { opacity: 0.65 }]}
+                        >
+                            <View style={styles.plusCircle}>
+                                <MaterialCommunityIcons name="plus" size={16} color="#DC2626" />
+                            </View>
+
+                            <Text style={styles.topAlarmLinkPlainText} numberOfLines={1}>
+                                Más Alarmas Portal
+                            </Text>
+
+                            <Ionicons
+                                name="chevron-forward"
+                                size={16}
+                                color="#DC2626"
+                                style={{ marginLeft: "auto" }}
+                            />
+                        </Pressable>
+                    )}
+                </Pressable>
+            </View>
+        );
+    };
+    //6B7280 gris 
+
+
+
+    //!-----------Fin CARD ALARMAS-----------
+
     return (
         <View style={[
             styles.container,
@@ -1214,9 +1453,29 @@ export default function AlarmList() {
 
             </LinearGradient>
 
+            {showTopAlarmCard && topAlarmCard && (
 
-            {renderContent()}
+                <>
 
+                    <TopAlarmCard
+                        title={topAlarmCard.nombreEquipo}
+                        locationText={topAlarmCard.ubicacion}
+                        detailText={topAlarmCard.detalle}
+                        chipText={topAlarmCard.mac}
+                        dateText={topAlarmCard.fecha}
+                        timeText={topAlarmCard.hora}
+                        count={totalLinkedAlarms}
+                        onPressCard={irAlPortal}
+                        onPressAll={irAListaAlarmasPortal}
+                    />
+
+                </>
+            )}
+            {showTopAlarmCard && <View style={styles.separatorLine} />}
+
+            <View style={{ flex: 1 }}>
+                {renderContent()}
+            </View>
             <ButtonMaster
                 //mac={mac}
                 //fetchAlarms={fetchAlarms}
@@ -1794,7 +2053,295 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
 
+    topAlarmWrap: {
+        paddingHorizontal: 14,
+        paddingTop: 8,
+        paddingBottom: 2,
+    },
+    topAlarmCard: {
+        backgroundColor: "#fff",
+        borderRadius: 14,
+        overflow: "hidden",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.12,
+        shadowRadius: 12,
+        elevation: 6,
+
+        borderWidth: 2,
+        borderColor: "rgba(239,68,68,0.65)",
+    },
+
+    topAlarmBar: {
+        height: 42,
+        paddingHorizontal: 12,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+    },
+    topAlarmBarLeft: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+        flex: 1,
+        marginRight: 10,
+    },
+    topAlarmBarTitle: {
+        color: "#fff",
+        fontWeight: "900",
+        fontSize: 16,
+    },
+    topAlarmBarDate: {
+        color: "rgba(255,255,255,0.95)",
+        fontWeight: "700",
+        fontSize: 12,
+    },
+    topAlarmBody: {
+        // flexDirection: "row",
+        // alignItems: "center",
+        //  justifyContent: "space-between",
+        paddingHorizontal: 12,
+        paddingTop: 8,
+        paddingBottom: 6,
+    },
+    topAlarmStatus: {
+        // flex: 1,
+        fontSize: 14,
+        fontWeight: "800",
+        color: "#111827",
+        marginRight: 10,
+    },
+    topAlarmTime: {
+        fontSize: 12,
+        fontWeight: "700",
+        color: "#374151",
+    },
+    topAlarmChipRow: {
+        paddingHorizontal: 12,
+        paddingBottom: 10,
+    },
+    topAlarmChip: {
+        alignSelf: "flex-end",
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+        backgroundColor: "#F3F4F6",
+        paddingHorizontal: 10,
+        paddingVertical: 7,
+        borderRadius: 10,
+    },
+    topAlarmChipText: {
+        fontSize: 12,
+        fontWeight: "800",
+        color: "#111827",
+    },
+    topAlarmLinkRow: {
+        alignSelf: "flex-end",        // ✅ lo pega a la derecha
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+
+        marginTop: 10,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+
+        borderWidth: 1.6,
+        borderColor: "#DC2626",
+        borderRadius: 12,
+        backgroundColor: "#FFFFFF",
+
+        maxWidth: "92%",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 6 },
+        shadowOpacity: 0.08,
+        shadowRadius: 10,
+        elevation: 3,
+
+    },
+
+    topAlarmLinkText: {
+        fontSize: 13,
+        fontWeight: "900",
+        color: "#DC2626",
+    },
+
+    //!-------------------------------
+    // topAlarmLinkRow: {
+    //     alignSelf: "flex-end",
+    //     flexDirection: "row",
+    //     alignItems: "center",
+    //     gap: 8,
+    //     marginTop: 10,
+    //     paddingHorizontal: 16,
+    //     paddingVertical: 12,
+    //     borderRadius: 18,
+    //     backgroundColor: "#DC2626",
+    //     maxWidth: "92%",
+    //     shadowColor: "#DC2626",
+    //     shadowOffset: { width: 0, height: 6 },
+    //     shadowOpacity: 0.3,
+    //     shadowRadius: 10,
+    //     elevation: 5,
+    // },
+    // topAlarmLinkText: {
+    //     fontSize: 13,
+    //     fontWeight: "700",
+    //     color: "#FFFFFF",
+    // },
+    // topAlarmLinkRowPressed: {
+    //     backgroundColor: "#FEF2F2",
+    //     borderColor: "#B91C1C",
+    //     transform: [{ scale: 0.98 }],
+    //     shadowOpacity: 0.25,
+    // },
+    //!-----------------------------------
 
 
+    topAlarmDateTimeRow: {
+        flexDirection: "row",
+        alignItems: "center",
+    },
+
+    topAlarmDateTime: {
+        fontSize: 13,        // sube a 14 si lo quieres más grande
+        fontWeight: "800",
+        color: "#374151",
+    },
+
+    verTodasBtn: {
+        alignSelf: "flex-end",
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+
+        paddingVertical: 8,
+        paddingHorizontal: 6,
+        borderBottomWidth: 2,
+        borderBottomColor: "rgba(220,38,38,0.45)",
+    },
+    verTodasBtnPressed: {
+        borderBottomColor: "rgba(220,38,38,0.9)",
+        opacity: 0.9,
+    },
+    verTodasText: {
+        fontSize: 13,
+        fontWeight: "900",
+        color: "#DC2626",
+    },
+
+    topAlarmLocation: {
+        flex: 1,
+        marginRight: 10,
+        fontSize: 13,
+        fontWeight: "700",
+        color: "#111827",
+    },
+    topAlarmDivider: {
+        height: 1,
+        backgroundColor: "rgba(17,24,39,0.08)", // gris suave
+    },
+
+    topAlarmLinkPlainRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
+        paddingHorizontal: 12,
+        paddingVertical: 12,
+        alignSelf: "flex-start", // ✅ a la izquierda
+    },
+
+    topAlarmLinkPlainText: {
+        fontSize: 13,
+        fontWeight: "900",
+        color: "#DC2626", // rojo
+    },
+
+    portalHeaderWrap: {
+        paddingHorizontal: 14,
+        paddingTop: 12,
+        paddingBottom: 6,
+    },
+
+    portalHeaderTitle: {
+        fontSize: 16,
+        fontWeight: "900",
+        color: "#111827",
+    },
+
+    portalHeaderDivider: {
+        marginTop: 8,
+        height: 1,
+        backgroundColor: "rgba(17,24,39,0.12)",
+    },
+    plusCircle: {
+        width: 22,
+        height: 22,
+        borderRadius: 11,
+        borderWidth: 2,
+        borderColor: "#DC2626",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    portalTitleInsideWrap: {
+        paddingHorizontal: 12,
+        paddingTop: 6,
+        paddingBottom: 6,
+        backgroundColor: "#fff",
+    },
+
+    portalTitleInsideText: {
+        fontSize: 16,
+        fontWeight: "900",
+        color: "#111827",
+    },
+    portalTitleInsideDivider: {
+        marginTop: 10,
+        height: 1,
+        backgroundColor: "rgba(17,24,39,0.10)",
+    },
+    topAlarmBarInside: {
+        height: 36,
+        marginTop: 0,     // ✅ esto “baja” la barra roja
+        paddingHorizontal: 12,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+    },
+    topAlarmBarRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        width: "100%",
+    },
+
+    topAlarmBarMac: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+        // paddingHorizontal: 10,
+        // paddingVertical: 5,
+        // borderRadius: 999,
+        // backgroundColor: "rgba(255,255,255,0.18)", // pill suave
+        // maxWidth: "38%", // para que no empuje demasiado el título
+    },
+
+    topAlarmBarMacText: {
+        color: "#fff",
+        fontWeight: "900",
+        fontSize: 12,
+    },
+    topAlarmBodyRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+    },
+    separatorLine: {
+        height: 1.5, // prueba 2 o 3
+        backgroundColor: "rgba(0,0,0,1)",
+        marginHorizontal: 16,
+        marginTop: 8,
+        marginBottom: 8,
+        borderRadius: 1,
+    },
 
 });

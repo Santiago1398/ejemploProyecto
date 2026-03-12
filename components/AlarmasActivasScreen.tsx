@@ -1,5 +1,13 @@
-import React, { useMemo, useLayoutEffect, useCallback } from "react";
-import { View, Text, StyleSheet, FlatList, Pressable, Alert } from "react-native";
+import React, { useEffect, useLayoutEffect, useCallback, useMemo, useState } from "react";
+import {
+    View,
+    Text,
+    StyleSheet,
+    FlatList,
+    Pressable,
+    Alert,
+    ActivityIndicator,
+} from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
@@ -8,13 +16,24 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import type { RootStackParamList } from "@/app/HomeStack";
 import { useAuthStore } from "@/store/authStore";
+import { get } from "@/services/api";
+
+import type { LinkedTc5AlarmResponse } from "@/types/LinkedTc5AlarmInterface";
+import { deviceName } from "@/utils/switch/dispositivos";
+import { resolverTextoAlarma } from "@/utils/linkedTc5Alarm";
+import { t } from "@/i18n/i18nConfig";
+import { useFocusEffect } from "@react-navigation/native";
+
 
 type Nav = NativeStackNavigationProp<RootStackParamList, "AlarmasActivasScreen">;
 type RouteT = RouteProp<RootStackParamList, "AlarmasActivasScreen">;
 
-type AlarmSimulada = {
+type AlarmActivaUI = {
     id: string;
-    statusText: string;
+    mac: string;
+    tituloEquipo: string;     // nombre del equipo (TC5, CTI-AT, etc.)
+    ubicacion: string;        // farm - building (si existe)
+    descripcion: string;      // texto resuelto (alarmRef -> i18n o alarmText)
     dateText: string;
     timeText: string;
 };
@@ -23,8 +42,15 @@ export default function AlarmasActivasScreen() {
     const navigation = useNavigation<Nav>();
     const route = useRoute<RouteT>();
     const token = useAuthStore((s) => s.token);
+    const [refreshing, setRefreshing] = useState(false);
 
-    //  Por ahora: si no vienen params, usamos device simulado
+    // evita solapes
+    const fetchingRef = React.useRef(false);
+
+    // ignora respuestas viejas
+    const reqIdRef = React.useRef(0);
+
+
     const device = route.params?.device ?? {
         id: "demo-id",
         userid: "demo-user",
@@ -32,33 +58,127 @@ export default function AlarmasActivasScreen() {
         longitude: 0,
         farmName: "Granja demo",
         siteName: "Nave demo",
-        mac: 123456,
+        mac: "123456",
         idSite: 1,
         buildingPortalRef: 1,
         simulado: true,
+        alarmType: 0,
+        swVersion: "0",
     };
 
-    const chipText = String(device.mac ?? "");
+    const [alarmas, setAlarmas] = useState<AlarmActivaUI[]>([]);
+    const [loading, setLoading] = useState(false);
 
-    const now = useMemo(() => new Date(), []);
-    const dateTextBase = now.toLocaleDateString("es-ES");
-    const timeTextBase = now.toLocaleTimeString("es-ES", {
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-    });
+    const chipTextBase = String(device.mac ?? "");
 
-    //  Lista simulada (3 alarmas)
-    const alarmas: AlarmSimulada[] = useMemo(
-        () => [
-            { id: "a1", statusText: "Temperatura alta", dateText: dateTextBase, timeText: timeTextBase },
-            { id: "a2", statusText: "Humedad fuera de rango", dateText: dateTextBase, timeText: timeTextBase },
-            { id: "a3", statusText: "CO₂ alto", dateText: dateTextBase, timeText: timeTextBase },
-        ],
-        [dateTextBase, timeTextBase]
+    const formatearUbicacion = useCallback((farm?: string, building?: string) => {
+        return [farm, building].filter((v) => v?.trim()).join(" - ");
+    }, []);
+
+    const fetchAlarmas = useCallback(
+        async (opts?: { showLoader?: boolean; isPullToRefresh?: boolean }) => {
+            if (!device?.mac) return;
+            if (fetchingRef.current) return;
+
+            fetchingRef.current = true;
+            const myReq = ++reqIdRef.current;
+
+            const showLoader = !!opts?.showLoader;
+            const pull = !!opts?.isPullToRefresh;
+
+            try {
+                if (showLoader) setLoading(true);
+                if (pull) setRefreshing(true);
+
+                const data: LinkedTc5AlarmResponse[] = await get(
+                    `alarmtc/linkedtc5alarms/${device.mac}`
+                );
+
+                // si llegó tarde, ignorar
+                if (myReq !== reqIdRef.current) return;
+
+                if (!Array.isArray(data) || data.length === 0) {
+                    setAlarmas([]);
+                    return;
+                }
+
+                // orden estable (si timestamps empatan)
+                const ordenadas = [...data].sort((a, b) => {
+                    const tb = new Date(b.timestamp).getTime();
+                    const ta = new Date(a.timestamp).getTime();
+                    if (tb !== ta) return tb - ta;
+
+                    const macA = Number(a.mac);
+                    const macB = Number(b.mac);
+                    if (!Number.isNaN(macA) && !Number.isNaN(macB) && macA !== macB) return macA - macB;
+
+                    return (a.alarmRef ?? 0) - (b.alarmRef ?? 0);
+                });
+
+                const ui: AlarmActivaUI[] = ordenadas.map((a, idx) => {
+                    const fechaObj = new Date(a.timestamp);
+
+                    const tituloEquipo = deviceName(a.mac);
+                    const descripcion = resolverTextoAlarma(a.mac, a.alarmRef, a.alarmText, t);
+
+                    // ✅ id estable (evita duplicados raros si timestamps iguales)
+                    const idBase = [
+                        a.mac,
+                        a.alarmRef ?? 0,
+                        a.alarmType ?? 0,
+                        a.locationId ?? 0,
+                        (a.farm ?? "").trim(),
+                        (a.building ?? "").trim(),
+                        (a.alarmText ?? "").trim(),
+                    ].join("|");
+
+                    return {
+                        id: `${idBase}|${idx}`, // idx solo como fallback si hay repetidos exactos
+                        mac: a.mac,
+                        tituloEquipo,
+                        ubicacion: formatearUbicacion(a.farm, a.building),
+                        descripcion,
+                        dateText: fechaObj.toLocaleDateString("es-ES"),
+                        timeText: fechaObj.toLocaleTimeString("es-ES", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                        }),
+                    };
+                });
+
+                setAlarmas(ui);
+            } catch (e) {
+                if (myReq !== reqIdRef.current) return;
+                console.log("❌ Error obteniendo linkedtc5alarms (lista):", e);
+
+                // 👇 opcional: yo NO vaciaría la lista por un fallo puntual
+                // setAlarmas([]);
+            } finally {
+                if (myReq === reqIdRef.current) {
+                    if (showLoader) setLoading(false);
+                    if (pull) setRefreshing(false);
+                }
+                fetchingRef.current = false;
+            }
+        },
+        [device.mac, formatearUbicacion]
     );
 
-    //  Link al portal (igual que antes)
+    useFocusEffect(
+        useCallback(() => {
+            // primera carga al entrar a la pantalla
+            fetchAlarmas({ showLoader: true });
+
+            const id = setInterval(() => {
+                fetchAlarmas(); // ✅ sin loader, refresco silencioso
+            }, 7000);
+
+            return () => clearInterval(id);
+        }, [fetchAlarmas])
+    );
+
+
     const handleGoToExplotacion = useCallback(() => {
         if (!token) {
             Alert.alert("Error", "No hay token disponible");
@@ -77,7 +197,6 @@ export default function AlarmasActivasScreen() {
         });
     }, [navigation, token, device]);
 
-    //  Poner la “bola del mundo” en el header
     useLayoutEffect(() => {
         navigation.setOptions({
             title: "Alarmas activas",
@@ -85,9 +204,7 @@ export default function AlarmasActivasScreen() {
                 <Pressable
                     onPress={handleGoToExplotacion}
                     hitSlop={10}
-                    style={({ pressed }) => [
-                        { paddingHorizontal: 10, opacity: pressed ? 0.6 : 1 },
-                    ]}
+                    style={({ pressed }) => [{ paddingHorizontal: 10, opacity: pressed ? 0.6 : 1 }]}
                 >
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
                         <Ionicons name="globe-outline" size={18} color="#2563EB" />
@@ -107,11 +224,13 @@ export default function AlarmasActivasScreen() {
         });
     }, [navigation, handleGoToExplotacion]);
 
-    const AlarmActivaCard = ({ item }: { item: AlarmSimulada }) => {
+    const AlarmActivaCard = ({ item }: { item: AlarmActivaUI }) => {
+        const chipText = item.mac ? String(item.mac) : chipTextBase;
+
         return (
             <View style={styles.topAlarmWrap}>
-                {/*  Card SOLO VISUAL (mismo estilo) */}
                 <View style={styles.topAlarmCard}>
+                    {/* Barra roja: TITULO = nombre del equipo */}
                     <LinearGradient
                         colors={["#dc2626", "#ef4444"]}
                         start={{ x: 0, y: 0 }}
@@ -120,28 +239,47 @@ export default function AlarmasActivasScreen() {
                     >
                         <View style={styles.topAlarmBarLeft}>
                             <MaterialCommunityIcons name="bell-ring-outline" size={18} color="#fff" />
-                            <Text style={styles.topAlarmBarTitle}>TC5</Text>
+                            <Text style={styles.topAlarmBarTitle} numberOfLines={1}>
+                                {item.tituloEquipo}
+                            </Text>
+                        </View>
+
+                        <View style={styles.topAlarmBarMac}>
+                            <Ionicons name="hardware-chip-outline" size={14} color="#fff" />
+                            <Text style={styles.topAlarmBarMacText} numberOfLines={1}>
+                                {chipText}
+                            </Text>
                         </View>
                     </LinearGradient>
 
+                    {/* contenido */}
                     <View style={styles.topAlarmBody}>
-                        <Text style={styles.topAlarmStatus} numberOfLines={1}>
-                            {item.statusText}
-                        </Text>
+                        <View style={styles.topAlarmMetaRow}>
+                            {!!item.ubicacion && (
+                                <Text style={styles.topAlarmLocation} numberOfLines={1}>
+                                    {item.ubicacion}
+                                </Text>
+                            )}
 
-                        <View style={styles.topAlarmDateTimeRow}>
-                            <Text style={styles.topAlarmDateTime}>{item.dateText}</Text>
-                            <Text style={styles.topAlarmDateTime}> • </Text>
-                            <Text style={styles.topAlarmDateTime}>{item.timeText}</Text>
+                            <View style={styles.topAlarmDateTimeRow}>
+                                <Text style={styles.topAlarmDateTime}>{item.dateText}</Text>
+                                <Text style={styles.topAlarmDateTime}> • </Text>
+                                <Text style={styles.topAlarmDateTime}>{item.timeText}</Text>
+                            </View>
                         </View>
+
+                        <Text style={styles.topAlarmStatus} numberOfLines={2}>
+                            {item.descripcion}
+                        </Text>
                     </View>
 
-                    <View style={styles.topAlarmChipRow}>
+                    {/* chip mac */}
+                    {/* <View style={styles.topAlarmChipRow}>
                         <View style={styles.topAlarmChip}>
                             <Ionicons name="hardware-chip-outline" size={14} color="#111827" />
                             <Text style={styles.topAlarmChipText}>{chipText}</Text>
                         </View>
-                    </View>
+                    </View> */}
                 </View>
             </View>
         );
@@ -149,19 +287,37 @@ export default function AlarmasActivasScreen() {
 
     return (
         <View style={styles.container}>
-            <FlatList
-                data={alarmas}
-                keyExtractor={(it) => it.id}
-                renderItem={({ item }) => <AlarmActivaCard item={item} />}
-                contentContainerStyle={{ paddingBottom: 18, paddingTop: 10 }}
-                showsVerticalScrollIndicator={false}
-            />
+            {loading && (
+                <View style={{ paddingTop: 14 }}>
+                    <ActivityIndicator />
+                </View>
+            )}
+
+            {!loading && alarmas.length === 0 ? (
+                <View style={styles.emptyWrap}>
+                    <Ionicons name="notifications-off-outline" size={48} color="#4B5563" />
+                    <Text style={styles.emptyText}>No hay alarmas activas</Text>
+                </View>
+            ) : (
+                <FlatList
+                    data={alarmas}
+                    keyExtractor={(it) => it.id}
+                    renderItem={({ item }) => <AlarmActivaCard item={item} />}
+                    contentContainerStyle={{ paddingBottom: 18, paddingTop: 10 }}
+                    showsVerticalScrollIndicator={false}
+                    refreshing={loading}
+                    onRefresh={fetchAlarmas}
+                />
+            )}
         </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: "#f4f4f4" },
+
+    emptyWrap: { flex: 1, alignItems: "center", justifyContent: "center", gap: 10 },
+    emptyText: { fontSize: 18, fontWeight: "800", color: "#4B5563" },
 
     topAlarmWrap: { paddingHorizontal: 14, paddingTop: 12, paddingBottom: 6 },
 
@@ -185,25 +341,49 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
     },
-    topAlarmBarLeft: { flexDirection: "row", alignItems: "center", gap: 8 },
-    topAlarmBarTitle: { color: "#fff", fontWeight: "900", fontSize: 16 },
-
-    topAlarmBody: {
+    topAlarmBarLeft: {
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-between",
+        gap: 8,
+        flex: 1,
+        marginRight: 10, // ✅ evita que el MAC empuje el título
+    },
+    topAlarmBarTitle: { color: "#fff", fontWeight: "900", fontSize: 16 },
+
+    topAlarmBarMac: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+        flexShrink: 0,
+    },
+    topAlarmBody: {
         paddingHorizontal: 12,
         paddingTop: 12,
         paddingBottom: 10,
     },
-    topAlarmStatus: {
+
+
+    topAlarmMetaRow: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        gap: 10,
+        marginBottom: 6,
+    },
+    topAlarmLocation: {
         flex: 1,
+        fontSize: 13,
+        fontWeight: "700",
+        color: "#111827", // ✅ negro
+    },
+
+
+
+    topAlarmStatus: {
         fontSize: 14,
         fontWeight: "800",
         color: "#111827",
-        marginRight: 10,
     },
-
     topAlarmChipRow: { paddingHorizontal: 12, paddingBottom: 10 },
     topAlarmChip: {
         alignSelf: "flex-start",
@@ -219,4 +399,9 @@ const styles = StyleSheet.create({
 
     topAlarmDateTimeRow: { flexDirection: "row", alignItems: "center" },
     topAlarmDateTime: { fontSize: 13, fontWeight: "800", color: "#374151" },
+    topAlarmBarMacText: {
+        color: "#fff",
+        fontWeight: "900",
+        fontSize: 12,
+    },
 });
