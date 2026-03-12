@@ -22,6 +22,8 @@ import type { LinkedTc5AlarmResponse } from "@/types/LinkedTc5AlarmInterface";
 import { deviceName } from "@/utils/switch/dispositivos";
 import { resolverTextoAlarma } from "@/utils/linkedTc5Alarm";
 import { t } from "@/i18n/i18nConfig";
+import { useFocusEffect } from "@react-navigation/native";
+
 
 type Nav = NativeStackNavigationProp<RootStackParamList, "AlarmasActivasScreen">;
 type RouteT = RouteProp<RootStackParamList, "AlarmasActivasScreen">;
@@ -40,6 +42,14 @@ export default function AlarmasActivasScreen() {
     const navigation = useNavigation<Nav>();
     const route = useRoute<RouteT>();
     const token = useAuthStore((s) => s.token);
+    const [refreshing, setRefreshing] = useState(false);
+
+    // evita solapes
+    const fetchingRef = React.useRef(false);
+
+    // ignora respuestas viejas
+    const reqIdRef = React.useRef(0);
+
 
     const device = route.params?.device ?? {
         id: "demo-id",
@@ -65,58 +75,109 @@ export default function AlarmasActivasScreen() {
         return [farm, building].filter((v) => v?.trim()).join(" - ");
     }, []);
 
-    const fetchAlarmas = useCallback(async () => {
-        try {
-            setLoading(true);
+    const fetchAlarmas = useCallback(
+        async (opts?: { showLoader?: boolean; isPullToRefresh?: boolean }) => {
+            if (!device?.mac) return;
+            if (fetchingRef.current) return;
 
-            const data: LinkedTc5AlarmResponse[] = await get(
-                `alarmtc/linkedtc5alarms/${device.mac}`
-            );
+            fetchingRef.current = true;
+            const myReq = ++reqIdRef.current;
 
-            if (!Array.isArray(data) || data.length === 0) {
-                setAlarmas([]);
-                return;
+            const showLoader = !!opts?.showLoader;
+            const pull = !!opts?.isPullToRefresh;
+
+            try {
+                if (showLoader) setLoading(true);
+                if (pull) setRefreshing(true);
+
+                const data: LinkedTc5AlarmResponse[] = await get(
+                    `alarmtc/linkedtc5alarms/${device.mac}`
+                );
+
+                // si llegó tarde, ignorar
+                if (myReq !== reqIdRef.current) return;
+
+                if (!Array.isArray(data) || data.length === 0) {
+                    setAlarmas([]);
+                    return;
+                }
+
+                // orden estable (si timestamps empatan)
+                const ordenadas = [...data].sort((a, b) => {
+                    const tb = new Date(b.timestamp).getTime();
+                    const ta = new Date(a.timestamp).getTime();
+                    if (tb !== ta) return tb - ta;
+
+                    const macA = Number(a.mac);
+                    const macB = Number(b.mac);
+                    if (!Number.isNaN(macA) && !Number.isNaN(macB) && macA !== macB) return macA - macB;
+
+                    return (a.alarmRef ?? 0) - (b.alarmRef ?? 0);
+                });
+
+                const ui: AlarmActivaUI[] = ordenadas.map((a, idx) => {
+                    const fechaObj = new Date(a.timestamp);
+
+                    const tituloEquipo = deviceName(a.mac);
+                    const descripcion = resolverTextoAlarma(a.mac, a.alarmRef, a.alarmText, t);
+
+                    // ✅ id estable (evita duplicados raros si timestamps iguales)
+                    const idBase = [
+                        a.mac,
+                        a.alarmRef ?? 0,
+                        a.alarmType ?? 0,
+                        a.locationId ?? 0,
+                        (a.farm ?? "").trim(),
+                        (a.building ?? "").trim(),
+                        (a.alarmText ?? "").trim(),
+                    ].join("|");
+
+                    return {
+                        id: `${idBase}|${idx}`, // idx solo como fallback si hay repetidos exactos
+                        mac: a.mac,
+                        tituloEquipo,
+                        ubicacion: formatearUbicacion(a.farm, a.building),
+                        descripcion,
+                        dateText: fechaObj.toLocaleDateString("es-ES"),
+                        timeText: fechaObj.toLocaleTimeString("es-ES", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                        }),
+                    };
+                });
+
+                setAlarmas(ui);
+            } catch (e) {
+                if (myReq !== reqIdRef.current) return;
+                console.log("❌ Error obteniendo linkedtc5alarms (lista):", e);
+
+                // 👇 opcional: yo NO vaciaría la lista por un fallo puntual
+                // setAlarmas([]);
+            } finally {
+                if (myReq === reqIdRef.current) {
+                    if (showLoader) setLoading(false);
+                    if (pull) setRefreshing(false);
+                }
+                fetchingRef.current = false;
             }
+        },
+        [device.mac, formatearUbicacion]
+    );
 
-            // ordena por más reciente primero
-            const ordenadas = [...data].sort(
-                (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-            );
+    useFocusEffect(
+        useCallback(() => {
+            // primera carga al entrar a la pantalla
+            fetchAlarmas({ showLoader: true });
 
-            const ui: AlarmActivaUI[] = ordenadas.map((a, idx) => {
-                const fechaObj = new Date(a.timestamp);
+            const id = setInterval(() => {
+                fetchAlarmas(); // ✅ sin loader, refresco silencioso
+            }, 7000);
 
-                const tituloEquipo = deviceName(a.mac);
-                const descripcion = resolverTextoAlarma(a.mac, a.alarmRef, a.alarmText, t);
+            return () => clearInterval(id);
+        }, [fetchAlarmas])
+    );
 
-                return {
-                    id: `${a.mac}-${a.timestamp}-${idx}`,
-                    mac: a.mac,
-                    tituloEquipo,
-                    ubicacion: formatearUbicacion(a.farm, a.building),
-                    descripcion,
-                    dateText: fechaObj.toLocaleDateString("es-ES"),
-                    timeText: fechaObj.toLocaleTimeString("es-ES", {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                        second: "2-digit",
-                    }),
-                };
-            });
-
-            setAlarmas(ui);
-        } catch (e) {
-            console.log("❌ Error obteniendo linkedtc5alarms (lista):", e);
-            setAlarmas([]);
-        } finally {
-            setLoading(false);
-        }
-    }, [device.mac, formatearUbicacion]);
-
-    useEffect(() => {
-        if (!device?.mac) return;
-        fetchAlarmas();
-    }, [device?.mac, fetchAlarmas]);
 
     const handleGoToExplotacion = useCallback(() => {
         if (!token) {
@@ -244,8 +305,9 @@ export default function AlarmasActivasScreen() {
                     renderItem={({ item }) => <AlarmActivaCard item={item} />}
                     contentContainerStyle={{ paddingBottom: 18, paddingTop: 10 }}
                     showsVerticalScrollIndicator={false}
-                    refreshing={loading}
-                    onRefresh={fetchAlarmas}
+                    refreshing={refreshing}
+                    onRefresh={() => fetchAlarmas({ isPullToRefresh: true })}
+
                 />
             )}
         </View>
