@@ -41,6 +41,8 @@ import { useTopLinkedTc5Alarm } from "@/hooks/useTopLinkedTc5Alarm";
 
 
 
+
+
 //  INTERFAZ PARA SENSORES
 // export interface SensorData {
 //     id: number;
@@ -96,6 +98,8 @@ export default function AlarmList() {
     const postingCriticalRef = useRef(false);
     const [criticalVisible, setCriticalVisible] = useState(false);
     const token = useAuthStore((s) => s.token);
+
+
 
 
     //!--------CARD DE LAS ALARAS------------
@@ -168,6 +172,15 @@ export default function AlarmList() {
             idSite: device.idSite,
             buildingPortalRef: device.buildingPortalRef,
             simulado: isSimulated,
+        });
+
+    };
+    const irAlPortal = handleGoToExplotacion;
+
+    const irAListaAlarmasPortal = () => {
+        navigation.navigate("AlarmasActivasScreen", {
+            device,
+            analogIds: analogIdsWithValue,
         });
     };
 
@@ -1264,6 +1277,7 @@ export default function AlarmList() {
         chipText,
         dateText,
         timeText,
+        count,
         onPressAll,
         onPressCard,
     }: {
@@ -1277,10 +1291,14 @@ export default function AlarmList() {
         onPressAll: () => void;
         onPressCard: () => void;
     }) => {
+        const hayMasDeUna = (count ?? 0) > 1;
+
+        const onPressCardFinal = hayMasDeUna ? onPressAll : onPressCard;
+
         return (
             <View style={styles.topAlarmWrap}>
                 <Pressable
-                    onPress={onPressCard}
+                    onPress={onPressCardFinal}
                     android_ripple={{ color: "rgba(0,0,0,0.06)" }}
                     style={({ pressed }) => [styles.topAlarmCard, pressed && { opacity: 0.92 }]}
                 >
@@ -1338,33 +1356,35 @@ export default function AlarmList() {
                     <View style={styles.topAlarmDivider} />
 
                     {/* ✅ Link plano (sin caja) */}
-                    <Pressable
-                        onPress={onPressAll}
-                        hitSlop={10}
-                        style={({ pressed }) => [styles.topAlarmLinkPlainRow, pressed && { opacity: 0.65 }]}
-                    >
-                        <View style={styles.plusCircle}>
-                            <MaterialCommunityIcons name="plus" size={16} color="#DC2626" />
-                        </View>
+                    {hayMasDeUna && (
+                        <Pressable
+                            onPress={onPressAll} // (puede ser el mismo que la card, no pasa nada)
+                            hitSlop={10}
+                            style={({ pressed }) => [styles.topAlarmLinkPlainRow, pressed && { opacity: 0.65 }]}
+                        >
+                            <View style={styles.plusCircle}>
+                                <MaterialCommunityIcons name="plus" size={16} color="#DC2626" />
+                            </View>
 
-                        {/* ✅ SOLO un texto (aquí tenías dos) */}
-                        <Text style={styles.topAlarmLinkPlainText} numberOfLines={1}>
-                            Más Alarmas Portal
-                        </Text>
+                            <Text style={styles.topAlarmLinkPlainText} numberOfLines={1}>
+                                Más Alarmas Portal
+                            </Text>
 
-                        <Ionicons
-                            name="chevron-forward"
-                            size={16}
-                            color="#DC2626"
-                            style={{ marginLeft: "auto" }}
-                        />
-                    </Pressable>
+                            <Ionicons
+                                name="chevron-forward"
+                                size={16}
+                                color="#DC2626"
+                                style={{ marginLeft: "auto" }}
+                            />
+                        </Pressable>
+                    )}
                 </Pressable>
             </View>
         );
     };
-
     //6B7280 gris 
+
+
 
     //!-----------Fin CARD ALARMAS-----------
 
@@ -1445,14 +1465,10 @@ export default function AlarmList() {
                         dateText={topAlarmCard.fecha}
                         timeText={topAlarmCard.hora}
                         count={totalLinkedAlarms}
-                        onPressCard={handleGoToExplotacion}
-                        onPressAll={() => {
-                            navigation.navigate("AlarmasActivasScreen", {
-                                device,
-                                analogIds: analogIdsWithValue,
-                            });
-                        }}
+                        onPressCard={irAlPortal}
+                        onPressAll={irAListaAlarmasPortal}
                     />
+
                 </>
             )}
             {showTopAlarmCard && <View style={styles.separatorLine} />}

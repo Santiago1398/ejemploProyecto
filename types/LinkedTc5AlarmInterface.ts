@@ -19,4 +19,5 @@ export interface TopAlarmCardData {
     hora: string;
     timestamp: string;
     nombreEquipo: string;
-}
+    key?: string;
+};
