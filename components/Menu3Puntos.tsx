@@ -15,6 +15,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { RootStackParamList } from "@/app/HomeStack";
 import { useAuthStore } from "@/store/authStore";
 import { t } from "@/i18n/i18nConfig";
+import { post } from "@/services/api";
+import { ActivityIndicator } from "react-native";
+
 
 
 type DeviceDetailsNavigationProp = NativeStackNavigationProp<RootStackParamList>;
@@ -45,6 +48,7 @@ export interface Menu3PuntosProps {
     };
     analogIds: number[];
     options?: MenuOption[];
+    onStopSharingTc5?: () => void;
 }
 
 const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
@@ -53,6 +57,7 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
     device,
     analogIds,
     options,
+    onStopSharingTc5
 }) => {
     const navigation = useNavigation<DeviceDetailsNavigationProp>();
     const token = useAuthStore((state) => state.token);
@@ -60,6 +65,7 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
 
     //  ESTADO PARA CONTROLAR QUÉ MENÚ MOSTRAR
     const [currentMenu, setCurrentMenu] = useState<'main' | 'ajustes'>('main');
+    const [confirmStopVisible, setConfirmStopVisible] = useState(false);
 
     //  NUEVO ORDEN DE OPCIONES
     const defaultOptions: MenuOption[] = [
@@ -194,6 +200,16 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
                 });
             },
         },
+        {
+            id: "stopSharingTc5",
+            label: "Eliminar acceso a TC5",
+            icon: "user-x",
+            onPress: () => {
+                onStopSharingTc5?.();       // ✅ abre modal en el padre
+            },
+
+        },
+
         {
             id: "ajustes", //  CUARTO: Ajustes (abre submenu)
             label: t("Menu3Puntos.ajustes"),

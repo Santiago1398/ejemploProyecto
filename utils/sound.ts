@@ -3,9 +3,12 @@ import { Audio, InterruptionModeIOS, InterruptionModeAndroid } from "expo-av";
 
 let soundObject: Audio.Sound | null = null;
 
-export const playAlarmSound = async () => {
+export const playAlarmSound = async (
+    archivo: "alarmcar" | "telephone" = "alarmcar"
+) => {
     try {
-        console.log(" Reproduciendo alarma...");
+        console.log(`Reproduciendo sonido: ${archivo}`);
+
         await Audio.setAudioModeAsync({
             allowsRecordingIOS: false,
             staysActiveInBackground: true,
@@ -15,39 +18,42 @@ export const playAlarmSound = async () => {
             interruptionModeAndroid: InterruptionModeAndroid.DoNotMix,
         });
 
-        const { sound } = await Audio.Sound.createAsync(
-            require("../assets/images/alarmcar.mp3"),
-            { shouldPlay: true, isLooping: true }
-        );
+        if (soundObject) {
+            await soundObject.stopAsync();
+            await soundObject.unloadAsync();
+            soundObject = null;
+        }
+
+        const recurso =
+            archivo === "telephone"
+                ? require("../assets/images/telephone.mp3")
+                : require("../assets/images/alarmcar.mp3");
+
+        const { sound } = await Audio.Sound.createAsync(recurso, {
+            shouldPlay: true,
+            isLooping: true,
+        });
 
         soundObject = sound;
-        //await sound.setIsLoopingAsync(true);
         await sound.playAsync();
         await AsyncStorage.setItem("alarmPlaying", "true");
     } catch (error) {
-        console.log(" Error reproduciendo sonido:", error);
+        console.log("Error reproduciendo sonido:", error);
     }
 };
 
 export const stopAlarmSound = async () => {
     try {
-        console.log(" Intentando detener alarma...");
+        console.log("Intentando detener sonido...");
 
-        // Intenta detener el sonido si ya está cargado
         if (soundObject) {
             await soundObject.stopAsync();
             await soundObject.unloadAsync();
             soundObject = null;
-        } else {
-            // Si no está en memoria, recárgalo y deténlo
-            const sound = new Audio.Sound();
-            await sound.loadAsync(require("../assets/images/alarmcar.mp3"));
-            await sound.stopAsync();
-            await sound.unloadAsync();
         }
 
         await AsyncStorage.removeItem("alarmPlaying");
     } catch (error) {
-        console.log(" Error deteniendo sonido:", error);
+        console.log("Error deteniendo sonido:", error);
     }
 };

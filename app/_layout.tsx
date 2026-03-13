@@ -78,6 +78,31 @@ export default function Layout() {
                     showBadge: true,
 
 
+
+                });
+
+
+                await Notifications.setNotificationChannelAsync("channel-warning", {
+                    name: "Notificaciones  warning",
+                    importance: Notifications.AndroidImportance.HIGH,
+                    sound: "telephone",
+                    vibrationPattern: [0, 1000, 200, 1000,],
+                    lightColor: "#FF231F7C",
+                    bypassDnd: false,
+                    lockscreenVisibility: Notifications.AndroidNotificationVisibility.PUBLIC,
+                    enableLights: true,
+                    enableVibrate: true,
+                    showBadge: true,
+                    audioAttributes: {
+                        contentType: Notifications.AndroidAudioContentType.SONIFICATION,
+                        usage: Notifications.AndroidAudioUsage.ALARM,
+                        flags: {
+                            enforceAudibility: true,
+                            requestHardwareAudioVideoSynchronization: false
+                        }
+                    },
+
+
                 });
                 await requestDndPermission();
             }
