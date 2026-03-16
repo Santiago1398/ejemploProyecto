@@ -99,6 +99,11 @@ export default function AlarmList() {
     const [criticalVisible, setCriticalVisible] = useState(false);
     const token = useAuthStore((s) => s.token);
 
+    const [stopVisible, setStopVisible] = useState(false);
+    const [stopping, setStopping] = useState(false);
+
+    const openStopModal = () => setStopVisible(true);
+
 
 
 
@@ -1386,6 +1391,22 @@ export default function AlarmList() {
 
 
 
+    //!-----------ELIMINAR ACESO A TC5-----------
+    const confirmarStop = async () => {
+        try {
+            setStopping(true);
+            await post("infrastructure/stopsharingtc5", {
+                userId: Number(userId),
+                mac: String(device.mac),
+            });
+            setStopVisible(false);
+            //navigation.navigate("DeviceList")
+            navigation.popToTop();
+            // Alert.alert("Error", "No se pudo eliminar el acceso al TC5.");
+        } finally {
+            setStopping(false);
+        }
+    };
     //!-----------Fin CARD ALARMAS-----------
 
     return (
@@ -1504,6 +1525,7 @@ export default function AlarmList() {
                     simulado: isSimulated,
                 }}
                 analogIds={analogIdsWithValue}
+                onStopSharingTc5={openStopModal}
 
             />
             <Modal
@@ -1603,6 +1625,45 @@ export default function AlarmList() {
             </Modal>
 
 
+            <Modal
+                visible={stopVisible}
+                transparent
+                animationType="fade"
+                onRequestClose={() => !stopping && setStopVisible(false)}
+            >
+                <Pressable
+                    style={styles.confirmOverlay}
+                    onPress={() => !stopping && setStopVisible(false)}
+                >
+                    <Pressable style={styles.confirmCard} onPress={() => { }}>
+                        <Text style={styles.confirmMessage}>
+                            ¿Desea eliminar el acceso a la nave y a las notificaciones del TC5?
+                        </Text>
+
+                        <View style={styles.confirmActions}>
+                            <Pressable
+                                style={[styles.confirmBtn, styles.confirmBtnGhost]}
+                                onPress={() => setStopVisible(false)}
+                                disabled={stopping}
+                            >
+                                <Text style={styles.confirmBtnGhostText}>Cancelar</Text>
+                            </Pressable>
+
+                            <Pressable
+                                style={[styles.confirmBtn, styles.confirmBtnPrimary]}
+                                onPress={confirmarStop}
+                                disabled={stopping}
+                            >
+                                {stopping ? (
+                                    <ActivityIndicator />
+                                ) : (
+                                    <Text style={styles.confirmBtnPrimaryText}>Aceptar</Text>
+                                )}
+                            </Pressable>
+                        </View>
+                    </Pressable>
+                </Pressable>
+            </Modal>
 
 
         </View>

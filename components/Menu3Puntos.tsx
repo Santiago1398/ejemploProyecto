@@ -45,6 +45,8 @@ export interface Menu3PuntosProps {
     };
     analogIds: number[];
     options?: MenuOption[];
+    onStopSharingTc5?: () => void; 
+
 }
 
 const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
@@ -53,6 +55,7 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
     device,
     analogIds,
     options,
+    onStopSharingTc5,
 }) => {
     const navigation = useNavigation<DeviceDetailsNavigationProp>();
     const token = useAuthStore((state) => state.token);
@@ -60,8 +63,7 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
 
     //  ESTADO PARA CONTROLAR QUÉ MENÚ MOSTRAR
     const [currentMenu, setCurrentMenu] = useState<'main' | 'ajustes'>('main');
-
-    //  NUEVO ORDEN DE OPCIONES
+const [confirmStopVisible, setConfirmStopVisible] = useState(false);
     const defaultOptions: MenuOption[] = [
         {
             id: "ActivacionRele",
@@ -193,6 +195,15 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
                     idSite: device.idSite,
                 });
             },
+        },
+        {
+            id: "stopSharingTc5",
+            label: "Eliminar acceso a TC5",
+            icon: "user-x",
+            onPress: () => {
+                onStopSharingTc5?.();      
+            },
+
         },
         {
             id: "ajustes", //  CUARTO: Ajustes (abre submenu)

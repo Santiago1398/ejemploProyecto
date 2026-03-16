@@ -31,7 +31,7 @@
       "entitlements": {
         "aps-environment": "production"
       },
-      "buildNumber": "20"
+      "buildNumber": "22"
     },
     "android": {
       "config": {
