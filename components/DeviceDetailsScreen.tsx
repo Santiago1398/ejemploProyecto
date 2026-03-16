@@ -103,6 +103,27 @@ export default function AlarmList() {
     const [stopping, setStopping] = useState(false);
 
     const openStopModal = () => setStopVisible(true);
+    const [pendingStopOpen, setPendingStopOpen] = useState(false);
+
+const requestStopSharing = () => {
+  // 1) marcamos que queremos abrir el modal
+  setPendingStopOpen(true);
+  // 2) cerramos el menú
+  setMenuVisible(false);
+};
+
+useEffect(() => {
+  // Solo cuando el menú ya NO está visible y teníamos la acción pendiente
+  if (!menuVisible && pendingStopOpen) {
+    const delay = Platform.OS === "ios" ? 450 : 0; // iOS necesita esperar la animación del Modal
+    const id = setTimeout(() => {
+      setStopVisible(true);
+      setPendingStopOpen(false);
+    }, delay);
+
+    return () => clearTimeout(id);
+  }
+}, [menuVisible, pendingStopOpen]);
 
 
 
@@ -1525,7 +1546,7 @@ export default function AlarmList() {
                     simulado: isSimulated,
                 }}
                 analogIds={analogIdsWithValue}
-                onStopSharingTc5={openStopModal}
+                onStopSharingTc5={requestStopSharing}
 
             />
             <Modal

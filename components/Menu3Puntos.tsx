@@ -7,6 +7,7 @@ import {
     Modal,
     Platform,
     Alert,
+    InteractionManager,
 } from "react-native";
 import { Feather, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
@@ -251,7 +252,7 @@ const [confirmStopVisible, setConfirmStopVisible] = useState(false);
     //  DETERMINAR QUÉ OPCIONES MOSTRAR
     const finalOptions = options ?? (currentMenu === 'main' ? defaultOptions : ajustesOptions);
 
-    const handleOptionPress = (option: MenuOption) => {
+     const handleOptionPress = (option: MenuOption) => {
         console.log(` Opción ${option.id} presionada`);
 
         //  Si es una acción de navegación entre menus, ejecutar inmediatamente
@@ -265,7 +266,38 @@ const [confirmStopVisible, setConfirmStopVisible] = useState(false);
         setTimeout(() => {
             option.onPress();
         }, 100);
-    };
+    }; 
+
+
+/* const handleOptionPress = (option: MenuOption) => {
+  console.log(`✅ Opción ${option.id} presionada`);
+
+  // Navegación entre menús (no cierres modal)
+  if (option.id === "ajustes" || option.id === "volver") {
+    option.onPress();
+    return;
+  }
+
+  // ✅ CASO ESPECIAL: stopSharingTc5 -> cerrar menú y luego abrir modal de confirmación
+  if (option.id === "stopSharingTc5") {
+    setCurrentMenu("main");
+    onClose();
+
+    // ✅ Espera a que termine la animación del Modal en iOS
+    InteractionManager.runAfterInteractions(() => {
+      onStopSharingTc5?.();
+    });
+
+    return;
+  }
+
+  // Resto de opciones: cerrar y ejecutar después
+  setCurrentMenu("main");
+  onClose();
+  setTimeout(() => {
+    option.onPress();
+  }, 150);
+}; */
 
     const handleBackdropPress = () => {
         console.log(" Backdrop presionado - cerrando menú");
