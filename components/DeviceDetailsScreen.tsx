@@ -97,7 +97,8 @@ export default function AlarmList() {
     const criticalAlertShownRef = useRef(false);
     const postingCriticalRef = useRef(false);
     const [criticalVisible, setCriticalVisible] = useState(false);
-    const token = useAuthStore((s) => s.token);
+    //const token = useAuthStore((s) => s.token);
+    const { token, reloginSilencioso, logout } = useAuthStore();
 
     const [stopVisible, setStopVisible] = useState(false);
     const [stopping, setStopping] = useState(false);
@@ -1395,14 +1396,40 @@ export default function AlarmList() {
     const confirmarStop = async () => {
         try {
             setStopping(true);
+
             await post("infrastructure/stopsharingtc5", {
                 userId: Number(userId),
                 mac: String(device.mac),
             });
+
             setStopVisible(false);
-            //navigation.navigate("DeviceList")
             navigation.popToTop();
-            // Alert.alert("Error", "No se pudo eliminar el acceso al TC5.");
+        } catch (error: any) {
+            console.log("Error en stopsharingtc5:", error);
+
+            if (error?.status === 401) {
+                const ok = await reloginSilencioso();
+
+                if (ok) {
+                    try {
+                        await post("infrastructure/stopsharingtc5", {
+                            userId: Number(userId),
+                            mac: String(device.mac),
+                        });
+
+                        setStopVisible(false);
+                        navigation.popToTop();
+                        return;
+                    } catch (retryError: any) {
+                        console.log("Error al reintentar stopsharingtc5:", retryError);
+                    }
+                }
+
+                await logout();
+                return;
+            }
+
+            Alert.alert("Error", "No se pudo eliminar el acceso al TC5.");
         } finally {
             setStopping(false);
         }

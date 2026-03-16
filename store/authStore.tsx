@@ -5,10 +5,15 @@ import { post, postxxx } from "@/services/api";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { registerForPushNotificationsAsync } from "@/utils/notifications";
 import { notificationService } from "@/hooks/NotificationService";
+import {
+    guardarCredencialesSeguras,
+    obtenerCredencialesSeguras,
+    borrarCredencialesSeguras,
+} from "@/utils/credencialesSeguras";
 
 interface AuthState {
     username: string | null;
-    password: string | null;
+    //password?: string | null;
     token: string | null;
     userId: number | null;
     isAuthenticated: boolean;
@@ -18,13 +23,16 @@ interface AuthState {
     logout: () => void;
     toggleDeveloperMode: () => void;
     reslogin: string;
+    reloginSilencioso: () => Promise<boolean>;
+
+
 }
 
 export const useAuthStore = create<AuthState>()(
     persist(
         (set, get) => ({
             username: null,
-            password: null,
+            //password: null,
             token: null,
             userId: null,
             isAuthenticated: false,
@@ -39,10 +47,11 @@ export const useAuthStore = create<AuthState>()(
 
                     console.log(" Datos del servidor:", data);
 
+                    await guardarCredencialesSeguras(username, password);
                     await AsyncStorage.setItem("token", data.token);
                     await AsyncStorage.setItem("userId", data.userId.toString());
                     await notificationService.registerDevice(data.userId);
-
+                    await AsyncStorage.setItem("fechaUltimoLogin", new Date().toISOString());
 
 
                     set({
@@ -60,16 +69,49 @@ export const useAuthStore = create<AuthState>()(
                     return false;
                 }
             },
+            reloginSilencioso: async () => {
+                try {
+                    const credenciales = await obtenerCredencialesSeguras();
+
+                    if (!credenciales) {
+                        return false;
+                    }
+
+                    const data = await postxxx("auth/login", {
+                        username: credenciales.username,
+                        password: credenciales.password,
+                    });
+
+                    await AsyncStorage.setItem("token", data.token);
+                    await AsyncStorage.setItem("userId", data.userId.toString());
+                    await AsyncStorage.setItem("fechaUltimoLogin", new Date().toISOString());
+
+                    set({
+                        username: credenciales.username,
+                        token: data.token,
+                        userId: data.userId,
+                        isAuthenticated: true,
+                        isActive: true,
+                    });
+
+                    return true;
+                } catch (error) {
+                    console.error("Error en relogin silencioso:", error);
+                    return false;
+                }
+            },
             logout: async () => {
                 try {
                     notificationService.disconnect();
 
+                    await borrarCredencialesSeguras();
                     await AsyncStorage.removeItem("token");
                     await AsyncStorage.removeItem("userId");
+                    await AsyncStorage.removeItem("fechaUltimoLogin");
 
                     set({
                         username: null,
-                        password: null,
+                        //password: null,
                         token: null,
                         userId: null,
                         isAuthenticated: false,
