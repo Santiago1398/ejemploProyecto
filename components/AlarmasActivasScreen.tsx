@@ -203,10 +203,14 @@ export default function AlarmasActivasScreen() {
             headerRight: () => (
                 <Pressable
                     onPress={handleGoToExplotacion}
-                    hitSlop={10}
-                    style={({ pressed }) => [{ paddingHorizontal: 10, opacity: pressed ? 0.6 : 1 }]}
+                    hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+                    style={({ pressed }) => ({
+                        paddingHorizontal: 12,
+                        paddingVertical: 8,
+                        opacity: pressed ? 0.6 : 1,
+                    })}
                 >
-                    <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                    <View style={{ flexDirection: "row", alignItems: "center" }}>
                         <Ionicons name="globe-outline" size={18} color="#2563EB" />
                         <Text
                             style={{
@@ -214,6 +218,7 @@ export default function AlarmasActivasScreen() {
                                 textDecorationLine: "underline",
                                 fontWeight: "800",
                                 fontSize: 18,
+                                marginLeft: 6,
                             }}
                         >
                             Portal
