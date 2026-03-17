@@ -65,7 +65,13 @@
         "confirmDisableAll": "¿Desea deshabilitar todas las alarmas?",
         "alerta_titutlo": "Alerta de Equipo desconectado",
         "alerta_subtitulo": "Confirmar que ha leido el aviso de Alarma",
-        "alert_aceptar": "Aceptar"
+        "alert_aceptar": "Aceptar",
+        "Mas_Alarma_portal": "Más Alarmas Portal",
+        "confirmStopSharingTc5": "¿Desea eliminar el acceso a la nave y a las notificaciones del TC5?",
+        "portalAlarm": "Alarma Portal",
+        "portal": "Portal",
+        "noActiveAlarms": "No hay alarmas activas",
+        "removeTc5Access": "Eliminar acceso a TC5"
     },
     "DrawerContent": {
         "logout": "Cerrar sesión",
@@ -175,6 +181,7 @@
     "login": {
         "titulo": "Ingresar",
         "subtitulo": "Por favor ingrese para continuar",
+        "firstLoginNotificationNotice": "Recuerde que recibirá las notificaciones con la cuenta con la que inicie sesión por primera vez",
         "correo": "Correo electrónico",
         "contrasena": "Contraseña",
         "boton": "Ingresar",
@@ -187,7 +194,7 @@
     "useNotificationPermission": {
         "alerta": {
             "titulo": "Notificaciones",
-            "mensaje": "Habilite las notificaciones para recibir las alarmas TC5",
+            "mensaje": "Habilite las notificaciones para recibir las alarmas TC5. Recuerde que recibirá las notificaciones con la cuenta con la que inicie sesión por primera vez",
             "boton": "Aceptar"
         },
         "error": {

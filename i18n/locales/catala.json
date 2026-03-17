@@ -65,7 +65,13 @@
         "confirmDisableAll": "Voleu desactivar totes les alarmes?",
         "alerta_titutlo": "Alerta d’equip desconnectat",
         "alerta_subtitulo": "Confirma que has llegit l’avís d’alarma",
-        "alert_aceptar": "Acceptar"
+        "alert_aceptar": "Acceptar",
+        "Mas_Alarma_portal": "Més alarmes del portal",
+        "confirmStopSharingTc5": "Vols eliminar l’accés a la nau i a les notificacions del TC5?",
+        "portalAlarm": "Alarma del portal",
+        "portal": "Portal",
+        "noActiveAlarms": "No hi ha alarmes actives",
+        "removeTc5Access": "Eliminar l’accés al TC5"
     },
     "DrawerContent": {
         "logout": "Tancar sessió",
@@ -182,12 +188,13 @@
             "datos": "Correu electrònic o contrasenya incorrectes",
             "general": "Error",
             "mensaje": "Alguna cosa ha anat malament"
-        }
+        },
+        "firstLoginNotificationNotice": "Recordi que rebrà les notificacions amb el compte amb el qual iniciï sessió per primera vegada"
     },
     "useNotificationPermission": {
         "alerta": {
             "titulo": "Notificacions",
-            "mensaje": "Habilita les notificacions per rebre les alarmes TC5",
+            "mensaje": "Habilita les notificacions per rebre les alarmes TC5.Recordi que rebrà les notificacions amb el compte amb el qual iniciï sessió per primera vegada",
             "boton": "Acceptar"
         },
         "error": {

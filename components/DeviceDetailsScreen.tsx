@@ -347,7 +347,7 @@ export default function AlarmList() {
             return;
         }
 
-        // ✅ tu lógica actual
+        //  tu lógica actual
         setAlarms([]);
         setMasterAlarmState(false);
         setIsConnected(false);
@@ -356,7 +356,7 @@ export default function AlarmList() {
         updateHeaderStatus([], false);
         void checkCriticalAlarmDemo(false, true);
 
-        // ✅ DEBUG: ver qué devuelve el endpoint SIN cambiar la UI
+        //  DEBUG: ver qué devuelve el endpoint SIN cambiar la UI
         if (__DEV__ && !debugDisconnectOnceRef.current) {
             debugDisconnectOnceRef.current = true;
 
@@ -1310,7 +1310,7 @@ export default function AlarmList() {
                 >
                     {/*  Título dentro de la card */}
                     <View style={styles.portalTitleInsideWrap}>
-                        <Text style={styles.portalTitleInsideText}>Alarma Portal</Text>
+                        <Text style={styles.portalTitleInsideText}>  {t("DeviceDetailsScreen.portalAlarm")}</Text>
                         {/* <View style={styles.portalTitleInsideDivider} /> */}
                     </View>
 
@@ -1361,7 +1361,7 @@ export default function AlarmList() {
 
                     <View style={styles.topAlarmDivider} />
 
-                    {/* ✅ Link plano (sin caja) */}
+                    {/*  Link plano (sin caja) */}
                     {hayMasDeUna && (
                         <Pressable
                             onPress={onPressAll} // (puede ser el mismo que la card, no pasa nada)
@@ -1373,7 +1373,7 @@ export default function AlarmList() {
                             </View>
 
                             <Text style={styles.topAlarmLinkPlainText} numberOfLines={1}>
-                                Más Alarmas Portal
+                                {t("DeviceDetailsScreen.Mas_Alarma_portal")}
                             </Text>
 
                             <Ionicons
@@ -1664,7 +1664,7 @@ export default function AlarmList() {
                 >
                     <Pressable style={styles.confirmCard} onPress={() => { }}>
                         <Text style={styles.confirmMessage}>
-                            ¿Desea eliminar el acceso a la nave y a las notificaciones del TC5?
+                            {t("DeviceDetailsScreen.confirmStopSharingTc5")}
                         </Text>
 
                         <View style={styles.confirmActions}>
@@ -1673,7 +1673,7 @@ export default function AlarmList() {
                                 onPress={() => setStopVisible(false)}
                                 disabled={stopping}
                             >
-                                <Text style={styles.confirmBtnGhostText}>Cancelar</Text>
+                                <Text style={styles.confirmBtnGhostText}>  {t("DeviceDetailsScreen.common.cancel")}</Text>
                             </Pressable>
 
                             <Pressable
@@ -1684,7 +1684,7 @@ export default function AlarmList() {
                                 {stopping ? (
                                     <ActivityIndicator />
                                 ) : (
-                                    <Text style={styles.confirmBtnPrimaryText}>Aceptar</Text>
+                                    <Text style={styles.confirmBtnPrimaryText}> {t("DeviceDetailsScreen.common.ok")}</Text>
                                 )}
                             </Pressable>
                         </View>

@@ -65,7 +65,13 @@
         "confirmDisableAll": "是否要停用所有警報？",
         "alerta_titutlo": "設備斷線警示",
         "alerta_subtitulo": "請確認您已閱讀警報通知",
-        "alert_aceptar": "接受"
+        "alert_aceptar": "接受",
+        "Mas_Alarma_portal": "更多入口網站警報",
+        "confirmStopSharingTc5": "您要移除對該建築物和 TC5 通知的存取權限嗎？",
+        "portalAlarm": "入口網站警報",
+        "portal": "入口網站",
+        "noActiveAlarms": "沒有啟用中的警報",
+        "removeTc5Access": "移除 TC5 存取權限"
     },
     "DrawerContent": {
         "logout": "登出",
@@ -181,12 +187,13 @@
             "datos": "電子郵件或密碼錯誤",
             "general": "錯誤",
             "mensaje": "發生未知錯誤"
-        }
+        },
+        "firstLoginNotificationNotice": "請記得，您將會使用第一次登入的帳號接收通知"
     },
     "useNotificationPermission": {
         "alerta": {
             "titulo": "通知",
-            "mensaje": "啟用通知以接收 TC5 警報",
+            "mensaje": "啟用通知以接收 TC5 警報. 請記得，您將會使用第一次登入的帳號接收通知",
             "boton": "接受"
         },
         "error": {

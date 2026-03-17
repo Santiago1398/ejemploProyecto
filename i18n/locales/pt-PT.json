@@ -65,7 +65,13 @@
         "confirmDisableAll": "Deseja desativar todos os alarmes?",
         "alerta_titutlo": "Alerta de equipamento desligado",
         "alerta_subtitulo": "Confirme que leu o aviso de alarme",
-        "alert_aceptar": "Aceitar"
+        "alert_aceptar": "Aceitar",
+        "Mas_Alarma_portal": "Mais alarmes do portal",
+        "confirmStopSharingTc5": "Pretende remover o acesso ao edifício e às notificações do TC5?",
+        "portalAlarm": "Alarme do portal",
+        "portal": "Portal",
+        "noActiveAlarms": "Não há alarmes ativos",
+        "removeTc5Access": "Remover acesso ao TC5"
     },
     "DrawerContent": {
         "logout": "Sair",
@@ -182,12 +188,13 @@
             "datos": "Email ou senha incorretos",
             "general": "Erro",
             "mensaje": "Algo deu errado"
-        }
+        },
+        "firstLoginNotificationNotice": "Lembre-se de que irá receber as notificações com a conta com a qual iniciar sessão pela primeira vez"
     },
     "useNotificationPermission": {
         "alerta": {
             "titulo": "Notificações",
-            "mensaje": "Ative as notificações para receber alarmes TC5",
+            "mensaje": "Ative as notificações para receber alarmes TC5.Lembre-se de que irá receber as notificações com a conta com a qual iniciar sessão pela primeira vez",
             "boton": "Permitir"
         },
         "error": {

@@ -65,7 +65,13 @@
         "confirmDisableAll": "Vuoi disattivare tutti gli allarmi?",
         "alerta_titutlo": "Allerta: dispositivo scollegato",
         "alerta_subtitulo": "Conferma di aver letto l’avviso di allarme",
-        "alert_aceptar": "Accetta"
+        "alert_aceptar": "Accetta",
+        "Mas_Alarma_portal": "Più allarmi del portale",
+        "confirmStopSharingTc5": "Vuoi rimuovere l’accesso all’edificio e alle notifiche del TC5?",
+        "portalAlarm": "Allarme del portale",
+        "portal": "Portale",
+        "noActiveAlarms": "Non ci sono allarmi attivi",
+        "removeTc5Access": "Rimuovere l’accesso al TC5"
     },
     "DrawerContent": {
         "logout": "Disconnetti",
@@ -182,12 +188,13 @@
             "datos": "Email o password errati",
             "general": "Errore",
             "mensaje": "Qualcosa è andato storto"
-        }
+        },
+        "firstLoginNotificationNotice": "Ricordi che riceverà le notifiche con l’account con cui effettua il primo accesso"
     },
     "useNotificationPermission": {
         "alerta": {
             "titulo": "Notifiche",
-            "mensaje": "Abilita le notifiche per ricevere gli allarmi TC5",
+            "mensaje": "Abilita le notifiche per ricevere gli allarmi TC5.Ricordi che riceverà le notifiche con l’account con cui effettua il primo accesso",
             "boton": "Accetta"
         },
         "error": {

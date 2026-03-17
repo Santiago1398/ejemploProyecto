@@ -65,7 +65,13 @@
         "confirmDisableAll": "Do you want to disable all alarms?",
         "alerta_titutlo": "Disconnected equipment alert",
         "alerta_subtitulo": "Confirm that you have read the alarm notice",
-        "alert_aceptar": "Acept"
+        "alert_aceptar": "Acept",
+        "Mas_Alarma_portal": "More Portal Alarms",
+        "confirmStopSharingTc5": "Do you want to remove access to the building and TC5 notifications?",
+        "portalAlarm": "Portal Alarm",
+        "portal": "Portal",
+        "noActiveAlarms": "There are no active alarms",
+        "removeTc5Access": "Remove access to TC5"
     },
     "DrawerContent": {
         "logout": "Logout",
@@ -182,12 +188,13 @@
             "datos": "Incorrect email or password",
             "general": "Error",
             "mensaje": "Something went wrong"
-        }
+        },
+        "firstLoginNotificationNotice": "Please remember that you will receive notifications with  the account you first sign in with"
     },
     "useNotificationPermission": {
         "alerta": {
             "titulo": "Notifications",
-            "mensaje": "Enable notifications to receive TC5 alarms",
+            "mensaje": "Enable notifications to receive TC5 alarms. Please remember that you will receive notifications with  the account you first sign in with",
             "boton": "Allow"
         },
         "error": {

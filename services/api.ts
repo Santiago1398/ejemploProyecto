@@ -155,30 +155,28 @@ const getHeaders = async () => {
 
 // 🔥 AXIOS: POST actualizado con URL dinámica
 export const post = async (path: string, data: unknown) => {
-    const API_URL = getApiUrl(); // 🔥 OBTENER URL según modo
-
-    // console.log("🔧 PostData", data);
-    //  console.log("🌐 POST URL:", `${API_URL}/${path}`);
+    const API_URL = getApiUrl();
 
     const headers = await getHeaders();
+
     const respuesta = await axios
         .post(`${API_URL}/${path}`, data, {
-            headers: { ...headers },
+            headers,
             timeout: 10000,
         })
         .then((response) => {
             return response.data;
         })
         .catch((error) => {
-            if (error.code !== "ERR_NETWORK") {
+            if (error.response) {
                 console.log("❌ Axios Error Response POST:", error.response);
 
                 const errorPersonalizado: any = new Error(
                     error.response?.data?.message || "Error en la petición"
                 );
 
-                errorPersonalizado.status = error.response?.status;
-                errorPersonalizado.data = error.response?.data;
+                errorPersonalizado.status = error.response.status;
+                errorPersonalizado.data = error.response.data;
 
                 throw errorPersonalizado;
             } else {
@@ -191,8 +189,9 @@ export const post = async (path: string, data: unknown) => {
                 throw errorRed;
             }
         });
-};
 
+    return respuesta;
+};
 // 🔥 AXIOS: GET actualizado con URL dinámica
 export const get = async (path: string, id?: number) => {
     const API_URL = getApiUrl(); // 🔥 OBTENER URL según modo

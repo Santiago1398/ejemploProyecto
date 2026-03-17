@@ -65,7 +65,13 @@
         "confirmDisableAll": "Czy chcesz wyłączyć wszystkie alarmy?",
         "alerta_titutlo": "Alert: urządzenie odłączone",
         "alerta_subtitulo": "Potwierdź, że przeczytano komunikat alarmowy",
-        "alert_aceptar": "Akceptuj"
+        "alert_aceptar": "Akceptuj",
+        "Mas_Alarma_portal": "Więcej alarmów portalu",
+        "confirmStopSharingTc5": "Вы хотите удалить доступ к зданию и уведомлениям TC5?",
+        "portalAlarm": "Alarm portalu",
+        "portal": "Portal",
+        "noActiveAlarms": "Brak aktywnych alarmów",
+        "removeTc5Access": "Usuń dostęp do TC5"
     },
     "DrawerContent": {
         "logout": "Wyloguj",
@@ -182,12 +188,13 @@
             "datos": "Nieprawidłowy email lub hasło",
             "general": "Błąd",
             "mensaje": "Coś poszło nie tak"
-        }
+        },
+        "firstLoginNotificationNotice": "Pamiętaj, że będziesz otrzymywać powiadomienia z kontem, na które zalogujesz się po raz pierwszy"
     },
     "useNotificationPermission": {
         "alerta": {
             "titulo": "Powiadomienia",
-            "mensaje": "Włącz powiadomienia, aby odbierać alarmy TC5",
+            "mensaje": "Włącz powiadomienia, aby odbierać alarmy TC5.Pamiętaj, że będziesz otrzymywać powiadomienia z kontem, na które zalogujesz się po raz pierwszy",
             "boton": "Akceptuj"
         },
         "error": {

@@ -202,10 +202,10 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
         },
         {
             id: "stopSharingTc5",
-            label: "Eliminar acceso a TC5",
+            label: t("DeviceDetailsScreen.removeTc5Access"),
             icon: "user-x",
             onPress: () => {
-                onStopSharingTc5?.();       // ✅ abre modal en el padre
+                onStopSharingTc5?.();       // abre modal en el padre
             },
 
         },

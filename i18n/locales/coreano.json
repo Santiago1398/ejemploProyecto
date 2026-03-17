@@ -65,7 +65,13 @@
         "confirmDisableAll": "모든 알람을 비활성화하시겠습니까?",
         "alerta_titutlo": "장비 연결 끊김 경고",
         "alerta_subtitulo": "알람 안내를 읽었음을 확인하세요",
-        "alert_aceptar": "확인"
+        "alert_aceptar": "확인",
+        "Mas_Alarma_portal": "포털 알람 더보기",
+        "confirmStopSharingTc5": "건물 접근 권한과 TC5 알림을 삭제하시겠습니까?",
+        "portalAlarm": "入口網站警報",
+        "portal": "포털",
+        "noActiveAlarms": "활성 알람이 없습니다",
+        "removeTc5Access": "TC5 접근 제거"
     },
     "DrawerContent": {
         "logout": "로그아웃",
@@ -175,6 +181,7 @@
     "login": {
         "titulo": "로그인",
         "subtitulo": "계속하려면 로그인하세요",
+        "firstLoginNotificationNotice": "처음 로그인한 계정의 알림을 받게 된다는 점을 기억해 주세요",
         "correo": "이메일",
         "contrasena": "비밀번호",
         "boton": "로그인",
@@ -187,7 +194,7 @@
     "useNotificationPermission": {
         "alerta": {
             "titulo": "알림",
-            "mensaje": "TC5 알람을 받으려면 알림을 켜세요",
+            "mensaje": "TC5 알람을 받으려면 알림을 켜세요. 처음 로그인한 계정의 알림을 받게 된다는 점을 기억해 주세요",
             "boton": "확인"
         },
         "error": {

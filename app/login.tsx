@@ -19,14 +19,13 @@ import { t } from "@/i18n/i18nConfig";
 export default function LoginScreen({ navigation }: any) {
     const {
         username: savedEmail,
-        password: savedPassword,
         login,
         isDeveloperMode,
         toggleDeveloperMode
     } = useAuthStore();
 
     const [email, setEmail] = useState(savedEmail || "");
-    const [password, setPassword] = useState(savedPassword || "");
+    const [password, setPassword] = useState("");
     const { requestPermission } = useNotificationPermission();
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -102,6 +101,7 @@ export default function LoginScreen({ navigation }: any) {
                         <View>
                             <Text style={styles.title}>{t("login.titulo")}</Text>
                             <Text style={styles.subtitle}>{t("login.subtitulo")}</Text>
+                            {/* <Text style={styles.noticeText}> {t("login.firstLoginNotificationNotice")} </Text> */}
 
                             {/* 🔥 INDICADOR DE MODO DESARROLLO */}
                             {isDeveloperMode && (
@@ -263,5 +263,13 @@ const styles = StyleSheet.create({
         fontSize: 11,
         textAlign: "center",
         fontWeight: "600",
+    },
+    noticeText: {
+        fontSize: 16,
+        color: "#555",
+        textAlign: "center",
+        marginTop: -12,
+        marginBottom: 16,
+        lineHeight: 18,
     },
 });

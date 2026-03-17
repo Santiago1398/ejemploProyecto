@@ -91,7 +91,7 @@ android {
         applicationId 'com.cticontrol.notificationtc5'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 8
+        versionCode 10
         versionName "1.0.2"
         resConfigs "en", "es", "it", "fr", "ca", "ru", "uk", "pl", "ko", "zh-rTW"
 
