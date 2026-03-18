@@ -199,7 +199,7 @@ const [confirmStopVisible, setConfirmStopVisible] = useState(false);
         },
         {
             id: "stopSharingTc5",
-            label: "Eliminar acceso a TC5",
+            label: t("DeviceDetailsScreen.removeTc5Access"),
             icon: "user-x",
             onPress: () => {
                 onStopSharingTc5?.();      

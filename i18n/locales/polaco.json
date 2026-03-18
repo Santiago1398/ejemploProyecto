@@ -66,7 +66,13 @@
         "ok": "Akceptuj",
         "alerta_titutlo": "Alerta de Equipo desconectado",
         "alerta_subtitulo": "Confirmar que ha leido el aviso de Alarma",
-        "alert_aceptar": "Aceptar"
+        "alert_aceptar": "Aceptar",
+        "Mas_Alarma_portal": "Więcej alarmów portalu",
+        "confirmStopSharingTc5": "Вы хотите удалить доступ к зданию и уведомлениям TC5?",
+        "portalAlarm": "Alarm portalu",
+        "portal": "Portal",
+        "noActiveAlarms": "Brak aktywnych alarmów",
+        "removeTc5Access": "Usuń dostęp do TC5"
     },
     "DrawerContent": {
         "logout": "Wyloguj",
@@ -183,12 +189,13 @@
             "datos": "Nieprawidłowy email lub hasło",
             "general": "Błąd",
             "mensaje": "Coś poszło nie tak"
-        }
+        },
+        "firstLoginNotificationNotice": "Pamiętaj, że będziesz otrzymywać powiadomienia z kontem, na które zalogujesz się po raz pierwszy"
     },
     "useNotificationPermission": {
         "alerta": {
             "titulo": "Powiadomienia",
-            "mensaje": "Włącz powiadomienia, aby odbierać alarmy TC5",
+            "mensaje": "Włącz powiadomienia, aby odbierać alarmy TC5. Pamiętaj, że będziesz otrzymywać powiadomienia z kontem, na które zalogujesz się po raz pierwszy",
             "boton": "Akceptuj"
         },
         "error": {

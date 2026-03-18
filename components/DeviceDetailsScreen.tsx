@@ -97,7 +97,8 @@ export default function AlarmList() {
     const criticalAlertShownRef = useRef(false);
     const postingCriticalRef = useRef(false);
     const [criticalVisible, setCriticalVisible] = useState(false);
-    const token = useAuthStore((s) => s.token);
+    //const token = useAuthStore((s) => s.token);
+    const { token, reloginSilencioso, logout } = useAuthStore();
 
     const [stopVisible, setStopVisible] = useState(false);
     const [stopping, setStopping] = useState(false);
@@ -1330,7 +1331,7 @@ useEffect(() => {
                 >
                     {/*  Título dentro de la card */}
                     <View style={styles.portalTitleInsideWrap}>
-                        <Text style={styles.portalTitleInsideText}>Alarma Portal</Text>
+                                <Text style={styles.portalTitleInsideText}>{t("DeviceDetailsScreen.portalAlarm")}</Text>
                         {/* <View style={styles.portalTitleInsideDivider} /> */}
                     </View>
 
@@ -1393,7 +1394,7 @@ useEffect(() => {
                             </View>
 
                             <Text style={styles.topAlarmLinkPlainText} numberOfLines={1}>
-                                Más Alarmas Portal
+                                    {t("DeviceDetailsScreen.Mas_Alarma_portal")}    
                             </Text>
 
                             <Ionicons
@@ -1413,7 +1414,7 @@ useEffect(() => {
 
 
     //!-----------ELIMINAR ACESO A TC5-----------
-    const confirmarStop = async () => {
+/*     const confirmarStop = async () => {
         try {
             setStopping(true);
             await post("infrastructure/stopsharingtc5", {
@@ -1427,7 +1428,49 @@ useEffect(() => {
         } finally {
             setStopping(false);
         }
-    };
+    }; */
+
+    const confirmarStop = async () => {
+    try {
+        setStopping(true);
+
+        await post("infrastructure/stopsharingtc5", {
+            userId: Number(userId),
+            mac: String(device.mac),
+        });
+
+        setStopVisible(false);
+        navigation.popToTop();
+    } catch (error: any) {
+        console.log("Error en stopsharingtc5:", error);
+
+        if (error?.status === 401) {
+            const ok = await reloginSilencioso();
+
+            if (ok) {
+                try {
+                    await post("infrastructure/stopsharingtc5", {
+                        userId: Number(userId),
+                        mac: String(device.mac),
+                    });
+
+                    setStopVisible(false);
+                    navigation.popToTop();
+                    return;
+                } catch (retryError: any) {
+                    console.log("Error al reintentar stopsharingtc5:", retryError);
+                }
+            }
+
+            await logout();
+            return;
+        }
+
+        Alert.alert("Error", "No se pudo eliminar el acceso al TC5.");
+    } finally {
+        setStopping(false);
+    }
+};
     //!-----------Fin CARD ALARMAS-----------
 
     return (
@@ -1658,7 +1701,7 @@ useEffect(() => {
                 >
                     <Pressable style={styles.confirmCard} onPress={() => { }}>
                         <Text style={styles.confirmMessage}>
-                            ¿Desea eliminar el acceso a la nave y a las notificaciones del TC5?
+                            {t("DeviceDetailsScreen.confirmStopSharingTc5")}
                         </Text>
 
                         <View style={styles.confirmActions}>
@@ -1667,7 +1710,9 @@ useEffect(() => {
                                 onPress={() => setStopVisible(false)}
                                 disabled={stopping}
                             >
-                                <Text style={styles.confirmBtnGhostText}>Cancelar</Text>
+                                <Text style={styles.confirmBtnGhostText}>   
+                                         {t("DeviceDetailsScreen.common.cancel")}
+                                </Text>
                             </Pressable>
 
                             <Pressable
@@ -1678,7 +1723,9 @@ useEffect(() => {
                                 {stopping ? (
                                     <ActivityIndicator />
                                 ) : (
-                                    <Text style={styles.confirmBtnPrimaryText}>Aceptar</Text>
+                                    <Text style={styles.confirmBtnPrimaryText}>
+                                         {t("DeviceDetailsScreen.common.ok")}
+                                        </Text>
                                 )}
                             </Pressable>
                         </View>

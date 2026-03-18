@@ -170,14 +170,27 @@ export const post = async (path: string, data: unknown) => {
             return response.data;
         })
         .catch((error) => {
-            if (error.code !== "ERR_NETWORK") {
-                console.log("❌ Axios Error Response POST:", error.response);
-                throw new Error(JSON.stringify(error.response.data));
-            } else {
-                console.log("❌ Axios Error POST CONEXION:", error);
-                throw new Error(JSON.stringify(error));
-            }
-        });
+    if (error.code !== "ERR_NETWORK") {
+        console.log("❌ Axios Error Response POST:", error.response);
+
+        const errorPersonalizado: any = new Error(
+            error.response?.data?.message || "Error en la petición"
+        );
+
+        errorPersonalizado.status = error.response?.status;
+        errorPersonalizado.data = error.response?.data;
+
+        throw errorPersonalizado;
+    } else {
+        console.log("❌ Axios Error POST CONEXION:", error);
+
+        const errorRed: any = new Error("Error de conexión con el servidor");
+        errorRed.status = 0;
+        errorRed.data = error;
+
+        throw errorRed;
+    }
+});
 
     return respuesta;
 };

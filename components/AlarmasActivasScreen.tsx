@@ -216,7 +216,7 @@ export default function AlarmasActivasScreen() {
                                 fontSize: 18,
                             }}
                         >
-                            Portal
+                        {t("DeviceDetailsScreen.portal")}
                         </Text>
                     </View>
                 </Pressable>
@@ -296,7 +296,7 @@ export default function AlarmasActivasScreen() {
             {!loading && alarmas.length === 0 ? (
                 <View style={styles.emptyWrap}>
                     <Ionicons name="notifications-off-outline" size={48} color="#4B5563" />
-                    <Text style={styles.emptyText}>No hay alarmas activas</Text>
+                    <Text style={styles.emptyText}>{t("DeviceDetailsScreen.noActiveAlarms")}</Text>
                 </View>
             ) : (
                 <FlatList

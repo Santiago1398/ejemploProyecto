@@ -31,7 +31,7 @@
       "entitlements": {
         "aps-environment": "production"
       },
-      "buildNumber": "25"
+      "buildNumber": "28"
     },
     "android": {
       "config": {
@@ -89,13 +89,14 @@
             "./assets/sounds/alarmcar_30s.caf"
           ]
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true
     },
     "extra": {
-      "devBuildNumber": 27,
+      "devBuildNumber": 29,
       "apiUrl": "https://api.tc5monitor.cticontrol.com/api",
       "apiUrlDev": "https://api.tc5monitortest.cticontrol.com/api",
       "socketUrl": "https://api.tc5monitor.cticontrol.com",

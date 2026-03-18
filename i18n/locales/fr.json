@@ -64,7 +64,13 @@
         "ok": "Accepter",
         "alerta_titutlo": "Alerta d’equip desconnectat",
         "alerta_subtitulo": "Confirma que has llegit l’avís d’alarma",
-        "alert_aceptar": "Acceptar"
+        "alert_aceptar": "Acceptar",
+        "Mas_Alarma_portal": "Plus d’alarmes du portail",
+        "confirmStopSharingTc5": "Voulez-vous supprimer l’accès au bâtiment et aux notifications du TC5 ?",
+        "portalAlarm": "Alarme du portail",
+        "portal": "Portail",
+        "noActiveAlarms": "Il n’y a pas d’alarmes actives",
+        "removeTc5Access": "Supprimer l’accès au TC5"
     },
     "DrawerContent": {
         "logout": "Se déconnecter",
@@ -181,12 +187,13 @@
             "datos": "E-mail ou mot de passe incorrect",
             "general": "Erreur",
             "mensaje": "Une erreur est survenue"
-        }
+        },
+        "firstLoginNotificationNotice": "N’oubliez pas que vous recevrez les notifications avec le compte avec lequel vous vous connectez pour la première fois"
     },
     "useNotificationPermission": {
         "alerta": {
             "titulo": "Notifications",
-            "mensaje": "Activez les notifications pour recevoir les alarmes TC5",
+            "mensaje": "Activez les notifications pour recevoir les alarmes TC5. N’oubliez pas que vous recevrez les notifications avec le compte avec lequel vous vous connectez pour la première fois",
             "boton": "Accepter"
         },
         "error": {

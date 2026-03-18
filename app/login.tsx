@@ -18,15 +18,14 @@ import { t } from "@/i18n/i18nConfig";
 
 export default function LoginScreen({ navigation }: any) {
     const {
-        username: savedEmail,
-        password: savedPassword,
-        login,
-        isDeveloperMode,
-        toggleDeveloperMode
-    } = useAuthStore();
+    username: savedEmail,
+    login,
+    isDeveloperMode,
+    toggleDeveloperMode
+} = useAuthStore();
 
-    const [email, setEmail] = useState(savedEmail || "");
-    const [password, setPassword] = useState(savedPassword || "");
+const [email, setEmail] = useState(savedEmail || "");
+const [password, setPassword] = useState("");
     const { requestPermission } = useNotificationPermission();
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
