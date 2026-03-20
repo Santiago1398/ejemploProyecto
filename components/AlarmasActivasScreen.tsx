@@ -7,6 +7,7 @@ import {
     Pressable,
     Alert,
     ActivityIndicator,
+    TouchableOpacity,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -23,6 +24,8 @@ import { deviceName } from "@/utils/switch/dispositivos";
 import { resolverTextoAlarma } from "@/utils/linkedTc5Alarm";
 import { t } from "@/i18n/i18nConfig";
 import { useFocusEffect } from "@react-navigation/native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Platform } from "react-native";
 
 
 type Nav = NativeStackNavigationProp<RootStackParamList, "AlarmasActivasScreen">;
@@ -43,6 +46,7 @@ export default function AlarmasActivasScreen() {
     const route = useRoute<RouteT>();
     const token = useAuthStore((s) => s.token);
     const [refreshing, setRefreshing] = useState(false);
+    const insets = useSafeAreaInsets();
 
     // evita solapes
     const fetchingRef = React.useRef(false);
@@ -197,37 +201,35 @@ export default function AlarmasActivasScreen() {
         });
     }, [navigation, token, device]);
 
+    // useLayoutEffect(() => {
+    //     navigation.setOptions({
+    //         title: "Alarmas activas",
+    //         headerRight: () => (
+    //             <TouchableOpacity
+    //                 activeOpacity={0.7}
+    //                 onPress={() => {
+    //                     console.log("✅ pulsado portal header");
+    //                     handleGoToExplotacion();
+    //                 }}
+    //                 hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
+    //                 style={{
+    //                     width: 40,
+    //                     height: 40,
+    //                     alignItems: "center",
+    //                     justifyContent: "center",
+    //                 }}
+    //             >
+    //                 <Ionicons name="globe-outline" size={22} color="#2563EB" />
+    //             </TouchableOpacity>
+    //         ),
+    //     });
+    // }, [navigation, handleGoToExplotacion]);
+
     useLayoutEffect(() => {
         navigation.setOptions({
-            title: "Alarmas activas",
-            headerRight: () => (
-                <Pressable
-                    onPress={handleGoToExplotacion}
-                    hitSlop={{ top: 12, bottom: 12, left: 12, right: 12 }}
-                    style={({ pressed }) => ({
-                        paddingHorizontal: 12,
-                        paddingVertical: 8,
-                        opacity: pressed ? 0.6 : 1,
-                    })}
-                >
-                    <View style={{ flexDirection: "row", alignItems: "center" }}>
-                        <Ionicons name="globe-outline" size={18} color="#2563EB" />
-                        <Text
-                            style={{
-                                color: "#2563EB",
-                                textDecorationLine: "underline",
-                                fontWeight: "800",
-                                fontSize: 18,
-                                marginLeft: 6,
-                            }}
-                        >
-                            {t("DeviceDetailsScreen.portal")}
-                        </Text>
-                    </View>
-                </Pressable>
-            ),
+            headerShown: false,
         });
-    }, [navigation, handleGoToExplotacion]);
+    }, [navigation]);
 
     const AlarmActivaCard = ({ item }: { item: AlarmActivaUI }) => {
         const chipText = item.mac ? String(item.mac) : chipTextBase;
@@ -292,6 +294,34 @@ export default function AlarmasActivasScreen() {
 
     return (
         <View style={styles.container}>
+            <View style={[styles.customHeader, { paddingTop: insets.top + 8 }]}>
+                <TouchableOpacity
+                    style={styles.backButton}
+                    onPress={() => navigation.goBack()}
+                    activeOpacity={0.7}
+                >
+                    <Ionicons name="arrow-back" size={24} color="#000" />
+                </TouchableOpacity>
+
+                <View style={styles.headerTitleContainer}>
+                    <Text style={styles.headerTitle}>Alarmas activas</Text>
+                </View>
+
+                <TouchableOpacity
+                    style={styles.portalButton}
+                    onPress={() => {
+                        console.log("✅ pulsado portal custom header");
+                        handleGoToExplotacion();
+                    }}
+                    activeOpacity={0.7}
+                >
+                    <Ionicons name="globe-outline" size={22} color="#2563EB" />
+                    <Text style={styles.portalButtonText}>
+                        {t("DeviceDetailsScreen.portal")}
+                    </Text>
+                </TouchableOpacity>
+            </View>
+
             {loading && (
                 <View style={{ paddingTop: 14 }}>
                     <ActivityIndicator />
@@ -312,7 +342,6 @@ export default function AlarmasActivasScreen() {
                     showsVerticalScrollIndicator={false}
                     refreshing={refreshing}
                     onRefresh={() => fetchAlarmas({ isPullToRefresh: true })}
-
                 />
             )}
         </View>
@@ -409,5 +438,54 @@ const styles = StyleSheet.create({
         color: "#fff",
         fontWeight: "900",
         fontSize: 12,
+    },
+    customHeader: {
+        backgroundColor: "#fff",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        paddingHorizontal: 14,
+        paddingBottom: 12,
+        minHeight: 64,
+        borderBottomWidth: 1,
+        borderBottomColor: "#E5E7EB",
+    },
+
+    backButton: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+
+    headerTitleContainer: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        paddingHorizontal: 8,
+    },
+
+    headerTitle: {
+        color: "#000",
+        fontSize: 20,
+        fontWeight: "800",
+        textAlign: "center",
+    },
+
+    portalButton: {
+        minHeight: 44,
+        minWidth: 44,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        paddingHorizontal: 8,
+    },
+
+    portalButtonText: {
+        color: "#2563EB",
+        fontSize: 15,
+        fontWeight: "700",
+        marginLeft: 6,
     },
 });

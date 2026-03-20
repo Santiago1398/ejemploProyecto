@@ -82,7 +82,7 @@ export default function Layout() {
                 });
 
 
-                await Notifications.setNotificationChannelAsync("channel-warning", {
+                await Notifications.setNotificationChannelAsync("channel-warning-v2", {
                     name: "Notificaciones  warning",
                     importance: Notifications.AndroidImportance.HIGH,
                     sound: "telephone",
