@@ -14,6 +14,7 @@
 		3E461D99554A48A4959DE609 /* SplashScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */; };
 		48A68C261103B1713960F960 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A8249EF74FA4C1A3AF0B112D /* PrivacyInfo.xcprivacy */; };
 		6B9269C9207B4985B7EFF34A /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 5F69BDD7402E463C90D748AA /* GoogleService-Info.plist */; };
+		980FC14A2F6D801C00A0D35B /* telephone.caf in Resources */ = {isa = PBXBuildFile; fileRef = 980FC1492F6D801C00A0D35B /* telephone.caf */; };
 		9840A6D32F2A436B002BD19F /* alarmcar_30s.caf in Resources */ = {isa = PBXBuildFile; fileRef = 9840A6D22F2A436B002BD19F /* alarmcar_30s.caf */; };
 		A8E2C3D2ECA90893374E7E75 /* Pods_TC5.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F58D317B48126482B9877266 /* Pods_TC5.framework */; };
 		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
@@ -31,6 +32,8 @@
 		5F69BDD7402E463C90D748AA /* GoogleService-Info.plist */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "TC5/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		6C2E3173556A471DD304B334 /* Pods-TC5.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TC5.debug.xcconfig"; path = "Target Support Files/Pods-TC5/Pods-TC5.debug.xcconfig"; sourceTree = "<group>"; };
 		7A4D352CD337FB3A3BF06240 /* Pods-TC5.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TC5.release.xcconfig"; path = "Target Support Files/Pods-TC5/Pods-TC5.release.xcconfig"; sourceTree = "<group>"; };
+		980FC1472F6D772E00A0D35B /* telephone.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = telephone.caf; path = ../assets/sounds/telephone.caf; sourceTree = "<group>"; };
+		980FC1492F6D801C00A0D35B /* telephone.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = telephone.caf; path = ../assets/sounds/telephone.caf; sourceTree = "<group>"; };
 		9840A6D22F2A436B002BD19F /* alarmcar_30s.caf */ = {isa = PBXFileReference; lastKnownFileType = file; name = alarmcar_30s.caf; path = TC5/alarmcar_30s.caf; sourceTree = "<group>"; };
 		A07AD8049AC143C6BFF82A70 /* TC5-Bridging-Header.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; name = "TC5-Bridging-Header.h"; path = "TC5/TC5-Bridging-Header.h"; sourceTree = "<group>"; };
 		A8249EF74FA4C1A3AF0B112D /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; name = PrivacyInfo.xcprivacy; path = TC5/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -90,6 +93,8 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				980FC1472F6D772E00A0D35B /* telephone.caf */,
+				980FC1492F6D801C00A0D35B /* telephone.caf */,
 				9840A6D22F2A436B002BD19F /* alarmcar_30s.caf */,
 				13B07FAE1A68108700A75B9A /* TC5 */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
@@ -207,6 +212,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				980FC14A2F6D801C00A0D35B /* telephone.caf in Resources */,
 				9840A6D32F2A436B002BD19F /* alarmcar_30s.caf in Resources */,
 				BB2F792D24A3F905000567C9 /* Expo.plist in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
