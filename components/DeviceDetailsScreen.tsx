@@ -557,35 +557,33 @@ useEffect(() => {
     //!-------------------------------------------------------------
 
     //!--------------------DEMO Alert Notificacion------------------
-    const checkCriticalAlarmDemo = async (masterConnected: boolean, alarmsEmpty: boolean) => {
-        // ✅ Solo nos interesa comprobar si:
-        // - el master NO está conectado, o
-        // - NO hay alarmas en el listado (array vacío)
-        const shouldCheck = !masterConnected || alarmsEmpty;
-        if (!shouldCheck) return;
+   const checkCriticalAlarmDemo = async (masterConnected: boolean, alarmsEmpty: boolean) => {
+    const shouldCheck = !masterConnected || alarmsEmpty;
+    if (!shouldCheck) return;
 
-        // Evita repetir modal o lanzar mientras está posteando
-        if (criticalAlertShownRef.current || postingCriticalRef.current) return;
+    if (criticalAlertShownRef.current || postingCriticalRef.current) return;
 
-        try {
-            const res = await get(`alarmtc/criticalalarmdemo`);
-            console.log("estado varibale get--------------", res)
+    try {
+        const res = await get(
+            `alarmtc/checkcriticalalarm?mac=${encodeURIComponent(String(mac))}`
+        );
 
-            const status =
-                parseBool(res) ||
-                parseBool(res?.data) ||
-                parseBool(res?.status) ||
-                parseBool(res?.data?.status);
+        console.log("estado variable get--------------", res);
 
-            if (!status) return;
+        const status =
+            parseBool(res) ||
+            parseBool(res?.data) ||
+            parseBool(res?.status) ||
+            parseBool(res?.data?.status);
 
-            criticalAlertShownRef.current = true;
-            setCriticalVisible(true);
-        } catch (e) {
-            console.log("❌ Error en GET criticalalarmdemo:", e);
-        }
-    };
+        if (!status) return;
 
+        criticalAlertShownRef.current = true;
+        setCriticalVisible(true);
+    } catch (e) {
+        console.log("❌ Error en GET checkcriticalalarm:", e);
+    }
+};
 
 
     // useFocusEffect(

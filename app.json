@@ -2,7 +2,7 @@
   "expo": {
     "name": "TC5",
     "slug": "notification-tc5",
-    "version": "1.0.4",
+    "version": "1.0.5",
     "orientation": "portrait",
     "icon": "./assets/images/TC5-3-RAYAS.png",
     "scheme": "myapp",
@@ -31,7 +31,7 @@
       "entitlements": {
         "aps-environment": "production"
       },
-      "buildNumber": "30"
+      "buildNumber": "32"
     },
     "android": {
       "config": {
@@ -97,7 +97,7 @@
       "typedRoutes": true
     },
     "extra": {
-      "devBuildNumber": 30,
+      "devBuildNumber": 31,
       "apiUrl": "https://api.tc5monitor.cticontrol.com/api",
       "apiUrlDev": "https://api.tc5monitortest.cticontrol.com/api",
       "socketUrl": "https://api.tc5monitor.cticontrol.com",
