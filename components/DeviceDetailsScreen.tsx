@@ -537,18 +537,17 @@ export default function AlarmList() {
 
     //!--------------------DEMO Alert Notificacion------------------
     const checkCriticalAlarmDemo = async (masterConnected: boolean, alarmsEmpty: boolean) => {
-        // ✅ Solo nos interesa comprobar si:
-        // - el master NO está conectado, o
-        // - NO hay alarmas en el listado (array vacío)
         const shouldCheck = !masterConnected || alarmsEmpty;
         if (!shouldCheck) return;
 
-        // Evita repetir modal o lanzar mientras está posteando
         if (criticalAlertShownRef.current || postingCriticalRef.current) return;
 
         try {
-            const res = await get(`alarmtc/criticalalarmdemo`);
-            console.log("estado varibale get--------------", res)
+            const res = await get(
+                `alarmtc/checkcriticalalarm?mac=${encodeURIComponent(String(mac))}`
+            );
+
+            console.log("estado variable get--------------", res);
 
             const status =
                 parseBool(res) ||
@@ -561,10 +560,9 @@ export default function AlarmList() {
             criticalAlertShownRef.current = true;
             setCriticalVisible(true);
         } catch (e) {
-            console.log("❌ Error en GET criticalalarmdemo:", e);
+            console.log("❌ Error en GET checkcriticalalarm:", e);
         }
     };
-
 
 
     // useFocusEffect(
