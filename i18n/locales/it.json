@@ -45,7 +45,10 @@
             "noConnection": "Nessuna connessione",
             "deviceDisconnected": "Dispositivo disconnesso o senza comunicazione"
         },
-        "common": { "cancel": "Annulla", "ok": "Accetta" },
+        "common": {
+            "cancel": "Annulla",
+            "ok": "Accetta"
+        },
         "errorDialog": "Non è stato possibile confermare l’avviso.",
         "Min": "Mín",
         "Max": "Máx",
@@ -70,7 +73,10 @@
         "portalAlarm": "Allarme del portale",
         "portal": "Portale",
         "noActiveAlarms": "Non ci sono allarmi attivi",
-        "removeTc5Access": "Rimuovere l’accesso al TC5"
+        "removeTc5Access": "Rimuovere l’accesso al TC5",
+        "confirmActivateTc5Sound": "Vuoi attivare il suono degli allarmi provenienti dal TC5?",
+        "confirmDeactivateTc5Sound": "Vuoi disattivare il suono degli allarmi provenienti dal TC5?",
+        "soundBadge": "Audio"
     },
     "DrawerContent": {
         "logout": "Disconnetti",
@@ -109,7 +115,9 @@
         "geolocalizacion": "Geolocalizzazione",
         "ajustes": "Impostazioni",
         "volver": "Indietro",
-        "guardarUbicacion": "Salva Posizione"
+        "guardarUbicacion": "Salva Posizione",
+        "activateSoundAlarms": "Attiva allarmi sonori",
+        "deactivateSoundAlarms": "Disattiva allarmi sonori"
     },
     "PhoneNumberDialog": {
         "title": "Inserisci il tuo numero di telefono",
@@ -317,38 +325,31 @@
         "errorLoadingFarm": "Impossibile caricare il portale perché non c'è connessione o non esiste"
     },
     "ActivacionRele": {
-  "activacionExitosa": "Attivazione riuscita",
-  "errorActivacion": "Errore di attivazione",
-  "activarRele": "Attiva relè",
-  "desactivarRele": "Disattiva relè",
-  "confirmarActivacion": "Sei sicuro di voler attivare il relè?",
-  "confirmarDesactivacion": "Sei sicuro di voler disattivare il relè?",
-  "si": "Sì",
-  "no": "No",
-  "loading": "Elaborazione richiesta...",
-  "errorTitle": "Errore",
-  "successTitle": "Successo",
-
-  "noConectado": "Non connesso",
-  "noActivado": "Non attivato",
-
-  "modo": "Modalità",
-  "automatico": "Automatico",
-  "manual": "Manuale",
-  "automaticoContacto": "Automatico: {{contacto}}",
-
-  "estado": "Stato relè",
-
-  "on": "ON",
-  "off": "OFF",
-
-  "macInvalida": "MAC non valido",
-  "sinDatos": "Formato inatteso o nessun dato",
-  "errorDesconocido": "Errore sconosciuto",
-
-  "cambioModoError": "Impossibile cambiare la modalità del relè.",
-  "cambioEstadoError": "Impossibile cambiare lo stato del relè.",
-    "ActivacionRele": "Attivazione relè"
-}
-
+        "activacionExitosa": "Attivazione riuscita",
+        "errorActivacion": "Errore di attivazione",
+        "activarRele": "Attiva relè",
+        "desactivarRele": "Disattiva relè",
+        "confirmarActivacion": "Sei sicuro di voler attivare il relè?",
+        "confirmarDesactivacion": "Sei sicuro di voler disattivare il relè?",
+        "si": "Sì",
+        "no": "No",
+        "loading": "Elaborazione richiesta...",
+        "errorTitle": "Errore",
+        "successTitle": "Successo",
+        "noConectado": "Non connesso",
+        "noActivado": "Non attivato",
+        "modo": "Modalità",
+        "automatico": "Automatico",
+        "manual": "Manuale",
+        "automaticoContacto": "Automatico: {{contacto}}",
+        "estado": "Stato relè",
+        "on": "ON",
+        "off": "OFF",
+        "macInvalida": "MAC non valido",
+        "sinDatos": "Formato inatteso o nessun dato",
+        "errorDesconocido": "Errore sconosciuto",
+        "cambioModoError": "Impossibile cambiare la modalità del relè.",
+        "cambioEstadoError": "Impossibile cambiare lo stato del relè.",
+        "ActivacionRele": "Attivazione relè"
+    }
 }

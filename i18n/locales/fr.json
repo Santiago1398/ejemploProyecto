@@ -45,7 +45,10 @@
             "noConnection": "Pas de connexion",
             "deviceDisconnected": "Appareil déconnecté ou sans communication"
         },
-        "common": { "cancel": "Annuler", "ok": "Accepter" },
+        "common": {
+            "cancel": "Annuler",
+            "ok": "Accepter"
+        },
         "errorDialog": "Impossible de confirmer l’alerte.",
         "Min": "Mín",
         "Max": "Máx",
@@ -70,7 +73,10 @@
         "portalAlarm": "Alarme du portail",
         "portal": "Portail",
         "noActiveAlarms": "Il n’y a pas d’alarmes actives",
-        "removeTc5Access": "Supprimer l’accès au TC5"
+        "removeTc5Access": "Supprimer l’accès au TC5",
+        "confirmActivateTc5Sound": "Voulez-vous activer le son des alarmes provenant du TC5 ?",
+        "confirmDeactivateTc5Sound": "Voulez-vous désactiver le son des alarmes provenant du TC5 ?",
+        "soundBadge": "Son"
     },
     "DrawerContent": {
         "logout": "Se déconnecter",
@@ -109,7 +115,9 @@
         "geolocalizacion": "Géolocalisation",
         "ajustes": "Paramètres",
         "volver": "Retour",
-        "guardarUbicacion": "Enregistrer l'Emplacement"
+        "guardarUbicacion": "Enregistrer l'Emplacement",
+        "activateSoundAlarms": "Activer les alarmes sonores",
+        "deactivateSoundAlarms": "Désactiver les alarmes sonores"
     },
     "PhoneNumberDialog": {
         "title": "Entrez votre numéro de téléphone",
@@ -317,38 +325,31 @@
         "errorLoadingFarm": "Impossible de charger le portail car il n'y a pas de connexion ou il n'existe pas"
     },
     "ActivacionRele": {
-  "activacionExitosa": "Activation réussie",
-  "errorActivacion": "Erreur d'activation",
-  "activarRele": "Activer le relais",
-  "desactivarRele": "Désactiver le relais",
-  "confirmarActivacion": "Êtes-vous sûr de vouloir activer le relais ?",
-  "confirmarDesactivacion": "Êtes-vous sûr de vouloir désactiver le relais ?",
-  "si": "Oui",
-  "no": "Non",
-  "loading": "Traitement de la demande...",
-  "errorTitle": "Erreur",
-  "successTitle": "Succès",
-
-  "noConectado": "Non connecté",
-  "noActivado": "Non activé",
-
-  "modo": "Mode",
-  "automatico": "Automatique",
-  "manual": "Manuel",
-  "automaticoContacto": "Automatique : {{contacto}}",
-
-  "estado": "État du relais",
-
-  "on": "ON",
-  "off": "OFF",
-
-  "macInvalida": "MAC invalide",
-  "sinDatos": "Format inattendu ou aucune donnée",
-  "errorDesconocido": "Erreur inconnue",
-
-  "cambioModoError": "Impossible de changer le mode du relais.",
-  "cambioEstadoError": "Impossible de changer l'état du relais.",
-    "ActivacionRele": "Activation du relais"    
-}
-
+        "activacionExitosa": "Activation réussie",
+        "errorActivacion": "Erreur d'activation",
+        "activarRele": "Activer le relais",
+        "desactivarRele": "Désactiver le relais",
+        "confirmarActivacion": "Êtes-vous sûr de vouloir activer le relais ?",
+        "confirmarDesactivacion": "Êtes-vous sûr de vouloir désactiver le relais ?",
+        "si": "Oui",
+        "no": "Non",
+        "loading": "Traitement de la demande...",
+        "errorTitle": "Erreur",
+        "successTitle": "Succès",
+        "noConectado": "Non connecté",
+        "noActivado": "Non activé",
+        "modo": "Mode",
+        "automatico": "Automatique",
+        "manual": "Manuel",
+        "automaticoContacto": "Automatique : {{contacto}}",
+        "estado": "État du relais",
+        "on": "ON",
+        "off": "OFF",
+        "macInvalida": "MAC invalide",
+        "sinDatos": "Format inattendu ou aucune donnée",
+        "errorDesconocido": "Erreur inconnue",
+        "cambioModoError": "Impossible de changer le mode du relais.",
+        "cambioEstadoError": "Impossible de changer l'état du relais.",
+        "ActivacionRele": "Activation du relais"
+    }
 }

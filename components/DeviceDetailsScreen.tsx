@@ -106,25 +106,64 @@ export default function AlarmList() {
     const openStopModal = () => setStopVisible(true);
     const [pendingStopOpen, setPendingStopOpen] = useState(false);
 
-const requestStopSharing = () => {
-  // 1) marcamos que queremos abrir el modal
-  setPendingStopOpen(true);
-  // 2) cerramos el menú
-  setMenuVisible(false);
-};
+    const showSoundSilencedIcon = true; // forzado por ahora
+    const [soundSilenced, setSoundSilenced] = useState(false);
+    const [soundSilenceLoading, setSoundSilenceLoading] = useState(false);
 
-useEffect(() => {
-  // Solo cuando el menú ya NO está visible y teníamos la acción pendiente
-  if (!menuVisible && pendingStopOpen) {
-    const delay = Platform.OS === "ios" ? 450 : 0; // iOS necesita esperar la animación del Modal
-    const id = setTimeout(() => {
-      setStopVisible(true);
-      setPendingStopOpen(false);
-    }, delay);
+    const handleToggleSoundNotifications = async () => {
+        const nextSilence = !soundSilenced;
 
-    return () => clearTimeout(id);
-  }
-}, [menuVisible, pendingStopOpen]);
+        const mensaje = nextSilence
+            ? t("DeviceDetailsScreen.confirmDeactivateTc5Sound")
+            : t("DeviceDetailsScreen.confirmActivateTc5Sound");
+
+        const confirmar = await confirmarCambioAlarma(mensaje);
+
+        if (!confirmar) return;
+
+        try {
+            setSoundSilenceLoading(true);
+
+            await runWithLoader(async () => {
+                await post("alarmtc/silenciar-notificaciones-sonoras", {
+                    silence: nextSilence,
+                    mac: String(mac),
+                    userId: Number(userId),
+                });
+            });
+
+            setSoundSilenced(nextSilence);
+            await fetchSoundNotificationsState();
+        } catch (error) {
+            console.log("❌ Error silenciando notificaciones sonoras:", error);
+            Alert.alert(
+                "Error",
+                "No se pudo cambiar el estado del sonido de las alarmas."
+            );
+        } finally {
+            setSoundSilenceLoading(false);
+        }
+    };
+
+    const requestStopSharing = () => {
+        // 1) marcamos que queremos abrir el modal
+        setPendingStopOpen(true);
+        // 2) cerramos el menú
+        setMenuVisible(false);
+    };
+
+    useEffect(() => {
+        // Solo cuando el menú ya NO está visible y teníamos la acción pendiente
+        if (!menuVisible && pendingStopOpen) {
+            const delay = Platform.OS === "ios" ? 450 : 0; // iOS necesita esperar la animación del Modal
+            const id = setTimeout(() => {
+                setStopVisible(true);
+                setPendingStopOpen(false);
+            }, delay);
+
+            return () => clearTimeout(id);
+        }
+    }, [menuVisible, pendingStopOpen]);
 
 
 
@@ -219,6 +258,29 @@ useEffect(() => {
     const parseBool = (v: any) =>
         v === true || v === "true" || v === 1 || v === "1";
 
+    const fetchSoundNotificationsState = async () => {
+        if (!mac || !userId) return;
+
+        try {
+            const res = await get(
+                `alarmtc/estado-notificaciones-sonoras?silence=false&mac=${encodeURIComponent(String(mac))}&userId=${Number(userId)}`
+            );
+
+            console.log("🔇 Estado notificaciones sonoras:", res);
+
+            const silenceValue =
+                res?.silence ??
+                res?.data?.silence ??
+                res?.data ??
+                res?.status ??
+                res;
+
+            setSoundSilenced(parseBool(silenceValue));
+        } catch (error) {
+            console.log("❌ Error consultando estado de sonido:", error);
+        }
+    };
+
 
     //  Confirm Modal (reemplaza Alert.alert para confirmaciones)
     const [confirmVisible, setConfirmVisible] = useState(false);
@@ -302,6 +364,11 @@ useEffect(() => {
             setConfirmVisible(true);
         });
     };
+
+
+    useEffect(() => {
+        fetchSoundNotificationsState();
+    }, [mac, userId]);
 
 
 
@@ -557,33 +624,33 @@ useEffect(() => {
     //!-------------------------------------------------------------
 
     //!--------------------DEMO Alert Notificacion------------------
-   const checkCriticalAlarmDemo = async (masterConnected: boolean, alarmsEmpty: boolean) => {
-    const shouldCheck = !masterConnected || alarmsEmpty;
-    if (!shouldCheck) return;
+    const checkCriticalAlarmDemo = async (masterConnected: boolean, alarmsEmpty: boolean) => {
+        const shouldCheck = !masterConnected || alarmsEmpty;
+        if (!shouldCheck) return;
 
-    if (criticalAlertShownRef.current || postingCriticalRef.current) return;
+        if (criticalAlertShownRef.current || postingCriticalRef.current) return;
 
-    try {
-        const res = await get(
-            `alarmtc/checkcriticalalarm?mac=${encodeURIComponent(String(mac))}`
-        );
+        try {
+            const res = await get(
+                `alarmtc/checkcriticalalarm?mac=${encodeURIComponent(String(mac))}`
+            );
 
-        console.log("estado variable get--------------", res);
+            console.log("estado variable get--------------", res);
 
-        const status =
-            parseBool(res) ||
-            parseBool(res?.data) ||
-            parseBool(res?.status) ||
-            parseBool(res?.data?.status);
+            const status =
+                parseBool(res) ||
+                parseBool(res?.data) ||
+                parseBool(res?.status) ||
+                parseBool(res?.data?.status);
 
-        if (!status) return;
+            if (!status) return;
 
-        criticalAlertShownRef.current = true;
-        setCriticalVisible(true);
-    } catch (e) {
-        console.log("❌ Error en GET checkcriticalalarm:", e);
-    }
-};
+            criticalAlertShownRef.current = true;
+            setCriticalVisible(true);
+        } catch (e) {
+            console.log("❌ Error en GET checkcriticalalarm:", e);
+        }
+    };
 
 
     // useFocusEffect(
@@ -1329,7 +1396,7 @@ useEffect(() => {
                 >
                     {/*  Título dentro de la card */}
                     <View style={styles.portalTitleInsideWrap}>
-                                <Text style={styles.portalTitleInsideText}>{t("DeviceDetailsScreen.portalAlarm")}</Text>
+                        <Text style={styles.portalTitleInsideText}>{t("DeviceDetailsScreen.portalAlarm")}</Text>
                         {/* <View style={styles.portalTitleInsideDivider} /> */}
                     </View>
 
@@ -1392,7 +1459,7 @@ useEffect(() => {
                             </View>
 
                             <Text style={styles.topAlarmLinkPlainText} numberOfLines={1}>
-                                    {t("DeviceDetailsScreen.Mas_Alarma_portal")}    
+                                {t("DeviceDetailsScreen.Mas_Alarma_portal")}
                             </Text>
 
                             <Ionicons
@@ -1412,63 +1479,63 @@ useEffect(() => {
 
 
     //!-----------ELIMINAR ACESO A TC5-----------
-/*     const confirmarStop = async () => {
+    /*     const confirmarStop = async () => {
+            try {
+                setStopping(true);
+                await post("infrastructure/stopsharingtc5", {
+                    userId: Number(userId),
+                    mac: String(device.mac),
+                });
+                setStopVisible(false);
+                //navigation.navigate("DeviceList")
+                navigation.popToTop();
+                // Alert.alert("Error", "No se pudo eliminar el acceso al TC5.");
+            } finally {
+                setStopping(false);
+            }
+        }; */
+
+    const confirmarStop = async () => {
         try {
             setStopping(true);
+
             await post("infrastructure/stopsharingtc5", {
                 userId: Number(userId),
                 mac: String(device.mac),
             });
+
             setStopVisible(false);
-            //navigation.navigate("DeviceList")
             navigation.popToTop();
-            // Alert.alert("Error", "No se pudo eliminar el acceso al TC5.");
+        } catch (error: any) {
+            console.log("Error en stopsharingtc5:", error);
+
+            if (error?.status === 401) {
+                const ok = await reloginSilencioso();
+
+                if (ok) {
+                    try {
+                        await post("infrastructure/stopsharingtc5", {
+                            userId: Number(userId),
+                            mac: String(device.mac),
+                        });
+
+                        setStopVisible(false);
+                        navigation.popToTop();
+                        return;
+                    } catch (retryError: any) {
+                        console.log("Error al reintentar stopsharingtc5:", retryError);
+                    }
+                }
+
+                await logout();
+                return;
+            }
+
+            Alert.alert("Error", "No se pudo eliminar el acceso al TC5.");
         } finally {
             setStopping(false);
         }
-    }; */
-
-    const confirmarStop = async () => {
-    try {
-        setStopping(true);
-
-        await post("infrastructure/stopsharingtc5", {
-            userId: Number(userId),
-            mac: String(device.mac),
-        });
-
-        setStopVisible(false);
-        navigation.popToTop();
-    } catch (error: any) {
-        console.log("Error en stopsharingtc5:", error);
-
-        if (error?.status === 401) {
-            const ok = await reloginSilencioso();
-
-            if (ok) {
-                try {
-                    await post("infrastructure/stopsharingtc5", {
-                        userId: Number(userId),
-                        mac: String(device.mac),
-                    });
-
-                    setStopVisible(false);
-                    navigation.popToTop();
-                    return;
-                } catch (retryError: any) {
-                    console.log("Error al reintentar stopsharingtc5:", retryError);
-                }
-            }
-
-            await logout();
-            return;
-        }
-
-        Alert.alert("Error", "No se pudo eliminar el acceso al TC5.");
-    } finally {
-        setStopping(false);
-    }
-};
+    };
     //!-----------Fin CARD ALARMAS-----------
 
     return (
@@ -1494,20 +1561,20 @@ useEffect(() => {
                     <Text style={styles.headerSubtitle}>{farmName} - {siteName}</Text>
 
                     <View style={{ flexDirection: 'row', alignItems: 'center', position: 'relative' }}>
-                        {/* texto + contador + campana */}
-                        <Text style={styles.headerMainTitle}>
-                            {headerText}
-                            {triggeredCount > 0 && ` (${triggeredCount})`}
-                        </Text>
 
                         {triggeredCount > 0 && (
                             <MaterialCommunityIcons
                                 name="bell-ring"
                                 size={18}
                                 color="#fff"
-                                style={{ marginLeft: 6, transform: [{ translateY: 1 }] }}
+                                style={{ marginRight: 6, transform: [{ translateY: 1 }] }}
                             />
                         )}
+
+                        <Text style={styles.headerMainTitle}>
+                            {headerText}
+                            {triggeredCount > 0 && ` (${triggeredCount})`}
+                        </Text>
 
                         {pendingRequests > 0 && (
                             <ActivityIndicator
@@ -1524,6 +1591,19 @@ useEffect(() => {
                     </View>
 
                 </View>
+
+                {soundSilenced && (
+                    <View style={styles.soundSilencedBadge}>
+                        <Text style={styles.soundSilencedText}>
+                            {t("DeviceDetailsScreen.soundBadge")}
+                        </Text>                    
+                            <MaterialCommunityIcons
+                            name="volume-off"
+                            size={14}
+                            color="#92400E"
+                        />
+                    </View>
+                )}
 
 
                 <TouchableOpacity
@@ -1588,6 +1668,8 @@ useEffect(() => {
                 }}
                 analogIds={analogIdsWithValue}
                 onStopSharingTc5={requestStopSharing}
+                onToggleSoundNotifications={handleToggleSoundNotifications}
+                soundSilenced={soundSilenced}
 
             />
             <Modal
@@ -1708,8 +1790,8 @@ useEffect(() => {
                                 onPress={() => setStopVisible(false)}
                                 disabled={stopping}
                             >
-                                <Text style={styles.confirmBtnGhostText}>   
-                                         {t("DeviceDetailsScreen.common.cancel")}
+                                <Text style={styles.confirmBtnGhostText}>
+                                    {t("DeviceDetailsScreen.common.cancel")}
                                 </Text>
                             </Pressable>
 
@@ -1722,8 +1804,8 @@ useEffect(() => {
                                     <ActivityIndicator />
                                 ) : (
                                     <Text style={styles.confirmBtnPrimaryText}>
-                                         {t("DeviceDetailsScreen.common.ok")}
-                                        </Text>
+                                        {t("DeviceDetailsScreen.common.ok")}
+                                    </Text>
                                 )}
                             </Pressable>
                         </View>
@@ -2469,6 +2551,27 @@ const styles = StyleSheet.create({
         marginTop: 8,
         marginBottom: 8,
         borderRadius: 1,
+    },
+
+    soundSilencedBadge: {
+        position: "absolute",
+        right: 48,
+        bottom: 10,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 4,
+        backgroundColor: "#FDE68A",
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 999,
+        borderWidth: 1,
+        borderColor: "rgba(146, 64, 14, 0.35)",
+    },
+
+    soundSilencedText: {
+        fontSize: 10,
+        fontWeight: "900",
+        color: "#92400E",
     },
 
 });

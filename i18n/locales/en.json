@@ -45,7 +45,10 @@
             "noConnection": "No connection",
             "deviceDisconnected": "Device disconnected or no communication"
         },
-        "common": { "cancel": "Cancel·lar", "ok": "Acceptar" },
+        "common": {
+            "cancel": "Cancel·lar",
+            "ok": "Acceptar"
+        },
         "errorDialog": "The alert could not be confirmed.",
         "Min": "Mín",
         "Max": "Máx",
@@ -70,7 +73,10 @@
         "portalAlarm": "Portal Alarm",
         "portal": "Portal",
         "noActiveAlarms": "There are no active alarms",
-        "removeTc5Access": "Remove access to TC5"
+        "removeTc5Access": "Remove access to TC5",
+          "confirmActivateTc5Sound": "Do you want to enable the sound for alarms from the TC5?",
+        "confirmDeactivateTc5Sound": "Do you want to disable the sound for alarms from the TC5?",
+        "soundBadge": "Sound"
     },
     "DrawerContent": {
         "logout": "Logout",
@@ -109,7 +115,10 @@
         "geolocalizacion": "Geolocation",
         "ajustes": "Settings",
         "volver": "Back",
-        "guardarUbicacion": "Save Location"
+        "guardarUbicacion": "Save Location",
+         "activateSoundAlarms": "Enable sound alarms",
+        "deactivateSoundAlarms": "Disable sound alarms"
+       
     },
     "PhoneNumberDialog": {
         "title": "Enter your phone number",
@@ -318,38 +327,31 @@
         "errorLoadingFarm": "The portal cannot be loaded because there is no connection or it does not exist"
     },
     "ActivacionRele": {
-  "activacionExitosa": "Activation successful",
-  "errorActivacion": "Activation error",
-  "activarRele": "Turn relay on",
-  "desactivarRele": "Turn relay off",
-  "confirmarActivacion": "Are you sure you want to turn the relay on?",
-  "confirmarDesactivacion": "Are you sure you want to turn the relay off?",
-  "si": "Yes",
-  "no": "No",
-  "loading": "Processing request...",
-  "errorTitle": "Error",
-  "successTitle": "Success",
-
-  "noConectado": "Not connected",
-  "noActivado": "Not enabled",
-
-  "modo": "Mode",
-  "automatico": "Automatic",
-  "manual": "Manual",
-  "automaticoContacto": "Automatic: {{contacto}}",
-
-  "estado": "Relay State",
-
-  "on": "ON",
-  "off": "OFF",
-
-  "macInvalida": "Invalid MAC",
-  "sinDatos": "Unexpected format or no data",
-  "errorDesconocido": "Unknown error",
-
-  "cambioModoError": "Couldn't change the relay mode.",
-  "cambioEstadoError": "Couldn't change the relay state.",
-  "ActivacionRele": "Relay Activation"
-}
-
+        "activacionExitosa": "Activation successful",
+        "errorActivacion": "Activation error",
+        "activarRele": "Turn relay on",
+        "desactivarRele": "Turn relay off",
+        "confirmarActivacion": "Are you sure you want to turn the relay on?",
+        "confirmarDesactivacion": "Are you sure you want to turn the relay off?",
+        "si": "Yes",
+        "no": "No",
+        "loading": "Processing request...",
+        "errorTitle": "Error",
+        "successTitle": "Success",
+        "noConectado": "Not connected",
+        "noActivado": "Not enabled",
+        "modo": "Mode",
+        "automatico": "Automatic",
+        "manual": "Manual",
+        "automaticoContacto": "Automatic: {{contacto}}",
+        "estado": "Relay State",
+        "on": "ON",
+        "off": "OFF",
+        "macInvalida": "Invalid MAC",
+        "sinDatos": "Unexpected format or no data",
+        "errorDesconocido": "Unknown error",
+        "cambioModoError": "Couldn't change the relay mode.",
+        "cambioEstadoError": "Couldn't change the relay state.",
+        "ActivacionRele": "Relay Activation"
+    }
 }

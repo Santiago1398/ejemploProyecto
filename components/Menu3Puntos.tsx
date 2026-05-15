@@ -46,7 +46,9 @@ export interface Menu3PuntosProps {
     };
     analogIds: number[];
     options?: MenuOption[];
-    onStopSharingTc5?: () => void; 
+    onStopSharingTc5?: () => void;
+    onToggleSoundNotifications?: () => void;
+    soundSilenced?: boolean;
 
 }
 
@@ -57,6 +59,8 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
     analogIds,
     options,
     onStopSharingTc5,
+    onToggleSoundNotifications,
+    soundSilenced = false,
 }) => {
     const navigation = useNavigation<DeviceDetailsNavigationProp>();
     const token = useAuthStore((state) => state.token);
@@ -64,7 +68,7 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
 
     //  ESTADO PARA CONTROLAR QUÉ MENÚ MOSTRAR
     const [currentMenu, setCurrentMenu] = useState<'main' | 'ajustes'>('main');
-const [confirmStopVisible, setConfirmStopVisible] = useState(false);
+    const [confirmStopVisible, setConfirmStopVisible] = useState(false);
     const defaultOptions: MenuOption[] = [
         {
             id: "ActivacionRele",
@@ -84,6 +88,17 @@ const [confirmStopVisible, setConfirmStopVisible] = useState(false);
 
 
                 });
+            },
+        },
+        {
+            id: "soundNotifications",
+            label: soundSilenced
+                ? t("Menu3Puntos.activateSoundAlarms")
+                : t("Menu3Puntos.deactivateSoundAlarms"),
+            icon: soundSilenced ? "volume-high" : "volume-off",
+            lib: "mc",
+            onPress: () => {
+                onToggleSoundNotifications?.();
             },
         },
 
@@ -202,7 +217,7 @@ const [confirmStopVisible, setConfirmStopVisible] = useState(false);
             label: t("DeviceDetailsScreen.removeTc5Access"),
             icon: "user-x",
             onPress: () => {
-                onStopSharingTc5?.();      
+                onStopSharingTc5?.();
             },
 
         },
@@ -252,7 +267,7 @@ const [confirmStopVisible, setConfirmStopVisible] = useState(false);
     //  DETERMINAR QUÉ OPCIONES MOSTRAR
     const finalOptions = options ?? (currentMenu === 'main' ? defaultOptions : ajustesOptions);
 
-     const handleOptionPress = (option: MenuOption) => {
+    const handleOptionPress = (option: MenuOption) => {
         console.log(` Opción ${option.id} presionada`);
 
         //  Si es una acción de navegación entre menus, ejecutar inmediatamente
@@ -266,38 +281,38 @@ const [confirmStopVisible, setConfirmStopVisible] = useState(false);
         setTimeout(() => {
             option.onPress();
         }, 100);
-    }; 
+    };
 
 
-/* const handleOptionPress = (option: MenuOption) => {
-  console.log(`✅ Opción ${option.id} presionada`);
-
-  // Navegación entre menús (no cierres modal)
-  if (option.id === "ajustes" || option.id === "volver") {
-    option.onPress();
-    return;
-  }
-
-  // ✅ CASO ESPECIAL: stopSharingTc5 -> cerrar menú y luego abrir modal de confirmación
-  if (option.id === "stopSharingTc5") {
-    setCurrentMenu("main");
-    onClose();
-
-    // ✅ Espera a que termine la animación del Modal en iOS
-    InteractionManager.runAfterInteractions(() => {
-      onStopSharingTc5?.();
-    });
-
-    return;
-  }
-
-  // Resto de opciones: cerrar y ejecutar después
-  setCurrentMenu("main");
-  onClose();
-  setTimeout(() => {
-    option.onPress();
-  }, 150);
-}; */
+    /* const handleOptionPress = (option: MenuOption) => {
+      console.log(`✅ Opción ${option.id} presionada`);
+    
+      // Navegación entre menús (no cierres modal)
+      if (option.id === "ajustes" || option.id === "volver") {
+        option.onPress();
+        return;
+      }
+    
+      // ✅ CASO ESPECIAL: stopSharingTc5 -> cerrar menú y luego abrir modal de confirmación
+      if (option.id === "stopSharingTc5") {
+        setCurrentMenu("main");
+        onClose();
+    
+        // ✅ Espera a que termine la animación del Modal en iOS
+        InteractionManager.runAfterInteractions(() => {
+          onStopSharingTc5?.();
+        });
+    
+        return;
+      }
+    
+      // Resto de opciones: cerrar y ejecutar después
+      setCurrentMenu("main");
+      onClose();
+      setTimeout(() => {
+        option.onPress();
+      }, 150);
+    }; */
 
     const handleBackdropPress = () => {
         console.log(" Backdrop presionado - cerrando menú");

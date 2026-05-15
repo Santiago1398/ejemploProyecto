@@ -45,10 +45,11 @@
             "noConnection": "Brak połączenia",
             "deviceDisconnected": "Urządzenie rozłączone lub brak komunikacji"
         },
-        "common": { "cancel": "Anuluj", "ok": "Akceptuj" },
-
-  "errorDialog":  "Nie udało się potwierdzić alertu",
-
+        "common": {
+            "cancel": "Anuluj",
+            "ok": "Akceptuj"
+        },
+        "errorDialog": "Nie udało się potwierdzić alertu",
         "Min": "Min",
         "Max": "Maks",
         "No_conectado": "Brak połączenia",
@@ -72,7 +73,10 @@
         "portalAlarm": "Alarm portalu",
         "portal": "Portal",
         "noActiveAlarms": "Brak aktywnych alarmów",
-        "removeTc5Access": "Usuń dostęp do TC5"
+        "removeTc5Access": "Usuń dostęp do TC5",
+        "confirmActivateTc5Sound": "Czy chcesz włączyć dźwięk alarmów pochodzących z TC5?",
+        "confirmDeactivateTc5Sound": "Czy chcesz wyłączyć dźwięk alarmów pochodzących z TC5?",
+        "soundBadge": "Dźwięk"
     },
     "DrawerContent": {
         "logout": "Wyloguj",
@@ -111,7 +115,9 @@
         "geolocalizacion": "Geolokalizacja",
         "ajustes": "Ustawienia",
         "volver": "Wróć",
-        "guardarUbicacion": "Zapisz Lokalizację"
+        "guardarUbicacion": "Zapisz Lokalizację",
+        "activateSoundAlarms": "Włącz alarmy dźwiękowe",
+        "deactivateSoundAlarms": "Wyłącz alarmy dźwiękowe"
     },
     "PhoneNumberDialog": {
         "title": "Wprowadź swój numer telefonu",
@@ -316,38 +322,31 @@
         "Maps": "Mapy"
     },
     "ActivacionRele": {
-  "activacionExitosa": "Aktywacja zakończona powodzeniem",
-  "errorActivacion": "Błąd aktywacji",
-  "activarRele": "Włącz przekaźnik",
-  "desactivarRele": "Wyłącz przekaźnik",
-  "confirmarActivacion": "Czy na pewno chcesz włączyć przekaźnik?",
-  "confirmarDesactivacion": "Czy na pewno chcesz wyłączyć przekaźnik?",
-  "si": "Tak",
-  "no": "Nie",
-  "loading": "Przetwarzanie żądania...",
-  "errorTitle": "Błąd",
-  "successTitle": "Sukces",
-
-  "noConectado": "Brak połączenia",
-  "noActivado": "Nieaktywne",
-
-  "modo": "Tryb",
-  "automatico": "Automatyczny",
-  "manual": "Ręczny",
-  "automaticoContacto": "Automatyczny: {{contacto}}",
-
-  "estado": "Stan przekaźnika",
-
-  "on": "ON",
-  "off": "OFF",
-
-  "macInvalida": "Nieprawidłowy MAC",
-  "sinDatos": "Nieoczekiwany format lub brak danych",
-  "errorDesconocido": "Nieznany błąd",
-
-  "cambioModoError": "Nie udało się zmienić trybu przekaźnika.",
-  "cambioEstadoError": "Nie udało się zmienić stanu przekaźnika.",
-  "ActivacionRele": "Aktywacja przekaźnika"
-}
-
+        "activacionExitosa": "Aktywacja zakończona powodzeniem",
+        "errorActivacion": "Błąd aktywacji",
+        "activarRele": "Włącz przekaźnik",
+        "desactivarRele": "Wyłącz przekaźnik",
+        "confirmarActivacion": "Czy na pewno chcesz włączyć przekaźnik?",
+        "confirmarDesactivacion": "Czy na pewno chcesz wyłączyć przekaźnik?",
+        "si": "Tak",
+        "no": "Nie",
+        "loading": "Przetwarzanie żądania...",
+        "errorTitle": "Błąd",
+        "successTitle": "Sukces",
+        "noConectado": "Brak połączenia",
+        "noActivado": "Nieaktywne",
+        "modo": "Tryb",
+        "automatico": "Automatyczny",
+        "manual": "Ręczny",
+        "automaticoContacto": "Automatyczny: {{contacto}}",
+        "estado": "Stan przekaźnika",
+        "on": "ON",
+        "off": "OFF",
+        "macInvalida": "Nieprawidłowy MAC",
+        "sinDatos": "Nieoczekiwany format lub brak danych",
+        "errorDesconocido": "Nieznany błąd",
+        "cambioModoError": "Nie udało się zmienić trybu przekaźnika.",
+        "cambioEstadoError": "Nie udało się zmienić stanu przekaźnika.",
+        "ActivacionRele": "Aktywacja przekaźnika"
+    }
 }

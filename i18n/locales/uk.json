@@ -45,7 +45,10 @@
             "noConnection": "Немає з'єднання",
             "deviceDisconnected": "Пристрій відключений або немає зв'язку"
         },
-        "common": { "cancel": "Скасувати", "ok": "Прийняти" },
+        "common": {
+            "cancel": "Скасувати",
+            "ok": "Прийняти"
+        },
         "errorDialog": "Не вдалося підтвердити сповіщення",
         "Min": "Хв",
         "Max": "Макс",
@@ -70,7 +73,10 @@
         "portalAlarm": "Тривога порталу",
         "portal": "Портал",
         "noActiveAlarms": "Немає активних тривог",
-        "removeTc5Access": "Видалити доступ до TC5"
+        "removeTc5Access": "Видалити доступ до TC5",
+        "confirmActivateTc5Sound": "Бажаєте увімкнути звук тривог, отриманих від TC5?",
+        "confirmDeactivateTc5Sound": "Бажаєте вимкнути звук тривог, отриманих від TC5?",
+        "soundBadge": "Звук"
     },
     "DrawerContent": {
         "logout": "Вийти",
@@ -109,7 +115,9 @@
         "geolocalizacion": "Геолокація",
         "ajustes": "Налаштування",
         "volver": "Назад",
-        "guardarUbicacion": "Зберегти місцезнаходження"
+        "guardarUbicacion": "Зберегти місцезнаходження",
+        "activateSoundAlarms": "Увімкнути звукові сигнали тривоги",
+        "deactivateSoundAlarms": "Вимкнути звукові сигнали тривоги"
     },
     "PhoneNumberDialog": {
         "title": "Введіть свій номер телефону",
@@ -318,38 +326,31 @@
         "errorLoadingFarm": "Не вдається завантажити портал, оскільки немає зʼєднання або він не існує"
     },
     "ActivacionRele": {
-  "activacionExitosa": "Активація успішна",
-  "errorActivacion": "Помилка активації",
-  "activarRele": "Увімкнути реле",
-  "desactivarRele": "Вимкнути реле",
-  "confirmarActivacion": "Ви впевнені, що хочете увімкнути реле?",
-  "confirmarDesactivacion": "Ви впевнені, що хочете вимкнути реле?",
-  "si": "Так",
-  "no": "Ні",
-  "loading": "Обробка запиту...",
-  "errorTitle": "Помилка",
-  "successTitle": "Успіх",
-
-  "noConectado": "Не підключено",
-  "noActivado": "Не активовано",
-
-  "modo": "Режим",
-  "automatico": "Автоматичний",
-  "manual": "Ручний",
-  "automaticoContacto": "Автоматичний: {{contacto}}",
-
-  "control": "Керування",
-
-  "on": "ON",
-  "off": "OFF",
-
-  "macInvalida": "Некоректний MAC",
-  "sinDatos": "Неочікуваний формат або немає даних",
-  "errorDesconocido": "Невідома помилка",
-
-  "cambioModoError": "Не вдалося змінити режим реле.",
-  "cambioEstadoError": "Не вдалося змінити стан реле.",
-  "ActivacionRele": "Активація реле"
-}
-
+        "activacionExitosa": "Активація успішна",
+        "errorActivacion": "Помилка активації",
+        "activarRele": "Увімкнути реле",
+        "desactivarRele": "Вимкнути реле",
+        "confirmarActivacion": "Ви впевнені, що хочете увімкнути реле?",
+        "confirmarDesactivacion": "Ви впевнені, що хочете вимкнути реле?",
+        "si": "Так",
+        "no": "Ні",
+        "loading": "Обробка запиту...",
+        "errorTitle": "Помилка",
+        "successTitle": "Успіх",
+        "noConectado": "Не підключено",
+        "noActivado": "Не активовано",
+        "modo": "Режим",
+        "automatico": "Автоматичний",
+        "manual": "Ручний",
+        "automaticoContacto": "Автоматичний: {{contacto}}",
+        "control": "Керування",
+        "on": "ON",
+        "off": "OFF",
+        "macInvalida": "Некоректний MAC",
+        "sinDatos": "Неочікуваний формат або немає даних",
+        "errorDesconocido": "Невідома помилка",
+        "cambioModoError": "Не вдалося змінити режим реле.",
+        "cambioEstadoError": "Не вдалося змінити стан реле.",
+        "ActivacionRele": "Активація реле"
+    }
 }

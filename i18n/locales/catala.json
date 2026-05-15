@@ -45,9 +45,11 @@
             "noConnection": "Sense connexió",
             "deviceDisconnected": "Equip desconnectat o sense comunicació"
         },
-        "common": { "cancel": "Cancel·lar", "ok": "Acceptar" },
-
-        "errorDialog":  "No s'ha pogut confirmar l'avís",
+        "common": {
+            "cancel": "Cancel·lar",
+            "ok": "Acceptar"
+        },
+        "errorDialog": "No s'ha pogut confirmar l'avís",
         "Min": "Mín",
         "Max": "Màx",
         "No_conectado": "No connectat",
@@ -71,13 +73,13 @@
         "portalAlarm": "Alarma del portal",
         "portal": "Portal",
         "noActiveAlarms": "No hi ha alarmes actives",
-        "removeTc5Access": "Eliminar l’accés al TC5"
-
-
+        "removeTc5Access": "Eliminar l’accés al TC5",
+        "confirmActivateTc5Sound": "Voleu activar el so de les alarmes derivades del TC5?",
+        "confirmDeactivateTc5Sound": "Voleu desactivar el so de les alarmes derivades del TC5?",
+        "soundBadge": "So"
     },
     "DrawerContent": {
         "logout": "Tancar sessió",
-
         "login": "Iniciar sessió",
         "settings": "Configuració",
         "maintenance": "Manteniment",
@@ -113,7 +115,9 @@
         "geolocalizacion": "Geolocalització",
         "ajustes": "Configuració",
         "volver": "Tornar",
-        "guardarUbicacion": "Guardar Ubicació"
+        "guardarUbicacion": "Guardar Ubicació",
+        "activateSoundAlarms": "Activar alarmes sonores",
+        "deactivateSoundAlarms": "Desactivar alarmes sonores"
     },
     "PhoneNumberDialog": {
         "title": "Introdueix el teu número de telèfon",
@@ -321,37 +325,31 @@
         "errorLoadingFarm": "No es pot carregar el portal perquè no hi ha connexió o no existeix"
     },
     "ActivacionRele": {
-  "activacionExitosa": "Activació correcta",
-  "errorActivacion": "Error en l'activació",
-  "activarRele": "Activar relé",
-  "desactivarRele": "Desactivar relé",
-  "confirmarActivacion": "Segur que vols activar el relé?",
-  "confirmarDesactivacion": "Segur que vols desactivar el relé?",
-  "si": "Sí",
-  "no": "No",
-  "loading": "Processant la sol·licitud...",
-  "errorTitle": "Error",
-  "successTitle": "Èxit",
-
-  "noConectado": "No connectat",
-  "noActivado": "No activat",
-
-  "modo": "Mode",
-  "automatico": "Automàtic",
-  "manual": "Manual",
-  "automaticoContacto": "Automàtic: {{contacto}}",
-
-  "estado": "Estat relé",
-
-  "on": "ON",
-  "off": "OFF",
-
-  "macInvalida": "MAC no vàlida",
-  "sinDatos": "Format inesperat o sense dades",
-  "errorDesconocido": "Error desconegut",
-
-  "cambioModoError": "No s'ha pogut canviar el mode del relé.",
-  "cambioEstadoError": "No s'ha pogut canviar l'estat del relé.",
-  "ActivacionRele": "Activació del relé"
-}
+        "activacionExitosa": "Activació correcta",
+        "errorActivacion": "Error en l'activació",
+        "activarRele": "Activar relé",
+        "desactivarRele": "Desactivar relé",
+        "confirmarActivacion": "Segur que vols activar el relé?",
+        "confirmarDesactivacion": "Segur que vols desactivar el relé?",
+        "si": "Sí",
+        "no": "No",
+        "loading": "Processant la sol·licitud...",
+        "errorTitle": "Error",
+        "successTitle": "Èxit",
+        "noConectado": "No connectat",
+        "noActivado": "No activat",
+        "modo": "Mode",
+        "automatico": "Automàtic",
+        "manual": "Manual",
+        "automaticoContacto": "Automàtic: {{contacto}}",
+        "estado": "Estat relé",
+        "on": "ON",
+        "off": "OFF",
+        "macInvalida": "MAC no vàlida",
+        "sinDatos": "Format inesperat o sense dades",
+        "errorDesconocido": "Error desconegut",
+        "cambioModoError": "No s'ha pogut canviar el mode del relé.",
+        "cambioEstadoError": "No s'ha pogut canviar l'estat del relé.",
+        "ActivacionRele": "Activació del relé"
+    }
 }
