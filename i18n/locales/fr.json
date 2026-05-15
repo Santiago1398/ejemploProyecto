@@ -71,7 +71,10 @@
         "portalAlarm": "Alarme du portail",
         "portal": "Portail",
         "noActiveAlarms": "Il n’y a pas d’alarmes actives",
-        "removeTc5Access": "Supprimer l’accès au TC5"
+        "removeTc5Access": "Supprimer l’accès au TC5",
+        "confirmActivateTc5Sound": "Voulez-vous activer le son des alarmes provenant du TC5 ?",
+        "confirmDeactivateTc5Sound": "Voulez-vous désactiver le son des alarmes provenant du TC5 ?",
+        "soundBadge": "Son"
     },
     "DrawerContent": {
         "logout": "Se déconnecter",
@@ -110,7 +113,9 @@
         "geolocalizacion": "Géolocalisation",
         "ajustes": "Paramètres",
         "volver": "Retour",
-        "guardarUbicacion": "Enregistrer l'Emplacement"
+        "guardarUbicacion": "Enregistrer l'Emplacement",
+        "activateSoundAlarms": "Activer les alarmes sonores",
+        "deactivateSoundAlarms": "Désactiver les alarmes sonores"
     },
     "PhoneNumberDialog": {
         "title": "Entrez votre numéro de téléphone",

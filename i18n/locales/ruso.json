@@ -71,7 +71,10 @@
         "portalAlarm": "Тревога портала",
         "portal": "Портал",
         "noActiveAlarms": "Нет активных тревог",
-        "removeTc5Access": "Удалить доступ к TC5"
+        "removeTc5Access": "Удалить доступ к TC5",
+        "confirmActivateTc5Sound": "Вы хотите включить звук тревог, поступающих от TC5?",
+        "confirmDeactivateTc5Sound": "Вы хотите отключить звук тревог, поступающих от TC5?",
+        "soundBadge": "Звук"
     },
     "DrawerContent": {
         "logout": "Выйти",
@@ -110,7 +113,9 @@
         "geolocalizacion": "Геолокация",
         "ajustes": "Настройки",
         "volver": "Назад",
-        "guardarUbicacion": "Сохранить местоположение"
+        "guardarUbicacion": "Сохранить местоположение",
+        "activateSoundAlarms": "Включить звуковые сигналы тревоги",
+        "deactivateSoundAlarms": "Отключить звуковые сигналы тревоги"
     },
     "PhoneNumberDialog": {
         "title": "Введите свой номер телефона",

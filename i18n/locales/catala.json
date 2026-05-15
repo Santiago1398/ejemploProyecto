@@ -71,7 +71,10 @@
         "portalAlarm": "Alarma del portal",
         "portal": "Portal",
         "noActiveAlarms": "No hi ha alarmes actives",
-        "removeTc5Access": "Eliminar l’accés al TC5"
+        "removeTc5Access": "Eliminar l’accés al TC5",
+        "confirmActivateTc5Sound": "Voleu activar el so de les alarmes derivades del TC5?",
+        "confirmDeactivateTc5Sound": "Voleu desactivar el so de les alarmes derivades del TC5?",
+        "soundBadge": "So"
     },
     "DrawerContent": {
         "logout": "Tancar sessió",
@@ -110,7 +113,9 @@
         "geolocalizacion": "Geolocalització",
         "ajustes": "Configuració",
         "volver": "Tornar",
-        "guardarUbicacion": "Guardar Ubicació"
+        "guardarUbicacion": "Guardar Ubicació",
+        "activateSoundAlarms": "Activar alarmes sonores",
+        "deactivateSoundAlarms": "Desactivar alarmes sonores"
     },
     "PhoneNumberDialog": {
         "title": "Introdueix el teu número de telèfon",

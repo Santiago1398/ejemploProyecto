@@ -71,7 +71,10 @@
         "portalAlarm": "入口網站警報",
         "portal": "入口網站",
         "noActiveAlarms": "沒有啟用中的警報",
-        "removeTc5Access": "移除 TC5 存取權限"
+        "removeTc5Access": "移除 TC5 存取權限",
+        "confirmActivateTc5Sound": "是否要啟用來自 TC5 警報的聲音？",
+        "confirmDeactivateTc5Sound": "是否要停用來自 TC5 警報的聲音？",
+        "soundBadge": "聲音"
     },
     "DrawerContent": {
         "logout": "登出",
@@ -109,7 +112,9 @@
         "geolocalizacion": "地理位置",
         "ajustes": "設定",
         "volver": "返回",
-        "guardarUbicacion": "儲存位置"
+        "guardarUbicacion": "儲存位置",
+        "activateSoundAlarms": "啟用聲音警報",
+        "deactivateSoundAlarms": "停用聲音警報"
     },
     "PhoneNumberDialog": {
         "title": "輸入您的電話號碼",

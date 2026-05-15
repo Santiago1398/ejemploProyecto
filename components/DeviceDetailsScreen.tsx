@@ -105,6 +105,46 @@ export default function AlarmList() {
 
     const openStopModal = () => setStopVisible(true);
 
+    const showSoundSilencedIcon = true; // forzado por ahora
+    const [soundSilenced, setSoundSilenced] = useState(false);
+    const [soundSilenceLoading, setSoundSilenceLoading] = useState(false);
+
+    const handleToggleSoundNotifications = async () => {
+        const nextSilence = !soundSilenced;
+
+        const mensaje = nextSilence
+            ? t("DeviceDetailsScreen.confirmDeactivateTc5Sound")
+            : t("DeviceDetailsScreen.confirmActivateTc5Sound");
+
+        const confirmar = await confirmarCambioAlarma(mensaje);
+
+        if (!confirmar) return;
+
+        try {
+            setSoundSilenceLoading(true);
+
+            await runWithLoader(async () => {
+                await post("alarmtc/silenciar-notificaciones-sonoras", {
+                    silence: nextSilence,
+                    mac: String(mac),
+                    userId: Number(userId),
+                });
+            });
+
+            setSoundSilenced(nextSilence);
+            await fetchSoundNotificationsState();
+        } catch (error) {
+            console.log("❌ Error silenciando notificaciones sonoras:", error);
+            Alert.alert(
+                "Error",
+                "No se pudo cambiar el estado del sonido de las alarmas."
+            );
+        } finally {
+            setSoundSilenceLoading(false);
+        }
+    };
+
+
 
 
 
@@ -197,6 +237,30 @@ export default function AlarmList() {
     const confirmandoMaster = useRef(false);
     const parseBool = (v: any) =>
         v === true || v === "true" || v === 1 || v === "1";
+
+    const fetchSoundNotificationsState = async () => {
+        if (!mac || !userId) return;
+
+        try {
+            const res = await get(
+                `alarmtc/estado-notificaciones-sonoras?silence=false&mac=${encodeURIComponent(String(mac))}&userId=${Number(userId)}`
+            );
+
+            console.log("🔇 Estado notificaciones sonoras:", res);
+
+            const silenceValue =
+                res?.silence ??
+                res?.data?.silence ??
+                res?.data ??
+                res?.status ??
+                res;
+
+            setSoundSilenced(parseBool(silenceValue));
+        } catch (error) {
+            console.log("❌ Error consultando estado de sonido:", error);
+        }
+    };
+
 
 
     //  Confirm Modal (reemplaza Alert.alert para confirmaciones)
@@ -303,6 +367,10 @@ export default function AlarmList() {
     );
 
     //!--------------------------------------------------------------
+    useEffect(() => {
+        fetchSoundNotificationsState();
+    }, [mac, userId]);
+
 
     useEffect(() => {
         const handleMacEvent = (payload: any) => {
@@ -1457,20 +1525,20 @@ export default function AlarmList() {
                     <Text style={styles.headerSubtitle}>{farmName} - {siteName}</Text>
 
                     <View style={{ flexDirection: 'row', alignItems: 'center', position: 'relative' }}>
-                        {/* texto + contador + campana */}
-                        <Text style={styles.headerMainTitle}>
-                            {headerText}
-                            {triggeredCount > 0 && ` (${triggeredCount})`}
-                        </Text>
 
                         {triggeredCount > 0 && (
                             <MaterialCommunityIcons
                                 name="bell-ring"
                                 size={18}
                                 color="#fff"
-                                style={{ marginLeft: 6, transform: [{ translateY: 1 }] }}
+                                style={{ marginRight: 6, transform: [{ translateY: 1 }] }}
                             />
                         )}
+
+                        <Text style={styles.headerMainTitle}>
+                            {headerText}
+                            {triggeredCount > 0 && ` (${triggeredCount})`}
+                        </Text>
 
                         {pendingRequests > 0 && (
                             <ActivityIndicator
@@ -1485,8 +1553,20 @@ export default function AlarmList() {
                             />
                         )}
                     </View>
-
                 </View>
+
+                {soundSilenced && (
+                    <View style={styles.soundSilencedBadge}>
+                        <Text style={styles.soundSilencedText}>
+                            {t("DeviceDetailsScreen.soundBadge")}
+                        </Text>
+                        <MaterialCommunityIcons
+                            name="volume-off"
+                            size={14}
+                            color="#92400E"
+                        />
+                    </View>
+                )}
 
 
                 <TouchableOpacity
@@ -1551,6 +1631,8 @@ export default function AlarmList() {
                 }}
                 analogIds={analogIdsWithValue}
                 onStopSharingTc5={openStopModal}
+                onToggleSoundNotifications={handleToggleSoundNotifications}
+                soundSilenced={soundSilenced}
 
             />
             <Modal
@@ -2428,6 +2510,27 @@ const styles = StyleSheet.create({
         marginTop: 8,
         marginBottom: 8,
         borderRadius: 1,
+    },
+
+    soundSilencedBadge: {
+        position: "absolute",
+        right: 48,
+        bottom: 10,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 4,
+        backgroundColor: "#FDE68A",
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 999,
+        borderWidth: 1,
+        borderColor: "rgba(146, 64, 14, 0.35)",
+    },
+
+    soundSilencedText: {
+        fontSize: 10,
+        fontWeight: "900",
+        color: "#92400E",
     },
 
 });

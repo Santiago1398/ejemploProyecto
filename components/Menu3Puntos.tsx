@@ -49,6 +49,8 @@ export interface Menu3PuntosProps {
     analogIds: number[];
     options?: MenuOption[];
     onStopSharingTc5?: () => void;
+    onToggleSoundNotifications?: () => void;
+    soundSilenced?: boolean;
 }
 
 const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
@@ -57,7 +59,9 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
     device,
     analogIds,
     options,
-    onStopSharingTc5
+    onStopSharingTc5,
+    onToggleSoundNotifications,
+    soundSilenced = false,
 }) => {
     const navigation = useNavigation<DeviceDetailsNavigationProp>();
     const token = useAuthStore((state) => state.token);
@@ -87,6 +91,18 @@ const Menu3Puntos: React.FC<Menu3PuntosProps> = ({
 
 
                 });
+            },
+
+        },
+        {
+            id: "soundNotifications",
+            label: soundSilenced
+                ? t("Menu3Puntos.activateSoundAlarms")
+                : t("Menu3Puntos.deactivateSoundAlarms"),
+            icon: soundSilenced ? "volume-high" : "volume-off",
+            lib: "mc",
+            onPress: () => {
+                onToggleSoundNotifications?.();
             },
         },
 

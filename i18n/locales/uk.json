@@ -71,7 +71,10 @@
         "portalAlarm": "Тривога порталу",
         "portal": "Портал",
         "noActiveAlarms": "Немає активних тривог",
-        "removeTc5Access": "Видалити доступ до TC5"
+        "removeTc5Access": "Видалити доступ до TC5",
+        "confirmActivateTc5Sound": "Бажаєте увімкнути звук тривог, отриманих від TC5?",
+        "confirmDeactivateTc5Sound": "Бажаєте вимкнути звук тривог, отриманих від TC5?",
+        "soundBadge": "Звук"
     },
     "DrawerContent": {
         "logout": "Вийти",
@@ -110,7 +113,9 @@
         "geolocalizacion": "Геолокація",
         "ajustes": "Налаштування",
         "volver": "Назад",
-        "guardarUbicacion": "Зберегти місцезнаходження"
+        "guardarUbicacion": "Зберегти місцезнаходження",
+        "activateSoundAlarms": "Увімкнути звукові сигнали тривоги",
+        "deactivateSoundAlarms": "Вимкнути звукові сигнали тривоги"
     },
     "PhoneNumberDialog": {
         "title": "Введіть свій номер телефону",

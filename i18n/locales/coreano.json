@@ -71,7 +71,10 @@
         "portalAlarm": "入口網站警報",
         "portal": "포털",
         "noActiveAlarms": "활성 알람이 없습니다",
-        "removeTc5Access": "TC5 접근 제거"
+        "removeTc5Access": "TC5 접근 제거",
+        "confirmActivateTc5Sound": "TC5에서 발생한 알람 소리를 켜시겠습니까?",
+        "confirmDeactivateTc5Sound": "TC5에서 발생한 알람 소리를 끄시겠습니까?",
+        "soundBadge": "소리"
     },
     "DrawerContent": {
         "logout": "로그아웃",
@@ -110,7 +113,9 @@
         "geolocalizacion": "지리적 위치",
         "ajustes": "설정",
         "volver": "뒤로",
-        "guardarUbicacion": "위치 저장"
+        "guardarUbicacion": "위치 저장",
+        "activateSoundAlarms": "알람 소리 켜기",
+        "deactivateSoundAlarms": "알람 소리 끄기"
     },
     "PhoneNumberDialog": {
         "title": "전화번호를 입력하세요",
